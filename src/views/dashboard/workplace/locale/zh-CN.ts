@@ -10,6 +10,7 @@ export default {
   'workplace.newFromYesterday': '较昨日新增',
   'workplace.minute': '分钟',
   'workplace.docs': '帮助文档',
+  'workplace.indexImage': '图片通知',
   'workplace.docs.productOverview': '产品概要',
   'workplace.docs.userGuide': '使用指南',
   'workplace.docs.workflow': '接入流程',

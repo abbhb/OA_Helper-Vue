@@ -8,6 +8,7 @@ const DASHBOARD: AppRouteRecordRaw = {
   meta: {
     locale: 'menu.dashboard',
     requiresAuth: true,
+    roles: ['*'],
     icon: 'icon-dashboard',
     order: 0,
   },
@@ -39,6 +40,8 @@ const DASHBOARD: AppRouteRecordRaw = {
       meta: {
         locale: 'menu.dashboard.printer',
         requiresAuth: true,
+        roles: ['*'],
+
       },
     },
   ],

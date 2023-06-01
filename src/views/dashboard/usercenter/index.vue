@@ -22,10 +22,6 @@
   const {type} = router.currentRoute.value.query;
 
 
-
-
-
-
 </script>
 
 

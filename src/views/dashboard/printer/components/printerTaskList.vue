@@ -30,6 +30,13 @@
 
   export default {
     name: 'PrinterTaskList',
+      onUnmounted() {
+      // 路由跳转前，清除轮询
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+    },
     data() {
       return {
         list_loading: false,
@@ -45,33 +52,12 @@
         }, 5000);
       }, 5000);
     },
-    beforeUnmount() {
-      clearInterval(this.timer);
-      this.timer = null;
-    },
     methods: {
       async handleChangeJob(FileUuid: any, state: any) {
-        this.list_loading = true;
-        try {
-          const res = await axios.get(
-            `http://10.15.245.1:8081/papi/setJob/${FileUuid}/${state}`,
-            {
-              withCredentials: true,
-            }
-          );
-          this.TimeDo();
-          const ResResult = res.data;
-          Modal.error({
-            title: '提示',
-            content: `${ResResult.msg}`,
-          });
-        } catch (e: any) {
-          Modal.error({
-            title: '提示',
-            content: `${e.message}`,
-          });
-        }
-        this.list_loading = false;
+        Modal.error({
+          title: '提示',
+          content: `这个按钮是摆设`,
+        });
       },
       async TimeDo() {
         try {

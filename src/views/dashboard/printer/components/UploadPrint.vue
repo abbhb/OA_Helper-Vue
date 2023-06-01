@@ -273,3 +273,19 @@
     background-color: var(--color-bg-2);
   }
 </style>
+<style lang="less" scoped>
+// responsive
+.mobile {
+  .s-upload {
+    padding: 10px 10px 10px 10px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-bg-2);
+  }
+}
+</style>

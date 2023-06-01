@@ -17,8 +17,16 @@ export interface PopularRecord {
   increases: number;
 }
 
+
 export function queryPopularList(params: { type: string }) {
   return axios.get<TableData[]>('/api/popular/list', { params });
+}
+
+export function queryIndexImageLabel() {
+  return axios.get<string[]>('/api/index_image/all_label');
+}
+export function queryLabelIndexImage(params: { label: string }) {
+  return axios.get<string[]>('/api/index_image/label_all', { params });
 }
 
 export function queryApiCount() {

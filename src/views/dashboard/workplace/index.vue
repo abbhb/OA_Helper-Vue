@@ -14,7 +14,7 @@
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <CategoriesPercent />
+          <IndexImage />
         </a-grid-item>
       </a-grid>
     </div>
@@ -41,11 +41,10 @@
 </template>
 
 <script lang="ts" setup>
+  import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
   import Banner from './components/banner.vue';
   import DataPanel from './components/data-panel.vue';
-  import ContentChart from './components/content-chart.vue';
   import PopularContent from './components/popular-content.vue';
-  import CategoriesPercent from './components/categories-percent.vue';
   import RecentlyVisited from './components/recently-visited.vue';
   import QuickOperation from './components/quick-operation.vue';
   import Announcement from './components/announcement.vue';

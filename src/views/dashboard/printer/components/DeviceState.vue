@@ -19,6 +19,12 @@
 
   export default {
     name: 'DeviceState',
+      onUnmounted() {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    },
     setup() {
       const formDevice = reactive({
         list: '获取中',
@@ -39,10 +45,6 @@
           this.timeRE();
         }, 3000);
       }, 3000);
-    },
-    beforeUnmount() {
-      clearInterval(this.timer);
-      this.timer = null;
     },
     methods: {
       async timeRE() {
