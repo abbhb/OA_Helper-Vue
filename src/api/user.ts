@@ -27,11 +27,15 @@ export interface UserInfo {
 export interface LoginRes {
   token: string;
 }
+
 export function login(data: LoginData) {
   return axios.post<LoginRes>('/api/user/login', data);
 }
 export function loginbycode(data: LoginDataByCode) {
   return axios.post<LoginRes>('/api/user/loginbycode', data);
+}
+export function loginbytoken() {
+  return axios.post<LoginRes>('/api/user/login_by_token');
 }
 export function updataUserInfo(data: UserInfo) {
   return axios.put<string>('/api/user/update', data);
@@ -41,7 +45,7 @@ export function setPassword(data: Password) {
 }
 
 export function logout() {
-  return axios.post<LoginRes>('/api/user/logout');
+  return axios.post<string>('/api/user/logout');
 }
 
 export function getUserInfo() {

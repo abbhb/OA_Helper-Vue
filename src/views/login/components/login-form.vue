@@ -4,6 +4,7 @@
     <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
+      v-if="!loginConfig.useSSO"
       ref="loginForm"
       :model="userInfo"
       class="login-form"
@@ -43,11 +44,7 @@
       </a-form-item>
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
-          <a-checkbox
-            checked="weekNoLogin"
-            :model-value="loginConfig.weekNoLogin"
-            @change="setRememberPassword as any"
-          >
+          <a-checkbox v-model="userInfo.week" checked="week">
             {{ $t('login.form.weekNoLogin') }}
           </a-checkbox>
           <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
@@ -55,11 +52,29 @@
         <a-button type="primary" html-type="submit" long :loading="loading">
           {{ $t('login.form.login') }}
         </a-button>
-        <a-button @click="gotoOAuth2" type="text" long class="login-form-register-btn">
+        <a-button
+          type="text"
+          long
+          class="login-form-register-btn"
+          @click="gotoOAuth2"
+        >
           {{ $t('login.form.oauth2') }}
         </a-button>
       </a-space>
     </a-form>
+    <div v-else-if="loginConfig.useSSO" class="login-2">
+      <a-button size="large" type="primary" long @click="gotoOAuth2">{{
+        $t('login.form.oauth2')
+      }}</a-button>
+      <a-button
+        size="large"
+        style="margin-top: 10px"
+        type="outline"
+        long
+        @click="changeLoginConfig(false)"
+        >{{ $t('login.form.traditionLogin') }}</a-button
+      >
+    </div>
   </div>
 </template>
 
@@ -69,7 +84,6 @@
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useI18n } from 'vue-i18n';
-  import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
@@ -79,21 +93,41 @@
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
-
-  const loginConfig = useStorage('login-config', {
-    weekNoLogin: false,
+  const loginConfig = ref({
+    useSSO: true,
+  });
+  const userInfo = ref({
     username: '',
     password: '',
-  });
-  const userInfo = reactive({
-    username: loginConfig.value.username,
-    password: loginConfig.value.password,
+    week: false,
   });
 
-  const gotoOAuth2 = () => {
-      window.location.href =
-          'http://10.15.245.1:55554/?response_type=code&client_id=891d832ff2204a858ad4d0f0dc0d203f';
+  const loginSuccess = () => {
+    const { redirect, ...othersQuery } = router.currentRoute.value.query;
+    router.push({
+      name: (redirect as string) || 'Workplace',
+      query: {
+        ...othersQuery,
+      },
+    });
+    Message.success(t('login.form.login.success'));
   };
+  const gotoOAuth2 = () => {
+    window.location.href =
+      'http://10.15.245.1:55554/?response_type=code&client_id=891d832ff2204a858ad4d0f0dc0d203f';
+  };
+  const changeLoginConfig = (config) => {
+    loginConfig.value.useSSO = config;
+  };
+  const loginByToken = async () => {
+    try {
+      await userStore.loginByToken();
+      loginSuccess();
+    } catch (err) {
+      errorMessage.value = (err as Error).message;
+    }
+  };
+
   const handleSubmit = async ({
     errors,
     values,
@@ -105,21 +139,9 @@
     if (!errors) {
       setLoading(true);
       try {
+        console.log(values);
         await userStore.login(values as LoginData);
-        const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        router.push({
-          name: (redirect as string) || 'Workplace',
-          query: {
-            ...othersQuery,
-          },
-        });
-        Message.success(t('login.form.login.success'));
-        const { rememberPassword } = loginConfig.value;
-        const { username, password } = values;
-        // 实际生产环境需要进行加密存储。
-        // The actual production environment requires encrypted storage.
-        loginConfig.value.username = rememberPassword ? username : '';
-        loginConfig.value.password = rememberPassword ? password : '';
+        loginSuccess();
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -127,9 +149,7 @@
       }
     }
   };
-  const setRememberPassword = (value: boolean) => {
-    loginConfig.value.rememberPassword = value;
-  };
+  loginByToken();
 </script>
 
 <style lang="less" scoped>

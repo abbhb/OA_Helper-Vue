@@ -3,10 +3,11 @@ import {
   login as userLogin,
   logout as userLogout,
   getUserInfo,
-  LoginData, LoginDataByCode, loginbycode,
+  LoginData, LoginDataByCode, loginbycode, loginbytoken,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
+import {Message} from "@arco-design/web-vue";
 import { UserState } from './types';
 import useAppStore from '../app';
 
@@ -69,6 +70,14 @@ const useUserStore = defineStore('user', {
       try {
         const res = await loginbycode(loginForm);
         setToken(res.data.token);
+      } catch (err) {
+        clearToken();
+        throw err;
+      }
+    },
+    async loginByToken() {
+      try {
+        await loginbytoken();
       } catch (err) {
         clearToken();
         throw err;
