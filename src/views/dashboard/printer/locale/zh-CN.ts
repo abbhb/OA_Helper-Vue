@@ -27,4 +27,9 @@ export default {
   'callback.one.upload.device.title': '设备名',
   'callback.one.upload.device.interface': '设备接口',
   'callback.one.upload.device.state': '设备状态',
+  'printer.one.HistoryRecord.title': '打印历史',
+  'printer.one.HistoryRecord.name': '文件名',
+  'printer.one.HistoryRecord.createTime': '创建时间',
+  'printer.one.HistoryRecord.createUser': '创建用户',
+  'printer.one.HistoryRecord.download': '下载',
 };

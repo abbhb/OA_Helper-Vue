@@ -3,7 +3,6 @@
     <a-card
       class="general-card"
       :header-style="{ paddingBottom: '0' }"
-      :body-style="{ padding: '17px 20px 21px 20px' }"
     >
       <template #title>
         {{ $t('workplace.indexImage') }}
@@ -21,7 +20,7 @@
             {{ label }}
           </a-radio>
         </a-radio-group>
-        <Carousel :image-src="imageList" />
+        <Carousel style="height: 264px" :image-src="imageList" />
       </a-space>
     </a-card>
   </a-spin>

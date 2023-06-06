@@ -123,6 +123,8 @@
       font-size: 20px;
       font-weight: 600;
       margin-bottom: 20px;
+        color: var(--color-text-1);
+
     }
   }
 </style>

@@ -3,6 +3,7 @@
     <div class="left-side">
       <UploadPrint />
       <PrinterTaskList />
+        <HistoryRecord/>
     </div>
     <div class="right-side">
       <QuickOperation />
@@ -16,9 +17,11 @@
   import UploadPrint from '@/views/dashboard/printer/components/UploadPrint.vue';
   import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
   import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
+  import HistoryRecord from "@/views/dashboard/printer/components/HistoryRecord.vue";
 
   export default {
     components: {
+        HistoryRecord,
       QuickOperation,
       PrinterTaskList,
       UploadPrint,
@@ -36,6 +39,8 @@
   }
 
   .left-side {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     overflow: auto;
   }

@@ -27,7 +27,7 @@
           </div>
         </a-grid-item>
         <a-grid-item class="panel" :span="24">
-          <Carousel />
+          <Carousel style="height: 188px"/>
         </a-grid-item>
         <a-grid-item class="panel" :span="24">
           <Announcement />
@@ -67,6 +67,8 @@
   }
 
   .left-side {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     overflow: auto;
   }
