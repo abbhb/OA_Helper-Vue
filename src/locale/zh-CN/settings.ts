@@ -15,6 +15,7 @@ export default {
   'settings.topMenu': '顶部菜单栏',
   'settings.tabBar': '多页签',
   'settings.footer': '底部',
+  'settings.modelFullscreen': '弹窗全屏',
   'settings.otherSettings': '其他设置',
   'settings.colorWeak': '色弱模式',
   'settings.alertContent':

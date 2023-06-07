@@ -15,6 +15,7 @@ export default {
   'settings.topMenu': 'Top Menu',
   'settings.tabBar': 'Tab Bar',
   'settings.footer': 'Footer',
+  'settings.modelFullscreen': 'ModelFullscreen',
   'settings.otherSettings': 'Other Settings',
   'settings.colorWeak': 'Color Weak',
   'settings.alertContent':

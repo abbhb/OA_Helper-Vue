@@ -14,6 +14,7 @@ export interface AppState {
   globalSettings: boolean;
   device: string;
   tabBar: boolean;
+  modelFullscreen: boolean;
   menuFromServer: boolean;
   serverMenu: RouteRecordNormalized[];
   [key: string]: unknown;

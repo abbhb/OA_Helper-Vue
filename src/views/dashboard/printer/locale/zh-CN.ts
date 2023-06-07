@@ -32,4 +32,5 @@ export default {
   'printer.one.HistoryRecord.createTime': '创建时间',
   'printer.one.HistoryRecord.createUser': '创建用户',
   'printer.one.HistoryRecord.download': '下载',
+  'printer.one.HistoryRecord.operate': '操作',
 };

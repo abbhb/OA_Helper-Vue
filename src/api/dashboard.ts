@@ -18,10 +18,6 @@ export interface PopularRecord {
 }
 
 
-export function queryPopularList(params: { type: string }) {
-  return axios.get<TableData[]>('/api/popular/list', { params });
-}
-
 export function queryIndexImageLabel() {
   return axios.get<string[]>('/api/index_image/all_label');
 }

@@ -112,7 +112,6 @@
     queryApiCount,
     queryDayPrintCount,
     queryLastdayApiCount,
-    queryPopularList,
   } from '@/api/dashboard';
 
   const userCount = ref(0);

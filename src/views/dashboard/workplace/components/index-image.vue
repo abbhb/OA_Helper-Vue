@@ -29,7 +29,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import useLoading from '@/hooks/loading';
-  import {queryIndexImageLabel, queryLabelIndexImage, queryPopularList} from '@/api/dashboard';
+  import {queryIndexImageLabel, queryLabelIndexImage} from '@/api/dashboard';
   import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
 
   const type = ref('text');
