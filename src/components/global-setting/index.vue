@@ -33,6 +33,7 @@
   const emit = defineEmits(['cancel']);
 
   const appStore = useAppStore();
+  console.log(appStore.$state);
   const { t } = useI18n();
   const { copy } = useClipboard();
   const visible = computed(() => appStore.globalSettings);
@@ -50,11 +51,11 @@
     },
     { name: 'settings.footer', key: 'footer', defaultVal: appStore.footer },
     { name: 'settings.tabBar', key: 'tabBar', defaultVal: appStore.tabBar },
-      {
-        name: 'settings.modelFullscreen',
-        key: 'modelFullscreen',
-        defaultVal: appStore.modelFullscreen,
-      },
+    {
+      name: 'settings.modelFullscreen',
+      key: 'modelFullscreen',
+      defaultVal: appStore.modelFullscreen,
+    },
     // {
     //   name: 'settings.menuFromServer',
     //   key: 'menuFromServer',

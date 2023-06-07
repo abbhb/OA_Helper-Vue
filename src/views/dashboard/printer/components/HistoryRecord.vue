@@ -8,7 +8,7 @@
     </a-card>
     <a-modal
       v-model:visible="visible"
-      :fullscreen="fullscreen"
+      :fullscreen="fullscreen.modelFullscreen"
       :footer="false"
       :draggable="true"
     >
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-  import { ref } from 'vue';
+import {reactive, ref} from 'vue';
   import { useI18n } from 'vue-i18n';
   import HistoryContent from '@/views/dashboard/printer/components/HistoryContent.vue';
   import { useAppStore } from '@/store';
@@ -32,8 +32,7 @@
     setup() {
       const { t } = useI18n();
         const appStore = useAppStore();
-        const fullscreen = ref(false);
-        fullscreen.value = appStore.modelFullscreen
+        const fullscreen = reactive(appStore);
       // dialog属性
       const visible = ref(false);
       const More = () => {

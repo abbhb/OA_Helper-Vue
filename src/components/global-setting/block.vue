@@ -14,8 +14,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue';
+  import { PropType, ref } from 'vue';
   import { useAppStore } from '@/store';
+  import { setConfig } from '@/store/modules/app/persistence';
   import FormWrapper from './form-wrapper.vue';
 
   interface OptionsProps {
@@ -55,7 +56,12 @@
         menuCollapse: false,
       });
     }
+    // 设置后写入浏览器设置
     appStore.updateSettings({ [key]: value });
+    const config = ref(appStore.$state);
+    config.value.globalSettings = false;
+    const text = JSON.stringify(config.value, null, 2);
+    setConfig(text);
   };
 </script>
 

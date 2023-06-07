@@ -4,10 +4,19 @@ import type { NotificationReturn } from '@arco-design/web-vue/es/notification/in
 import type { RouteRecordNormalized } from 'vue-router';
 import defaultSettings from '@/config/settings.json';
 import { getMenuList } from '@/api/user';
+import { getConfig } from '@/store/modules/app/persistence';
 import { AppState } from './types';
 
 const useAppStore = defineStore('app', {
-  state: (): AppState => ({ ...defaultSettings }),
+  state: (): AppState => {
+    if (getConfig()) {
+      console.log(getConfig())
+      if (getConfig().indexOf('globalSettings') !== -1) {
+        return { ...JSON.parse(getConfig()) };
+      }
+    }
+    return { ...defaultSettings };
+  },
 
   getters: {
     appCurrentSetting(state: AppState): AppState {
