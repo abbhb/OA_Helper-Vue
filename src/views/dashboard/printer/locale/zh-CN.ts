@@ -32,5 +32,7 @@ export default {
   'printer.one.HistoryRecord.createTime': '创建时间',
   'printer.one.HistoryRecord.createUser': '创建用户',
   'printer.one.HistoryRecord.download': '下载',
+  'printer.one.HistoryRecord.delete': '删除',
   'printer.one.HistoryRecord.operate': '操作',
+  'printer.one.HistoryRecord.noDelete': '我告诉你我删了你信不',
 };

@@ -51,5 +51,4 @@ export default {
   'workplace.popularContent.notUrgent': '不急',
   'workplace.categoriesPercent': '内容类型占比',
   'workplace.pecs': '个',
-  'workplace.noUse': '暂不开放',
 };

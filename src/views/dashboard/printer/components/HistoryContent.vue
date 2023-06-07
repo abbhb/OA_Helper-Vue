@@ -10,19 +10,25 @@
         <a-table-column
           :title="$t(`printer.one.HistoryRecord.name`)"
           data-index="name"
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
         ></a-table-column>
         <a-table-column
           :title="$t(`printer.one.HistoryRecord.createTime`)"
           data-index="createTime"
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
         ></a-table-column>
         <a-table-column
           :title="$t(`printer.one.HistoryRecord.createUser`)"
           data-index="createUser"
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
         ></a-table-column>
         <a-table-column :title="$t('printer.one.HistoryRecord.operate')">
           <template #cell="{ record }">
-            <a-button @click="button(record.url)">{{
+            <a-button class="button_item" @click="button(record.url)">{{
               $t('printer.one.HistoryRecord.download')
+            }}</a-button>
+            <a-button class="button_item" @click="buttonDelete(record.url)">{{
+              $t('printer.one.HistoryRecord.delete')
             }}</a-button>
           </template>
         </a-table-column>
@@ -32,10 +38,12 @@
 </template>
 
 <script lang="ts">
-  import { reactive, ref } from 'vue';
+  import { h, reactive, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { queryAllPrinterList, querySelfPrinterList } from '@/api/printer';
   import { useUserStore } from '@/store';
+  import { IconFaceSmileFill } from '@arco-design/web-vue/es/icon';
+  import {Message} from "@arco-design/web-vue";
 
   export default {
     name: 'HistoryContent',
@@ -135,6 +143,12 @@
         // fetchDate1(contentType);
         window.open(url);
       };
+      const buttonDelete = (url: string) => {
+        Message.info({
+          content: () => t('printer.one.HistoryRecord.noDelete'),
+          icon: () => h(IconFaceSmileFill),
+        });
+      };
       fetchSelfData(1, 5);
 
       return {
@@ -145,9 +159,14 @@
         tableData,
         typeChange,
         button,
+        buttonDelete,
       };
     },
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  .button_item {
+    margin-left: 3px;
+  }
+</style>
