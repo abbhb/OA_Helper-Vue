@@ -114,7 +114,7 @@
   };
   const gotoOAuth2 = () => {
     window.location.href =
-      'http://10.15.245.1:55554/?response_type=code&client_id=891d832ff2204a858ad4d0f0dc0d203f';
+      'http://10.15.247.254:55554/?response_type=code&client_id=891d832ff2204a858ad4d0f0dc0d203f';
   };
   const changeLoginConfig = (config) => {
     loginConfig.value.useSSO = config;

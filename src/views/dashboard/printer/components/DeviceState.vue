@@ -48,7 +48,7 @@
     },
     methods: {
       async timeRE() {
-        const resB = await axios.get(`http://10.15.245.1:8081/papi/status`);
+        const resB = await axios.get(`http://10.15.247.254:8081/papi/status`);
         this.formDevice.list = resB.data.list;
         this.formDevice.prot = resB.data.prot;
         this.formDevice.status = resB.data.status;

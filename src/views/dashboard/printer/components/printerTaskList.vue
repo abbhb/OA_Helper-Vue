@@ -61,7 +61,7 @@
       },
       async TimeDo() {
         try {
-          const res = await axios.get(`http://10.15.245.1:8081/papi/list`);
+          const res = await axios.get(`http://10.15.247.254:8081/papi/list`);
           this.data = res.data;
         } catch (e: any) {
           this.$notification.warning(`${e.message}`);

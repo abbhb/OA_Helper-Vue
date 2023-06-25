@@ -8,3 +8,14 @@ nginx
       return 403;
     }
 ```
+
+#### 拉依赖报错
+```
+ compiling from source
+  × Error: Command failed: C:\windows\system32\cmd.exe /s /c "./configure --disable-shared --prefix="D:\Project\vue-admin-beautiful-template\node_modules\cwebp-bin\vendor" --bindir="D:\Project\vue-admin-beautiful-template\node_modules\cwebp-bin\vendor""
+'.' ����� ����ⲿ���Ҳ���ǿ����еĳ���
+���������ļ���
+
+这种报错添加raw.githubusercontent.com的ip到host里就行
+
+```

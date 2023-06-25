@@ -1,5 +1,5 @@
 export default {
-  path: 'http://10.15.245.1/',
+  path: 'http://10.15.247.254/',
   name: 'fileBrowser',
   meta: {
     locale: 'menu.fileBrowser',

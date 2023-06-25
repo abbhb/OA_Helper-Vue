@@ -3,7 +3,7 @@
     <a-spin :loading="loading" :size="30" style="width: 500px" dot>
       <Upload
         v-if="!success_upload"
-        url="http://10.15.245.1:8081/papi/uploader"
+        url="http://10.15.247.254:8081/papi/uploader"
         :draggable="true"
         @on-success="uploadSuccess"
         @on-error="uploadError"
@@ -186,7 +186,7 @@
           }
 
           const res = await axios.get(
-            `http://10.15.245.1:8081/papi/print/${this.form.uuid}/${this.form.first_page}/${this.form.last_page}/${this.form.copies}/${modeNum}/${Position}`
+            `http://10.15.247.254:8081/papi/print/${this.form.uuid}/${this.form.first_page}/${this.form.last_page}/${this.form.copies}/${modeNum}/${Position}`
           );
 
           const ResResult = res.data;
@@ -239,7 +239,7 @@
         this.form.last_page = ResResult.page_num;
         setTimeout(async () => {
           const res = await axios.get(
-            `http://10.15.245.1:8081/papi/get_thumbnail/${this.form.uuid}`,
+            `http://10.15.247.254:8081/papi/get_thumbnail/${this.form.uuid}`,
             {
               withCredentials: true,
             }
