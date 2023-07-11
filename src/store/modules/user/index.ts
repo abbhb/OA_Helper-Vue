@@ -10,8 +10,6 @@ import {
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
-import { useRouter } from 'vue-router';
-import { Message } from '@arco-design/web-vue';
 import { UserState } from './types';
 import useAppStore from '../app';
 
@@ -91,15 +89,6 @@ const useUserStore = defineStore('user', {
       const appStore = useAppStore();
       this.resetInfo();
       clearToken();
-      const router = useRouter();
-      const currentRoute = router.currentRoute.value;
-      router.push({
-        name: 'login',
-        query: {
-          ...router.currentRoute.value.query,
-          redirect: currentRoute.name as string,
-        },
-      });
       removeRouteListener();
       appStore.clearServerMenu();
     },
