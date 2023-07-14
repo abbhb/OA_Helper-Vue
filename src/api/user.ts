@@ -5,6 +5,7 @@ import { UserState } from '@/store/modules/user/types';
 export interface LoginData {
   username: string;
   password: string;
+  week: boolean;
 }
 export interface LoginDataByCode {
   code: string;

@@ -3,6 +3,10 @@ import localeLogin from '@/views/login/locale/en-US';
 
 import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
+import localeCallback from "@/views/callback/locale/zh-CN";
+import localeSafeCenter from "@/views/dashboard/usercenter/locale/zh-CN";
+import localePrinter from "@/views/dashboard/printer/locale/zh-CN";
+import localeKeep from "@/views/dashboard/keep/locale/zh-CN";
 import localeSettings from './en-US/settings';
 
 export default {
@@ -27,4 +31,8 @@ export default {
   ...localeMessageBox,
   ...localeLogin,
   ...localeWorkplace,
+  ...localeCallback,
+  ...localeSafeCenter,
+  ...localePrinter,
+  ...localeKeep,
 };

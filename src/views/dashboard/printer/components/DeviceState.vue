@@ -13,48 +13,35 @@
   </a-card>
 </template>
 
-<script lang="ts">
-  import { reactive } from 'vue';
-  import axios from 'axios';
+<script setup lang="ts">
+import {onMounted, onUnmounted, reactive} from 'vue';
+import axios from 'axios';
 
-  export default {
-    name: 'DeviceState',
-      onUnmounted() {
-        if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-        }
-    },
-    setup() {
-      const formDevice = reactive({
-        list: '获取中',
-        prot: '别着急',
-        status: '正常',
-      });
-      const timer = null;
-
-      return {
-        formDevice,
-        timer,
-      };
-    },
-    mounted() {
-      this.timeRE();
-      this.timer = window.setInterval(() => {
-        setTimeout(() => {
-          this.timeRE();
-        }, 3000);
-      }, 3000);
-    },
-    methods: {
-      async timeRE() {
-        const resB = await axios.get(`http://10.15.247.254:8081/papi/status`);
-        this.formDevice.list = resB.data.list;
-        this.formDevice.prot = resB.data.prot;
-        this.formDevice.status = resB.data.status;
-      },
-    },
+const formDevice = reactive({
+  list: '获取中',
+  prot: '别着急',
+  status: '正常',
+});
+const timeState = reactive({
+  timeInter: null, // 定义定时器
+});
+onMounted(() => {
+  const interval = () => {
+    timeState.timeInter = setTimeout(async () => {
+      // 执行代码块
+      const resB = await axios.get(`http://10.15.247.254:8081/papi/status`);
+      formDevice.list = resB.data.list;
+      formDevice.prot = resB.data.prot;
+      formDevice.status = resB.data.status;
+      interval();
+    }, 2000);
   };
+  interval();
+});
+onUnmounted(() => {
+  clearTimeout(timeState.timeInter); // 销毁
+  timeState.timeInter = null;
+});
 </script>
 
 <style scoped></style>

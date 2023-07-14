@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import globalComponents from '@/components';
+import useRSAStore from "@/store/modules/rsa";
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -24,5 +25,10 @@ app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
-
 app.mount('#app');
+
+// 初始化加密
+const rsaState = useRSAStore();
+if (!rsaState.getPublicKey) {
+    rsaState.updateRSA();
+}
