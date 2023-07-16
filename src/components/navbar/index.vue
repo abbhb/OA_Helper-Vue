@@ -82,33 +82,33 @@
           </a-button>
         </a-tooltip>
       </li>
-<!--      <li>-->
-<!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
-<!--          <div class="message-box-trigger">-->
-<!--            <a-badge :count="9" dot>-->
-<!--              <a-button-->
-<!--                class="nav-btn"-->
-<!--                type="outline"-->
-<!--                :shape="'circle'"-->
-<!--                @click="setPopoverVisible"-->
-<!--              >-->
-<!--                <icon-notification />-->
-<!--              </a-button>-->
-<!--            </a-badge>-->
-<!--          </div>-->
-<!--        </a-tooltip>-->
-<!--        <a-popover-->
-<!--          trigger="click"-->
-<!--          :arrow-style="{ display: 'none' }"-->
-<!--          :content-style="{ padding: 0, minWidth: '400px' }"-->
-<!--          content-class="message-popover"-->
-<!--        >-->
-<!--          <div ref="refBtn" class="ref-btn"></div>-->
-<!--          <template #content>-->
-<!--            <message-box />-->
-<!--          </template>-->
-<!--        </a-popover>-->
-<!--      </li>-->
+      <!--      <li>-->
+      <!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
+      <!--          <div class="message-box-trigger">-->
+      <!--            <a-badge :count="9" dot>-->
+      <!--              <a-button-->
+      <!--                class="nav-btn"-->
+      <!--                type="outline"-->
+      <!--                :shape="'circle'"-->
+      <!--                @click="setPopoverVisible"-->
+      <!--              >-->
+      <!--                <icon-notification />-->
+      <!--              </a-button>-->
+      <!--            </a-badge>-->
+      <!--          </div>-->
+      <!--        </a-tooltip>-->
+      <!--        <a-popover-->
+      <!--          trigger="click"-->
+      <!--          :arrow-style="{ display: 'none' }"-->
+      <!--          :content-style="{ padding: 0, minWidth: '400px' }"-->
+      <!--          content-class="message-popover"-->
+      <!--        >-->
+      <!--          <div ref="refBtn" class="ref-btn"></div>-->
+      <!--          <template #content>-->
+      <!--            <message-box />-->
+      <!--          </template>-->
+      <!--        </a-popover>-->
+      <!--      </li>-->
       <li>
         <a-tooltip
           :content="
@@ -139,7 +139,14 @@
             @click="setVisible"
           >
             <template #icon>
-              <icon-settings />
+              <a-badge
+                :count="count"
+                :dot-style="{ width: '8px', height: '8px' }"
+                :offset="[7, -5, 5, 5]"
+                dot
+              >
+                <icon-settings/>
+              </a-badge>
             </template>
           </a-button>
         </a-tooltip>
@@ -153,14 +160,14 @@
             <img alt="avatar" :src="avatar" />
           </a-avatar>
           <template #content>
-<!--            <a-doption>-->
-<!--              <a-space @click="switchRoles">-->
-<!--                <icon-tag />-->
-<!--                <span>-->
-<!--                  {{ $t('messageBox.switchRoles') }}-->
-<!--                </span>-->
-<!--              </a-space>-->
-<!--            </a-doption>-->
+            <!--            <a-doption>-->
+            <!--              <a-space @click="switchRoles">-->
+            <!--                <icon-tag />-->
+            <!--                <span>-->
+            <!--                  {{ $t('messageBox.switchRoles') }}-->
+            <!--                </span>-->
+            <!--              </a-space>-->
+            <!--            </a-doption>-->
             <a-doption>
               <a-space @click="$router.push({ name: 'Info' })">
                 <icon-user />
@@ -169,14 +176,14 @@
                 </span>
               </a-space>
             </a-doption>
-<!--            <a-doption>-->
-<!--              <a-space @click="$router.push({ name: 'Setting' })">-->
-<!--                <icon-settings />-->
-<!--                <span>-->
-<!--                  {{ $t('messageBox.userSettings') }}-->
-<!--                </span>-->
-<!--              </a-space>-->
-<!--            </a-doption>-->
+            <!--            <a-doption>-->
+            <!--              <a-space @click="$router.push({ name: 'Setting' })">-->
+            <!--                <icon-settings />-->
+            <!--                <span>-->
+            <!--                  {{ $t('messageBox.userSettings') }}-->
+            <!--                </span>-->
+            <!--              </a-space>-->
+            <!--            </a-doption>-->
             <a-doption>
               <a-space @click="handleLogout">
                 <icon-export />
@@ -201,6 +208,7 @@
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
+  import {hasNotificationPermission} from '@/utils/notify';
   import MessageBox from '../message-box/index.vue';
 
   const appStore = useAppStore();
@@ -227,12 +235,16 @@
       appStore.toggleTheme(dark);
     },
   });
+  const count = ref(0);
+  if (hasNotificationPermission) {
+    count.value += 1;
+  }
   const toggleTheme = useToggle(isDark);
   const handleToggleTheme = () => {
     toggleTheme();
   };
   const setVisible = () => {
-    appStore.updateSettings({ globalSettings: true });
+    appStore.updateSettings({globalSettings: true});
   };
   const refBtn = ref();
   const triggerBtn = ref();

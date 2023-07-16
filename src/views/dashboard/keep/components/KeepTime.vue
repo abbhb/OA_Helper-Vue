@@ -4,7 +4,6 @@ import {addClock30, ClockSelfDTO, getSelfClock} from '@/api/keeptime';
 import {Message} from '@arco-design/web-vue';
 
 const studyState = ref(1);
-studyState.value = 2;
 const startStudyState = ref(1);
 
 const nowtimer = ref('00:00:00');
@@ -38,6 +37,9 @@ const init = async () => {
   const data = await getSelfClock();
   if (data.code === 1) {
     selfData.value = data.data;
+    if (data.data.isSigned) {
+      studyState.value = 2;
+    }
   }
 };
 init();
@@ -66,6 +68,7 @@ const start = () => {
       nowtimer.value = e.data;
     } else {
       sendTime();
+      init();
     }
   };
   // 每30秒向服务器发送一次记录，若失败及时推送消息订阅！
@@ -102,6 +105,7 @@ const reset = () => {
   second.value = 0;
   nowtimer.value = '00:00:00';
   startStudyState.value = 1;
+  init();
 };
 </script>
 
@@ -115,6 +119,7 @@ const reset = () => {
     <span class="keep-title">
       {{ $t('keep.one.title') }}
     </span>
+
     <!--  主功能区-->
     <a-space direction="vertical" size="large">
       <a-space v-if="studyState === 1" direction="horizontal" size="large">
@@ -127,13 +132,21 @@ const reset = () => {
         ><span class="item-text">{{ selfData.oldTime }}分钟</span>
       </a-space>
     </a-space>
+    <a-space style="float: right">
+      <a-alert
+        v-for="item in selfData.why.split('||')"
+        :key="item"
+        :type="selfData.isStandard ? 'success' : 'warning'"
+      >
+        <template #title>
+          {{ selfData.isStandard ? '今日已合格！' : item }}
+        </template>
+      </a-alert>
+    </a-space>
     <div class="timeContainer">
-      <span v-if="startStudyState === 2" class="item-title">{{
-          $t('keep.one.nowtime')
-        }}</span>
+      <span class="item-title">{{ $t('keep.one.nowtime') }}</span>
       {{ nowtimer }}
-    </div
-    >
+    </div>
     <!--    开始学习按钮区-->
     <div v-if="startStudyState === 1" class="keep-button-div">
       <div class="start-button--1" @click="start()">
