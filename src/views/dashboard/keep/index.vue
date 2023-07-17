@@ -1,17 +1,28 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
-import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
-import KeepTime from "@/views/dashboard/keep/components/KeepTime.vue";
-import Sidebar from "@/views/dashboard/keep/components/sidebar.vue";
+import KeepTime from '@/views/dashboard/keep/components/KeepTime.vue';
+import Sidebar from '@/views/dashboard/keep/components/sidebar.vue';
+import RecentStudy from '@/views/dashboard/keep/components/RecentStudy.vue';
+import AdminCard from "@/views/dashboard/keep/components/AdminCard.vue";
+import {useUserStore} from "@/store";
 
 export default defineComponent({
   name: 'index.vue',
   components: {
+    AdminCard,
+    RecentStudy,
     Sidebar,
     KeepTime,
-    QuickOperation,
-
   },
+  data() {
+    return {
+      permission: 2,
+    }
+  },
+  created() {
+    const userState = useUserStore();
+    this.permission = userState.permission;
+  }
 });
 </script>
 
@@ -19,10 +30,12 @@ export default defineComponent({
   <div class="container">
     <div class="left-side">
       <KeepTime/>
+      <RecentStudy/>
     </div>
     <div class="right-side">
-      <QuickOperation/>
       <Sidebar/>
+      <AdminCard v-if="permission === 10 || permission === 1"/>
+      <!--      公共排行榜 先封装公共组件，在封装小组件-->
     </div>
   </div>
 </template>

@@ -2,7 +2,9 @@
   <div class="block">
     <h5 class="title">{{ title }}</h5>
     <div v-for="option in options" :key="option.name" class="switch-wrapper">
-      <span>{{ $t(option.name) }}</span>
+      <span :style="option.isNew ? 'color: #9f35de;' : ''">{{
+          $t(option.name)
+        }}</span>
       <form-wrapper
         :type="option.type || 'switch'"
         :name="option.key"
@@ -24,6 +26,7 @@
     key: string;
     type?: string;
     defaultVal?: boolean | string | number;
+    isNew?: boolean;
   }
   defineProps({
     title: {

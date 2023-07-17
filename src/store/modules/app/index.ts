@@ -10,7 +10,7 @@ import { AppState } from './types';
 const useAppStore = defineStore('app', {
   state: (): AppState => {
     if (getConfig()) {
-      console.log(getConfig())
+      console.log(getConfig());
       if (getConfig().indexOf('globalSettings') !== -1) {
         return { ...JSON.parse(getConfig()) };
       }

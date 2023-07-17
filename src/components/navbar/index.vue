@@ -139,14 +139,8 @@
             @click="setVisible"
           >
             <template #icon>
-              <a-badge
-                :count="count"
-                :dot-style="{ width: '8px', height: '8px' }"
-                :offset="[7, -5, 5, 5]"
-                dot
-              >
-                <icon-settings/>
-              </a-badge>
+
+              <icon-settings/>
             </template>
           </a-button>
         </a-tooltip>
@@ -208,8 +202,6 @@
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
-  import {hasNotificationPermission} from '@/utils/notify';
-  import MessageBox from '../message-box/index.vue';
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -235,10 +227,7 @@
       appStore.toggleTheme(dark);
     },
   });
-  const count = ref(0);
-  if (hasNotificationPermission) {
-    count.value += 1;
-  }
+
   const toggleTheme = useToggle(isDark);
   const handleToggleTheme = () => {
     toggleTheme();
