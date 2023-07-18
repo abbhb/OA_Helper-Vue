@@ -68,12 +68,17 @@ const pagination = ref({
         :sortable="{ sortDirections: ['ascend', 'descend'] }"
         :title="$t(`keep.admin.viewData.dayStudyTime`)"
         data-index="oldTime"
-      ></a-table-column>
+      >
+        <template #cell="{ record }">
+          {{ record.oldTime }}分钟
+        </template>
+      </a-table-column>
       <a-table-column
         :title="$t(`keep.admin.viewData.isStandard`)"
       >
         <template #cell="{ record }">
-          {{ record.isStandard ? '1' : '2' }}
+          <a-tag v-if="record.isStandard" bordered color="green">完成</a-tag>
+          <a-tag v-else bordered color="magenta">未完成</a-tag>
         </template>
       </a-table-column>
       <a-table-column
