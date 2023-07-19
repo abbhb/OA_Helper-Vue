@@ -45,7 +45,7 @@
   ];
   const goto = (type: string) => {
     router.push({
-      name: 'Usercenter',
+      name: 'profile',
       query: {
         type,
       },

@@ -24,16 +24,6 @@ const DASHBOARD: AppRouteRecordRaw = {
           },
       },
       {
-          path: 'usercenter',
-          name: 'Usercenter',
-          component: () => import('@/views/dashboard/usercenter/index.vue'),
-          meta: {
-              locale: 'menu.dashboard.usercenter',
-              requiresAuth: true,
-              roles: ['10', '1', '2', '3', '4'],
-          },
-      },
-      {
           path: 'printer',
           name: 'printer',
           component: () => import('@/views/dashboard/printer/printerL.vue'),

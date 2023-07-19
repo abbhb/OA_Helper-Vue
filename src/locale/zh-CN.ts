@@ -3,7 +3,7 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeCallback from '@/views/callback/locale/zh-CN';
 
 import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
-import localeSafeCenter from '@/views/dashboard/usercenter/locale/zh-CN';
+import localeSafeCenter from '@/views/usercenter/usercenter/locale/zh-CN';
 import localePrinter from '@/views/dashboard/printer/locale/zh-CN';
 import localeKeep from '@/views/dashboard/keep/locale/zh-CN';
 
@@ -14,7 +14,7 @@ export default {
   'menu.usercenter': '用户中心',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
-  'menu.usercenter.profile': '我的',
+  'menu.usercenter.usercenter': '用户中心',
   'menu.dashboard.printer': 'AI_EN打印',
   'menu.dashboard.keep': '学习打卡',
   'menu.server.monitor': '实时监控-服务端',

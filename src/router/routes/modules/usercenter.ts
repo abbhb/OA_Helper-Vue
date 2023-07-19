@@ -6,10 +6,10 @@ const USERCENTER: AppRouteRecordRaw = {
     name: 'usercenter',
     component: DEFAULT_LAYOUT,
     meta: {
-        locale: 'menu.user-center',
+        locale: 'menu.usercenter',
         requiresAuth: true,
         roles: ['*'],
-        icon: 'icon-user-center',
+        icon: 'icon-user',
         order: 0,
     },
     children: [
@@ -18,7 +18,7 @@ const USERCENTER: AppRouteRecordRaw = {
             name: 'profile',
             component: () => import('@/views/usercenter/usercenter/index.vue'),
             meta: {
-                locale: 'menu.usercenter.profile',
+                locale: 'menu.usercenter.usercenter',
                 requiresAuth: true,
                 roles: ['10', '1', '2', '3', '4'],
             },

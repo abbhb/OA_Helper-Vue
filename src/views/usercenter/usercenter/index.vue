@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="left-side">
-      <UpdateUserInfo v-if="(type==='updateUserInfo')||!type"/>
-      <SettingPassword v-else-if="(type==='settingPassword')"/>
+      <UpdateUserInfo v-if="type === 'updateUserInfo' || !type"/>
+      <SettingPassword v-else-if="type === 'settingPassword'"/>
     </div>
     <div class="right-side">
       <QuickOperation />
@@ -12,18 +12,15 @@
 </template>
 
 <script lang="ts" setup>
-  import UpdateUserInfo from '@/views/dashboard/usercenter/components/update-userinfo.vue';
-  import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
-  import SettingPassword from "@/views/dashboard/usercenter/components/setting-password.vue";
-  import {useRouter} from "vue-router";
-  import UsercenterPannel from '@/views/dashboard/usercenter/components/usercenter-pannel.vue';
+import UpdateUserInfo from '@/views/usercenter/usercenter/components/update-userinfo.vue';
+import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
+import SettingPassword from '@/views/usercenter/usercenter/components/setting-password.vue';
+import {useRouter} from 'vue-router';
+import UsercenterPannel from '@/views/usercenter/usercenter/components/usercenter-pannel.vue';
 
-  const router = useRouter()
-  const {type} = router.currentRoute.value.query;
-
-
+const router = useRouter();
+const {type} = router.currentRoute.value.query;
 </script>
-
 
 <style lang="less" scoped>
   .container {
