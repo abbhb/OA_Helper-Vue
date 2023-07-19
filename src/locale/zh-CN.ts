@@ -11,9 +11,10 @@ import localeSettings from './zh-CN/settings';
 
 export default {
   'menu.dashboard': '仪表盘',
+  'menu.usercenter': '用户中心',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
-  'menu.dashboard.usercenter': '用户中心',
+  'menu.usercenter.profile': '我的',
   'menu.dashboard.printer': 'AI_EN打印',
   'menu.dashboard.keep': '学习打卡',
   'menu.server.monitor': '实时监控-服务端',
