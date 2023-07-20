@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export interface AddClock30DTO {
     sign: string;
@@ -47,5 +47,7 @@ export function getSelfClockAll() {
 }
 
 export function getSelfClockEcharts() {
-    return axios.get<ClockSelfEchartsVO>('/api/study_clock/get_self_clock_echarts');
+    return axios.get<ClockSelfEchartsVO>(
+        '/api/study_clock/get_self_clock_echarts'
+    );
 }

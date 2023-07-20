@@ -23,6 +23,16 @@ const USERCENTER: AppRouteRecordRaw = {
                 roles: ['10', '1', '2', '3', '4'],
             },
         },
+        {
+            path: 'group',
+            name: 'group',
+            component: () => import('@/views/usercenter/group/index.vue'),
+            meta: {
+                locale: 'menu.usercenter.group',
+                requiresAuth: true,
+                roles: ['10', '1'],
+            },
+        },
     ],
 };
 

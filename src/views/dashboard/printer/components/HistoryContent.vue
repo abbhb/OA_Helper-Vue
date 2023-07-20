@@ -42,8 +42,8 @@
   import { useI18n } from 'vue-i18n';
   import { queryAllPrinterList, querySelfPrinterList } from '@/api/printer';
   import { useUserStore } from '@/store';
-  import { IconFaceSmileFill } from '@arco-design/web-vue/es/icon';
-  import {Message} from "@arco-design/web-vue";
+  import {IconFaceSmileFill} from '@arco-design/web-vue/es/icon';
+  import {Message} from '@arco-design/web-vue';
 
   export default {
     name: 'HistoryContent',
@@ -86,11 +86,11 @@
         },
       ]);
       // 分页返回参数区
-      const tabelRDataTotal = ref(0);
+      const tabelRDataTotal = ref<string>('0');
       const fetchSelfData = async (current, pageSize) => {
         try {
           if (type.value === '个人') {
-            const { data } = await querySelfPrinterList({
+            const {data} = await querySelfPrinterList({
               page_num: current,
               page_size: pageSize,
             });

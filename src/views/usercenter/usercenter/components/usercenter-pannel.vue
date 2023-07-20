@@ -27,9 +27,9 @@
 </template>
 
 <script lang="ts" setup>
-  import {useRouter} from "vue-router";
+  import {useRouter} from 'vue-router';
 
-  const router = useRouter()
+  const router = useRouter();
 
   const links = [
     {

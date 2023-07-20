@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import getPublicKey from '@/api/common';
+import {getPublicKey} from '@/api/common';
 import {RSAState} from './types';
 
 const useRSAStore = defineStore('rsa', {
