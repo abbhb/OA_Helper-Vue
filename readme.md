@@ -10,6 +10,7 @@ nginx
 ```
 
 #### 拉依赖报错
+
 ```
  compiling from source
   × Error: Command failed: C:\windows\system32\cmd.exe /s /c "./configure --disable-shared --prefix="D:\Project\vue-admin-beautiful-template\node_modules\cwebp-bin\vendor" --bindir="D:\Project\vue-admin-beautiful-template\node_modules\cwebp-bin\vendor""
@@ -19,3 +20,13 @@ nginx
 这种报错添加raw.githubusercontent.com的ip到host里就行
 
 ```
+
+#### 写代码时的坑
+
+`
+使用了字节的arco.design
+文档里API给的model-value (v-model)
+实际代码里需要v-model:model-value="selectUser"
+完全得猜好吧...
+
+`

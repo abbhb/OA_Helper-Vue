@@ -8,8 +8,14 @@ export default {
   'usercenter.group.createUserName': '创建用户',
   'usercenter.group.id': '分组编号',
   'usercenter.group.control': '操作',
+  'usercenter.group.control.read': '查看',
+  'usercenter.group.control.del': '删除',
+  'usercenter.group.control.q_del.tip': '您确定要强制删除该组极其所有组员绑定关系吗?(此操作不支持回滚!)',
   'usercenter.group.search.tip': '请输入名称进行搜索',
   'usercenter.group.search': '搜索',
   'usercenter.group.add': '添加分组',
+  'usercenter.group.edit': '编辑分组',
+  'usercenter.group.add.button': '添加分组',
+  'usercenter.group.edit.button': '编辑分组',
 
 };
