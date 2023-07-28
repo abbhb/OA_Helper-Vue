@@ -57,6 +57,7 @@
     "@types/sortablejs": "^1.15.0",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
+    "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vitejs/plugin-vue-jsx": "^3.0.1",
     "@vue/babel-plugin-jsx": "^1.1.5",
