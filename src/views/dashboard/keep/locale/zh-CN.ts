@@ -13,4 +13,7 @@ export default {
   'keep.admin.viewData.isStandard': '是否达标',
   'keep.admin.viewData.why': '备注',
   'keep.admin.viewData.date': '日期',
+  'keep.admin.viewData.name.tip': '输入用户昵称来筛选',
+  'keep.admin.viewData.group.tip': '选择组来筛选',
+
 };

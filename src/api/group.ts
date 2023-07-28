@@ -10,7 +10,7 @@ export interface GroupUser {
   sex?: string;
 }
 
-interface Group {
+export interface Group {
   id?: string;
   name?: string;
   createUser?: string;
@@ -72,6 +72,10 @@ export function getCanBeAdd(groupId?: string) {
       groupId,
     },
   });
+}
+
+export function queryGroupSelectList() {
+  return axios.get<Group[]>('/api/group/queryGroupSelectList');
 }
 
 export function addGroup(data: GroupAndUserVO) {

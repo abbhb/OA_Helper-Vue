@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import SearchQueryComponent, {SearchQuery} from "@/views/dashboard/keep/components/SearchQueryComponent.vue";
 
 const {t} = useI18n();
 
@@ -39,55 +40,62 @@ const pagination = ref({
   },
   showTotal: () => `共 ${11} 条`,
 });
+const searchQuery = (searchQuerys:SearchQuery) => {
+  console.log(searchQuerys)
+}
 </script>
 
 <template>
-  <a-table :data="tableData" :pagination="pagination">
-    <template #columns>
-      <a-table-column
-        :sortable="{ sortDirections: ['ascend', 'descend'] }"
-        :title="$t(`keep.admin.viewData.name`)"
-        data-index="name"
-      ></a-table-column>
-      <a-table-column
-        :sortable="{ sortDirections: ['ascend', 'descend'] }"
-        :title="$t(`keep.admin.viewData.studentId`)"
-        data-index="studentId"
-      ></a-table-column>
-      <a-table-column
-        :sortable="{ sortDirections: ['ascend', 'descend'] }"
-        :title="$t(`keep.admin.viewData.date`)"
-        data-index="date"
-      ></a-table-column>
-      <a-table-column
-        :sortable="{ sortDirections: ['ascend', 'descend'] }"
-        :title="$t(`keep.admin.viewData.daySignInTime`)"
-        data-index="firstTime"
-      ></a-table-column>
-      <a-table-column
-        :sortable="{ sortDirections: ['ascend', 'descend'] }"
-        :title="$t(`keep.admin.viewData.dayStudyTime`)"
-        data-index="oldTime"
-      >
-        <template #cell="{ record }">
-          {{ record.oldTime }}分钟
-        </template>
-      </a-table-column>
-      <a-table-column
-        :title="$t(`keep.admin.viewData.isStandard`)"
-      >
-        <template #cell="{ record }">
-          <a-tag v-if="record.isStandard" bordered color="green">完成</a-tag>
-          <a-tag v-else bordered color="magenta">未完成</a-tag>
-        </template>
-      </a-table-column>
-      <a-table-column
-        :sortable="{ sortDirections: ['ascend', 'descend'] }"
-        :title="$t(`keep.admin.viewData.why`)"
-        data-index="why"
-      ></a-table-column>
-    </template>
-  </a-table>
+  <a-space direction="vertical">
+    <SearchQueryComponent @re-query="searchQuery"/>
+    <a-table :data="tableData" :pagination="pagination">
+      <template #columns>
+        <a-table-column
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
+          :title="$t(`keep.admin.viewData.name`)"
+          data-index="name"
+        ></a-table-column>
+        <a-table-column
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
+          :title="$t(`keep.admin.viewData.studentId`)"
+          data-index="studentId"
+        ></a-table-column>
+        <a-table-column
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
+          :title="$t(`keep.admin.viewData.date`)"
+          data-index="date"
+        ></a-table-column>
+        <a-table-column
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
+          :title="$t(`keep.admin.viewData.daySignInTime`)"
+          data-index="firstTime"
+        ></a-table-column>
+        <a-table-column
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
+          :title="$t(`keep.admin.viewData.dayStudyTime`)"
+          data-index="oldTime"
+        >
+          <template #cell="{ record }">
+            {{ record.oldTime }}分钟
+          </template>
+        </a-table-column>
+        <a-table-column
+          :title="$t(`keep.admin.viewData.isStandard`)"
+        >
+          <template #cell="{ record }">
+            <a-tag v-if="record.isStandard" bordered color="green">完成</a-tag>
+            <a-tag v-else bordered color="magenta">未完成</a-tag>
+          </template>
+        </a-table-column>
+        <a-table-column
+          :sortable="{ sortDirections: ['ascend', 'descend'] }"
+          :title="$t(`keep.admin.viewData.why`)"
+          data-index="why"
+        ></a-table-column>
+      </template>
+    </a-table>
+  </a-space>
+
 </template>
 
 <style lang="less" scoped></style>

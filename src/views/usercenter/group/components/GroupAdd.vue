@@ -5,109 +5,109 @@ import {reject} from 'lodash';
 import {Message} from '@arco-design/web-vue';
 
 const formRef = ref();
-const transferDataS = ref([]);
-const treeData = ref([]);
-const selectUser = ref([]);
-const form = reactive({
-  name: '',
-  id: '',
-});
-const emit = defineEmits(['close']);
-const rules = [
-  {
-    validator: (value, cb) => {
-      return new Promise<Duplicate>((resolve) => {
-        if (!value) {
-          cb('name must not be null');
-        }
-        isDuplicate(value)
-          .then((data) => {
-            if (data.data.isDuplicate) {
-              resolve(data.data);
-            } else {
-              cb(data.data.why);
-              resolve(data.data);
-            }
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      });
-    },
-  },
-];
-const getTransferData = (treeDataa = [], transferDataSource = []) => {
-  treeDataa.forEach((item) => {
-    if (item.children) getTransferData(item.children, transferDataSource);
-    else transferDataSource.push({label: item.title, value: item.key});
+  const transferDataS = ref([]);
+  const treeData = ref([]);
+  const selectUser = ref([]);
+  const form = reactive({
+    name: '',
+    id: '',
   });
-  return transferDataSource;
-};
-
-const getTreeData = (data = []) => {
-  const values = data.map((item) => item.value);
-  const travel = (_treeData = []) => {
-    const treeDataSource = [];
-    _treeData.forEach((item) => {
-      if (item.children || values.includes(item.key)) {
-        treeDataSource.push({
-          title: item.title,
-          key: item.key,
-          children: travel(item.children),
+  const emit = defineEmits(['close']);
+  const rules = [
+    {
+      validator: (value, cb) => {
+        return new Promise<Duplicate>((resolve) => {
+          if (!value) {
+            cb('name must not be null');
+          }
+          isDuplicate(value)
+            .then((data) => {
+              if (data.data.isDuplicate) {
+                resolve(data.data);
+              } else {
+                cb(data.data.why);
+                resolve(data.data);
+              }
+            })
+            .catch((e) => {
+              reject(e);
+            });
         });
-      }
-    });
-    return treeDataSource;
-  };
-  return travel(treeData.value);
-};
-const value = [];
-
-const initData = async () => {
-  const {data} = await getCanBeAdd();
-  treeData.value = data;
-  transferDataS.value = getTransferData(data);
-};
-initData();
-
-// 更新或者新建都是此按钮
-const handleClick = async () => {
-  // 调试代码
-  // formRef.value.setFields({
-  //   name: {
-  //     status: 'error',
-  //     message: 'async name error',
-  //   },
-  // });
-  if (form.name === '') {
-    formRef.value.setFields({
-      name: {
-        status: 'error',
-        message: '不能为空',
       },
+    },
+  ];
+  const getTransferData = (treeDataa = [], transferDataSource = []) => {
+    treeDataa.forEach((item) => {
+      if (item.children) getTransferData(item.children, transferDataSource);
+      else transferDataSource.push({ label: item.title, value: item.key });
     });
-    return;
-  }
-  const auserList = ref<GroupUser[]>([]);
-  selectUser.value.forEach((item) => {
-    const auser = ref<GroupUser>({userId: ''});
-    auser.value.userId = item;
-    auserList.value.push(auser.value);
-  });
-  const data = await addGroup({
-    name: form.name,
-    groupUserList: auserList.value,
-  });
-  Message.success(data.msg);
-  emit('close');
-};
+    return transferDataSource;
+  };
 
-const styleHeader = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingRight: '8px',
-};
+  const getTreeData = (data = []) => {
+    const values = data.map((item) => item.value);
+    const travel = (_treeData = []) => {
+      const treeDataSource = [];
+      _treeData.forEach((item) => {
+        if (item.children || values.includes(item.key)) {
+          treeDataSource.push({
+            title: item.title,
+            key: item.key,
+            children: travel(item.children),
+          });
+        }
+      });
+      return treeDataSource;
+    };
+    return travel(treeData.value);
+  };
+  const value = [];
+
+  const initData = async () => {
+    const { data } = await getCanBeAdd();
+    treeData.value = data;
+    transferDataS.value = getTransferData(data);
+  };
+  initData();
+
+  // 更新或者新建都是此按钮
+  const handleClick = async () => {
+    // 调试代码
+    // formRef.value.setFields({
+    //   name: {
+    //     status: 'error',
+    //     message: 'async name error',
+    //   },
+    // });
+    if (form.name === '') {
+      formRef.value.setFields({
+        name: {
+          status: 'error',
+          message: '不能为空',
+        },
+      });
+      return;
+    }
+    const auserList = ref<GroupUser[]>([]);
+    selectUser.value.forEach((item) => {
+      const auser = ref<GroupUser>({ userId: '' });
+      auser.value.userId = item;
+      auserList.value.push(auser.value);
+    });
+    const data = await addGroup({
+      name: form.name,
+      groupUserList: auserList.value,
+    });
+    Message.success(data.msg);
+    emit('close');
+  };
+
+  const styleHeader = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: '8px',
+  };
 </script>
 
 <template>
@@ -127,9 +127,8 @@ const styleHeader = {
               />
             </a-form-item>
             <a-form-item>
-              <a-button @click="handleClick">{{
-                  $t('usercenter.group.add.button')
-                }}
+              <a-button @click="handleClick"
+                >{{ $t('usercenter.group.add.button') }}
               </a-button>
             </a-form-item>
           </a-form>
@@ -194,20 +193,20 @@ const styleHeader = {
 </template>
 
 <style lang="less" scoped>
-.hir {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-}
+  .hir {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+  }
 
-.shu {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-}
+  .shu {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+  }
 
-.arco-transfer-view {
-  height: 400px;
-}
+  .arco-transfer-view {
+    height: 400px;
+  }
 </style>
