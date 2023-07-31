@@ -65,5 +65,6 @@ export default function isT() {
         return true;
     }
     console.log('/* 建议更换浏览器！ */');
+    alert('请升级浏览器后访问!!!')
     return false;
 }

@@ -139,7 +139,6 @@
             @click="setVisible"
           >
             <template #icon>
-
               <icon-settings/>
             </template>
           </a-button>
@@ -170,14 +169,14 @@
                 </span>
               </a-space>
             </a-doption>
-            <!--            <a-doption>-->
-            <!--              <a-space @click="$router.push({ name: 'Setting' })">-->
-            <!--                <icon-settings />-->
-            <!--                <span>-->
-            <!--                  {{ $t('messageBox.userSettings') }}-->
-            <!--                </span>-->
-            <!--              </a-space>-->
-            <!--            </a-doption>-->
+            <a-doption>
+              <a-space @click="$router.push({ name: 'Setting' })">
+                <icon-settings/>
+                <span>
+                  {{ $t('messageBox.userSettings') }}
+                </span>
+              </a-space>
+            </a-doption>
             <a-doption>
               <a-space @click="handleLogout">
                 <icon-export />
@@ -194,16 +193,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, inject } from 'vue';
-  import { Message } from '@arco-design/web-vue';
-  import { useDark, useToggle, useFullscreen } from '@vueuse/core';
-  import { useAppStore, useUserStore } from '@/store';
-  import { LOCALE_OPTIONS } from '@/locale';
-  import useLocale from '@/hooks/locale';
-  import useUser from '@/hooks/user';
-  import Menu from '@/components/menu/index.vue';
+import {computed, inject, ref} from 'vue';
+import {Message} from '@arco-design/web-vue';
+import {useDark, useFullscreen, useToggle} from '@vueuse/core';
+import {useAppStore, useUserStore} from '@/store';
+import {LOCALE_OPTIONS} from '@/locale';
+import useLocale from '@/hooks/locale';
+import useUser from '@/hooks/user';
+import Menu from '@/components/menu/index.vue';
 
-  const appStore = useAppStore();
+const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
