@@ -8,6 +8,7 @@ export default {
   'messageBox.noContent': '暂无内容',
   'messageBox.switchRoles': '切换角色',
   'messageBox.userCenter': '用户中心',
+    'messageBox.casCenter': '认证中心',
   'messageBox.userSettings': '用户设置',
   'messageBox.logout': '登出登录',
 };

@@ -1,33 +1,38 @@
 <template>
   <div class="container">
     <div class="left-side">
-      <UploadPrint />
+      <UploadPrint v-if="printState.model === 1"/>
+      <MultiUploadPrint v-else-if="printState.model === 9"/>
       <PrinterTaskList />
-        <HistoryRecord/>
+      <HistoryRecord/>
     </div>
     <div class="right-side">
-      <QuickOperation />
-      <DeviceState />
+      <a-grid :cols="24" :row-gap="16">
+        <a-grid-item :span="24">
+          <div class="panel moduler-wrap">
+            <QuickOperation/>
+            <DeviceState/>
+          </div>
+        </a-grid-item>
+        <a-grid-item :span="24" class="panel">
+          <StateManger/>
+        </a-grid-item>
+      </a-grid>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-  import DeviceState from '@/views/dashboard/printer/components/DeviceState.vue';
-  import UploadPrint from '@/views/dashboard/printer/components/UploadPrint.vue';
-  import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
-  import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
-  import HistoryRecord from "@/views/dashboard/printer/components/HistoryRecord.vue";
+<script lang="ts" setup>
+import DeviceState from '@/views/dashboard/printer/components/DeviceState.vue';
+import UploadPrint from '@/views/dashboard/printer/components/UploadPrint.vue';
+import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
+import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
+import HistoryRecord from '@/views/dashboard/printer/components/HistoryRecord.vue';
+import StateManger from '@/views/dashboard/printer/components/StateManger.vue';
+import MultiUploadPrint from '@/views/dashboard/printer/components/MultiUploadPrint.vue';
+import usePrintStore from '@/store/modules/print';
 
-  export default {
-    components: {
-        HistoryRecord,
-      QuickOperation,
-      PrinterTaskList,
-      UploadPrint,
-      DeviceState,
-    },
-  };
+const printState = usePrintStore();
 </script>
 
 <style lang="less" scoped>

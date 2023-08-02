@@ -35,4 +35,6 @@ export default {
   'printer.one.HistoryRecord.delete': '删除',
   'printer.one.HistoryRecord.operate': '操作',
   'printer.one.HistoryRecord.noDelete': '我告诉你我删了你信不',
+  'printer.one.StateManger.title': '打印配置',
+  'printer.one.StateManger.Preview': '打印预览',
 };

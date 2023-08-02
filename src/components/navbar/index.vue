@@ -170,10 +170,10 @@
               </a-space>
             </a-doption>
             <a-doption>
-              <a-space @click="$router.push({ name: 'Setting' })">
+              <a-space @click="gotoCASUserCenter()">
                 <icon-settings/>
                 <span>
-                  {{ $t('messageBox.userSettings') }}
+                  {{ $t('messageBox.casCenter') }}
                 </span>
               </a-space>
             </a-doption>
@@ -260,6 +260,9 @@ const appStore = useAppStore();
     Message.success(res as string);
   };
   const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
+const gotoCASUserCenter = () => {
+  window.location.href = 'http://10.15.247.254:55554';
+};
 </script>
 
 <style scoped lang="less">
