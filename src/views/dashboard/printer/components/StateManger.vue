@@ -51,7 +51,7 @@ const printState = usePrintStore()
                   多文件打印
                 </div>
                 <a-typography-text type="secondary">
-                  测试阶段
+                  Beta(仅推荐word、pdf的文件使用)
                 </a-typography-text>
               </div>
             </a-space>

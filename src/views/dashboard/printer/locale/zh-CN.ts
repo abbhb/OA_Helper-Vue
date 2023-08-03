@@ -37,4 +37,10 @@ export default {
   'printer.one.HistoryRecord.noDelete': '我告诉你我删了你信不',
   'printer.one.StateManger.title': '打印配置',
   'printer.one.StateManger.Preview': '打印预览',
+  'printer.one.PrintDocumentTypeStatistics.title': '文件类型统计',
+  'printer.one.PrintDocumentTypeStatistics.tip': '24小时更新一次',
+  'printer.one.PrintDocumentTypeStatistics.name': '文件拓展名',
+  'printer.one.printTopListNew.name': '打印排行榜',
+  'printer.one.printTopListNew.tip.none': '今日暂无人打印，请查看总榜！',
+  'printer.one.printTopListNew.unit.page': '页',
 };

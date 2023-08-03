@@ -216,12 +216,10 @@ const printers = async () => {
                 <div style="display: flex; flex-direction: column">
                   <div style="font-weight: 200; font-family: 黑体; color: black"
                   >请上传需要印刷的文件
-                  </div
-                  >
+                  </div>
                   <div
                   >支持格式:pdf、doc、docx、ppt、pptx、xlsx、xlt、xls、jpg、jpeg、png等
-                  </div
-                  >
+                  </div>
                 </div>
               </a-empty>
             </template>
@@ -288,7 +286,7 @@ const printers = async () => {
                     type="button"
                   >
                     <a-radio :value="1">单面</a-radio>
-                    <a-radio :value="2">双面翻转</a-radio>
+                    <a-radio :value="2">双面</a-radio>
                     <a-radio :value="3">双面向上翻</a-radio>
                   </a-radio-group>
                 </template>
@@ -335,8 +333,7 @@ const printers = async () => {
                       type="primary"
                       @click="Preview(record)"
                     >预览
-                    </a-button
-                    >
+                    </a-button>
                     <a-button
                       style="margin-left: 2px"
                       type="primary"
@@ -355,12 +352,10 @@ const printers = async () => {
         <div style="display: flex; justify-content: end">
           <a-button @click="Message.info('懒得做，以后再说')"
           >批量配置
-          </a-button
-          >
+          </a-button>
           <a-button style="margin-left: 10px" type="primary" @click="printers()"
           >提交打印
-          </a-button
-          >
+          </a-button>
         </div>
       </a-card>
 

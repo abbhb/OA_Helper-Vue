@@ -5,17 +5,20 @@
       <MultiUploadPrint v-else-if="printState.model === 9"/>
       <PrinterTaskList />
       <HistoryRecord/>
+      <PrintDocumentTypeStatistics/>
     </div>
     <div class="right-side">
       <a-grid :cols="24" :row-gap="16">
         <a-grid-item :span="24">
           <div class="panel moduler-wrap">
-            <QuickOperation/>
             <DeviceState/>
           </div>
         </a-grid-item>
         <a-grid-item :span="24" class="panel">
           <StateManger/>
+        </a-grid-item>
+        <a-grid-item :span="24" class="panel">
+          <PrintTopListNew/>
         </a-grid-item>
       </a-grid>
     </div>
@@ -26,11 +29,12 @@
 import DeviceState from '@/views/dashboard/printer/components/DeviceState.vue';
 import UploadPrint from '@/views/dashboard/printer/components/UploadPrint.vue';
 import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
-import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
 import HistoryRecord from '@/views/dashboard/printer/components/HistoryRecord.vue';
 import StateManger from '@/views/dashboard/printer/components/StateManger.vue';
 import MultiUploadPrint from '@/views/dashboard/printer/components/MultiUploadPrint.vue';
 import usePrintStore from '@/store/modules/print';
+import PrintDocumentTypeStatistics from '@/views/dashboard/printer/components/PrintDocumentTypeStatistics.vue';
+import PrintTopListNew from '@/views/dashboard/printer/components/PrintTopListNew.vue';
 
 const printState = usePrintStore();
 </script>
