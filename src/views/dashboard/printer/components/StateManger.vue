@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import usePrintStore from "@/store/modules/print";
+import usePrintStore from '@/store/modules/print';
 
-
-const printState = usePrintStore()
-
+const printState = usePrintStore();
 </script>
 
 <template>
@@ -26,9 +24,7 @@ const printState = usePrintStore()
                 <div className="custom-radio-card-mask-dot"/>
               </div>
               <div>
-                <div className="custom-radio-card-title">
-                  单文件打印
-                </div>
+                <div className="custom-radio-card-title"> 单文件打印</div>
                 <a-typography-text type="secondary">
                   稳定、可靠
                 </a-typography-text>
@@ -47,9 +43,7 @@ const printState = usePrintStore()
                 <div className="custom-radio-card-mask-dot"/>
               </div>
               <div>
-                <div className="custom-radio-card-title">
-                  多文件打印
-                </div>
+                <div className="custom-radio-card-title"> 多文件打印</div>
                 <a-typography-text type="secondary">
                   Beta(仅推荐word、pdf的文件使用)
                 </a-typography-text>
