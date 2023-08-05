@@ -1,12 +1,15 @@
 export default {
     'usercenter.group.title': 'Group User',
-    'usercenter.group.username': 'User-Name',
+    'usercenter.group.username': 'Username',
     'usercenter.group.name': 'Group-Name',
     'usercenter.group.name.tip': 'please enter your group name...',
-    'usercenter.group.count': 'Group-Count',
+    'usercenter.manger.sex': 'Sex',
     'usercenter.group.id': 'Group-Id',
     'usercenter.group.createTime': 'Create-Time',
-    'usercenter.group.createUserName': 'Create-UserName',
+    'usercenter.manger.updateTime': 'update-Time',
+    'usercenter.manger.status': 'Status',
+    'usercenter.manger.permissionName': 'permissionName',
+
     'usercenter.group.control': 'Control',
     'usercenter.group.control.read': 'Read',
     'usercenter.group.control.del': 'Del',

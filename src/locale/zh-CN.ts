@@ -7,6 +7,7 @@ import localeSafeCenter from '@/views/usercenter/usercenter/locale/zh-CN';
 import localeUserGroup from '@/views/usercenter/group/locale/zh-CN';
 import localePrinter from '@/views/dashboard/printer/locale/zh-CN';
 import localeKeep from '@/views/dashboard/keep/locale/zh-CN';
+import localeManger from '@/views/usercenter/manger/locale/zh-CN';
 
 import localeSettings from './zh-CN/settings';
 
@@ -17,6 +18,7 @@ export default {
     'menu.server.workplace': '工作台-服务端',
     'menu.usercenter.usercenter': '用户中心',
     'menu.usercenter.group': '用户分组',
+    'menu.usercenter.manger': '用户管理',
     'menu.dashboard.printer': 'AI_EN打印',
     'menu.dashboard.keep': '学习打卡',
     'menu.server.monitor': '实时监控-服务端',
@@ -43,4 +45,5 @@ export default {
     ...localePrinter,
     ...localeKeep,
     ...localeUserGroup,
+    ...localeManger,
 };

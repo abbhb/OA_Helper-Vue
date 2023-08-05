@@ -9,6 +9,8 @@ import localeUserGroup from '@/views/usercenter/group/locale/en-US';
 
 import localePrinter from '@/views/dashboard/printer/locale/en-US';
 import localeKeep from '@/views/dashboard/keep/locale/en-US';
+import localeManger from '@/views/usercenter/manger/locale/en-US';
+
 import localeSettings from './en-US/settings';
 
 export default {
@@ -18,6 +20,7 @@ export default {
     'menu.server.workplace': 'Workplace-Server',
     'menu.usercenter': 'Usercenter',
     'menu.usercenter.usercenter': 'User-Center',
+    'menu.usercenter.manger': 'User-Manger',
     'menu.server.monitor': 'Monitor-Server',
     'menu.list': 'List',
     'menu.result': 'Result',
@@ -41,4 +44,5 @@ export default {
     ...localePrinter,
     ...localeKeep,
     ...localeUserGroup,
+    ...localeManger,
 };
