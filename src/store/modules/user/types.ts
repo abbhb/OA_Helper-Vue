@@ -1,4 +1,3 @@
-export type PermissionType = 1 | 2 | 3 | 10;
 export type StatusType = 1 | 0;
 export interface UserState {
   name?: string;
@@ -12,6 +11,7 @@ export interface UserState {
   createTime?: string;
   updateTime?: string;
   studentId?: string;
-  permission?: PermissionType;
-  permissionName?: string;
+  deptId?: string;
+  deptName?: string;
+  roles?: string[];
 }

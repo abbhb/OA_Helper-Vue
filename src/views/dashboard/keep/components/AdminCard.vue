@@ -18,7 +18,7 @@ const links = ref<Link[]>([
   {
     text: 'keep.admin.viewData',
     icon: 'icon-drag-dot',
-    type: 'viewData',
+    type: 'viewData'
   },
 ]);
 const modelVisible = ref(false);
@@ -64,8 +64,7 @@ const openModel = (link: Link) => {
       :draggable="true"
       :footer="false"
       :fullscreen="appState.modelFullscreen"
-      :unmount-on-close=true
-
+      :unmount-on-close="true"
     >
       <template #title>
         {{ $t(modelData.title) }}

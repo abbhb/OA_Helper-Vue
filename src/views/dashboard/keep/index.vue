@@ -3,8 +3,8 @@ import {defineComponent} from 'vue';
 import KeepTime from '@/views/dashboard/keep/components/KeepTime.vue';
 import Sidebar from '@/views/dashboard/keep/components/sidebar.vue';
 import RecentStudy from '@/views/dashboard/keep/components/RecentStudy.vue';
-import AdminCard from "@/views/dashboard/keep/components/AdminCard.vue";
-import {useUserStore} from "@/store";
+import AdminCard from '@/views/dashboard/keep/components/AdminCard.vue';
+import {useUserStore} from '@/store';
 
 export default defineComponent({
   name: 'index.vue',
@@ -14,15 +14,9 @@ export default defineComponent({
     Sidebar,
     KeepTime,
   },
-  data() {
-    return {
-      permission: 2,
-    }
-  },
   created() {
     const userState = useUserStore();
-    this.permission = userState.permission;
-  }
+  },
 });
 </script>
 
@@ -34,7 +28,7 @@ export default defineComponent({
     </div>
     <div class="right-side">
       <Sidebar/>
-      <AdminCard v-if="permission === 10 || permission === 1"/>
+      <AdminCard v-roles="['superadmin', 'lsadmin']"/>
       <!--      公共排行榜 先封装公共组件，在封装小组件-->
     </div>
   </div>

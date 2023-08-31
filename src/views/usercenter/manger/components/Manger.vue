@@ -2,10 +2,10 @@
 import {useI18n} from 'vue-i18n';
 import {ref} from 'vue';
 import {useAppStore} from '@/store';
-import {GroupUserFront,} from '@/api/group';
+import {GroupUserFront} from '@/api/group';
 import {getUserListManger, UserManger} from '@/api/user';
-import {Message} from "@arco-design/web-vue";
-import AvatarImage from "@/components/image/AvatarImage.vue";
+import {Message} from '@arco-design/web-vue';
+import AvatarImage from '@/components/image/AvatarImage.vue';
 
 const {t} = useI18n();
 
@@ -169,9 +169,8 @@ const handleCancel = () => {
           :title="$t(`usercenter.manger.status`)"
         >
           <template #cell="{ record }">
-            <a-tag :color="record.status === 1 ? 'green' : 'red'" bordered>{{
-                record.status === 1 ? '正常' : '封禁'
-              }}
+            <a-tag :color="record.status === 1 ? 'green' : 'red'" bordered
+            >{{ record.status === 1 ? '正常' : '封禁' }}
             </a-tag>
           </template>
         </a-table-column>
@@ -185,12 +184,15 @@ const handleCancel = () => {
             <a-button @click="readAGroup(record)"
             >{{ $t('usercenter.manger.control.read') }}
             </a-button>
-            <a-button :status="record.status===1?'danger':'success'" @click="IBan(record)">
-              <span v-if="record.status===1">{{ $t('usercenter.manger.control.banned') }}</span>
+            <a-button
+              :status="record.status === 1 ? 'danger' : 'success'"
+              @click="IBan(record)"
+            >
+              <span v-if="record.status === 1">{{
+                  $t('usercenter.manger.control.banned')
+                }}</span>
               <span v-else>{{ $t('usercenter.manger.control.Nobanned') }}</span>
-
             </a-button>
-
           </template>
         </a-table-column>
       </template>

@@ -1,22 +1,25 @@
-import { DirectiveBinding } from 'vue';
-import { useUserStore } from '@/store';
+import {DirectiveBinding} from 'vue';
+import {useUserStore} from '@/store';
 
 function checkPermission(el: HTMLElement, binding: DirectiveBinding) {
   const { value } = binding;
   const userStore = useUserStore();
-  const { permission } = userStore;
+  const {roles} = userStore;
 
   if (Array.isArray(value)) {
     if (value.length > 0) {
-      const permissionValues = value;
-
-      const hasPermission = permissionValues.includes(String(permission));
+      const needRoles = value;
+      const hasPermission =
+          needRoles.length + roles.length !==
+          Array.from(new Set([...needRoles, ...roles])).length;
       if (!hasPermission && el.parentNode) {
+
+
         el.parentNode.removeChild(el);
       }
     }
   } else {
-    throw new Error(`need roles! Like v-permission="[10,1,2]"`);
+    throw new Error(`need roles! Like v-roles="['superadmin']"`);
   }
 }
 

@@ -162,7 +162,7 @@
             <!--              </a-space>-->
             <!--            </a-doption>-->
             <a-doption>
-              <a-space @click="$router.push({ name: 'Info' })">
+              <a-space @click="$router.push({ name: 'profile' })">
                 <icon-user />
                 <span>
                   {{ $t('messageBox.userCenter') }}

@@ -1,16 +1,16 @@
 import {defineStore} from 'pinia';
 import {
-  login as userLogin,
-  logout as userLogout,
   getUserInfo,
-  LoginData,
-  LoginDataByCode,
+  login as userLogin,
   loginbycode,
   loginbytoken,
+  LoginData,
+  LoginDataByCode,
+  logout as userLogout,
 } from '@/api/user';
-import {setToken, clearToken} from '@/utils/auth';
+import {clearToken, setToken} from '@/utils/auth';
 import {removeRouteListener} from '@/utils/route-listener';
-import rsautils from "@/utils/rsautils";
+import rsautils from '@/utils/rsautils';
 import {UserState} from './types';
 import useAppStore from '../app';
 
@@ -27,8 +27,9 @@ const useUserStore = defineStore('user', {
     createTime: '',
     updateTime: '',
     studentId: '',
-    permission: 3,
-    permissionName: '用户',
+    deptId: '',
+    deptName: '',
+    roles: ['roomuser'],
   }),
 
   getters: {

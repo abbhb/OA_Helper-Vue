@@ -20,7 +20,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.usercenter.usercenter',
                 requiresAuth: true,
-                roles: ['10', '1', '2', '3', '4'],
+                roles: ['*'],
             },
         },
         {
@@ -30,7 +30,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.usercenter.manger',
                 requiresAuth: true,
-                roles: ['10', '1'],
+                roles: ['superadmin', 'lsadmin'],
             },
         },
         {
@@ -40,7 +40,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.usercenter.group',
                 requiresAuth: true,
-                roles: ['10', '1'],
+                roles: ['superadmin', 'lsadmin'],
             },
         },
     ],

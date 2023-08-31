@@ -1,10 +1,9 @@
-import type { Router, RouteRecordNormalized } from 'vue-router';
+import type {Router, RouteRecordNormalized} from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
-
 import usePermission from '@/hooks/permission';
-import { useUserStore, useAppStore } from '@/store';
-import { appRoutes } from '../routes';
-import { WHITE_LIST, NOT_FOUND } from '../constants';
+import {useAppStore, useUserStore} from '@/store';
+import {appRoutes} from '../routes';
+import {NOT_FOUND, WHITE_LIST} from '../constants';
 
 export default function setupPermissionGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
@@ -20,7 +19,7 @@ export default function setupPermissionGuard(router: Router) {
       // Handle routing configuration from the server
 
       // 根据需要自行完善来源于服务端的菜单配置的permission逻辑
-      // Refine the permission logic from the server's menu configuration as needed
+      // Refine the roles logic from the server's menu configuration as needed
       if (
         !appStore.appAsyncMenus.length &&
         !WHITE_LIST.find((el) => el.name === to.name)
@@ -45,14 +44,13 @@ export default function setupPermissionGuard(router: Router) {
       } else next(NOT_FOUND);
     } else {
       // eslint-disable-next-line no-lonely-if
-      if (permissionsAllow){
+      if (permissionsAllow) {
         next();
-      }
-      else {
+      } else {
         const destination =
           Permission.findFirstPermissionRoute(
             appRoutes,
-            String(userStore.permission)
+              String('10')
           ) || NOT_FOUND;
         next(destination);
       }

@@ -1,9 +1,9 @@
-import { computed } from 'vue';
-import { RouteRecordRaw, RouteRecordNormalized } from 'vue-router';
+import {computed} from 'vue';
+import {RouteRecordNormalized, RouteRecordRaw} from 'vue-router';
 import usePermission from '@/hooks/permission';
-import { useAppStore } from '@/store';
+import {useAppStore} from '@/store';
 import appClientMenus from '@/router/app-menus';
-import { cloneDeep } from 'lodash';
+import {cloneDeep} from 'lodash';
 
 export default function useMenuTree() {
   const permission = usePermission();
@@ -29,7 +29,7 @@ export default function useMenuTree() {
         }
 
         // leaf node
-        if (element.meta?.hideChildrenInMenu || !element.children) {
+          if (element.meta?.hideChildrenInMenu || !element.children || element.children.length === 0) {
           element.children = [];
           return element;
         }
