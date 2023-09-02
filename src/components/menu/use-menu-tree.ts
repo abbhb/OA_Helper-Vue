@@ -29,7 +29,11 @@ export default function useMenuTree() {
         }
 
         // leaf node
-          if (element.meta?.hideChildrenInMenu || !element.children || element.children.length === 0) {
+        if (
+            element.meta?.hideChildrenInMenu ||
+            !element.children ||
+            element.children.length === 0
+        ) {
           element.children = [];
           return element;
         }

@@ -11,4 +11,5 @@ export default {
     'messageBox.casCenter': '认证中心',
   'messageBox.userSettings': '用户设置',
   'messageBox.logout': '登出登录',
+  'messageBox.switchUser': '切换用户',
 };

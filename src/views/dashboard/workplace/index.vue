@@ -2,7 +2,11 @@
   <div class="container">
     <div class="left-side">
       <div class="panel">
-        <Banner />
+        <ContextMenu
+          :menu="[{ label: '刷新',icon:'icon-refresh' },{ label: '刷新2',icon:'icon-refresh' },{ label: '刷新3',icon:'icon-refresh' }]"
+          @select="selectMenu">
+          <Banner/>
+        </ContextMenu>
         <DataPanel />
       </div>
       <a-grid :cols="24" :col-gap="16" :row-gap="16" style="margin-top: 16px">
@@ -18,6 +22,7 @@
         </a-grid-item>
       </a-grid>
     </div>
+
     <div class="right-side">
       <a-grid :cols="24" :row-gap="16">
         <a-grid-item :span="24">
@@ -41,15 +46,21 @@
 </template>
 
 <script lang="ts" setup>
-  import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
-  import Banner from './components/banner.vue';
-  import DataPanel from './components/data-panel.vue';
-  import PopularContent from './components/popular-content.vue';
-  import RecentlyVisited from './components/recently-visited.vue';
-  import QuickOperation from './components/quick-operation.vue';
-  import Announcement from './components/announcement.vue';
-  import Carousel from './components/carousel.vue';
-  import Docs from './components/docs.vue';
+import ContextMenu from '@/components/context-menu/index.vue';
+import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
+import {Message} from '@arco-design/web-vue';
+import Banner from './components/banner.vue';
+import DataPanel from './components/data-panel.vue';
+import PopularContent from './components/popular-content.vue';
+import RecentlyVisited from './components/recently-visited.vue';
+import QuickOperation from './components/quick-operation.vue';
+import Announcement from './components/announcement.vue';
+import Carousel from './components/carousel.vue';
+import Docs from './components/docs.vue';
+
+const selectMenu = (item) => {
+  Message.info(item.label);
+};
 </script>
 
 <script lang="ts">

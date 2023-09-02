@@ -21,7 +21,6 @@ interface GroupAndUserVO extends Group {
   groupUserList?: GroupUser[];
 }
 
-
 export interface GroupUserFront {
   id: string;
   name: string;
@@ -86,7 +85,6 @@ export function updateGroup(data: GroupAndUserVO) {
   return axios.put<string>('/api/group/updateGroup', data);
 }
 
-
 export function deleteGroup(data: GroupAndUserVO) {
   return axios.post<string>('/api/group/deleteGroup', data);
 }
@@ -94,4 +92,3 @@ export function deleteGroup(data: GroupAndUserVO) {
 export function forceDeleteGroup(data: GroupAndUserVO) {
   return axios.post<string>('/api/group/forceDeleteGroup', data);
 }
-

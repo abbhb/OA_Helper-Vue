@@ -11,4 +11,6 @@ export default {
     'messageBox.casCenter': 'Auth Center',
   'messageBox.userSettings': 'User Settings',
   'messageBox.logout': 'Logout',
+  'messageBox.switchUser': 'Switch Users',
+
 };

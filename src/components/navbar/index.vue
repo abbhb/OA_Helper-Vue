@@ -162,10 +162,10 @@
             <!--              </a-space>-->
             <!--            </a-doption>-->
             <a-doption>
-              <a-space @click="$router.push({ name: 'profile' })">
+              <a-space v-is-auth="true" @click="$router.push({ name: 'profile' })">
                 <icon-user />
                 <span>
-                  {{ $t('messageBox.userCenter') }}
+                  {{ userStore.name }}
                 </span>
               </a-space>
             </a-doption>
@@ -174,6 +174,14 @@
                 <icon-settings/>
                 <span>
                   {{ $t('messageBox.casCenter') }}
+                </span>
+              </a-space>
+            </a-doption>
+            <a-doption>
+              <a-space @click="alert('此功能在2023年底前上线')">
+                <icon-export/>
+                <span>
+                  {{ $t('messageBox.switchUser') }}
                 </span>
               </a-space>
             </a-doption>

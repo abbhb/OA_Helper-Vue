@@ -10,9 +10,9 @@ export default function usePermission() {
         !route.meta?.roles ||
         route.meta?.roles?.includes('*') ||
         // route.meta?.roles?.includes(String(userStore.roles))
-        (route.meta.roles.length + userStore.roles.length) !== Array.from(new Set([...route.meta.roles, ...userStore.roles])).length
+        route.meta.roles.length + userStore.roles.length !==
+        Array.from(new Set([...route.meta.roles, ...userStore.roles])).length
       );
-
     },
     findFirstPermissionRoute(_routers: any, role = 'admin') {
       const cloneRouters = [..._routers];

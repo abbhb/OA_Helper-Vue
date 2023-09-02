@@ -1,7 +1,7 @@
 import {DirectiveBinding} from 'vue';
 import {useUserStore} from '@/store';
 
-function checkPermission(el: HTMLElement, binding: DirectiveBinding) {
+function checkRoles(el: HTMLElement, binding: DirectiveBinding) {
   const { value } = binding;
   const userStore = useUserStore();
   const {roles} = userStore;
@@ -13,8 +13,6 @@ function checkPermission(el: HTMLElement, binding: DirectiveBinding) {
           needRoles.length + roles.length !==
           Array.from(new Set([...needRoles, ...roles])).length;
       if (!hasPermission && el.parentNode) {
-
-
         el.parentNode.removeChild(el);
       }
     }
@@ -25,9 +23,9 @@ function checkPermission(el: HTMLElement, binding: DirectiveBinding) {
 
 export default {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
-    checkPermission(el, binding);
+    checkRoles(el, binding);
   },
   updated(el: HTMLElement, binding: DirectiveBinding) {
-    checkPermission(el, binding);
+    checkRoles(el, binding);
   },
 };
