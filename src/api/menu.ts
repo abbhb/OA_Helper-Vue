@@ -36,4 +36,19 @@ export function menuList() {
     return axios.post<MenuManger[]>('/api/menu/list');
 }
 
-export default getMenuList();
+export function updateMenu(data: MenuManger) {
+    return axios.put<string>('/api/menu/update', data);
+}
+
+export function addMenu(data: MenuManger) {
+    return axios.post<string>('/api/menu/add', data);
+}
+
+export function deleteMenu(id: string) {
+    return axios.delete<string>('/api/menu/delete', {
+        params: {
+            id,
+        },
+    });
+}
+
