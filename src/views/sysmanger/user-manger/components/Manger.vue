@@ -6,7 +6,7 @@ import {GroupUserFront} from '@/api/group';
 import {getUserListManger, UserManger} from '@/api/user';
 import {Message} from '@arco-design/web-vue';
 import AvatarImage from '@/components/image/AvatarImage.vue';
-import {getColor} from "@/utils/color-index";
+import {getColor} from '@/utils/color-index';
 
 const {t} = useI18n();
 const appStore = useAppStore();
@@ -104,7 +104,7 @@ const getRolesNameList = computed(() => (roles) => {
             v-model:model-value="statuEs.name"
             :allow-clear="true"
             :loading="statuEs.searchStatus"
-            :placeholder="$t('usercenter.manger.search.tip')"
+            :placeholder="$t('syscenter.user.manger.search.tip')"
             :style="{ width: '320px' }"
             search-button
             style="margin-bottom: 1rem"
@@ -116,7 +116,7 @@ const getRolesNameList = computed(() => (roles) => {
               <icon-search/>
             </template>
             <template #button-default>
-              {{ $t('usercenter.manger.search') }}
+              {{ $t('syscenter.user.manger.search') }}
             </template>
           </a-input-search>
           <a-space direction="vertical">
@@ -125,7 +125,7 @@ const getRolesNameList = computed(() => (roles) => {
               type="primary"
               @click="Message.info('暂时仅支持通过oauth2认证登录!')"
             >
-              {{ $t('usercenter.manger.add') }}
+              {{ $t('syscenter.user.manger.add') }}
             </a-button>
           </a-space>
           <a-divider class="split-line" style="margin: 3px"/>
@@ -133,24 +133,24 @@ const getRolesNameList = computed(() => (roles) => {
 
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.id`)"
+          :title="$t(`syscenter.user.manger.id`)"
           :width="120"
           data-index="id"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.name`)"
+          :title="$t(`syscenter.user.manger.name`)"
           data-index="name"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.username`)"
+          :title="$t(`syscenter.user.manger.username`)"
           data-index="username"
         ></a-table-column>
 
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.avatar`)"
+          :title="$t(`syscenter.user.manger.avatar`)"
         >
           <template #cell="{ record }">
             <AvatarImage :avatar="record.avatar" :name="record.name"/>
@@ -158,22 +158,22 @@ const getRolesNameList = computed(() => (roles) => {
         </a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.sex`)"
+          :title="$t(`syscenter.user.manger.sex`)"
           data-index="sex"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.createTime`)"
+          :title="$t(`syscenter.user.manger.createTime`)"
           data-index="createTime"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.updateTime`)"
+          :title="$t(`syscenter.user.manger.updateTime`)"
           data-index="updateTime"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.status`)"
+          :title="$t(`syscenter.user.manger.status`)"
         >
           <template #cell="{ record }">
             <a-tag :color="record.status === 1 ? 'green' : 'red'" bordered
@@ -183,7 +183,7 @@ const getRolesNameList = computed(() => (roles) => {
         </a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.roles`)"
+          :title="$t(`syscenter.user.manger.roles`)"
           :width="240"
         >
           <template #cell="{ record }">
@@ -193,23 +193,24 @@ const getRolesNameList = computed(() => (roles) => {
               :color="getColor(role.sort)"
               bordered
             >{{ role.name }}
-            </a-tag
-            >
+            </a-tag>
           </template>
         </a-table-column>
-        <a-table-column :title="$t(`usercenter.manger.control`)">
+        <a-table-column :title="$t(`syscenter.user.manger.control`)">
           <template #cell="{ record }">
             <a-button @click="readAGroup(record)"
-            >{{ $t('usercenter.manger.control.read') }}
+            >{{ $t('syscenter.user.manger.control.read') }}
             </a-button>
             <a-button
               :status="record.status === 1 ? 'danger' : 'success'"
               @click="IBan(record)"
             >
               <span v-if="record.status === 1">{{
-                  $t('usercenter.manger.control.banned')
+                  $t('syscenter.user.manger.control.banned')
                 }}</span>
-              <span v-else>{{ $t('usercenter.manger.control.Nobanned') }}</span>
+              <span v-else>{{
+                  $t('syscenter.user.manger.control.Nobanned')
+                }}</span>
             </a-button>
           </template>
         </a-table-column>

@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia';
-import { Notification } from '@arco-design/web-vue';
-import type { NotificationReturn } from '@arco-design/web-vue/es/notification/interface';
-import type { RouteRecordNormalized } from 'vue-router';
+import {defineStore} from 'pinia';
+import {Notification} from '@arco-design/web-vue';
+import type {NotificationReturn} from '@arco-design/web-vue/es/notification/interface';
+import type {RouteRecordNormalized} from 'vue-router';
 import defaultSettings from '@/config/settings.json';
-import { getMenuList } from '@/api/user';
-import { getConfig } from '@/store/modules/app/persistence';
-import { AppState } from './types';
+import {getMenuList} from '@/api/menu';
+import {getConfig} from '@/store/modules/app/persistence';
+import {AppState} from './types';
 
 const useAppStore = defineStore('app', {
   state: (): AppState => {

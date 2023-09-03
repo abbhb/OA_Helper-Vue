@@ -1,5 +1,4 @@
 import axios from 'axios';
-import type {RouteRecordNormalized} from 'vue-router';
 import {UserState} from '@/store/modules/user/types';
 import {PageData} from '@/api/common';
 
@@ -96,6 +95,3 @@ export function getUserPassword() {
   return axios.get<number>('/api/user/user_password');
 }
 
-export function getMenuList() {
-  return axios.post<RouteRecordNormalized[]>('/api/user/menu');
-}

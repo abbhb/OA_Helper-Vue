@@ -117,18 +117,18 @@ const formRef = ref();
         <div class="shu">
           <a-form ref="formRef" :model="form" :style="{ width: '600px' }">
             <a-form-item
-              :label="$t('usercenter.group.name')"
+              :label="$t('syscenter.group.name')"
               :rules="rules"
               field="name"
             >
               <a-input
                 v-model="form.name"
-                :placeholder="$t('usercenter.group.name.tip')"
+                :placeholder="$t('syscenter.group.name.tip')"
               />
             </a-form-item>
             <a-form-item>
               <a-button @click="handleClick"
-                >{{ $t('usercenter.group.add.button') }}
+              >{{ $t('syscenter.group.add.button') }}
               </a-button>
             </a-form-item>
           </a-form>

@@ -162,7 +162,10 @@
             <!--              </a-space>-->
             <!--            </a-doption>-->
             <a-doption>
-              <a-space v-is-auth="true" @click="$router.push({ name: 'profile' })">
+              <a-space
+                v-is-auth="true"
+                @click="$router.push({ name: 'profile' })"
+              >
                 <icon-user />
                 <span>
                   {{ userStore.name }}

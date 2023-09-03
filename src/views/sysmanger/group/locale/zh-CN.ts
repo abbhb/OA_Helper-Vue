@@ -1,0 +1,21 @@
+export default {
+    'syscenter.group.title': '用户分组',
+    'syscenter.group.username': '用户昵称',
+    'syscenter.group.name': '分组名称',
+    'syscenter.group.name.tip': '请输入分组名称',
+    'syscenter.group.count': '分组人数',
+    'syscenter.group.createTime': '创建时间',
+    'syscenter.group.createUserName': '创建用户',
+    'syscenter.group.id': '分组编号',
+    'syscenter.group.control': '操作',
+    'syscenter.group.control.read': '查看',
+    'syscenter.group.control.del': '删除',
+    'syscenter.group.control.q_del.tip': '您确定要强制删除该组极其所有组员绑定关系吗?(此操作不支持回滚!)',
+    'syscenter.group.search.tip': '请输入名称进行搜索',
+    'syscenter.group.search': '搜索',
+    'syscenter.group.add': '添加分组',
+    'syscenter.group.edit': '编辑分组',
+    'syscenter.group.add.button': '添加分组',
+    'syscenter.group.edit.button': '编辑分组',
+
+};

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
+import Group from '@/views/sysmanger/group/components/Group.vue';
 import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
-import Manger from '@/views/usercenter/manger/components/Manger.vue';
 </script>
 
 <template>
   <div class="container">
     <div class="left-side">
-      <Manger/>
+      <Group/>
     </div>
     <div class="right-side">
       <QuickOperation/>

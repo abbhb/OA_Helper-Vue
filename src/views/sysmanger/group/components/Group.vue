@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n';
 import {ref} from 'vue';
-import {deleteGroup, forceDeleteGroup, getGroupUser, GroupUserFront} from '@/api/group';
+import {deleteGroup, forceDeleteGroup, getGroupUser, GroupUserFront,} from '@/api/group';
 import {useAppStore} from '@/store';
-import GroupAdd from '@/views/usercenter/group/components/GroupAdd.vue';
-import GroupEdit from '@/views/usercenter/group/components/GroupEdit.vue';
-import {Message} from "@arco-design/web-vue";
+import GroupAdd from '@/views/sysmanger/group/components/GroupAdd.vue';
+import GroupEdit from '@/views/sysmanger/group/components/GroupEdit.vue';
+import {Message} from '@arco-design/web-vue';
 
 const {t} = useI18n();
 
@@ -122,7 +122,7 @@ const handleItemClose = () => {
             v-model:model-value="statuEs.name"
             :allow-clear="true"
             :loading="statuEs.searchStatus"
-            :placeholder="$t('usercenter.group.search.tip')"
+            :placeholder="$t('syscenter.group.search.tip')"
             :style="{ width: '320px' }"
             search-button
             style="margin-bottom: 1rem"
@@ -134,7 +134,7 @@ const handleItemClose = () => {
               <icon-search/>
             </template>
             <template #button-default>
-              {{ $t('usercenter.group.search') }}
+              {{ $t('syscenter.group.search') }}
             </template>
           </a-input-search>
           <a-space direction="vertical">
@@ -143,7 +143,7 @@ const handleItemClose = () => {
               type="primary"
               @click="addOnclick()"
             >
-              {{ $t('usercenter.group.add') }}
+              {{ $t('syscenter.group.add') }}
             </a-button>
           </a-space>
           <a-divider class="split-line" style="margin: 3px"/>
@@ -151,43 +151,44 @@ const handleItemClose = () => {
 
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.group.id`)"
+          :title="$t(`syscenter.group.id`)"
           data-index="id"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.group.name`)"
+          :title="$t(`syscenter.group.name`)"
           data-index="name"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.group.count`)"
+          :title="$t(`syscenter.group.count`)"
           data-index="count"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.group.createTime`)"
+          :title="$t(`syscenter.group.createTime`)"
           data-index="createTime"
         ></a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.group.createUserName`)"
+          :title="$t(`syscenter.group.createUserName`)"
         >
           <template #cell="{ record }">
             <a-tag bordered color="green">{{ record.createUserName }}</a-tag>
           </template>
         </a-table-column>
-        <a-table-column :title="$t(`usercenter.group.control`)">
+        <a-table-column :title="$t(`syscenter.group.control`)">
           <template #cell="{ record }">
-            <a-button @click="readAGroup(record)">{{
-                $t('usercenter.group.control.read')
-              }}
+            <a-button @click="readAGroup(record)"
+            >{{ $t('syscenter.group.control.read') }}
             </a-button>
-            <a-button @click="delAGroup(record)">{{
-                $t('usercenter.group.control.del')
-              }}
+            <a-button @click="delAGroup(record)"
+            >{{ $t('syscenter.group.control.del') }}
             </a-button>
-            <a-popconfirm :content="$t('usercenter.group.control.q_del.tip')" @ok="forceDelAGroup(record)">
+            <a-popconfirm
+              :content="$t('syscenter.group.control.q_del.tip')"
+              @ok="forceDelAGroup(record)"
+            >
               <a-button status="danger" type="primary">
                 <template #icon>
                   <icon-delete/>
@@ -212,9 +213,9 @@ const handleItemClose = () => {
     >
       <template #title>
         <span v-if="statuEs.modelType === 'add'">{{
-            $t('usercenter.group.add')
+            $t('syscenter.group.add')
           }}</span>
-        <span v-else>{{ $t('usercenter.group.edit') }}</span>
+        <span v-else>{{ $t('syscenter.group.edit') }}</span>
       </template>
       <GroupAdd v-if="statuEs.modelType === 'add'" @close="handleItemClose()"/>
       <GroupEdit

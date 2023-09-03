@@ -38,8 +38,8 @@ export default defineComponent({
           return;
         }
         // Eliminate external link side effects
-        const { hideInMenu, activeMenu } = item.meta as RouteMeta;
-        if (route.name === item.name && !hideInMenu && !activeMenu) {
+        const {show, activeMenu} = item.meta as RouteMeta;
+        if (route.name === item.name && show && !activeMenu) {
           selectedKey.value = [item.name as string];
           return;
         }
@@ -70,8 +70,8 @@ export default defineComponent({
         return result;
       };
       listenerRouteChange((newRoute) => {
-        const { requiresAuth, activeMenu, hideInMenu } = newRoute.meta;
-        if (requiresAuth && (!hideInMenu || activeMenu)) {
+        const {requiresAuth, activeMenu, show} = newRoute.meta;
+        if (requiresAuth && (show || activeMenu)) {
           const menuOpenKeys = findMenuOpenKeys(
             (activeMenu || newRoute.name) as string
           );

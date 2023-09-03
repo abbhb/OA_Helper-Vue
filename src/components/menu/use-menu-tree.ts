@@ -37,12 +37,10 @@ export default function useMenuTree() {
           element.children = [];
           return element;
         }
-
         // route filter hideInMenu true
         element.children = element.children.filter(
-          (x) => x.meta?.hideInMenu !== true
+            (x) => x.meta?.show === true
         );
-
         // Associated child node
         const subItem = travel(element.children, layer + 1);
 

@@ -1,19 +1,17 @@
 <script lang="ts" setup>
-
-import Group from "@/views/usercenter/group/components/Group.vue";
-import QuickOperation from "@/views/dashboard/workplace/components/quick-operation.vue";
+import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
+import Manger from '@/views/sysmanger/user-manger/components/Manger.vue';
 </script>
 
 <template>
   <div class="container">
     <div class="left-side">
-      <Group/>
+      <Manger/>
     </div>
     <div class="right-side">
       <QuickOperation/>
     </div>
   </div>
-
 </template>
 
 <style lang="less" scoped>
