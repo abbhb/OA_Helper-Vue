@@ -9,19 +9,21 @@ import localeUserGroup from '@/views/sysmanger/group/locale/en-US';
 
 import localePrinter from '@/views/dashboard/printer/locale/en-US';
 import localeKeep from '@/views/dashboard/keep/locale/en-US';
-import localeManger from '@/views/sysmanger/user-manger/locale/en-US';
+import localeSysUserManger from '@/views/sysmanger/user-manger/locale/zh-CN';
+import localeSysMenuManger from '@/views/sysmanger/menu-manger/locale/zh-CN';
 
 import localeSettings from './en-US/settings';
 
 export default {
     'menu.dashboard': 'Dashboard',
-    'menu.server.dashboard': 'Dashboard-Server',
-    'menu.sysmanger.group': 'Group-User',
-    'menu.server.workplace': 'Workplace-Server',
-    'menu.sysmanger': 'System-Center',
     'menu.usercenter.usercenter': 'User-Center',
+    'menu.server.dashboard': 'Dashboard-Server',
+    'menu.server.workplace': 'Workplace-Server',
+    'menu.sysmanger.group': 'Group-User',
+    'menu.sysmanger': 'System-Center',
     'menu.sysmanger.usercenter': 'User-Center',
-    'menu.sysmanger.manger': 'User-Manger',
+    'menu.sysmanger.MenuManger': 'Menu-Manger',
+    'menu.sysmanger.UserManger': 'User-Manger',
     'menu.server.monitor': 'Monitor-Server',
     'menu.list': 'List',
     'menu.result': 'Result',
@@ -45,5 +47,6 @@ export default {
     ...localePrinter,
     ...localeKeep,
     ...localeUserGroup,
-    ...localeManger,
+    ...localeSysUserManger,
+    ...localeSysMenuManger,
 };

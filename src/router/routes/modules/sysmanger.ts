@@ -14,11 +14,21 @@ const USERCENTER: AppRouteRecordRaw = {
     },
     children: [
         {
-            path: 'manger',
-            name: 'manger',
+            path: 'user-manger',
+            name: 'UserManger',
             component: () => import('@/views/sysmanger/user-manger/index.vue'),
             meta: {
-                locale: 'menu.sysmanger.manger',
+                locale: 'menu.sysmanger.UserManger',
+                requiresAuth: true,
+                roles: ['superadmin', 'lsadmin'],
+            },
+        },
+        {
+            path: 'menu-manger',
+            name: 'MenuManger',
+            component: () => import('@/views/sysmanger/menu-manger/index.vue'),
+            meta: {
+                locale: 'menu.sysmanger.MenuManger',
                 requiresAuth: true,
                 roles: ['superadmin', 'lsadmin'],
             },

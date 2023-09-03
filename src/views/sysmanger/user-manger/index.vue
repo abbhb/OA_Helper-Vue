@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import QuickOperation from '@/views/dashboard/workplace/components/quick-operation.vue';
 import Manger from '@/views/sysmanger/user-manger/components/Manger.vue';
 </script>
 
@@ -7,9 +6,6 @@ import Manger from '@/views/sysmanger/user-manger/components/Manger.vue';
   <div class="container">
     <div class="left-side">
       <Manger/>
-    </div>
-    <div class="right-side">
-      <QuickOperation/>
     </div>
   </div>
 </template>

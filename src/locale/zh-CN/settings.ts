@@ -19,8 +19,7 @@ export default {
     'settings.otherSettings': '其他设置',
     'settings.colorWeak': '色弱模式',
     'settings.windowNotify': '系统级通知(Beta)',
-    'settings.alertContent':
-        '配置之后存储在用户浏览器端，同步功能以后上线',
+    'settings.alertContent': '配置之后存储在用户浏览器端，同步功能以后上线',
     'settings.copySettings': '复制配置',
     'settings.copySettings.message':
         '复制成功，请粘贴到 src/settings.json 文件中',
