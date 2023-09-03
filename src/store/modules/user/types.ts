@@ -1,4 +1,13 @@
 export type StatusType = 1 | 0;
+
+interface Role {
+  id?: string;
+  name?: string;
+  key?: string;
+  sort?: number;
+}
+
+
 export interface UserState {
   name?: string;
   avatar?: string;
@@ -13,5 +22,5 @@ export interface UserState {
   studentId?: string;
   deptId?: string;
   deptName?: string;
-  roles?: string[];
+  roles?: Role[];
 }

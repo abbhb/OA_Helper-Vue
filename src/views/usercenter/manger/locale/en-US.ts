@@ -6,6 +6,7 @@ export default {
     'usercenter.manger.count': 'Manger-Count',
     'usercenter.manger.id': 'Manger-Id',
     'usercenter.manger.avatar': 'Avatar',
+    'usercenter.manger.roles': 'Roles',
 
     'usercenter.manger.createTime': 'Create-Time',
     'usercenter.manger.createUserName': 'Create-UserName',

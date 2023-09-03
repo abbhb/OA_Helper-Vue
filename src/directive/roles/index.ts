@@ -5,13 +5,16 @@ function checkRoles(el: HTMLElement, binding: DirectiveBinding) {
   const { value } = binding;
   const userStore = useUserStore();
   const {roles} = userStore;
-
+  const roleKeyList = [];
+  roles.forEach((item) => {
+    roleKeyList.push(item.key);
+  });
   if (Array.isArray(value)) {
     if (value.length > 0) {
       const needRoles = value;
       const hasPermission =
           needRoles.length + roles.length !==
-          Array.from(new Set([...needRoles, ...roles])).length;
+          Array.from(new Set([...needRoles, ...roleKeyList])).length;
       if (!hasPermission && el.parentNode) {
         el.parentNode.removeChild(el);
       }

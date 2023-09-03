@@ -29,7 +29,13 @@ const useUserStore = defineStore('user', {
     studentId: '',
     deptId: '',
     deptName: '',
-    roles: ['roomuser'],
+    roles: [
+      {
+        id: '3',
+        name: '内部用户',
+        key: 'roomuser',
+      },
+    ],
   }),
 
   getters: {

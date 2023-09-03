@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n';
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import {useAppStore} from '@/store';
 import {GroupUserFront} from '@/api/group';
 import {getUserListManger, UserManger} from '@/api/user';
 import {Message} from '@arco-design/web-vue';
 import AvatarImage from '@/components/image/AvatarImage.vue';
+import {getColor} from "@/utils/color-index";
 
 const {t} = useI18n();
-
 const appStore = useAppStore();
 
 interface statuEI {
@@ -58,7 +58,6 @@ getData(pagination);
 
 const getDataB = async () => {
   statuEs.value.searchStatus = true;
-  console.log(statuEs.value);
   const {data} = await getUserListManger({
     pageNum: pagination.value.current,
     pageSize: pagination.value.pageSize,
@@ -86,6 +85,14 @@ const IBan = (record) => {
 const handleCancel = () => {
   getData(pagination);
 };
+
+const getRolesNameList = computed(() => (roles) => {
+  const roleKeyList = [];
+  roles.forEach((item) => {
+    roleKeyList.push(item.name);
+  });
+  return roleKeyList;
+});
 </script>
 
 <template>
@@ -176,9 +183,20 @@ const handleCancel = () => {
         </a-table-column>
         <a-table-column
           :sortable="{ sortDirections: ['ascend', 'descend'] }"
-          :title="$t(`usercenter.manger.permissionName`)"
-          data-index="permissionName"
-        ></a-table-column>
+          :title="$t(`usercenter.manger.roles`)"
+          :width="240"
+        >
+          <template #cell="{ record }">
+            <a-tag
+              v-for="(role, index) of record.roles"
+              :key="index"
+              :color="getColor(role.sort)"
+              bordered
+            >{{ role.name }}
+            </a-tag
+            >
+          </template>
+        </a-table-column>
         <a-table-column :title="$t(`usercenter.manger.control`)">
           <template #cell="{ record }">
             <a-button @click="readAGroup(record)"

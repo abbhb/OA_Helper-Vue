@@ -24,6 +24,6 @@ export function useContextMenu(container) {
         // 移除window上的事件
     });
     return {x, y, showMenu};
-};
+}
 
-export default {useContextMenu}
+export default {useContextMenu};

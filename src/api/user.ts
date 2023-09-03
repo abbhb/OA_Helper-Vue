@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type {RouteRecordNormalized} from 'vue-router';
 import {UserState} from '@/store/modules/user/types';
-import {PageData} from "@/api/common";
+import {PageData} from '@/api/common';
 
 export interface LoginData {
   username: string;
@@ -16,6 +16,14 @@ export interface Password {
   rePassword: string;
   newPassword: string;
 }
+
+export interface Role {
+  id?: string;
+  name?: string;
+  key?: string;
+  sort?: number;
+}
+
 export interface UserInfo {
   username?: string;
   id?: string;
@@ -24,6 +32,9 @@ export interface UserInfo {
   studentId?: string;
   phone?: string;
   avatar?: string;
+  roles?: Role[];
+  deptId?: string;
+  deptName?: string;
 }
 
 export interface UserManger extends UserInfo {
@@ -32,8 +43,6 @@ export interface UserManger extends UserInfo {
   status?: number;
   email?: string;
   password?: string;
-  permission?: number;
-  permissionName?: string;
 }
 export interface LoginRes {
   token: string;
@@ -67,10 +76,18 @@ export function getUserCount() {
   return axios.get<number>('/api/user/user_count');
 }
 
+export function getRoleName(roles: string) {
+  return axios.get<string[]>('/api/user/role_name', {
+    params: {
+      role_key: roles,
+    },
+  });
+}
+
 export function getUserListManger(params: {
-  pageNum: number,
-  pageSize: number,
-  name?: string
+  pageNum: number;
+  pageSize: number;
+  name?: string;
 }) {
   return axios.get<PageData<UserManger[]>>('/api/user/user_manger', {params});
 }
