@@ -6,6 +6,7 @@ import {RouteRecordRaw, useRoute, useRouter} from 'vue-router';
 import {useAppStore} from '@/store';
 import {listenerRouteChange} from '@/utils/route-listener';
 import {openWindow, regexUrl} from '@/utils';
+import {Message} from '@arco-design/web-vue';
 import useMenuTree from './use-menu-tree';
 
 export default defineComponent({
@@ -31,11 +32,15 @@ export default defineComponent({
       const selectedKey = ref<string[]>([]);
 
       const goto = (item: RouteRecordRaw) => {
+        // 此item里的meta直接取决与后端返回
         // Open external link
         if (regexUrl.test(item.path)) {
-          openWindow(item.path);
-          selectedKey.value = [item.name as string];
-          return;
+          if (item.meta.frame) {
+            openWindow(item.path);
+            selectedKey.value = [item.name as string];
+            return;
+          }
+          Message.error('越权！该菜单禁止外链');
         }
         // Eliminate external link side effects
         const {show, activeMenu} = item.meta as RouteMeta;

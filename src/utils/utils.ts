@@ -9,4 +9,4 @@ export function setChildrenUndefined(data: any[]) {
     }
 }
 
-export default {setChildrenUndefined}
+export default {setChildrenUndefined};

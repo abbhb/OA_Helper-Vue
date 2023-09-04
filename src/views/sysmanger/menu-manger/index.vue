@@ -6,7 +6,7 @@ import {setChildrenUndefined} from '@/utils/utils';
 import {useAppStore} from '@/store';
 import FunctionalIcons from '@/components/icon/FunctionalIcons/index.vue';
 import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {Message} from "@arco-design/web-vue";
+import {Message} from '@arco-design/web-vue';
 
 interface statuEI {
   clickLoading: boolean;
@@ -178,17 +178,16 @@ const update = async (done) => {
     isShow: Number(form.isShow),
     status: Number(form.status),
     perms: form.perms,
-  })
+  });
   try {
     const {data} = await addMenu(forms.value);
-    Message.success(data)
+    Message.success(data);
     done(true);
   } catch (e) {
     done(false);
   }
 };
 const add = async (done) => {
-
   const forms = ref<MenuManger>({
     type: form.type,
     parentId: form.parentId,
@@ -205,7 +204,7 @@ const add = async (done) => {
   });
   try {
     const {data} = await addMenu(forms.value);
-    Message.success(data)
+    Message.success(data);
     done(true);
   } catch (e) {
     done(false);
@@ -223,22 +222,7 @@ const handelOk = (done) => {
       done(false);
       return;
     }
-    if (Number(form.id) === 0) {
-      Message.error('你不能创建根节点');
-      done(false);
-      return;
-    }
     if (form.locale === '') {
-      Message.error('请填写locale字段');
-      done(false);
-      return;
-    }
-    if (form.name === '') {
-      Message.error('name');
-      done(false);
-      return;
-    }
-    if (form.path === '') {
       Message.error('请填写locale字段');
       done(false);
       return;
@@ -452,17 +436,14 @@ const handelOk = (done) => {
               label-col-flex="100px"
             >
               <a-radio-group v-model:model-value="form.type">
-                <a-radio value="M">{{
-                    $t('syscenter.menu-manger.menu.form.type.M')
-                  }}
+                <a-radio value="M"
+                >{{ $t('syscenter.menu-manger.menu.form.type.M') }}
                 </a-radio>
-                <a-radio value="C">{{
-                    $t('syscenter.menu-manger.menu.form.type.C')
-                  }}
+                <a-radio value="C"
+                >{{ $t('syscenter.menu-manger.menu.form.type.C') }}
                 </a-radio>
-                <a-radio value="F">{{
-                    $t('syscenter.menu-manger.menu.form.type.F')
-                  }}
+                <a-radio value="F"
+                >{{ $t('syscenter.menu-manger.menu.form.type.F') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -492,8 +473,7 @@ const handelOk = (done) => {
                     :icon="icon"
                     size="18"
                     style="margin-right: 10px"
-                  ></functional-icons
-                  >
+                  ></functional-icons>
                   {{ icon }}
                 </a-option>
                 <template #prefix>
@@ -595,13 +575,11 @@ const handelOk = (done) => {
               label-col-flex="100px"
             >
               <a-radio-group v-model:model-value="form.isFrame">
-                <a-radio :value="1">{{
-                    $t('syscenter.menu-manger.menu.form.isFrame.1')
-                  }}
+                <a-radio :value="1"
+                >{{ $t('syscenter.menu-manger.menu.form.isFrame.1') }}
                 </a-radio>
-                <a-radio :value="0">{{
-                    $t('syscenter.menu-manger.menu.form.isFrame.0')
-                  }}
+                <a-radio :value="0"
+                >{{ $t('syscenter.menu-manger.menu.form.isFrame.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -615,13 +593,11 @@ const handelOk = (done) => {
               label-col-flex="80px"
             >
               <a-radio-group v-model:model-value="form.isCache">
-                <a-radio :value="1">{{
-                    $t('syscenter.menu-manger.menu.form.isCache.1')
-                  }}
+                <a-radio :value="1"
+                >{{ $t('syscenter.menu-manger.menu.form.isCache.1') }}
                 </a-radio>
-                <a-radio :value="0">{{
-                    $t('syscenter.menu-manger.menu.form.isCache.0')
-                  }}
+                <a-radio :value="0"
+                >{{ $t('syscenter.menu-manger.menu.form.isCache.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -637,13 +613,11 @@ const handelOk = (done) => {
               label-col-flex="100px"
             >
               <a-radio-group v-model:model-value="form.isShow">
-                <a-radio :value="1">{{
-                    $t('syscenter.menu-manger.menu.form.isShow.1')
-                  }}
+                <a-radio :value="1"
+                >{{ $t('syscenter.menu-manger.menu.form.isShow.1') }}
                 </a-radio>
-                <a-radio :value="0">{{
-                    $t('syscenter.menu-manger.menu.form.isShow.0')
-                  }}
+                <a-radio :value="0"
+                >{{ $t('syscenter.menu-manger.menu.form.isShow.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -656,13 +630,11 @@ const handelOk = (done) => {
               label-col-flex="80px"
             >
               <a-radio-group v-model:model-value="form.status">
-                <a-radio :value="1">{{
-                    $t('syscenter.menu-manger.menu.form.status.1')
-                  }}
+                <a-radio :value="1"
+                >{{ $t('syscenter.menu-manger.menu.form.status.1') }}
                 </a-radio>
-                <a-radio :value="0">{{
-                    $t('syscenter.menu-manger.menu.form.status.0')
-                  }}
+                <a-radio :value="0"
+                >{{ $t('syscenter.menu-manger.menu.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>

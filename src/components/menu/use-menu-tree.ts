@@ -15,7 +15,7 @@ export default function useMenuTree() {
     return appClientMenus;
   });
   const menuTree = computed(() => {
-    const copyRouter = cloneDeep(appRoute.value) as RouteRecordNormalized[];
+    let copyRouter = cloneDeep(appRoute.value) as RouteRecordNormalized[];
     copyRouter.sort((a: RouteRecordNormalized, b: RouteRecordNormalized) => {
       return (a.meta.order || 0) - (b.meta.order || 0);
     });
@@ -57,11 +57,14 @@ export default function useMenuTree() {
         if (element.meta?.hideInMenu === false) {
           return element;
         }
-
         return null;
       });
       return collector.filter(Boolean);
     }
+
+    copyRouter = copyRouter.filter(
+        (x) => x.meta?.show === true
+    );
     return travel(copyRouter, 0);
   });
 

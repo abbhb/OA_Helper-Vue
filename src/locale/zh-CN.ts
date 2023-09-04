@@ -35,6 +35,7 @@ export default {
   'menu.arcoWebsite': 'Arco Design',
   'menu.faq': '常见问题',
   'menu.fileBrowser': '文件服务器',
+    'menu.QuickRouter': '导航页',
   'navbar.docs': '文档中心',
   'navbar.action.locale': '切换为中文',
     'footer.company': 'AI_EN Helper',

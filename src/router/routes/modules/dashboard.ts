@@ -1,6 +1,7 @@
-import { DEFAULT_LAYOUT } from '../base';
-import { AppRouteRecordRaw } from '../types';
+import {DEFAULT_LAYOUT} from '../base';
+import {AppRouteRecordRaw} from '../types';
 
+// @ts-ignore
 const DASHBOARD: AppRouteRecordRaw = {
   path: '/dashboard',
   name: 'dashboard',
@@ -31,7 +32,6 @@ const DASHBOARD: AppRouteRecordRaw = {
               locale: 'menu.dashboard.printer',
               requiresAuth: true,
               roles: ['*'],
-
           },
       },
       {
