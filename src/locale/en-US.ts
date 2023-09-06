@@ -9,8 +9,9 @@ import localeUserGroup from '@/views/sysmanger/group/locale/en-US';
 
 import localePrinter from '@/views/dashboard/printer/locale/en-US';
 import localeKeep from '@/views/dashboard/keep/locale/en-US';
-import localeSysUserManger from '@/views/sysmanger/user-manger/locale/zh-CN';
-import localeSysMenuManger from '@/views/sysmanger/menu-manger/locale/zh-CN';
+import localeSysUserManger from '@/views/sysmanger/user-manger/locale/en-US';
+import localeSysMenuManger from '@/views/sysmanger/menu-manger/locale/en-US';
+import localeSysRoleManger from '@/views/sysmanger/role-manger/locale/en-US';
 
 import localeSettings from './en-US/settings';
 
@@ -49,4 +50,5 @@ export default {
     ...localeUserGroup,
     ...localeSysUserManger,
     ...localeSysMenuManger,
+    ...localeSysRoleManger,
 };

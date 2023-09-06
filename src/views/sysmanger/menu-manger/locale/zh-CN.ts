@@ -29,7 +29,7 @@ export default {
   'syscenter.menu-manger.menu.form.locale': '菜单名称',
   'syscenter.menu-manger.menu.form.perms': '权限字符',
   'syscenter.menu-manger.menu.form.tip.perms': '请输入权限字符',
-  'syscenter.menu-manger.menu.form.path': '是否外链',
+    'syscenter.menu-manger.menu.form.path': '路由地址',
   'syscenter.menu-manger.menu.form.isCache': '是否缓存',
   'syscenter.menu-manger.menu.form.isShow': '显示状态',
   'syscenter.menu-manger.menu.form.status': '菜单状态',

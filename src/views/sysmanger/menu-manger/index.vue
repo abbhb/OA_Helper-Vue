@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {computed, h, reactive, ref} from 'vue';
 import {getColor} from '@/utils/color-index';
-import {addMenu, menuList, MenuManger} from '@/api/menu';
+import {addMenu, deleteMenu, menuList, MenuManger, updateMenu} from '@/api/menu';
 import {setChildrenUndefined} from '@/utils/utils';
 import {useAppStore} from '@/store';
 import FunctionalIcons from '@/components/icon/FunctionalIcons/index.vue';
@@ -150,15 +150,21 @@ const editHandel = (record) => {
   statuEs.value.model = true;
 };
 const addHandel = (record) => {
+  if (record) {
+    const nextType = getTypeNext(record);
+    form.type = nextType;
+  } else {
+    form.type = 'M';
+  }
   statuEs.value.modelTitle = '添加菜单';
   statuEs.value.modelType = 'add';
-  const nextType = getTypeNext(record);
-  form.type = nextType;
   form.parentId = record.id;
   statuEs.value.model = true;
 };
-const delHandel = (record) => {
-  console.log(record);
+const delHandel = async (record) => {
+  const {data} = await deleteMenu(record.id);
+  Message.success(data);
+  initData();
 };
 const handleCancel = () => {
   cleanForm();
@@ -180,9 +186,10 @@ const update = async (done) => {
     perms: form.perms,
   });
   try {
-    const {data} = await addMenu(forms.value);
+    const {data} = await updateMenu(forms.value);
     Message.success(data);
     done(true);
+    initData();
   } catch (e) {
     done(false);
   }
@@ -206,6 +213,7 @@ const add = async (done) => {
     const {data} = await addMenu(forms.value);
     Message.success(data);
     done(true);
+    initData();
   } catch (e) {
     done(false);
   }
@@ -234,11 +242,6 @@ const handelOk = (done) => {
       done(false);
       return;
     }
-    if (Number(form.parentId) === 0) {
-      Message.error('你不能创建根节点');
-      done(false);
-      return;
-    }
     if (form.locale === '') {
       Message.error('请填写locale字段');
       done(false);
@@ -263,6 +266,10 @@ const handelOk = (done) => {
 
 <template>
   <a-card>
+    <a-alert banner center
+    >注意:用户侧的菜单的更新只会在重新登录后！！！
+    </a-alert
+    >
     <a-space>
       <a-table
         :bordered="false"
@@ -299,7 +306,7 @@ const handelOk = (done) => {
         <template #columns>
           <a-space direction="vertical">
             <a-space direction="vertical">
-              <a-button :loading="statuEs.clickLoading" type="primary">
+              <a-button :loading="statuEs.clickLoading" type="primary" @click="addHandel">
                 {{ $t('syscenter.menu-manger.menu.control.add') }}
               </a-button>
             </a-space>
