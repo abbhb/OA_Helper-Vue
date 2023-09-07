@@ -5,7 +5,7 @@ import {addrole, deleterole, roleList, RoleManger, updaterole,} from '@/api/role
 import {useAppStore} from '@/store';
 import {IconSearch} from '@arco-design/web-vue/es/icon';
 import {Message} from '@arco-design/web-vue';
-import {MenuManger} from "@/api/menu";
+import {MenuManger} from '@/api/menu';
 
 interface statuEI {
   clickLoading: boolean;
@@ -85,7 +85,7 @@ const tableDataToTreeData = (table: any) => {
 const getAllId = (yuan) => {
   if (yuan) {
     for (let i = 0; i < yuan.length; i += 1) {
-      allExpandedKeys.value.push(yuan[i].id)
+      allExpandedKeys.value.push(yuan[i].id);
       if (yuan[i].children) {
         if (yuan[i].children.length > 0) {
           getAllId(yuan[i].children);
@@ -150,6 +150,7 @@ const update = async (done) => {
     roleSort: form.sort,
     status: Number(form.status),
     roleKey: form.key,
+    haveKey: expandedKeys.value,
   });
   try {
     const {data} = await updaterole(forms.value);
@@ -166,7 +167,7 @@ const add = async (done) => {
     roleSort: form.sort,
     status: Number(form.status),
     roleKey: form.key,
-    haveKey: expandedKeys.value
+    haveKey: expandedKeys.value,
   });
   try {
     const {data} = await addrole(forms.value);
@@ -189,7 +190,9 @@ const toggleChecked = () => {
   checkedKeys.value = checkedKeys?.value.length ? [] : allCheckedKeys.value;
 };
 const toggleExpanded = () => {
-  expandedKeys.value = expandedKeys?.value.length ? [] : allExpandedKeys.value;
+  expandedKeys.value = expandedKeys?.value.length
+    ? []
+    : allExpandedKeys.value;
 };
 const onSelect = (newSelectedKeys, event) => {
   // console.log('select: ', newSelectedKeys, event);
@@ -206,8 +209,7 @@ const onExpand = (newExpandedKeys, event) => {
   <a-card>
     <a-alert banner center
     >注意:用户侧的角色的更新只会在重新登录后！！！
-    </a-alert
-    >
+    </a-alert>
     <a-space>
       <a-table
         :bordered="false"
@@ -402,7 +404,14 @@ const onExpand = (newExpandedKeys, event) => {
                 <a-button type="primary" @click="toggleExpanded">
                   {{ expandedKeys?.length ? 'fold' : 'unfold' }}
                 </a-button>
-                <a-button type="primary" @click="form.fuziliandong?form.fuziliandong = false:form.fuziliandong = true;">
+                <a-button
+                  type="primary"
+                  @click="
+                    form.fuziliandong
+                      ? (form.fuziliandong = false)
+                      : (form.fuziliandong = true)
+                  "
+                >
                   {{ form?.fuziliandong ? '父子节点不关联' : '父子节点关联' }}
                 </a-button>
               </a-button-group>
@@ -413,11 +422,11 @@ const onExpand = (newExpandedKeys, event) => {
                 :check-strictly="!form.fuziliandong"
                 :checkable="true"
                 :data="treeData"
-                :fieldNames="{
+                :field-names="{
                   key: 'id',
                   title: 'locale',
                   children: 'children',
-                  icon: 'customIcon'
+                  icon: 'customIcon',
                 }"
                 @check="onCheck"
                 @expand="onExpand"
