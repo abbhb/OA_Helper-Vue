@@ -150,7 +150,7 @@ const update = async (done) => {
     roleSort: form.sort,
     status: Number(form.status),
     roleKey: form.key,
-    haveKey: expandedKeys.value,
+    haveKey: checkedKeys.value,
   });
   try {
     const {data} = await updaterole(forms.value);
@@ -167,7 +167,7 @@ const add = async (done) => {
     roleSort: form.sort,
     status: Number(form.status),
     roleKey: form.key,
-    haveKey: expandedKeys.value,
+    haveKey: checkedKeys.value,
   });
   try {
     const {data} = await addrole(forms.value);

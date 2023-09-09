@@ -53,6 +53,16 @@ const USERCENTER: AppRouteRecordRaw = {
                 roles: ['superadmin', 'lsadmin'],
             },
         },
+        {
+            path: 'dept-manger',
+            name: 'DeptManger',
+            component: () => import('@/views/sysmanger/dept-manger/index.vue'),
+            meta: {
+                locale: 'menu.sysmanger.DeptManger',
+                requiresAuth: true,
+                roles: ['superadmin', 'lsadmin'],
+            },
+        },
     ],
 };
 

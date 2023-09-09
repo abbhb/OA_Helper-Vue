@@ -16,7 +16,7 @@ export default {
   'syscenter.role-manger.role.form.sort': '显示排序',
   'syscenter.role-manger.role.form.tip.sort': '请选择或输入显示排序',
   'syscenter.role-manger.role.form.tip.name': '请输入角色名称',
-  'syscenter.role-manger.role.form.key.help': "'PermissionCheck(role = {\"superadmin\", \"lsadmin\"})'",
+  'syscenter.role-manger.role.form.key.help': "'@PermissionCheck(role = {\"superadmin\", \"lsadmin\"})'",
   'syscenter.role-manger.role.form.name': '角色名称',
   'syscenter.role-manger.role.form.key': '角色Key',
   'syscenter.role-manger.role.form.status': '角色状态',

@@ -12,7 +12,7 @@ import localeKeep from '@/views/dashboard/keep/locale/en-US';
 import localeSysUserManger from '@/views/sysmanger/user-manger/locale/en-US';
 import localeSysMenuManger from '@/views/sysmanger/menu-manger/locale/en-US';
 import localeSysRoleManger from '@/views/sysmanger/role-manger/locale/en-US';
-
+import localeSysDeptManger from '@/views/sysmanger/dept-manger/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
@@ -25,6 +25,7 @@ export default {
     'menu.sysmanger.usercenter': 'User-Center',
     'menu.sysmanger.MenuManger': 'Menu-Manger',
     'menu.sysmanger.UserManger': 'User-Manger',
+    'menu.sysmanger.DeptManger': 'Dpet-Manger',
     'menu.server.monitor': 'Monitor-Server',
     'menu.list': 'List',
     'menu.result': 'Result',
@@ -51,4 +52,5 @@ export default {
     ...localeSysUserManger,
     ...localeSysMenuManger,
     ...localeSysRoleManger,
+    ...localeSysDeptManger,
 };
