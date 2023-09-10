@@ -1,11 +1,7 @@
+import {Role} from "@/api/role";
+
 export type StatusType = 1 | 0;
 
-interface Role {
-  id?: string;
-  name?: string;
-  key?: string;
-  sort?: number;
-}
 
 
 export interface UserState {

@@ -26,6 +26,7 @@ export default {
   'syscenter.dept-manger.dept.form.tip.leader': '请输入负责人名称',
   'syscenter.dept-manger.dept.form.status': '部门状态',
   'syscenter.dept-manger.dept.form.status.1': '正常',
+  'syscenter.dept-manger.dept.role': '角色',
   'syscenter.dept-manger.dept.form.status.0': '停用',
   'syscenter.dept-manger.dept.form.phone': '负责人电话',
   'syscenter.dept-manger.dept.form.tip.phone': '请输入负责人电话',

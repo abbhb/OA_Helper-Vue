@@ -32,8 +32,8 @@ const useUserStore = defineStore('user', {
     roles: [
       {
         id: '3',
-        name: '内部用户',
-        key: 'roomuser',
+        roleName: '内部用户',
+        roleKey: 'roomuser',
       },
     ],
   }),

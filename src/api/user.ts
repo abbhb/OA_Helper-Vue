@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {UserState} from '@/store/modules/user/types';
 import {PageData} from '@/api/common';
+import {Role} from "@/api/role";
 
 export interface LoginData {
   username: string;
@@ -16,12 +17,6 @@ export interface Password {
   newPassword: string;
 }
 
-export interface Role {
-  id?: string;
-  name?: string;
-  key?: string;
-  sort?: number;
-}
 
 export interface UserInfo {
   username?: string;
@@ -94,4 +89,3 @@ export function getUserListManger(params: {
 export function getUserPassword() {
   return axios.get<number>('/api/user/user_password');
 }
-

@@ -6,6 +6,7 @@ import {useAppStore} from '@/store';
 import {IconSearch} from '@arco-design/web-vue/es/icon';
 import {Message} from '@arco-design/web-vue';
 import {addDept, deleteDept, deptList, DeptManger, updateDept,} from '@/api/dept';
+import {Role, roleTagList} from "@/api/role";
 
 interface statuEI {
   clickLoading: boolean;
@@ -29,20 +30,13 @@ const form = reactive({
   phone: '',
   email: '',
   status: 1,
+  roles: []
 });
 
-const iconList = ref<string[]>([
-  'icon-apps',
-  'icon-check-circle',
-  'icon-clock-circle',
-  'icon-info',
-  'icon-question-circle',
-  'icon-heart-fill',
-]);
 const appStore = useAppStore();
 const tableData = ref<DeptManger[]>([]);
 const selectTree = ref([]);
-
+const rolesStore = ref<Role[]>([]);
 const buildSelectTree = (tabel: any) => {
   selectTree.value = [];
   tabel.forEach((item) => {
@@ -50,6 +44,10 @@ const buildSelectTree = (tabel: any) => {
   });
 };
 
+const initSelect = async () => {
+  const {data} = await roleTagList();
+  rolesStore.value = data;
+}
 const initData = async () => {
   statuEs.value.clickLoading = true;
   const {data} = await deptList();
@@ -59,6 +57,7 @@ const initData = async () => {
   statuEs.value.clickLoading = false;
 };
 initData();
+initSelect();
 
 const stateChange = computed(() => (status: any) => {
   return status === 1 || status === '1' ? '正常' : '停用';
@@ -73,6 +72,7 @@ const cleanForm = () => {
   form.phone = '';
   form.email = '';
   form.status = 1;
+  form.roles = [];
 };
 
 const editHandel = (record) => {
@@ -86,6 +86,13 @@ const editHandel = (record) => {
   form.deptName = record.deptName;
   form.orderNum = record.orderNum;
   form.leader = record.leader;
+  const sadas = [];
+  if (record.roles) {
+    record.roles.forEach(item => {
+      sadas.push(item.id);
+    });
+  }
+  form.roles = sadas;
   statuEs.value.model = true;
 };
 const addHandel = (record) => {
@@ -107,6 +114,12 @@ const handleCancel = () => {
   cleanForm();
 };
 const update = async (done) => {
+  const dasf = ref<Role[]>([]);
+  if (form.roles) {
+    form.roles.forEach(item => {
+      dasf.value.push({id: item})
+    })
+  }
   const forms = ref<DeptManger>({
     id: form.id,
     parentId: form.parentId,
@@ -115,6 +128,7 @@ const update = async (done) => {
     orderNum: form.orderNum,
     phone: form.phone,
     email: form.email,
+    roles: dasf.value,
     status: Number(form.status),
   });
   try {
@@ -127,6 +141,12 @@ const update = async (done) => {
   }
 };
 const add = async (done) => {
+  const dasf = ref<Role[]>([]);
+  if (form.roles) {
+    form.roles.forEach(item => {
+      dasf.value.push({id: item})
+    })
+  }
   const forms = ref<DeptManger>({
     parentId: form.parentId,
     leader: form.leader,
@@ -134,6 +154,7 @@ const add = async (done) => {
     orderNum: form.orderNum,
     phone: form.phone,
     email: form.email,
+    roles: dasf.value,
     status: Number(form.status),
   });
   try {
@@ -252,6 +273,22 @@ const handelOk = (done) => {
             data-index="email"
           ></a-table-column>
           <a-table-column
+            :title="$t(`syscenter.dept-manger.dept.role`)"
+            :tooltip="{ position: 'top' }"
+            :width="200"
+          >
+            <template #cell="{ record }">
+              <a-tag
+                v-for="(role, index) of record.roles"
+                :key="index"
+                :color="getColor(role.roleSort)"
+                bordered
+                style="margin-left: 3px;"
+              >{{ role.roleName }}
+              </a-tag>
+            </template>
+          </a-table-column>
+          <a-table-column
             :title="$t(`syscenter.dept-manger.dept.status`)"
             :width="130"
           >
@@ -304,7 +341,7 @@ const handelOk = (done) => {
         <a-row :gutter="24">
           <a-col :span="24">
             <a-form-item
-              v-if="String(form.id)!=='1'"
+              v-if="String(form.id) !== '1'"
               :label="$t('syscenter.dept-manger.dept.form.parentId')"
               field="parentId"
               label-col-flex="100px"
@@ -399,6 +436,14 @@ const handelOk = (done) => {
 
         <a-row :gutter="28">
           <a-col :span="14">
+            <a-select v-model:model-value="form.roles" :default-value="[]" :scrollbar="true" :style="{width:'360px'}"
+                      multiple
+                      placeholder="Please select role">
+              <a-option v-for="role in rolesStore" :key="role.id" :tag-props="{color:getColor(role.roleSort)}"
+                        :value="role.id">
+                {{ role.roleName }}
+              </a-option>
+            </a-select>
           </a-col>
           <a-col :span="10">
             <a-form-item

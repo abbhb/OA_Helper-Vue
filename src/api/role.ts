@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {MenuManger} from "@/api/menu";
+import {MenuManger} from '@/api/menu';
 
 export interface RoleManger {
   id?: string;
@@ -15,6 +15,13 @@ export interface RoleManger {
   haveKey?: string[];
 }
 
+export interface Role {
+  id?: string;
+  roleName?: string;
+  roleKey?: string;
+  roleSort?: number;
+}
+
 export interface RoleRoot {
   mangers?: RoleManger[];
   menuMangerList?: MenuManger[];
@@ -22,6 +29,10 @@ export interface RoleRoot {
 
 export function roleList() {
   return axios.post<RoleRoot>('/api/role/list');
+}
+
+export function roleTagList() {
+  return axios.get<Role[]>('/api/role/list-tag');
 }
 
 export function updaterole(data: RoleManger) {

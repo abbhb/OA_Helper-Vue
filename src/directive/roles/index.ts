@@ -4,10 +4,10 @@ import {useUserStore} from '@/store';
 function checkRoles(el: HTMLElement, binding: DirectiveBinding) {
   const { value } = binding;
   const userStore = useUserStore();
-  const {roles} = userStore;
+    const {roles} = userStore;
   const roleKeyList = [];
   roles.forEach((item) => {
-    roleKeyList.push(item.key);
+      roleKeyList.push(item.roleKey);
   });
   if (Array.isArray(value)) {
     if (value.length > 0) {

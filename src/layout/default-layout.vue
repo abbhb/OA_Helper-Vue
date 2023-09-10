@@ -45,18 +45,17 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed, watch, provide, onMounted } from 'vue';
-  import { useRouter, useRoute } from 'vue-router';
-  import { useAppStore, useUserStore } from '@/store';
-  import NavBar from '@/components/navbar/index.vue';
-  import Menu from '@/components/menu/index.vue';
-  import Footer from '@/components/footer/index.vue';
-  import TabBar from '@/components/tab-bar/index.vue';
-  import usePermission from '@/hooks/permission';
-  import useResponsive from '@/hooks/responsive';
-  import PageLayout from './page-layout.vue';
+import {computed, onMounted, provide, ref, watch} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useAppStore, useUserStore} from '@/store';
+import NavBar from '@/components/navbar/index.vue';
+import Menu from '@/components/menu/index.vue';
+import TabBar from '@/components/tab-bar/index.vue';
+import usePermission from '@/hooks/permission';
+import useResponsive from '@/hooks/responsive';
+import PageLayout from './page-layout.vue';
 
-  const isInit = ref(false);
+const isInit = ref(false);
   const appStore = useAppStore();
   const userStore = useUserStore();
   const router = useRouter();
@@ -87,7 +86,7 @@
     appStore.updateSettings({ menuCollapse: val });
   };
   watch(
-    () => userStore.role,
+    () => userStore.roles,
     (roleValue) => {
       if (roleValue && !permission.accessRouter(route))
         router.push({ name: 'notFound' });

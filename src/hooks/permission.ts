@@ -7,7 +7,7 @@ export default function usePermission() {
     accessRouter(route: RouteLocationNormalized | RouteRecordRaw) {
       const roleKeyList = [];
       userStore.roles.forEach((item) => {
-        roleKeyList.push(item.key);
+        roleKeyList.push(item.roleKey);
       });
       return (
         !route.meta?.requiresAuth ||
