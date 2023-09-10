@@ -2,18 +2,13 @@ import axios from 'axios';
 
 export interface DeptManger {
     id?: string;
-    name?: string;
-    locale?: string;
     parentId?: string;
-    sort?: number;
-    path?: string;
-    isFrame?: number;
-    isCache?: number;
-    type?: string;
-    isShow?: number;
     status?: number;
-    perms?: string;
-    icon?: string;
+    leader?: string;
+    deptName?: string;
+    orderNum?: number;
+    phone?: string;
+    email?: string;
     createUser?: string;
     createUserName?: string;
     createTime?: string;
