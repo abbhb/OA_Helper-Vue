@@ -5,7 +5,16 @@ import Manger from '@/views/sysmanger/user-manger/components/Manger.vue';
 <template>
   <div class="container">
     <div class="left-side">
-      <Manger/>
+      <a-tree
+        :data="[]"
+        :default-selected-keys="[]"
+        :show-line="true"
+      />
+      <a-alert banner center
+      >注意:此处的角色只显示直接赋予用户的角色，不包含继承自部门的角色!
+      </a-alert>
+      <Manger style="margin-top: 5px"
+      />
     </div>
   </div>
 </template>

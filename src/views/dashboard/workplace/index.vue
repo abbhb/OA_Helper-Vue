@@ -3,8 +3,13 @@
     <div class="left-side">
       <div class="panel">
         <ContextMenu
-          :menu="[{ label: '刷新',icon:'icon-refresh' },{ label: '刷新2',icon:'icon-refresh' },{ label: '刷新3',icon:'icon-refresh' }]"
-          @select="selectMenu">
+          :menu="[
+            { label: '刷新', icon: 'icon-refresh' },
+            { label: '刷新2', icon: 'icon-refresh' },
+            { label: '刷新3', icon: 'icon-refresh' },
+          ]"
+          @select="selectMenu"
+        >
           <Banner/>
         </ContextMenu>
         <DataPanel />
@@ -18,7 +23,7 @@
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <IndexImage />
+          <IndexImage @alert-some="StatusTh.indexImageModelStatus = true"/>
         </a-grid-item>
       </a-grid>
     </div>
@@ -42,6 +47,18 @@
         </a-grid-item>
       </a-grid>
     </div>
+    <a-modal>
+      <a-modal
+        v-model:visible="StatusTh.indexImageModelStatus"
+        :draggable="false"
+        :fullscreen="appStore.modelFullscreen"
+        :width="720"
+        title="图片公告"
+        unmount-on-close
+      >
+        <IndexImage/>
+      </a-modal>
+    </a-modal>
   </div>
 </template>
 
@@ -49,6 +66,8 @@
 import ContextMenu from '@/components/context-menu/index.vue';
 import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
 import {Message} from '@arco-design/web-vue';
+import {ref} from 'vue';
+import {useAppStore} from "@/store";
 import Banner from './components/banner.vue';
 import DataPanel from './components/data-panel.vue';
 import PopularContent from './components/popular-content.vue';
@@ -58,9 +77,16 @@ import Announcement from './components/announcement.vue';
 import Carousel from './components/carousel.vue';
 import Docs from './components/docs.vue';
 
+const appStore = useAppStore();
 const selectMenu = (item) => {
   Message.info(item.label);
 };
+
+interface StatusT {
+  indexImageModelStatus: boolean;
+}
+
+const StatusTh = ref<StatusT>({indexImageModelStatus: false});
 </script>
 
 <script lang="ts">

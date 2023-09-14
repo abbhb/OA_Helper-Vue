@@ -33,12 +33,15 @@ const getavatar = async () => {
   if (props.avatar.includes('data:image')) {
     // 直接解析
     image.value = props.avatar;
+    return;
   }
   if (props.avatar.includes('http')) {
     image.value = props.avatar;
+    return;
   }
   if (!props.avatar) {
     image.value = '';
+    return;
   }
   const {data} = await getAllImageUrl({key: props.avatar});
   if (!data) {
@@ -53,9 +56,8 @@ getavatar();
 </script>
 
 <template>
-  <a-avatar v-if="!types" :image-url="image" @error="error">{{
-      text
-    }}
+  <a-avatar v-if="!types" :image-url="image" @error="error"
+  >{{ text }}
   </a-avatar>
   <a-avatar
     v-else
@@ -64,8 +66,7 @@ getavatar();
       backgroundColor: '#14a9f8',
     }"
   >{{ text }}
-  </a-avatar
-  >
+  </a-avatar>
 </template>
 
 <style lang="less" scoped></style>

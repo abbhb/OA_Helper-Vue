@@ -24,6 +24,10 @@ export function deptList() {
   return axios.post<DeptManger[]>('/api/dept/list');
 }
 
+export function deptListTree() {
+    return axios.get<DeptManger[]>('/api/dept/list-only-tree');
+}
+
 export function updateDept(data: DeptManger) {
   return axios.put<string>('/api/dept/update', data);
 }

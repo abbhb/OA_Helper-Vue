@@ -1,14 +1,14 @@
 <template>
   <a-spin :loading="loading" style="width: 100%">
-    <a-card
-      class="general-card"
-      :header-style="{ paddingBottom: '0' }"
-    >
+    <a-card :header-style="{ paddingBottom: '0' }" class="general-card">
       <template #title>
         {{ $t('workplace.indexImage') }}
       </template>
       <template #extra>
-        <a-link>{{ $t('workplace.viewMore') }}</a-link>
+        <a-link @click="emit('alertSome')">{{
+            $t('workplace.viewMore')
+          }}
+        </a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
         <a-radio-group
@@ -27,31 +27,32 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import useLoading from '@/hooks/loading';
-  import {queryIndexImageLabel, queryLabelIndexImage} from '@/api/dashboard';
-  import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
+import {defineEmits, ref} from 'vue';
+import useLoading from '@/hooks/loading';
+import {queryIndexImageLabel, queryLabelIndexImage} from '@/api/dashboard';
+import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
 
+const emit = defineEmits(['alertSome']);
   const type = ref('text');
   const { loading, setLoading } = useLoading();
   const labelList = ref<string[]>();
   const imageList = ref([]);
-  const fetchDate1 = async (label: string)=>{
-      try {
-          setLoading(true)
-          const { data } = await queryLabelIndexImage({ label });
-          imageList.value = data;
-      }catch (err) {
-          // you can report use errorHandler or other
-      } finally {
-          setLoading(false);
-      }
+const fetchDate1 = async (label: string) => {
+  try {
+    setLoading(true);
+    const {data} = await queryLabelIndexImage({label});
+    imageList.value = data;
+  } catch (err) {
+    // you can report use errorHandler or other
+  } finally {
+    setLoading(false);
   }
+};
   const fetchData = async () => {
     try {
       const { data } = await queryIndexImageLabel();
       labelList.value = data;
-      fetchDate1(data[0])
+      fetchDate1(data[0]);
     } catch (err) {
       // you can report use errorHandler or other
     }
@@ -62,7 +63,6 @@
     fetchDate1(contentType);
     console.log(contentType);
   };
-
 </script>
 
 <style scoped lang="less">

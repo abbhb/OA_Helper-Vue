@@ -54,6 +54,10 @@ export function loginbytoken() {
 export function updataUserInfo(data: UserInfo) {
   return axios.put<string>('/api/user/update', data);
 }
+
+export function updataUserByAdmin(data: UserManger) {
+  return axios.put<string>('/api/user/updateByAdmin', data);
+}
 export function setPassword(data: Password) {
   return axios.put<string>('/api/user/setPassword', data);
 }
@@ -82,6 +86,7 @@ export function getUserListManger(params: {
   pageNum: number;
   pageSize: number;
   name?: string;
+  deptId?: string;
 }) {
   return axios.get<PageData<UserManger[]>>('/api/user/user_manger', {params});
 }

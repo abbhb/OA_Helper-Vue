@@ -6,7 +6,7 @@ import {useAppStore} from '@/store';
 import {IconSearch} from '@arco-design/web-vue/es/icon';
 import {Message} from '@arco-design/web-vue';
 import {addDept, deleteDept, deptList, DeptManger, updateDept,} from '@/api/dept';
-import {Role, roleTagList} from "@/api/role";
+import {Role, roleTagList} from '@/api/role';
 
 interface statuEI {
   clickLoading: boolean;
@@ -30,7 +30,7 @@ const form = reactive({
   phone: '',
   email: '',
   status: 1,
-  roles: []
+  roles: [],
 });
 
 const appStore = useAppStore();
@@ -47,7 +47,7 @@ const buildSelectTree = (tabel: any) => {
 const initSelect = async () => {
   const {data} = await roleTagList();
   rolesStore.value = data;
-}
+};
 const initData = async () => {
   statuEs.value.clickLoading = true;
   const {data} = await deptList();
@@ -88,7 +88,7 @@ const editHandel = (record) => {
   form.leader = record.leader;
   const sadas = [];
   if (record.roles) {
-    record.roles.forEach(item => {
+    record.roles.forEach((item) => {
       sadas.push(item.id);
     });
   }
@@ -116,9 +116,9 @@ const handleCancel = () => {
 const update = async (done) => {
   const dasf = ref<Role[]>([]);
   if (form.roles) {
-    form.roles.forEach(item => {
-      dasf.value.push({id: item})
-    })
+    form.roles.forEach((item) => {
+      dasf.value.push({id: item});
+    });
   }
   const forms = ref<DeptManger>({
     id: form.id,
@@ -143,9 +143,9 @@ const update = async (done) => {
 const add = async (done) => {
   const dasf = ref<Role[]>([]);
   if (form.roles) {
-    form.roles.forEach(item => {
-      dasf.value.push({id: item})
-    })
+    form.roles.forEach((item) => {
+      dasf.value.push({id: item});
+    });
   }
   const forms = ref<DeptManger>({
     parentId: form.parentId,
@@ -283,7 +283,7 @@ const handelOk = (done) => {
                 :key="index"
                 :color="getColor(role.roleSort)"
                 bordered
-                style="margin-left: 3px;"
+                style="margin-left: 3px"
               >{{ role.roleName }}
               </a-tag>
             </template>
@@ -436,11 +436,20 @@ const handelOk = (done) => {
 
         <a-row :gutter="28">
           <a-col :span="14">
-            <a-select v-model:model-value="form.roles" :default-value="[]" :scrollbar="true" :style="{width:'360px'}"
-                      multiple
-                      placeholder="Please select role">
-              <a-option v-for="role in rolesStore" :key="role.id" :tag-props="{color:getColor(role.roleSort)}"
-                        :value="role.id">
+            <a-select
+              v-model:model-value="form.roles"
+              :default-value="[]"
+              :scrollbar="true"
+              :style="{ width: '360px' }"
+              multiple
+              placeholder="Please select role"
+            >
+              <a-option
+                v-for="role in rolesStore"
+                :key="role.id"
+                :tag-props="{ color: getColor(role.roleSort) }"
+                :value="role.id"
+              >
                 {{ role.roleName }}
               </a-option>
             </a-select>
