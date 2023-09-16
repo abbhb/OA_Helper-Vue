@@ -18,7 +18,7 @@
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <PopularContent />
+          <PopularContent @alert-some="StatusTh.popularContentStatus = true"/>
         </a-grid-item>
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
@@ -47,17 +47,23 @@
         </a-grid-item>
       </a-grid>
     </div>
-    <a-modal>
-      <a-modal
-        v-model:visible="StatusTh.indexImageModelStatus"
-        :draggable="false"
-        :fullscreen="appStore.modelFullscreen"
-        :width="720"
-        title="图片公告"
-        unmount-on-close
-      >
-        <IndexImage/>
-      </a-modal>
+    <a-modal
+      v-model:visible="StatusTh.indexImageModelStatus"
+      :draggable="true"
+      :fullscreen="appStore.modelFullscreen"
+      title="图片公告"
+      unmount-on-close
+    >
+      <IndexImage no-more/>
+    </a-modal>
+    <a-modal
+      v-model:visible="StatusTh.popularContentStatus"
+      :draggable="true"
+      :fullscreen="appStore.modelFullscreen"
+      title="通知文章"
+      unmount-on-close
+    >
+      <PopularContent no-more/>
     </a-modal>
   </div>
 </template>
@@ -67,7 +73,7 @@ import ContextMenu from '@/components/context-menu/index.vue';
 import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
 import {Message} from '@arco-design/web-vue';
 import {ref} from 'vue';
-import {useAppStore} from "@/store";
+import {useAppStore} from '@/store';
 import Banner from './components/banner.vue';
 import DataPanel from './components/data-panel.vue';
 import PopularContent from './components/popular-content.vue';
@@ -84,9 +90,13 @@ const selectMenu = (item) => {
 
 interface StatusT {
   indexImageModelStatus: boolean;
+  popularContentStatus: boolean;
 }
 
-const StatusTh = ref<StatusT>({indexImageModelStatus: false});
+const StatusTh = ref<StatusT>({
+  indexImageModelStatus: false,
+  popularContentStatus: false,
+});
 </script>
 
 <script lang="ts">

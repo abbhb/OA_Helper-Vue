@@ -5,9 +5,8 @@
         {{ $t('workplace.indexImage') }}
       </template>
       <template #extra>
-        <a-link @click="emit('alertSome')">{{
-            $t('workplace.viewMore')
-          }}
+        <a-link v-if="!props.noMore" @click="emit('alertSome')"
+        >{{ $t('workplace.viewMore') }}
         </a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
@@ -20,7 +19,10 @@
             {{ label }}
           </a-radio>
         </a-radio-group>
-        <Carousel style="height: 264px" :image-src="imageList" />
+        <Carousel
+          :image-src="imageList"
+          :style="props.noMore ? 'height: 564px' : 'height: 264px'"
+        />
       </a-space>
     </a-card>
   </a-spin>
@@ -31,6 +33,13 @@ import {defineEmits, ref} from 'vue';
 import useLoading from '@/hooks/loading';
 import {queryIndexImageLabel, queryLabelIndexImage} from '@/api/dashboard';
 import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
+
+const props = defineProps({
+  noMore: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 const emit = defineEmits(['alertSome']);
   const type = ref('text');

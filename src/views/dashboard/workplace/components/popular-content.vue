@@ -9,7 +9,7 @@
         {{ $t('workplace.popularContent') }}
       </template>
       <template #extra>
-        <a-link>{{ $t('workplace.viewMore') }}</a-link>
+        <a-link v-if="!props.noMore" @click="emit('alertSome')">{{ $t('workplace.viewMore') }}</a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
         <a-radio-group
@@ -47,16 +47,16 @@
               </template>
             </a-table-column>
             <a-table-column title="类型" data-index="type">
-<!--                预留模板-->
-                <template #cell="{ record }">
-                    <div class="increases-cell">
-                        <span>{{ record.increases }}%</span>
-                        <icon-caret-up
-                                v-if="record.type !== 0"
-                                style="color: #f53f3f; font-size: 8px"
-                        />
-                    </div>
-                </template>
+              <!--                预留模板-->
+              <template #cell="{ record }">
+                <div class="increases-cell">
+                  <span>{{ record.increases }}%</span>
+                  <icon-caret-up
+                    v-if="record.type !== 0"
+                    style="color: #f53f3f; font-size: 8px"
+                  />
+                </div>
+              </template>
             </a-table-column>
           </template>
         </a-table>
@@ -66,10 +66,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import useLoading from '@/hooks/loading';
-  import type { TableData } from '@arco-design/web-vue/es/table/interface';
+import {ref} from 'vue';
+import useLoading from '@/hooks/loading';
+import type {TableData} from '@arco-design/web-vue/es/table/interface';
+import {defineEmits} from "vue/dist/vue";
 
+const props = defineProps({
+    noMore: {
+      type: Boolean,
+      default: false,
+    },
+  });
+  const emit = defineEmits(['alertSome']);
   const type = ref('text');
   const { loading, setLoading } = useLoading();
   const renderList = ref<TableData[]>();
@@ -86,7 +94,7 @@
   // };
   const typeChange = (contentType: string) => {
     // fetchData(contentType);
-      console.log(contentType);
+    console.log(contentType);
   };
   // fetchData('text');
 </script>
