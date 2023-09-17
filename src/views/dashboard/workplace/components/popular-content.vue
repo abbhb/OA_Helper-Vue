@@ -31,7 +31,7 @@
           :data="renderList"
           :pagination="false"
           :bordered="false"
-          :scroll="{ x: '100%', y: '264px' }"
+          :scroll="{ x: '100%', y: '362px' }"
         >
           <template #columns>
             <a-table-column title="排序" data-index="key"></a-table-column>

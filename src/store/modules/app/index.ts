@@ -26,6 +26,8 @@ const useAppStore = defineStore('app', {
       return state.device;
     },
     appAsyncMenus(state: AppState): RouteRecordNormalized[] {
+      console.log("同步菜单");
+      console.log(state.serverMenu);
       return state.serverMenu as unknown as RouteRecordNormalized[];
     },
   },
@@ -69,7 +71,6 @@ const useAppStore = defineStore('app', {
           closable: true,
         });
       } catch (error) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         notifyInstance = Notification.error({
           id: 'menuNotice',
           content: 'error',

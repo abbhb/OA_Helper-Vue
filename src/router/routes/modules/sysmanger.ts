@@ -1,7 +1,7 @@
 import {DEFAULT_LAYOUT} from '../base';
 import {AppRouteRecordRaw} from '../types';
 
-const USERCENTER: AppRouteRecordRaw = {
+const SysManger: AppRouteRecordRaw = {
     path: '/sysmanger',
     name: 'sysmanger',
     component: DEFAULT_LAYOUT,
@@ -20,7 +20,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.sysmanger.UserManger',
                 requiresAuth: true,
-                roles: ['superadmin', 'lsadmin'],
+                roles: ['*'],
             },
         },
         {
@@ -30,7 +30,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.sysmanger.MenuManger',
                 requiresAuth: true,
-                roles: ['superadmin', 'lsadmin'],
+                roles: ['*'],
             },
         },
         {
@@ -40,7 +40,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.sysmanger.group',
                 requiresAuth: true,
-                roles: ['superadmin', 'lsadmin'],
+                roles: ['*'],
             },
         },
         {
@@ -50,7 +50,7 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.sysmanger.RoleManger',
                 requiresAuth: true,
-                roles: ['superadmin', 'lsadmin'],
+                roles: ['*'],
             },
         },
         {
@@ -60,10 +60,10 @@ const USERCENTER: AppRouteRecordRaw = {
             meta: {
                 locale: 'menu.sysmanger.DeptManger',
                 requiresAuth: true,
-                roles: ['superadmin', 'lsadmin'],
+                roles: ['*'],
             },
         },
     ],
 };
 
-export default USERCENTER;
+export default SysManger;

@@ -5,7 +5,6 @@ import {addrole, deleterole, roleList, RoleManger, updaterole,} from '@/api/role
 import {useAppStore} from '@/store';
 import {IconSearch} from '@arco-design/web-vue/es/icon';
 import {Message} from '@arco-design/web-vue';
-import {MenuManger} from '@/api/menu';
 
 interface statuEI {
   clickLoading: boolean;
@@ -28,7 +27,7 @@ const form = reactive({
   status: 1,
   zhankai: false,
   quanxuan: false,
-  fuziliandong: true,
+  fuziliandong: false,
 });
 
 const appStore = useAppStore();
@@ -40,7 +39,7 @@ const allExpandedKeys = ref([]);
 const selectedKeys = ref([]);
 const checkedKeys = ref([]);
 const expandedKeys = ref([]);
-const treeData = ref<MenuManger[]>([]);
+const treeData = ref([]);
 
 /**
  *  :fieldNames="{
@@ -112,7 +111,7 @@ const cleanForm = () => {
   form.id = '';
   form.name = '';
   form.key = '';
-  form.fuziliandong = true;
+  form.fuziliandong = false;
   form.quanxuan = false;
   form.zhankai = false;
   form.sort = 1;
@@ -219,27 +218,6 @@ const onExpand = (newExpandedKeys, event) => {
         :size="'medium'"
         row-key="id"
       >
-        <template
-          #locale-filter="{
-            filterValue,
-            setFilterValue,
-            handleFilterConfirm,
-            handleFilterReset,
-          }"
-        >
-          <div class="custom-filter">
-            <a-space direction="vertical">
-              <a-input
-                :model-value="filterValue[0]"
-                @input="(value) => setFilterValue([value])"
-              />
-              <div class="custom-filter-footer">
-                <a-button @click="handleFilterConfirm">Confirm</a-button>
-                <a-button @click="handleFilterReset">Reset</a-button>
-              </div>
-            </a-space>
-          </div>
-        </template>
         <template #columns>
           <a-space direction="vertical">
             <a-space direction="vertical">
@@ -335,8 +313,8 @@ const onExpand = (newExpandedKeys, event) => {
       @before-ok="handelOk"
     >
       <a-form :model="form">
-        <a-row :gutter="24">
-          <a-col :span="24">
+        <div>
+          <div>
             <a-form-item
               :label="$t('syscenter.role-manger.role.form.name')"
               :tooltip="$t('syscenter.role-manger.role.form.name.help')"
@@ -348,20 +326,19 @@ const onExpand = (newExpandedKeys, event) => {
                 :placeholder="$t('syscenter.role-manger.role.form.tip.name')"
               ></a-input>
             </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="10">
+          </div>
+        </div>
+        <div>
+          <div>
             <a-form-item
               :label="$t('syscenter.role-manger.role.form.key')"
-              :tooltip="$t('syscenter.role-manger.role.form.key.help')"
               field="key"
               label-col-flex="80px"
             >
               <a-input v-model="form.key"></a-input>
             </a-form-item>
-          </a-col>
-          <a-col :span="10">
+          </div>
+          <div>
             <a-form-item
               :label="$t('syscenter.role-manger.role.form.sort')"
               field="sort"
@@ -373,10 +350,10 @@ const onExpand = (newExpandedKeys, event) => {
                 :min="1"
               ></a-input-number>
             </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="28">
-          <a-col :span="10">
+          </div>
+        </div>
+        <div>
+          <div>
             <a-form-item
               :label="$t('syscenter.role-manger.role.form.status')"
               :tooltip="$t('syscenter.role-manger.role.form.status.help')"
@@ -392,10 +369,10 @@ const onExpand = (newExpandedKeys, event) => {
                 </a-radio>
               </a-radio-group>
             </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="24">
+          </div>
+        </div>
+        <div>
+          <div>
             <a-card>
               <a-button-group style="margin-bottom: 20px">
                 <a-button type="primary" @click="toggleChecked">
@@ -403,16 +380,6 @@ const onExpand = (newExpandedKeys, event) => {
                 </a-button>
                 <a-button type="primary" @click="toggleExpanded">
                   {{ expandedKeys?.length ? 'fold' : 'unfold' }}
-                </a-button>
-                <a-button
-                  type="primary"
-                  @click="
-                    form.fuziliandong
-                      ? (form.fuziliandong = false)
-                      : (form.fuziliandong = true)
-                  "
-                >
-                  {{ form?.fuziliandong ? '父子节点不关联' : '父子节点关联' }}
                 </a-button>
               </a-button-group>
               <a-tree
@@ -437,8 +404,8 @@ const onExpand = (newExpandedKeys, event) => {
                 </template>
               </a-tree>
             </a-card>
-          </a-col>
-        </a-row>
+          </div>
+        </div>
       </a-form>
     </a-modal>
   </a-card>

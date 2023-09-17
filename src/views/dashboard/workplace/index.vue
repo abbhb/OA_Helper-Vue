@@ -2,16 +2,17 @@
   <div class="container">
     <div class="left-side">
       <div class="panel">
-        <ContextMenu
-          :menu="[
-            { label: '刷新', icon: 'icon-refresh' },
-            { label: '刷新2', icon: 'icon-refresh' },
-            { label: '刷新3', icon: 'icon-refresh' },
-          ]"
-          @select="selectMenu"
-        >
-          <Banner/>
-        </ContextMenu>
+        <!--        <ContextMenu-->
+        <!--          :menu="[-->
+        <!--            { label: '刷新', icon: 'icon-refresh' },-->
+        <!--            { label: '刷新2', icon: 'icon-refresh' },-->
+        <!--            { label: '刷新3', icon: 'icon-refresh' },-->
+        <!--          ]"-->
+        <!--          @select="selectMenu"-->
+        <!--        >-->
+        <!--          -->
+        <!--        </ContextMenu>-->
+        <Banner/>
         <DataPanel />
       </div>
       <a-grid :cols="24" :col-gap="16" :row-gap="16" style="margin-top: 16px">
@@ -69,7 +70,6 @@
 </template>
 
 <script lang="ts" setup>
-import ContextMenu from '@/components/context-menu/index.vue';
 import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
 import {Message} from '@arco-design/web-vue';
 import {ref} from 'vue';

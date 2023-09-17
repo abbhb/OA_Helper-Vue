@@ -482,8 +482,7 @@ const handleSuccess = (data) => {
             <a-col :span="6">
               <a-tag color="green"
               >请注意，此处电子邮箱涉及用户安全邮箱!勿轻易改动
-              </a-tag
-              >
+              </a-tag>
             </a-col>
           </a-row>
           <a-row :gutter="28">
@@ -574,8 +573,7 @@ const handleSuccess = (data) => {
           >
             <a-checkbox v-model:model-value="statuEs.formModel" :value="true"
             >高级模式
-            </a-checkbox
-            >
+            </a-checkbox>
           </a-form-item>
         </a-form>
       </a-modal>

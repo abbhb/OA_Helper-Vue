@@ -16,12 +16,6 @@ export interface PopularRecord {
   increases: number;
 }
 
-export function queryIndexImageLabel() {
-  return axios.get<string[]>('/api/index_image/all_label');
-}
-export function queryLabelIndexImage(params: { label: string }) {
-  return axios.get<string[]>('/api/index_image/label_all', { params });
-}
 
 export function queryApiCount() {
   return axios.get<number>('/api/common/api_count');

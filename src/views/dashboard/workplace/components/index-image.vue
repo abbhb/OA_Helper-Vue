@@ -21,7 +21,7 @@
         </a-radio-group>
         <Carousel
           :image-src="imageList"
-          :style="props.noMore ? 'height: 564px' : 'height: 264px'"
+          :style="props.noMore ? 'height: 362px' : 'height: 362px'"
         />
       </a-space>
     </a-card>
@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import {defineEmits, ref} from 'vue';
 import useLoading from '@/hooks/loading';
-import {queryIndexImageLabel, queryLabelIndexImage} from '@/api/dashboard';
+import {IndexImage, queryIndexImageLabel, queryLabelIndexImage} from '@/api/index-image';
 import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
 
 const props = defineProps({
@@ -45,7 +45,7 @@ const emit = defineEmits(['alertSome']);
   const type = ref('text');
   const { loading, setLoading } = useLoading();
   const labelList = ref<string[]>();
-  const imageList = ref([]);
+const imageList = ref<IndexImage[]>([]);
 const fetchDate1 = async (label: string) => {
   try {
     setLoading(true);

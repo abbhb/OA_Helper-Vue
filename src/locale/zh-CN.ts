@@ -11,6 +11,7 @@ import localeSysUserManger from '@/views/sysmanger/user-manger/locale/zh-CN';
 import localeSysMenuManger from '@/views/sysmanger/menu-manger/locale/zh-CN';
 import localeSysRoleManger from '@/views/sysmanger/role-manger/locale/zh-CN';
 import localeSysDeptManger from '@/views/sysmanger/dept-manger/locale/zh-CN';
+import localeIndexImage from '@/views/content-promotion/index-image/locale/zh-CN';
 
 import localeSettings from './zh-CN/settings';
 
@@ -27,6 +28,9 @@ export default {
   'menu.sysmanger.RoleManger': '角色管理',
   'menu.sysmanger.DeptManger': '部门管理',
   'menu.dashboard.printer': 'AI_EN打印',
+  'menu.docnotification.DocNotification': '通知管理',
+  'menu.docnotification.IndexImage': '图片通知',
+  'menu.contentpromotion': '内容管理',
   'menu.dashboard.keep': '学习打卡',
   'menu.server.monitor': '实时监控-服务端',
   'menu.list': '列表页',
@@ -57,4 +61,5 @@ export default {
   ...localeSysMenuManger,
   ...localeSysRoleManger,
   ...localeSysDeptManger,
+  ...localeIndexImage
 };

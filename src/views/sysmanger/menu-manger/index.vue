@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {computed, h, reactive, ref} from 'vue';
 import {getColor} from '@/utils/color-index';
-import {addMenu, deleteMenu, menuList, MenuManger, updateMenu} from '@/api/menu';
+import {addMenu, deleteMenu, menuList, MenuManger, updateMenu,} from '@/api/menu';
 import {setChildrenUndefined} from '@/utils/utils';
 import {useAppStore} from '@/store';
 import FunctionalIcons from '@/components/icon/FunctionalIcons/index.vue';
@@ -268,8 +268,10 @@ const handelOk = (done) => {
   <a-card>
     <a-alert banner center
     >注意:用户侧的菜单的更新只会在重新登录后！！！
-    </a-alert
-    >
+    </a-alert>
+    <a-alert :type="'warning'" banner center
+    >注意:添加完菜单别忘了给角色授权菜单，否则可能看不见菜单！
+    </a-alert>
     <a-space>
       <a-table
         :bordered="false"
@@ -306,7 +308,11 @@ const handelOk = (done) => {
         <template #columns>
           <a-space direction="vertical">
             <a-space direction="vertical">
-              <a-button :loading="statuEs.clickLoading" type="primary" @click="addHandel">
+              <a-button
+                :loading="statuEs.clickLoading"
+                type="primary"
+                @click="addHandel"
+              >
                 {{ $t('syscenter.menu-manger.menu.control.add') }}
               </a-button>
             </a-space>

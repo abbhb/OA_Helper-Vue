@@ -1,8 +1,11 @@
 <template>
   <a-space direction="vertical" :size="10" fill>
     <a-radio-group v-model="type" type="button" @change="typeChange as any">
-      <a-radio v-for="label in labelList" :key="label" :value="label">
-        {{ label }}
+      <a-radio value="个人">
+        个人
+      </a-radio>
+      <a-radio value="全部">
+        全部
       </a-radio>
     </a-radio-group>
     <a-table :columns="columns" :data="tableData" :pagination="pagination">
@@ -38,19 +41,17 @@
 </template>
 
 <script lang="ts">
-  import { h, reactive, ref } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import { queryAllPrinterList, querySelfPrinterList } from '@/api/printer';
-  import { useUserStore } from '@/store';
-  import {IconFaceSmileFill} from '@arco-design/web-vue/es/icon';
-  import {Message} from '@arco-design/web-vue';
+import {h, reactive, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {queryAllPrinterList, querySelfPrinterList} from '@/api/printer';
+import {IconFaceSmileFill} from '@arco-design/web-vue/es/icon';
+import {Message} from '@arco-design/web-vue';
 
-  export default {
+export default {
     name: 'HistoryContent',
     setup() {
       const { t } = useI18n();
       const type = ref('个人');
-      const labelList = ref<string[]>();
       const columns = [
         {
           title: t(`printer.one.HistoryRecord.name`),
@@ -126,15 +127,6 @@
         },
         showTotal: () => `共 ${11} 条`,
       });
-      const userStore = useUserStore();
-      if (
-        userStore.userInfo.permission === 1 ||
-        userStore.userInfo.permission === 10
-      ) {
-        labelList.value = ['个人', '全部'];
-      } else {
-        labelList.value = ['个人'];
-      }
 
       const typeChange = (contentType: string) => {
         fetchSelfData(pagination.value.current, pagination.value.pageSize);
@@ -153,7 +145,6 @@
 
       return {
         type,
-        labelList,
         columns,
         pagination,
         tableData,

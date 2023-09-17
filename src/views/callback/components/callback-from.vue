@@ -1,24 +1,35 @@
 <template>
-    <div class="login-form-wrapper">
-        <div class="login-form-title">
-            {{ status ? (!code ? $t('callback.one.NoCode') : $t('callback.one.title')) : $t('callback.one.error') }}
-        </div>
-        <div class="login-form-sub-title">
-            {{ status ? (!code ? $t('callback.one.NoCode') : $t('callback.one.title')) : $t('callback.one.error') }}
-        </div>
-        <div class="login-form-error-msg" v-if="!status">{{ errorMessage }}</div>
-
+  <div class="login-form-wrapper">
+    <div class="login-form-title">
+      {{
+        status
+          ? !code
+            ? $t('callback.one.NoCode')
+            : $t('callback.one.title')
+          : $t('callback.one.error')
+      }}
     </div>
+    <div class="login-form-sub-title">
+      {{
+        status
+          ? !code
+            ? $t('callback.one.NoCode')
+            : $t('callback.one.title')
+          : $t('callback.one.error')
+      }}
+    </div>
+    <div v-if="!status" class="login-form-error-msg">{{ errorMessage }}</div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useRouter} from 'vue-router';
 import {useI18n} from 'vue-i18n';
-import {loginbycode, LoginDataByCode} from "@/api/user";
-import {useIntervalFn} from "@vueuse/core";
-import {Message} from "@arco-design/web-vue";
-import {useUserStore} from "@/store";
+import {LoginDataByCode} from '@/api/user';
+import {useIntervalFn} from '@vueuse/core';
+import {Message} from '@arco-design/web-vue';
+import {useUserStore} from '@/store';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -28,22 +39,20 @@ const status = ref(true);
 const {code} = router.currentRoute.value.query;
 const login = async () => {
   try {
-      console.log(code)
+    console.log(code);
     await userStore.loginByCode({code} as LoginDataByCode);
 
-  const { redirect } = router.currentRoute.value.query;
-  router.push({
+    const {redirect} = router.currentRoute.value.query;
+    router.push({
       name: (redirect as string) || 'Workplace',
-      query: {
-      },
-  });
-  Message.success(t('login.form.login.success'));
+    });
+    Message.success(t('login.form.login.success'));
   } catch (e) {
     console.log(e);
-    status.value = false
-    const time = ref(3)
-    time.value = 3
-    errorMessage.value = `${time.value}s后跳转到登录页面`
+    status.value = false;
+    const time = ref(3);
+    time.value = 3;
+    errorMessage.value = `${time.value}s后跳转到登录页面`;
       // useIntervalFn(回调函数，间隔时间长度，是否立即开始)
     const {resume} = useIntervalFn(
       () => {
@@ -51,20 +60,19 @@ const login = async () => {
           router.push({name: 'login'});
           resume();
         } else {
-          time.value -= 1
-          errorMessage.value = `${time.value}s后跳转到登录页面`
+          time.value -= 1;
+          errorMessage.value = `${time.value}s后跳转到登录页面`;
         }
-      }, 1000, {immediate: true})
-
+      },
+      1000,
+      {immediate: true}
+    );
   }
-}
+};
 
 if (code) {
-
   login();
 }
-
-
 </script>
 
 <style lang="less" scoped>

@@ -18,7 +18,8 @@
             v-if="file && file.url"
             class="arco-upload-list-picture custom-upload-avatar"
           >
-            <img :src="file.url"/>
+            <ImagePreview :key="file.url" :img="file.url"/>
+            <!--            <img :src="file.url"/>-->
             <div class="arco-upload-list-picture-mask">
               <IconEdit/>
             </div>
@@ -51,8 +52,10 @@
 import axios from 'axios';
 import {Message} from '@arco-design/web-vue';
 import {getAllImageUrl} from '@/api/common';
+import ImagePreview from "@/components/image/ImagePreview.vue";
 
 export default {
+  components: {ImagePreview},
     // 参数：
     // url: 文件上传接口
     // draggable: 是否支持拖动上传

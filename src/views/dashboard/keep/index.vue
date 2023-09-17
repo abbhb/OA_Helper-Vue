@@ -28,7 +28,7 @@ export default defineComponent({
     </div>
     <div class="right-side">
       <Sidebar/>
-      <AdminCard v-roles="['superadmin', 'lsadmin']"/>
+      <AdminCard v-roles="['superadmin']"/>
       <!--      公共排行榜 先封装公共组件，在封装小组件-->
     </div>
   </div>

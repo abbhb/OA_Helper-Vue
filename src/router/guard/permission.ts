@@ -21,11 +21,13 @@ export default function setupPermissionGuard(router: Router) {
       // 根据需要自行完善来源于服务端的菜单配置的permission逻辑
       // Refine the roles logic from the server's menu configuration as needed
       if (
-        !appStore.appAsyncMenus.length &&
+          appStore.appAsyncMenus.length === 0 &&
         !WHITE_LIST.find((el) => el.name === to.name)
       ) {
         await appStore.fetchServerMenuConfig();
       }
+
+
       const serverMenuConfig = [...appStore.appAsyncMenus, ...WHITE_LIST];
 
       let exist = false;
@@ -48,10 +50,8 @@ export default function setupPermissionGuard(router: Router) {
         next();
       } else {
         const destination =
-          Permission.findFirstPermissionRoute(
-            appRoutes,
-              String('10')
-          ) || NOT_FOUND;
+            Permission.findFirstPermissionRoute(appRoutes, String('10')) ||
+            NOT_FOUND;
         next(destination);
       }
     }
