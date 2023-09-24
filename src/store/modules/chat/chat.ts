@@ -97,7 +97,6 @@ export const useChatStore = defineStore('chat', () => {
     // 获取用户信息缓存
     // 尝试取缓存user, 如果有 lastModifyTime 说明缓存过了，没有就一定是要缓存的用户了
     const { uid } = msg.fromUser;
-    console.log(uid);
     const cacheUser = cachedStore.userCachedList[uid];
     cachedStore.getBatchUserInfo([
       { uid, lastModifyTime: cacheUser?.lastModifyTime },

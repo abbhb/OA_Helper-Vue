@@ -2,29 +2,19 @@
   <div class="container">
     <div class="left-side">
       <div class="panel">
-        <!--        <ContextMenu-->
-        <!--          :menu="[-->
-        <!--            { label: '刷新', icon: 'icon-refresh' },-->
-        <!--            { label: '刷新2', icon: 'icon-refresh' },-->
-        <!--            { label: '刷新3', icon: 'icon-refresh' },-->
-        <!--          ]"-->
-        <!--          @select="selectMenu"-->
-        <!--        >-->
-        <!--          -->
-        <!--        </ContextMenu>-->
-        <Banner/>
+        <Banner />
         <DataPanel />
       </div>
       <a-grid :cols="24" :col-gap="16" :row-gap="16" style="margin-top: 16px">
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <PopularContent @alert-some="StatusTh.popularContentStatus = true"/>
+          <PopularContent @alert-some="StatusTh.popularContentStatus = true" />
         </a-grid-item>
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <IndexImage @alert-some="StatusTh.indexImageModelStatus = true"/>
+          <IndexImage @alert-some="StatusTh.indexImageModelStatus = true" />
         </a-grid-item>
       </a-grid>
     </div>
@@ -38,7 +28,7 @@
           </div>
         </a-grid-item>
         <a-grid-item class="panel" :span="24">
-          <Carousel style="height: 188px"/>
+          <Carousel style="height: 188px" />
         </a-grid-item>
         <a-grid-item class="panel" :span="24">
           <Announcement />
@@ -55,7 +45,7 @@
       title="图片公告"
       unmount-on-close
     >
-      <IndexImage no-more/>
+      <IndexImage no-more />
     </a-modal>
     <a-modal
       v-model:visible="StatusTh.popularContentStatus"
@@ -64,7 +54,7 @@
       title="通知文章"
       unmount-on-close
     >
-      <PopularContent no-more/>
+      <PopularContent no-more />
     </a-modal>
   </div>
 </template>
@@ -84,19 +74,19 @@ import Carousel from './components/carousel.vue';
 import Docs from './components/docs.vue';
 
 const appStore = useAppStore();
-const selectMenu = (item) => {
-  Message.info(item.label);
-};
+  const selectMenu = (item) => {
+    Message.info(item.label);
+  };
 
-interface StatusT {
-  indexImageModelStatus: boolean;
-  popularContentStatus: boolean;
-}
+  interface StatusT {
+    indexImageModelStatus: boolean;
+    popularContentStatus: boolean;
+  }
 
-const StatusTh = ref<StatusT>({
-  indexImageModelStatus: false,
-  popularContentStatus: false,
-});
+  const StatusTh = ref<StatusT>({
+    indexImageModelStatus: false,
+    popularContentStatus: false,
+  });
 </script>
 
 <script lang="ts">

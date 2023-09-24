@@ -62,6 +62,7 @@ const onCloseHandler = () => {
   }
 
   // 断线重连
+  // @ts-ignore
   timer = setTimeout(() => {
     // eslint-disable-next-line no-use-before-define
     initConnection();
@@ -94,6 +95,8 @@ const onConnectMsg = (e: any) => postMsg({ type: 'message', value: e.data });
 
 // 初始化 ws 连接
 const initConnection = () => {
+  console.log("new WebSocket")
+
   connection?.removeEventListener('message', onConnectMsg);
   connection?.removeEventListener('open', onConnectOpen);
   connection?.removeEventListener('close', onConnectClose);

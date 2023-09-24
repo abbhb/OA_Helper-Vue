@@ -28,20 +28,19 @@ export const useCachedStore = defineStore(
         userCachedList[item.uid] = curItemResult;
       });
     };
-
-    /** 全量初始化用户基础信息 */
-    const initAllUserBaseInfo = async () => {
-      if (localStorage.getItem('IS_INIT_USER_BASE') === null) {
-        await Api.getAllUserBaseInfo();
-        localStorage.setItem('IS_INIT_USER_BASE', 'true');
-      }
-    };
-
     const getAllUserBaseInfo = async () => {
       const { data } = await Api.getAllUserBaseInfo({ params: { roomId: 1 } });
       data?.forEach((item) => {
         userCachedList[item.uid] = item;
       });
+    };
+
+    /** 全量初始化用户基础信息 */
+    const initAllUserBaseInfo = async () => {
+      if (localStorage.getItem('IS_INIT_USER_BASE') === null) {
+        await getAllUserBaseInfo();
+        localStorage.setItem('IS_INIT_USER_BASE', 'true');
+      }
     };
 
     // 根据用户名关键字过滤用户，
@@ -62,4 +61,4 @@ export const useCachedStore = defineStore(
   { persist: true }
 );
 
-export default {useCachedStore}
+export default { useCachedStore };

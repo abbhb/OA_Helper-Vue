@@ -19,7 +19,6 @@ import {useFileDialog} from '@vueuse/core';
 import {useUserInfo} from '@/hooks/chat/useCached';
 import {useEmojiStore} from '@/store/modules/chat/emoji';
 import {useUserStore} from '@/store';
-import {useWsLoginStore} from '@/store/modules/chat/ws';
 import {insertInputText} from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
 import UserList from '../UserList/index.vue';
 import ChatList from '../ChatList/index.vue';
@@ -42,7 +41,6 @@ const client = judgeClient();
   const isUpEmoji = ref(false);
   const tempEmojiId = ref('-1');
 
-  const loginStore = useWsLoginStore(); // 显示登录框
   const userStore = useUserStore(); // 是否已登录
   const emojiStore = useEmojiStore();
 
@@ -313,7 +311,12 @@ const client = judgeClient();
                   @mouseover="isHovered = true"
                   @mouseleave="isHovered = false"
                 >
-                  <icon-reply v-if="isHovered" icon="shocked" :size="18" colorful />
+                  <icon-reply
+                    v-if="isHovered"
+                    icon="shocked"
+                    :size="18"
+                    colorful
+                  />
                   <icon-reply v-else icon="happy1" :size="18" colorful />
                 </div>
               </template>
@@ -323,9 +326,9 @@ const client = judgeClient();
                     <li
                       v-for="(emoji, $index) of emojis"
                       :key="$index"
-                      v-is-auth="true"                      
-                      @click="insertEmoji(emoji)"
+                      v-is-auth="true"
                       class="emoji-item"
+                      @click="insertEmoji(emoji)"
                     >
                       {{ emoji }}
                     </li>
@@ -366,7 +369,8 @@ const client = judgeClient();
                     ]"
                     :size="18"
                     @click="panelIndex = 0"
-                  >表情</div>
+                    >表情</div
+                  >
                   <icon-reply
                     :class="[
                       'cursor-pointer',
@@ -409,13 +413,7 @@ const client = judgeClient();
               <icon-send class="send" :size="20" />
             </div>
           </div>
-          <span
-            v-if="!isSign"
-            class="tips"
-            @click="loginStore.showLogin = true"
-          >
-            请登录之后再发言~
-          </span>
+          <span v-if="!isSign" class="tips"> 请登录之后再发言~ </span>
         </div>
       </div>
     </div>

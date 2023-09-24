@@ -10,7 +10,6 @@ import {useLikeToggle} from '@/hooks/chat/useLikeToggle';
 import {formatTimestamp} from '@/utils/chat/computedTime';
 import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
 import AvatarImage from '@/components/image/AvatarImage.vue';
-import ContextMenu from '../ContextMenu/index.vue';
 import MsgOption from '../MsgOption/index.vue';
 
 const props = defineProps({

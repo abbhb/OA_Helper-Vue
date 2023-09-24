@@ -5,7 +5,6 @@ import {ref} from 'vue';
 import {UserItem} from '@/types/chat';
 import {useUserInfo} from '@/hooks/chat/useCached';
 import {useUserStore} from '@/store';
-import ContextMenu from '../ContextMenu/index.vue';
 
 const props = defineProps({
     user: {
@@ -42,11 +41,11 @@ const props = defineProps({
   >
     <Avatar :src="userInfo.avatar" :size="24" show-status :online="true" />
     {{ userInfo.name }}
-    <ContextMenu
-      v-model:show="isShowMenu"
-      :options="menuOptions"
-      :uid="(user?.uid as number)"
-    />
+<!--    <ContextMenu-->
+<!--      v-model:show="isShowMenu"-->
+<!--      :options="menuOptions"-->
+<!--      :uid="(user?.uid as number)"-->
+<!--    />-->
   </li>
 </template>
 

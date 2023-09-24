@@ -69,7 +69,7 @@ const chatStore = useChatStore();
 </script>
 
 <template>
-  <div class="chat-msg-list" @contextmenu.prevent>
+  <div class="chat-msg-list" >
     <icon-loading v-if="chatStore.isLoading" :size="14" class="loading">
       消息加载中
     </icon-loading>
