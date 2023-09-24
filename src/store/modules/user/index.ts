@@ -1,12 +1,12 @@
 import {defineStore} from 'pinia';
 import {
-  getUserInfo,
-  login as userLogin,
-  loginbycode,
-  loginbytoken,
-  LoginData,
-  LoginDataByCode,
-  logout as userLogout,
+    getUserInfo,
+    login as userLogin,
+    loginbycode,
+    loginbytoken,
+    LoginData,
+    LoginDataByCode,
+    logout as userLogout,
 } from '@/api/user';
 import {clearToken, setToken} from '@/utils/auth';
 import {removeRouteListener} from '@/utils/route-listener';
@@ -58,6 +58,9 @@ const useUserStore = defineStore('user', {
     // Reset user's information
     resetInfo() {
       this.$reset();
+    },
+    isSign() {
+      return this.id !== '';
     },
 
     // Get user's information

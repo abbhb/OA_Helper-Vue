@@ -8,7 +8,7 @@ export interface UserState {
   name?: string;
   avatar?: string;
   username?: string;
-  id?: number;
+  id?: string;
   email?: string;
   sex?: string;
   status?: StatusType;

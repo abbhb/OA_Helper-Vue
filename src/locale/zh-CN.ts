@@ -19,6 +19,7 @@ export default {
   'menu.dashboard': '仪表盘',
   'menu.usercenter': '用户中心',
   'menu.sysmanger': '系统管理',
+  'menu.chat': 'Chat',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
   'menu.usercenter.usercenter': '用户中心',

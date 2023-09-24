@@ -3,7 +3,9 @@ import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import '@arco-design/web-vue/dist/arco.css';
 import globalComponents from '@/components';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import useRSAStore from '@/store/modules/rsa';
+import {createPinia} from 'pinia';
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -31,10 +33,13 @@ app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
+// 持久化插件
+app.use(createPinia().use(piniaPluginPersistedstate));
+
 app.mount('#app');
 
 // 初始化加密
 const rsaState = useRSAStore();
 if (!rsaState.getPublicKey) {
-    rsaState.updateRSA();
+  rsaState.updateRSA();
 }
