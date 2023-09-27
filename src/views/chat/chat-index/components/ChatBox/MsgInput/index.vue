@@ -1,8 +1,11 @@
 <script setup lang="ts">
 // 艾特功能参考自 https://github.com/MrHGJ/at-mentions
-import {inject, reactive, ref, type StyleValue, toRefs, watch, watchEffect,} from 'vue';
+import {reactive, ref, type StyleValue, toRefs, watch, watchEffect,} from 'vue';
 import {useCachedStore} from '@/store/modules/chat/cached';
 import {CacheUserItem} from '@/types/chat';
+// eslint-disable-next-line import/extensions
+import VirtualList from '@/views/chat/chat-index/components/VirtualList/index.tsx';
+import eventBus from "@/utils/chat/eventBus";
 import type {IMention, INode} from './types';
 import {NodeType} from './types';
 import {
@@ -48,7 +51,6 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     'send',
   ]);
 
-  const focusMsgInput = inject<() => void>('focusMsgInput');
   // eslint-disable-next-line vue/no-dupe-keys
   const { modelValue: value, mentions, maxLength, disabled } = toRefs(props);
   const editorRef = ref<HTMLElement | null>();
@@ -529,7 +531,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
   //
   const onSelectPerson = (uid: number, ignore = false) => {
     if (!uid) return;
-    focusMsgInput?.();
+    eventBus.emit('focusMsgInput')
     setTimeout(() => {
       const userItem = cachedStore.userCachedList[uid];
       // userItem && selectPerson?.(userItem as CacheUserItem, ignore);
@@ -611,13 +613,13 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     padding: 0 12px;
     color: var(--font-main);
     cursor: text;
-    background-color: var(--background-2);
+    //background-color: var(--background-2);
     border: 1px solid transparent;
     border-radius: 6px;
     transition: all 0.1s cubic-bezier(0, 0, 1, 1);
 
     &:focus-within {
-      outline: 1px solid var(--hover-primary);
+      outline: 1px solid #2299dd;
     }
 
     .input {
@@ -626,7 +628,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
       overflow: hidden;
       overflow-y: auto;
       font-size: 14px;
-      color: inherit;
+      color: var(--color-text-1);
       white-space: pre-wrap;
       cursor: inherit;
       resize: none;
@@ -636,7 +638,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
       outline: none;
 
       &:empty::before {
-        color: var(--font-placeholder);
+        color: var(--color-text-1);
         pointer-events: none;
         content: attr(placeholder);
       }
@@ -650,7 +652,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     min-width: 100px;
     padding: 6px;
     font-size: 16px;
-    color: var(--font-main);
+    color: var(--color-text-1);
     background: var(--background-2);
     border-radius: 12px;
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 10%);

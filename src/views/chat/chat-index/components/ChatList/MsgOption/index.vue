@@ -30,7 +30,7 @@ const props = defineProps<{ msg: MessageType }>();
       <icon-reply v-is-auth="true" :size="14" @click="() => onReplyMsg(msg)" />
     </span>
     <span class="msg-option-item" title="点赞">
-      <icon-reply
+      <icon-thumb-up-fill
         v-is-auth="true"
         :size="14"
         :class="[{ 'like-active': isLike }]"
@@ -38,7 +38,7 @@ const props = defineProps<{ msg: MessageType }>();
       />
     </span>
     <span class="msg-option-item" title="不喜欢">
-      <icon-reply
+      <icon-thumb-down-fill
         v-is-auth="true"
         :class="[{ 'dislike-active': isDisLike }]"
         :size="15"

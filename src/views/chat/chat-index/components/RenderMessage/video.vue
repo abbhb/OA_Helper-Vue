@@ -20,7 +20,7 @@ const props = defineProps<{ body: VideoBody }>();
     :style="`height:${getImageHeight()}px`"
     @click="videoStore.open(body?.url)"
   >
-    <Icon icon="bofang" :size="30" />
+    <icon-file-video icon="bofang" :size="30" />
     <img :src="body.thumbUrl" />
   </div>
 </template>

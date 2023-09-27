@@ -208,7 +208,7 @@ const printers = async () => {
                     />
                     <div class="mask">
                       <h4>
-                        <Icon size="40" type="ios-trash-outline"></Icon>
+                        <icon-folder-add size="40" type="ios-trash-outline"></icon-folder-add>
                       </h4>
                     </div>
                   </div>

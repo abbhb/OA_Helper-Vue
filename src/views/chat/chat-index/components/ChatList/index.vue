@@ -70,7 +70,7 @@ const chatStore = useChatStore();
 
 <template>
   <div class="chat-msg-list" >
-    <icon-loading v-if="chatStore.isLoading" :size="14" class="loading">
+    <icon-loading v-if="chatStore.isLoading" style="width: 100%" :size="14">
       消息加载中
     </icon-loading>
     <VirtualList
@@ -122,30 +122,6 @@ const chatStore = useChatStore();
     transform: translate3d(0, 0, 0);
     //perspective: 1000;
 
-    .loading {
-      position: absolute;
-      z-index: 20;
-      gap: 4px;
-      width: 100%;
-      padding: 16px 0;
-      font-size: 14px;
-      color: var(--font-light-1);
-      background: linear-gradient(180deg, rgb(50, 54, 68) 0%, transparent 85%);
-
-      svg {
-        @keyframes rotate {
-          from {
-            transform: rotate(0);
-          }
-
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        animation: rotate 2s linear infinite;
-      }
-    }
 
     .empty {
       display: flex;

@@ -1,4 +1,4 @@
-import {ChatActEnum, ChatMarkEnum, ChatMsgEnum, ChatOnlineEnum,} from '@/types/enums/chat';
+import {ChatActEnum, ChatMarkEnum, ChatMsgEnum, ChatOnlineEnum, RoomTypeEnum,} from '@/types/enums/chat';
 
 export type ChatUserItem = {
   /** 在线状态 */
@@ -15,9 +15,9 @@ export type ChatUserItem = {
 
 export type ChatGroupStatisticType = {
   /** 在线人数 */
-  onlineNum: number
+  onlineNum: number;
   /** 总人数 */
-  totalNum: number
+  totalNum: number;
 };
 
 export type ListResponse<T> = {
@@ -303,4 +303,73 @@ export type MessageReq = {
     /** 任意 */
     [key: string]: any;
   };
+};
+
+/** 申请状态 */
+export enum RequestFriendAgreeStatus {
+  /** 1待审批 */
+  Waiting = 1,
+  /** 2同意 */
+  Agree,
+}
+/** 请求添加好友的列表项 */
+export type RequestFriendItem = {
+  /** 申请id */
+  applyId: number;
+  /** 申请信息 */
+  msg: string;
+  /** 申请状态 1待审批 2同意 */
+  status: RequestFriendAgreeStatus;
+  /** 申请类型 1加好友 */
+  type: number;
+  /** 申请人uid */
+  uid: number;
+  /** 会话 ID */
+  roomId: number;
+};
+/** 联系人的列表项 */
+export type ContactItem = {
+  /** 在线状态 1在线 2离线 */
+  activeStatus: ChatOnlineEnum;
+  /** 最后一次上下线时间 */
+  lastOptTime: number;
+  uid: number;
+};
+
+/** 是否全员展示的会话 0否 1是 */
+export enum IsAllUserEnum {
+  /** 0否 */
+  Not,
+  /** 1是 */
+  Yes,
+}
+
+/** 会话列表项 */
+export type SessionItem = {
+  /** 房间最后活跃时间(用来排序) */
+  activeTime: number;
+  /** 会话头像 */
+  avatar: string;
+  /** 是否全员展示的会话 0否 1是 */
+  hot_Flag: IsAllUserEnum;
+  /** 会话名称 */
+  name: string;
+  /** 房间id */
+  roomId: number;
+  /** 最新消息 */
+  text: string;
+  /** 房间类型 1群聊 2单聊 */
+  type: RoomTypeEnum;
+  /** 未读数 */
+  unreadCount: number;
+};
+
+/** 消息已读未读数列表项 */
+export type MsgReadUnReadCountType = {
+  /** 消息 ID */
+  msgId: number;
+  /** 已读数 */
+  readCount: number;
+  /** 未读数 */
+  unReadCount: number | null;
 };

@@ -39,7 +39,7 @@ const props = defineProps<{ body: ImageBody }>();
     @click="imageStore.show(body?.url)"
   >
     <div v-if="hasLoadError" class="image-slot" :style="getWidthStyle()">
-      <Icon icon="dazed" :size="36" colorful />
+      <icon-poweroff icon="dazed" :size="36" colorful />
       加载失败
     </div>
     <template v-else>

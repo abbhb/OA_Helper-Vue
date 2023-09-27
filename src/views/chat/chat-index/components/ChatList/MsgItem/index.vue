@@ -50,7 +50,6 @@ const props = defineProps({
   const userStore = useUserStore();
   const chatStore = useChatStore();
   const userInfo = useUserInfo(fromUser.value.uid);
-  const wearingItemId = computed(() => userInfo?.value?.wearingItemId);
   const isCurrentUser = computed(
     () => props.msg?.fromUser.uid === userStore?.userInfo.id
   );
@@ -201,7 +200,7 @@ const props = defineProps({
               :class="['extra-item like', { active: isLike }]"
               @click="onLike"
             >
-              <icon-reply icon="like" />
+              <icon-thumb-up-fill/>
               <transition name="count-up" mode="out-in">
                 <span :key="likeCount" class="count">{{ likeCount }}</span>
               </transition>
@@ -214,7 +213,7 @@ const props = defineProps({
               :class="['extra-item dlike', { active: isDisLike }]"
               @click="onDisLike"
             >
-              <icon-unlock icon="dislike" :size="17" />
+              <icon-thumb-down-fill  :size="17" />
               <transition name="count-up" mode="out-in">
                 <span :key="dislikeCount" class="count">{{
                   dislikeCount
@@ -226,7 +225,7 @@ const props = defineProps({
       </div>
     </div>
   </transition>
-  <ContextMenu v-model:show="isShowMenu" :options="menuOptions" :msg="msg" />
+<!--  <ContextMenu v-model:show="isShowMenu" :options="menuOptions" :msg="msg" />-->
 </template>
 
 <style lang="less">
@@ -235,7 +234,7 @@ const props = defineProps({
     padding: 0;
     line-height: 12px;
     color: var(--font-main);
-    background-color: var(--background-2) !important;
+    background-color: var(--color-bg-2) !important;
     border: none !important;
   }
   .chat-item {
@@ -255,11 +254,11 @@ const props = defineProps({
       align-items: center;
       margin-bottom: 8px;
       font-size: 12px;
-      color: var(--font-light);
+      color: var(--color-text-1);
       white-space: nowrap;
 
       .user-name:hover {
-        color: var(--color-primary);
+        color: var(--color-text-1);
         cursor: pointer;
       }
 
@@ -290,9 +289,9 @@ const props = defineProps({
         padding: 8px 12px;
         font-size: 15px;
         line-height: 22px;
-        color: var(--font-main);
+        color: var(--color-text-1);
         word-break: break-word;
-        background-color: var(--background-2);
+        background-color: var(--color-bg-2);
         border-radius: 2px 18px 18px;
 
         &-card {
@@ -310,7 +309,7 @@ const props = defineProps({
           &-link {
             margin-bottom: 6px;
             font-size: 12px;
-            color: var(--color-light-1);
+            color: var(--color-text-1);
 
             &-content {
               display: inline-flex;
@@ -330,23 +329,23 @@ const props = defineProps({
 
           &-title {
             font-size: 14px;
-            color: var(--font-main);
+            color: var(--color-text-1);
           }
 
           &-desc {
             font-size: 12px;
-            color: var(--font-light);
+            color: var(--color-text-1);
           }
 
           &:hover {
-            box-shadow: var(--el-box-shadow-lighter);
+            box-shadow: var(--color-secondary-hover);
             opacity: 0.85;
           }
         }
 
         &-mention {
           font-weight: 500;
-          color: var(--color-primary);
+          color: var(--color-text-1);
           cursor: pointer;
           border-radius: 4px;
 
@@ -380,9 +379,9 @@ const props = defineProps({
           min-width: 70px;
           height: 100%;
           font-size: 12px;
-          color: var(--color-light-1);
+          color: var(--color-text-1);
           vertical-align: middle;
-          background: var(--background-2);
+          background: var(--color-bg-2);
         }
       }
 
@@ -399,7 +398,7 @@ const props = defineProps({
         line-height: 1;
         color: var(--font-main);
         cursor: pointer;
-        background-color: var(--background-2);
+        background-color: var(--color-bg-2);
         border-radius: 12px;
 
         .file-desc {
@@ -421,17 +420,17 @@ const props = defineProps({
 
           .file-size {
             font-size: 12px;
-            color: var(--el-text-color-placeholder);
+            color: var(--color-text-1);
             user-select: none;
           }
         }
 
         &:hover {
-          box-shadow: var(--el-box-shadow-light);
+          box-shadow: var(--color-bg-1);
         }
 
         .icon-xiazai:hover {
-          color: var(--color-primary) !important;
+          color: var(--color-text-1) !important;
         }
       }
 
@@ -445,7 +444,7 @@ const props = defineProps({
         color: var(--font-main);
         cursor: pointer;
         user-select: none;
-        background-color: var(--background-2);
+        background-color: var(--color-text-2);
         border-radius: 12px;
 
         .num {
@@ -464,7 +463,7 @@ const props = defineProps({
           z-index: 20;
           width: 0;
           height: 100%;
-          background: var(--background-2);
+          background: var(--color-bg-2);
         }
 
         .play {
@@ -509,7 +508,7 @@ const props = defineProps({
       .video {
         position: relative;
         width: auto;
-        background-color: var(--background-2);
+        background-color: var(--color-bg-2);
         border-radius: 4px;
 
         img {
@@ -523,21 +522,21 @@ const props = defineProps({
           top: 50%;
           left: 50%;
           z-index: 10;
-          color: var(--font-main);
+          color: var(--color-text-1);
           transform: translate(-50%, -50%);
         }
 
         &:hover {
-          box-shadow: var(--el-box-shadow-light);
+          box-shadow: var(--color-text-1);
 
           .icon-bofang {
-            color: var(--color-primary);
+            color: var(--color-text-1);
           }
         }
       }
 
       a {
-        color: var(--color-primary);
+        color: var(--color-text-1);
       }
     }
 
@@ -569,11 +568,11 @@ const props = defineProps({
       font-size: 12px;
       color: var(--font-light);
       word-break: break-all;
-      background-color: var(--background-3);
+      background-color: var(--color-bg-3);
       border-radius: 8px;
 
       .icon-totop {
-        color: var(--font-main);
+        color: var(--color-text-1);
       }
 
       &.pointer {
@@ -598,8 +597,8 @@ const props = defineProps({
         align-items: center;
         padding: 0 6px;
         cursor: pointer;
-        background-color: var(--border-1);
-        border: 1px solid var(--border-base);
+        background-color: var(--color-border);
+        border: 1px solid var(--color-border);
         border-radius: 8px;
 
         .mallchat {
@@ -626,12 +625,12 @@ const props = defineProps({
       .active {
         &.like {
           color: var(--font-pink);
-          border-color: var(--border-pink);
+          border-color: var(--color-border-4);
         }
 
         &.dlike {
           color: var(--font-light);
-          border-color: var(--el-color-info);
+          border-color: var(--color-border);
         }
       }
     }
@@ -692,7 +691,7 @@ const props = defineProps({
     width: 100%;
     margin-bottom: 12px;
     font-size: 12px;
-    color: var(--font-light);
+    color: var(--color-text-1);
     text-align: center;
     user-select: none;
   }
@@ -706,7 +705,7 @@ const props = defineProps({
     }
 
     .text {
-      background-color: var(--color-primary);
+      background-color: var(--color-primary-light-1);
 
       &-mention {
         color: #f1f1f1;

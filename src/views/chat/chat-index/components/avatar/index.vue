@@ -31,11 +31,11 @@ interface Props {
     :style="{ width: size + 'px', height: size + 'px' }"
   >
     <template v-if="src">
-      <Icon v-if="hasError" icon="avatar" :size="size" />
+      <icon-poweroff v-if="hasError" icon="avatar" :size="size" />
       <img v-else :src="src" alt="avatar" @error="hasError = true" />
     </template>
     <slot v-else>
-      <Icon icon="avatar" :size="size" />
+      <icon-image icon="avatar" :size="size" />
     </slot>
     <i v-if="showStatus" class="status" />
   </div>

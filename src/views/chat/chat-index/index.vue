@@ -31,7 +31,7 @@ const imageStore = useImgPreviewStore();
 </script>
 
 <template>
-  <main class="home">
+  <main class="home chat">
     <div class="wrapper">
       <SideBar />
       <ChatBox />
@@ -151,5 +151,8 @@ const imageStore = useImgPreviewStore();
       background-color: var(--background-secondary);
       transform: scale(0.9);
     }
+  }
+  .chat {
+    background-color: var(--color-bg-1);
   }
 </style>

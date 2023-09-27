@@ -55,8 +55,8 @@ const imageBody = ref({ url: '' });
 </script>
 
 <template>
-  <ElDialog
-    v-model="visible"
+  <a-modal
+    v-model:visible="visible"
     class="image-paste-modal"
     title="粘贴图片"
     :close-on-click-modal="false"
@@ -67,11 +67,11 @@ const imageBody = ref({ url: '' });
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="onSend"> 发送 </el-button>
+        <a-button @click="visible = false">取消</a-button>
+        <a-button type="primary" @click="onSend"> 发送 </a-button>
       </span>
     </template>
-  </ElDialog>
+  </a-modal>
 </template>
 
 <style lang="less" scoped>

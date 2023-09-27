@@ -16,7 +16,7 @@ const props = defineProps<{ body: VoiceBody }>();
   <div class="voice" @click="voiceStore.open(body.url)">
     <div class="saying">
       <span :class="['shelter', { play: isPlay }]" />
-      <Icon icon="saying" :size="18" />
+      <icon-voice icon="saying" :size="18" />
     </div>
     <span class="num">{{ body?.second }}"</span>
   </div>

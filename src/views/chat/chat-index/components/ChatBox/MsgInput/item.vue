@@ -1,6 +1,6 @@
 <script setup lang="ts">
-
-import {CacheUserItem} from "@/types/chat";
+import {CacheUserItem} from '@/types/chat';
+import AvatarImage from '@/components/image/AvatarImage.vue';
 
 interface Props {
     item: CacheUserItem;
@@ -21,7 +21,7 @@ interface Props {
     :class="{ 'person-item--active': activeIndex === index }"
     @click="onClick"
   >
-    <Avatar class="avatar" :src="item.avatar" :size="26" />
+    <AvatarImage class="avatar" :avatar="item.avatar" :size="26" />
     <div class="person-item__name">
       {{ item.name }}
     </div>

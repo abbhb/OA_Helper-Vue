@@ -3,6 +3,7 @@ import {computed, ref} from 'vue';
 import {useChatStore} from '@/store/modules/chat/chat';
 import {useUserInfo} from '@/hooks/chat/useCached';
 import {formatTimestamp} from '@/utils/chat/computedTime';
+import AvatarImage from "@/components/image/AvatarImage.vue";
 
 // 选中的聊天对话
   const activeChat = ref('1');
@@ -54,7 +55,7 @@ import {formatTimestamp} from '@/utils/chat/computedTime';
       :class="['chat-message-item ', { active: activeChat === item.id }]"
       @click="activeChat = item.id"
     >
-      <el-avatar shape="circle" :size="38" :src="item.avatar" />
+      <AvatarImage shape="circle" :size="38" :avatar="item.avatar" />
       <div class="message-info">
         <div style="white-space: nowrap">
           <span class="person">{{ item.msgName }}</span>
