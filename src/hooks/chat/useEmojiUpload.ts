@@ -135,16 +135,16 @@ export const useEmojiUpload = () => {
    const uploadEmoji = async (file: File) => {
     const compressFile = (await compressImage(file)) as File;
     if (!compressFile) return;
-    // @ts-ignore
-    const { downloadUrl, uploadUrl } = await getUploadUrl({
+
+    const { data } = await getUploadUrl({
       fileName: compressFile.name,
       scene: '2',
     });
-    if (uploadUrl && downloadUrl) {
-      onStart.trigger({ file, downloadUrl });
-      upload(uploadUrl, compressFile).then((res) => {
+    if (data.uploadUrl && data.downloadUrl) {
+      onStart.trigger(data);
+      upload(data.uploadUrl, compressFile).then((res) => {
         if (res) {
-          emojiStore.addEmoji(downloadUrl);
+          emojiStore.addEmoji(data.downloadUrl);
         }
       });
     }

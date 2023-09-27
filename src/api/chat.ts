@@ -64,9 +64,13 @@ export function recallMsg(data: { msgId: string; roomId: string }) {
   return axios.put<void>('/api/chat/msg/recall', data);
 }
 
+interface uploadT {
+    downloadUrl: string;
+    uploadUrl: string
+}
 /** 获取临时上传链接 */
 export function getUploadUrl(params: any) {
-  return axios.get<{ downloadUrl: string; uploadUrl: string }>(
+  return axios.get<uploadT>(
     '/api/chat-oss/upload/url',
     {
       params,
@@ -75,8 +79,8 @@ export function getUploadUrl(params: any) {
 }
 
 /** 新增表情包 */
-export function addEmoji(data: { uid: string; expressionUrl: string }) {
-  return axios.post<MessageType>('/api/user/emoji', data);
+export function addEmoji(data: { expressionUrl: string }) {
+  return axios.post<MessageType>('/api/user/emoji/add', data);
 }
 
 /** 获取表情 */
@@ -88,7 +92,7 @@ export function getEmoji(params: { uid: string }) {
 
 /** 删除id */
 export function deleteEmoji(params: { id: string }) {
-  return axios.delete<EmojiItem[]>('/api/user/emoji', {
+  return axios.delete<EmojiItem[]>('/api/user/emoji/delete', {
     params,
   });
 }
