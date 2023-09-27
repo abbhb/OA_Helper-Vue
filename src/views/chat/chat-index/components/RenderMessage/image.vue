@@ -43,9 +43,11 @@ const props = defineProps<{ body: ImageBody }>();
       加载失败
     </div>
     <template v-else>
-      <img
+      <a-image
         v-if="body?.url"
+        :width="100"
         :src="body?.url"
+        :zoom-rate="1.1"
         @click="imageStore.show(body?.url)"
         @error="handleError"
       />

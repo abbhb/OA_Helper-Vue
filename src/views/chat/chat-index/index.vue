@@ -37,15 +37,6 @@ const imageStore = useImgPreviewStore();
       <ChatBox />
     </div>
 
-    <a-image
-      v-if="imageStore.isShowing"
-      :z-index="5000"
-      :initial-index="0"
-      :zoom-rate="1.1"
-      :hide-on-click-modal="true"
-      :src="imageStore.previewUrl"
-      @preview-visible-change="imageStore.close"
-    />
     <div
       v-if="videoStore.isPlaying"
       class="video-play"

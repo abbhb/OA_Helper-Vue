@@ -16,7 +16,6 @@ export const useCachedStore = defineStore(
         (item) => !item.lastModifyTime || isDiffNow10Min(item.lastModifyTime)
       );
       if (!result.length) return;
-      const itemIdSet: Set<string> = new Set();
       const { data } = await Api.getUserInfoBatch(result);
       data?.forEach((item) => {
         // 更新最后更新时间。

@@ -96,10 +96,14 @@ export const useChatStore = defineStore('chat', () => {
 
     // 获取用户信息缓存
     // 尝试取缓存user, 如果有 lastModifyTime 说明缓存过了，没有就一定是要缓存的用户了
-    const { uid } = msg.fromUser;
-    const cacheUser = cachedStore.userCachedList[uid];
+    console.log("此处为数据")
+    if (!msg.fromUser.uid){
+      return;
+    }
+    console.log(msg.fromUser.uid)
+    const cacheUser = cachedStore.userCachedList[ msg.fromUser.uid];
     cachedStore.getBatchUserInfo([
-      { uid, lastModifyTime: cacheUser?.lastModifyTime },
+      {  uid:msg.fromUser.uid, lastModifyTime: cacheUser?.lastModifyTime },
     ]);
 
     // 如果收到的消息里面是艾特自己的就发送系统通知
