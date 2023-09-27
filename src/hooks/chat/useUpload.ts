@@ -79,30 +79,29 @@ export const useUpload = () => {
           ?.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         // 将canvas转为图片file
-        canvas.toBlob((blob) => {
+        canvas.toBlob(async (blob) => {
           if (!blob) return;
           // 时间戳生成唯一文件名
           const name = `${Date.now()}thumb.jpg`;
-          const thumbFile = new File([blob], name, { type: 'image/jpeg' });
+          const thumbFile = new File([blob], name, {type: 'image/jpeg'});
           // 转成File对象 并上传
-          getUploadUrl({ fileName: name, scene: '1' }).then((res) => {
-            if (res.uploadUrl && res.downloadUrl) {
-              upload(res.uploadUrl, thumbFile, true);
-              // 等待上传完成
-              const timer = setInterval(() => {
-                if (!isUploading.value) {
-                  clearInterval(timer);
-                  resolve({
-                    thumbWidth: canvas.width,
-                    thumbHeight: canvas.height,
-                    thumbUrl: res.downloadUrl,
-                    thumbSize: thumbFile.size,
-                    tempUrl,
-                  });
-                }
-              });
-            }
-          });
+          const {data} = await getUploadUrl({fileName: name, scene: '1'});
+          if (data.uploadUrl && data.downloadUrl) {
+            upload(data.uploadUrl, thumbFile, true);
+            // 等待上传完成
+            const timer = setInterval(() => {
+              if (!isUploading.value) {
+                clearInterval(timer);
+                resolve({
+                  thumbWidth: canvas.width,
+                  thumbHeight: canvas.height,
+                  thumbUrl: data.downloadUrl,
+                  thumbSize: thumbFile.size,
+                  tempUrl,
+                });
+              }
+            });
+          }
         });
       };
       video.onerror = function () {
@@ -221,16 +220,16 @@ export const useUpload = () => {
       return;
     }
 
-    // @ts-ignore
-    const { downloadUrl, uploadUrl } = await getUploadUrl({
+    // 获取上传链接
+    const { data } = await getUploadUrl({
       fileName: info.name,
       scene: '1',
     });
-
-    if (uploadUrl && downloadUrl) {
+    const {downloadUrl} = data
+    if (data.uploadUrl && data.downloadUrl) {
       fileInfo.value = { ...info, downloadUrl };
       onStart.trigger(fileInfo);
-      upload(uploadUrl, file);
+      upload(data.uploadUrl, file);
     } else {
       trigger('fail');
     }

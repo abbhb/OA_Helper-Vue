@@ -25,7 +25,8 @@ const { downloadObjMap, download, quenu, cancelDownload } =
   });
 
   const process = computed(() => {
-    return downloadObjMap.get(props.body.url)?.process || 0;
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    return (downloadObjMap.get(props.body.url)?.process/100.0) || 0;
   });
 
   // 是否排队中
@@ -36,7 +37,7 @@ const { downloadObjMap, download, quenu, cancelDownload } =
 
 <template>
   <div class="file">
-    <icon-download :icon="getFileSuffix(body?.fileName)" :size="32" colorful />
+    <icon-file :icon="getFileSuffix(body?.fileName)" :size="32" colorful />
     <div class="file-desc">
       <span class="file-name">{{ body?.fileName || '未知文件' }}</span>
       <span class="file-size">{{ formatBytes(body?.size) }}</span>

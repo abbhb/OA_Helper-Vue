@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue'
-import type {EmojiBody} from '@/services/types'
+import {EmojiBody} from "@/types/chat";
 
 defineProps<{ body: EmojiBody }>()
 

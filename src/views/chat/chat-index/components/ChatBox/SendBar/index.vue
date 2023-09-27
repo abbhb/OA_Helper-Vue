@@ -199,9 +199,6 @@ const client = judgeClient();
       await uploadFile(file);
     }
   };
-  watch(files, () => {
-    selectAndUploadFile(files.value);
-  });
 
   // 选中文件上传并发送消息
   provide('onChangeFile', selectAndUploadFile);
@@ -210,6 +207,9 @@ const client = judgeClient();
     nowMsgType.value = msgType;
   });
 
+  watch(files, () => {
+    selectAndUploadFile(files.value);
+  });
   onStart(() => {
     if (!fileInfo.value) return;
 
@@ -329,7 +329,7 @@ const client = judgeClient();
                   @click="sendEmoji(emoji.expressionUrl)"
                   @contextmenu="handleRightClick($event, emoji.id)"
                 >
-                  <a-image    :width="50" :src="emoji.expressionUrl" />
+                  <a-image :width="50" :src="emoji.expressionUrl" />
                   <icon-folder-add
                     v-if="emoji.id === tempEmojiId"
                     icon="guanbi1"
