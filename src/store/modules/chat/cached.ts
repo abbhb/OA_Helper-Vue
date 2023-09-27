@@ -3,6 +3,7 @@ import {defineStore} from 'pinia';
 import {isDiffNow10Min} from '@/utils/chat/computedTime';
 import {CacheUserItem, CacheUserReq} from '@/types/chat';
 import * as Api from '@/api/chat';
+import item from "@/views/chat/chat-index/components/VirtualList/item";
 
 export const useCachedStore = defineStore(
   'cached',
