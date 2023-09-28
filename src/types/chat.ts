@@ -315,7 +315,7 @@ export enum RequestFriendAgreeStatus {
 /** 请求添加好友的列表项 */
 export type RequestFriendItem = {
   /** 申请id */
-  applyId: number;
+  applyId: string;
   /** 申请信息 */
   msg: string;
   /** 申请状态 1待审批 2同意 */
@@ -323,9 +323,9 @@ export type RequestFriendItem = {
   /** 申请类型 1加好友 */
   type: number;
   /** 申请人uid */
-  uid: number;
+  uid: string;
   /** 会话 ID */
-  roomId: number;
+  roomId: string;
 };
 /** 联系人的列表项 */
 export type ContactItem = {
@@ -333,7 +333,7 @@ export type ContactItem = {
   activeStatus: ChatOnlineEnum;
   /** 最后一次上下线时间 */
   lastOptTime: number;
-  uid: number;
+  uid: string;
 };
 
 /** 是否全员展示的会话 0否 1是 */
@@ -367,7 +367,7 @@ export type SessionItem = {
 /** 消息已读未读数列表项 */
 export type MsgReadUnReadCountType = {
   /** 消息 ID */
-  msgId: number;
+  msgId: string;
   /** 已读数 */
   readCount: number;
   /** 未读数 */

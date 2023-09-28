@@ -26,7 +26,7 @@ export const useGlobalStore = defineStore('global', () => {
   });
   /** 点击联系人选中的联系人项 */
   const currentSelectedContact = ref<ContactItem | RequestFriendItem>();
-  const addFriendModalInfo = reactive<{ show: boolean; uid?: number }>({
+  const addFriendModalInfo = reactive<{ show: boolean; uid?: string }>({
     show: false,
     uid: undefined,
   });

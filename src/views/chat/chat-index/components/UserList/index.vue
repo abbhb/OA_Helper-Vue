@@ -92,7 +92,7 @@
     list-style-type: none;
 
     :deep(.el-loading-mask) {
-      background-color: var(--background-mask);
+      background-color: var(--color-bg-5);
     }
 
     &-box {
@@ -105,7 +105,7 @@
       &.show {
         position: fixed;
         inset: 66px 0 0;
-        background-color: var(--background-black-half);
+        background-color: var(--color-bg-3);
       }
     }
 
@@ -116,7 +116,7 @@
       width: 100%;
       height: 100%;
       font-size: 14px;
-      color: var(--font-light);
+      color: var(--color-text-1);
     }
 
     &-wrapper {
@@ -129,7 +129,7 @@
       width: 200px;
       height: 100%;
       padding: 8px 12px;
-      background-color: var(--background-secondary);
+      background-color: var(--color-secondary);
       border-radius: 8px;
       transition: transform 0.3s ease;
       transform: translateX(100%);

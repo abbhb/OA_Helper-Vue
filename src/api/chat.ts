@@ -1,15 +1,17 @@
 import axios from 'axios';
 import {
-    CacheUserItem,
-    CacheUserReq,
-    ChatCacheUserItem,
-    ChatGroupStatisticType,
-    ChatUserItem,
-    EmojiItem,
-    ListResponse,
-    MarkMsgReq,
-    MessageReq,
-    MessageType,
+  CacheUserItem,
+  CacheUserReq,
+  ChatCacheUserItem,
+  ChatGroupStatisticType,
+  ChatUserItem,
+  ContactItem,
+  EmojiItem,
+  ListResponse,
+  MarkMsgReq,
+  MessageReq,
+  MessageType,
+  RequestFriendItem,
 } from '@/types/chat';
 
 /** 获取群成员列表 */
@@ -65,17 +67,14 @@ export function recallMsg(data: { msgId: string; roomId: string }) {
 }
 
 interface uploadT {
-    downloadUrl: string;
-    uploadUrl: string
+  downloadUrl: string;
+  uploadUrl: string;
 }
 /** 获取临时上传链接 */
 export function getUploadUrl(params: any) {
-  return axios.get<uploadT>(
-    '/api/chat-oss/upload/url',
-    {
-      params,
-    }
-  );
+  return axios.get<uploadT>('/api/chat-oss/upload/url', {
+    params,
+  });
 }
 
 /** 新增表情包 */
@@ -93,6 +92,42 @@ export function getEmoji(params: { uid: string }) {
 /** 删除id */
 export function deleteEmoji(params: { id: string }) {
   return axios.delete<EmojiItem[]>('/api/user/emoji/delete', {
+    params,
+  });
+}
+
+// -------------- 好友相关 ---------------
+export function getContactList(params?: any) {
+  return axios.get<ListResponse<ContactItem>>('/api/user/friend/page', {
+    params,
+  });
+}
+
+export function requestFriendList(params?: any) {
+  return axios.get<ListResponse<RequestFriendItem>>(
+    '/api/user/friend/apply/page',
+    {
+      params,
+    }
+  );
+}
+
+/** 发送添加好友请求 */
+export function sendAddFriendRequest(params: {
+  targetUid: string;
+  msg: string;
+}) {
+  return axios.post<EmojiItem[]>('/api/user/friend/apply', params);
+}
+
+/** 同意好友申请 */
+export function applyFriendRequest(params: { applyId: string }) {
+  return axios.put<void>('/api/user/friend/apply', params);
+}
+
+/** 删除好友 */
+export function deleteFriend(params: { targetUid: string }) {
+  return axios.delete('/api/user/emoji/delete', {
     params,
   });
 }

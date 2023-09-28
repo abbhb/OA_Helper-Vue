@@ -1,0 +1,115 @@
+<script setup lang="ts">
+  import { computed, toRef } from 'vue';
+  import {
+    ContextMenu,
+    ContextMenuItem,
+    type MenuOptions,
+  } from '@imengyu/vue3-context-menu';
+  import { useUserStore } from '@/store';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import { useGroupStore } from '@/store/modules/chat/group';
+  import { ChatPowerEnum, RoleEnum } from '@/types/enums/chat';
+  import eventBus from '@/utils/chat/eventBus';
+
+  const props = defineProps<{
+    // 消息体
+    uid: string;
+    // 菜单设置-其它的参数透传
+    options?: MenuOptions;
+  }>();
+
+  // const uid = toRef(props.uid)
+
+  const userInfo = useUserStore()?.userInfo;
+  const globalStore = useGlobalStore();
+  const groupStore = useGroupStore();
+  const statistic = computed(() => groupStore.countInfo);
+  // const isMe = computed(() => userInfo?.id === uid.value)
+  const onAtUser = (uid: string, ignoreCheck: boolean) =>
+    eventBus.emit('onSelectPerson', { uid, ignoreCheck });
+
+  // 添加好友
+  const onAddFriend = async () => {
+    globalStore.addFriendModalInfo.show = true;
+    globalStore.addFriendModalInfo.uid = props.uid;
+  };
+  //
+  // // 移除群成员
+  // const onRemoveMember = async () => {
+  //   await removeGroupMember({ uid: props.uid, roomId: globalStore.currentSession.roomId }).send()
+  //   // 更新群成员列表
+  //   groupStore.getGroupUserList(true)
+  // }
+</script>
+
+<template>
+  <ContextMenu :options="{ theme: 'dark', x: 0, y: 0, ...props.options }">
+    <ContextMenuItem
+      label="艾特Ta"
+      @click="onAtUser?.(props.uid, true)"
+    >
+      <template #icon> <span class="icon">@</span> </template>
+    </ContextMenuItem>
+    <!--    <ContextMenuItem v-if="isAdmin" label="拉黑(管理)" @click="onBlockUser">-->
+    <!--      <template #icon>-->
+    <!--        <Icon icon="lahei" :size="13" />-->
+    <!--      </template>-->
+    <!--    </ContextMenuItem>-->
+    <ContextMenuItem
+      v-friends="uid"
+      label="添加好友"
+      @click="onAddFriend"
+    >
+      <template #icon>
+        <Icon icon="tianjia" :size="13" />
+      </template>
+    </ContextMenuItem>
+    <!-- 群主和管理员才能踢人（踢的不是自己） -->
+    <!--    <ContextMenuItem-->
+    <!--      vLoginShow-->
+    <!--      v-if="[RoleEnum.LORD, RoleEnum.ADMIN].includes(statistic.role) && !isMe"-->
+    <!--      label="剔出群聊"-->
+    <!--      @click="onRemoveMember"-->
+    <!--    >-->
+    <!--      <template #icon>-->
+    <!--        <Icon icon="yichu" :size="13" />-->
+    <!--      </template>-->
+    <!--    </ContextMenuItem>-->
+  </ContextMenu>
+</template>
+
+<style lang="scss" scoped>
+  .mx-context-menu {
+    padding: 6px;
+    background-color: var(--background-3);
+    border-radius: 6px;
+
+    .mx-context-menu-item {
+      padding: 2px 4px;
+      color: var(--color-text-3);
+      border-radius: 4px;
+
+      .label {
+        padding: 0;
+        font-size: 12px;
+      }
+    }
+
+    .mx-context-menu-item:hover {
+      background-color: var(--color-bg-1);
+    }
+
+    .mx-icon-placeholder {
+      width: auto !important;
+      padding-right: 4px;
+    }
+
+    .mx-context-menu-item-sperator {
+      background-color: var(--color-bg-3);
+    }
+
+    .mx-context-menu-item-sperator::after {
+      background-color: var(--color-bg-2);
+    }
+  }
+</style>

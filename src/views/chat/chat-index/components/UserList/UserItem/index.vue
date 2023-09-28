@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import type {PropType} from 'vue';
-import {ref} from 'vue';
+  import type { PropType } from 'vue';
+  import { ref } from 'vue';
 
-import {UserItem} from '@/types/chat';
-import {useUserInfo} from '@/hooks/chat/useCached';
-import {useUserStore} from '@/store';
+  import { UserItem } from '@/types/chat';
+  import { useUserInfo } from '@/hooks/chat/useCached';
+  import { useUserStore } from '@/store';
+  import AvatarImage from '@/components/image/AvatarImage.vue';
+  import ContextMenu from '../ContextMenu/index.vue';
 
-const props = defineProps({
+  const props = defineProps({
     user: {
       type: Object as PropType<UserItem>,
       required: true,
@@ -39,13 +41,21 @@ const props = defineProps({
     class="user-list-item"
     @contextmenu.prevent.stop="handleRightClick($event)"
   >
-    <Avatar :src="userInfo.avatar" :size="24" show-status :online="true" />
-    {{ userInfo.name }}
-<!--    <ContextMenu-->
-<!--      v-model:show="isShowMenu"-->
-<!--      :options="menuOptions"-->
-<!--      :uid="(user?.uid as number)"-->
-<!--    />-->
+    <AvatarImage
+      :avatar="userInfo.avatar"
+      :size="24"
+      show-status
+      :online="true"
+    />
+    <span style="margin-left: 5px">
+      {{ userInfo.name }}
+    </span>
+
+    <ContextMenu
+      v-model:show="isShowMenu"
+      :options="menuOptions"
+      :uid="(user?.uid as number)"
+    />
   </li>
 </template>
 

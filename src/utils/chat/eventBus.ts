@@ -5,10 +5,10 @@ import {MsgReadUnReadCountType} from '@/types/chat';
 
 type Events = {
   focusMsgInput?: void;
-  onSelectPerson: { uid: number; ignoreCheck?: boolean };
-  onAddReadCountTask: { msgId: number };
-  onRemoveReadCountTask: { msgId: number };
-  onGetReadCount: Map<number, MsgReadUnReadCountType>;
+  onSelectPerson: { uid: string; ignoreCheck?: boolean };
+  onAddReadCountTask: { msgId: string };
+  onRemoveReadCountTask: { msgId: string };
+  onGetReadCount: Map<string, MsgReadUnReadCountType>;
 };
 
 const eventHub: Emitter<Events> = mitt<Events>();
