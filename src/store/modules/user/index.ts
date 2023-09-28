@@ -1,19 +1,19 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 import {
-    getUserInfo,
-    login as userLogin,
-    loginbycode,
-    loginbytoken,
-    LoginData,
-    LoginDataByCode,
-    logout as userLogout,
+  getUserInfo,
+  login as userLogin,
+  loginbycode,
+  loginbytoken,
+  LoginData,
+  LoginDataByCode,
+  logout as userLogout,
 } from '@/api/user';
-import {clearToken, setToken} from '@/utils/auth';
-import {removeRouteListener} from '@/utils/route-listener';
+import { clearToken, setToken } from '@/utils/auth';
+import { removeRouteListener } from '@/utils/route-listener';
 import rsautils from '@/utils/rsautils';
-import {UserState} from './types';
+import { deleteLocalMenu } from '@/store/modules/app/persistence';
+import { UserState } from './types';
 import useAppStore from '../app';
-import {deleteLocalMenu} from "@/store/modules/app/persistence";
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
@@ -74,7 +74,7 @@ const useUserStore = defineStore('user', {
     async login(loginForm: LoginData) {
       try {
         loginForm.password = <string>(
-            rsautils.encryptByPublicKey(loginForm.password)
+          rsautils.encryptByPublicKey(loginForm.password)
         );
         const res = await userLogin(loginForm);
         setToken(res.data.token);
