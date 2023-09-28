@@ -1,4 +1,6 @@
 // 发消息给主进程
+import {getToken} from "@/utils/auth";
+
 const postMsg = ({ type, value }: { type: string; value?: object }) => {
   // eslint-disable-next-line no-restricted-globals
   self.postMessage(JSON.stringify({ type, value }));
@@ -18,7 +20,6 @@ let timer: null | number = null;
 // 重连🔐
 let lockReconnect = false;
 // 重连🔐
-let token: null | string = null;
 
 // 往 ws 发消息
 const connectionSend = (value: object) => {
@@ -81,7 +82,6 @@ const onConnectError = () => {
 // ws 连接 close
 const onConnectClose = () => {
   onCloseHandler();
-  token = null;
   postMsg({ type: 'close' });
 };
 // ws 连接成功
@@ -101,13 +101,16 @@ const initConnection = () => {
   connection?.removeEventListener('open', onConnectOpen);
   connection?.removeEventListener('close', onConnectClose);
   connection?.removeEventListener('error', onConnectError);
+  const token = getToken();
+
+
   // 建立链接
   // 本地配置到 .env 里面修改。生产配置在 .env.production 里面
   connection = new WebSocket(
-    `ws://localhost:8090${
+    `${import.meta.env.VITE_WS_BASE_URL}${
       token
         ? `?token=${token}`
-        : '?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCIsImlkIjoiMTY1OTkzOTcyNjM4NjgyNzI2NSJ9.j8nqvt4gS_zDOqE_4OVGICkM2asWodBe6EpsxNmur9c'
+        : ''
     }`
   );
   // 收到消息
@@ -127,7 +130,6 @@ self.onmessage = (e: MessageEvent<string>) => {
   switch (type) {
     case 'initWS': {
       reconnectCount = 0;
-      token = value;
       initConnection();
       break;
     }

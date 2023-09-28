@@ -13,6 +13,7 @@ import {removeRouteListener} from '@/utils/route-listener';
 import rsautils from '@/utils/rsautils';
 import {UserState} from './types';
 import useAppStore from '../app';
+import {deleteLocalMenu} from "@/store/modules/app/persistence";
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
@@ -103,6 +104,7 @@ const useUserStore = defineStore('user', {
       const appStore = useAppStore();
       this.resetInfo();
       clearToken();
+      deleteLocalMenu();
       removeRouteListener();
       appStore.clearServerMenu();
     },
