@@ -528,14 +528,16 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     return false;
   };
 
-  //
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSelectPerson = (uid: number, ignore = false) => {
     if (!uid) return;
     eventBus.emit('focusMsgInput')
     setTimeout(() => {
-      const userItem = cachedStore.userCachedList[uid];
-      // userItem && selectPerson?.(userItem as CacheUserItem, ignore);
-    }, 10);
+      const userItem = cachedStore.userCachedList[uid]
+      // eslint-disable-next-line no-unused-expressions
+      userItem && selectPerson?.(userItem as CacheUserItem, ignore)
+    }, 10)
   };
 
   // 暴露 ref 属性
@@ -598,7 +600,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     padding: 0;
     font-size: inherit;
     line-height: 1;
-    color: var(--color-bg-1);
+    color: #2299dd;
     background: transparent;
     border: none;
   }
@@ -611,7 +613,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     width: 100%;
     max-height: 100px;
     padding: 0 12px;
-    color: var(--font-main);
+    color: var(--color-text-1);
     cursor: text;
     //background-color: var(--background-2);
     border: 1px solid transparent;
@@ -691,7 +693,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
 
         span {
           font-size: 12px;
-          color: var(--font-placeholder);
+          color: var(--color-text-1);
         }
       }
     }

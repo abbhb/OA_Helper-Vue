@@ -5,10 +5,9 @@
     ContextMenuItem,
     type MenuOptions,
   } from '@imengyu/vue3-context-menu';
-  import { useUserStore } from '@/store';
+  import {useAppStore, useUserStore} from '@/store';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import { useGroupStore } from '@/store/modules/chat/group';
-  import { ChatPowerEnum, RoleEnum } from '@/types/enums/chat';
   import eventBus from '@/utils/chat/eventBus';
 
   const props = defineProps<{
@@ -18,8 +17,9 @@
     options?: MenuOptions;
   }>();
 
-  // const uid = toRef(props.uid)
+  const appStore = useAppStore();
 
+  // const uid = toRef(props.uid)
   const userInfo = useUserStore()?.userInfo;
   const globalStore = useGlobalStore();
   const groupStore = useGroupStore();
@@ -28,6 +28,9 @@
   const onAtUser = (uid: string, ignoreCheck: boolean) =>
     eventBus.emit('onSelectPerson', { uid, ignoreCheck });
 
+  const theme = computed(() => {
+    return appStore.theme;
+  });
   // 添加好友
   const onAddFriend = async () => {
     globalStore.addFriendModalInfo.show = true;
@@ -43,7 +46,7 @@
 </script>
 
 <template>
-  <ContextMenu :options="{ theme: 'dark', x: 0, y: 0, ...props.options }">
+  <ContextMenu :options="{ theme: theme, x: 0, y: 0, ...props.options }">
     <ContextMenuItem
       label="艾特Ta"
       @click="onAtUser?.(props.uid, true)"
@@ -56,12 +59,12 @@
     <!--      </template>-->
     <!--    </ContextMenuItem>-->
     <ContextMenuItem
-      v-friends="uid"
+      v-is-frient="uid"
       label="添加好友"
       @click="onAddFriend"
     >
       <template #icon>
-        <Icon icon="tianjia" :size="13" />
+        <icon-user-add icon="tianjia" :size="13" />
       </template>
     </ContextMenuItem>
     <!-- 群主和管理员才能踢人（踢的不是自己） -->

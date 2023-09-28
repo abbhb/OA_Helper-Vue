@@ -32,7 +32,7 @@ const client = judgeClient();
   const globalStore = useGlobalStore();
   const isSending = ref(false);
   const inputMsg = ref('');
-  const mentionRef = ref<typeof Input>();
+  const mentionRef = ref();
   const mentionList = ref<IMention[]>([]);
   const isAudio = ref(false);
   const isHovered = ref(false);
@@ -54,17 +54,12 @@ const client = judgeClient();
     });
   };
   // 艾特
-  const onSelectPerson = ({
-    uid,
-    ignoreCheck,
-  }: {
-    uid: number;
-    ignoreCheck?: boolean;
-  }) => {
-    mentionRef.value?.onSelectPerson?.(uid, ignoreCheck);
-    isAudio.value = false;
-  };
 
+const onSelectPerson = ({ uid, ignoreCheck }: { uid: string; ignoreCheck?: boolean }) => {
+  console.log(uid)
+  mentionRef.value?.onSelectPerson?.(uid, ignoreCheck)
+  isAudio.value = false
+}
   onMounted(() => {
     eventBus.on('onSelectPerson', onSelectPerson);
     eventBus.on('focusMsgInput', focusMsgInput);

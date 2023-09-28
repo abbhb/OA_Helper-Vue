@@ -1,14 +1,40 @@
-import {reactive} from 'vue';
-import {defineStore} from 'pinia';
-import {isDiffNow10Min} from '@/utils/chat/computedTime';
-import {CacheUserItem, CacheUserReq} from '@/types/chat';
+import { computed, reactive } from 'vue';
+import { defineStore } from 'pinia';
+import { isDiffNow10Min } from '@/utils/chat/computedTime';
+import { CacheUserItem, CacheUserReq } from '@/types/chat';
 import * as Api from '@/api/chat';
-import item from "@/views/chat/chat-index/components/VirtualList/item";
+import { useGlobalStore } from '@/store/modules/chat/global'
+
+
+type BaseUserItem = Pick<CacheUserItem, 'uid' | 'avatar' | 'name'>;
 
 export const useCachedStore = defineStore(
   'cached',
   () => {
-    const userCachedList = reactive<Record<string, Partial<CacheUserItem>>>({});
+    const globalStore = useGlobalStore();
+    const userCachedList = reactive<Record<number, Partial<CacheUserItem>>>({});
+
+    const currentRoomId = computed(() => globalStore.currentSession.roomId);
+
+    const atUsersMap = reactive<Record<number, BaseUserItem[]>>({
+      [currentRoomId.value]: [],
+    }); // 消息Map
+
+    const currentAtUsersList = computed({
+      get: () => {
+        const current = atUsersMap[currentRoomId.value];
+        if (current === undefined) {
+          atUsersMap[currentRoomId.value] = [];
+        }
+        if (currentRoomId.value === 1) {
+          return Object.values(userCachedList as BaseUserItem[]);
+        }
+        return atUsersMap[currentRoomId.value];
+      },
+      set: (val) => {
+        atUsersMap[currentRoomId.value] = val;
+      },
+    });
 
     /** 批量获取用户详细信息 */
     const getBatchUserInfo = async (users: CacheUserReq[]) => {
@@ -53,6 +79,7 @@ export const useCachedStore = defineStore(
 
     return {
       userCachedList,
+      currentAtUsersList,
       getBatchUserInfo,
       initAllUserBaseInfo,
       filterUsers,

@@ -1,11 +1,9 @@
 import {defineStore} from 'pinia';
 import {reactive, ref, watch} from 'vue';
-import {useChatStore} from '@/store/modules/chat/chat';
 import {RoomTypeEnum} from '@/types/enums/chat';
 import {ContactItem, RequestFriendItem} from '@/types/chat';
 
 export const useGlobalStore = defineStore('global', () => {
-  const chatStore = useChatStore();
   const unReadMark = reactive<{
     newFriendUnreadCount: number;
     newMsgUnreadCount: number;
@@ -34,7 +32,7 @@ export const useGlobalStore = defineStore('global', () => {
   const createGroupModalInfo = reactive<{
     show: boolean;
     isInvite: boolean;
-    selectedUid: number[];
+    selectedUid: string[];
   }>({
     show: false,
     isInvite: false,

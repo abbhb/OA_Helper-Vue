@@ -67,7 +67,7 @@ const isSelect = ref(false);
     .m-input {
       padding: 0 4px;
       margin: 0 4px;
-      background-color: transparent;
+      color: #2299dd;
     }
 
     .msg-input {
@@ -77,7 +77,7 @@ const isSelect = ref(false);
       min-height: 40px;
       padding: 2px 6px;
       font-size: 14px;
-      color: var(--font-main);
+      color: var(--color-text-2);
       background-color: var(--color-bg-3);
       border-radius: 12px;
 
@@ -92,7 +92,7 @@ const isSelect = ref(false);
       }
 
       .action:hover {
-        background-color: var(--color-secondary-hover);
+        background-color: var(--color-secondary);
       }
 
       .send {
@@ -179,7 +179,7 @@ const isSelect = ref(false);
       padding: 4px 12px;
       margin-bottom: 4px;
       font-size: 12px;
-      color: var(--color-text-1);
+      color: var(--color-text-4);
       word-wrap: break-all;
       white-space: pre-wrap;
       background-color: var(--color-bg-3);
@@ -237,6 +237,7 @@ const isSelect = ref(false);
       border-top: 1px solid var(--color-bg-2);
 
       &-act {
+        color: #2299dd;
         padding: 4px;
         margin-right: 8px;
         line-height: 18px;

@@ -2,7 +2,12 @@
   import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
   import { useGroupStore } from '@/store/modules/chat/group';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import { useCachedStore } from '@/store/modules/chat/cached';
   import UserItem from './UserItem/index.vue';
+
+  const globalStore = useGlobalStore();
+  const cachedStore = useCachedStore();
 
   const groupListLastElRef = ref<HTMLDivElement>();
   const groupStore = useGroupStore();
@@ -40,6 +45,13 @@
 
   // eslint-disable-next-line no-return-assign
   const hiddenGroupListShow = () => (groupStore.showGroupList = false);
+  const onAddGroupMember = () => {
+    globalStore.createGroupModalInfo.show = true;
+    globalStore.createGroupModalInfo.isInvite = true;
+    // 禁用已经邀请的人
+    globalStore.createGroupModalInfo.selectedUid =
+      cachedStore.currentAtUsersList.map((item) => item.uid);
+  };
 </script>
 
 <template>
@@ -56,9 +68,16 @@
       <div class="user-list-header"
         >在线人数：{{ statistic.onlineNum || 0 }}</div
       >
+      <a-button
+        type="primary"
+        :shape="'circle'"
+        size="small"
+        style="font-size: 14px; font-weight: 900"
+        @click="onAddGroupMember"
+        >+</a-button
+      >
       <TransitionGroup
         v-show="groupUserList?.length"
-        v-loading.lock="groupStore.loading"
         tag="ul"
         name="fade"
         class="user-list"

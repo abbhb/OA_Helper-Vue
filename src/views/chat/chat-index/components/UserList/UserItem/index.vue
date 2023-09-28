@@ -6,7 +6,7 @@
   import { useUserInfo } from '@/hooks/chat/useCached';
   import { useUserStore } from '@/store';
   import AvatarImage from '@/components/image/AvatarImage.vue';
-  import ContextMenu from '../ContextMenu/index.vue';
+  import ContextMenu from '@/views/chat/chat-index/components/UserList/ContextMenu/index.vue';
 
   const props = defineProps({
     user: {
@@ -25,7 +25,6 @@
     if (!useUserStore().isSign) {
       return;
     }
-
     // TODO：看它源码里提供了一个transformMenuPosition函数可以控制在容器范围内弹窗 我试验了一下报错
     // https://github.com/imengyu/vue3-context-menu/blob/f91a4140b4a425fa2770449a8be3570836cdfc23/examples/views/ChangeContainer.vue#LL242C5-L242C5
     const { x, y } = e;
@@ -51,11 +50,14 @@
       {{ userInfo.name }}
     </span>
 
+
     <ContextMenu
       v-model:show="isShowMenu"
       :options="menuOptions"
-      :uid="(user?.uid as number)"
+      :uid="(user?.uid as string)"
     />
+
+
   </li>
 </template>
 
@@ -72,7 +74,7 @@
       // content-visibility: auto;
 
       &:hover {
-        background-color: var(--background-mask);
+        background-color: var(--color-mask-bg);
       }
 
       .avatar {
