@@ -650,12 +650,12 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
   // 选人弹窗样式
   .at-mentions__dialog {
     position: fixed;
-    z-index: 10000;
+    z-index: 20000;
     min-width: 100px;
     padding: 6px;
     font-size: 16px;
     color: var(--color-text-1);
-    background: var(--background-2);
+    background: var(--color-bg-2);
     border-radius: 12px;
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 10%);
     transform: translateY(-100%);
@@ -675,7 +675,7 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
       margin-bottom: 2px;
       cursor: pointer;
       border-radius: 8px;
-
+      background-color: var(--color-bg-3);
       .avatar {
         margin-right: 8px;
       }

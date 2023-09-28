@@ -62,7 +62,7 @@ interface Props {
       outline: none;
 
       &:empty::before {
-        color: var(--font-placeholder);
+        color: var(--color-text-1);
         pointer-events: none;
         content: attr(placeholder);
       }
@@ -76,10 +76,10 @@ interface Props {
     min-width: 100px;
     padding: 6px;
     font-size: 16px;
-    color: var(--font-main);
-    background: var(--background-2);
+    color: var(--color-text-1);
+    background: var(--color-bg-3);
     border-radius: 12px;
-    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 10%);
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0);
     transform: translateY(-100%);
 
     .person-warpper {
