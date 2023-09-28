@@ -708,12 +708,12 @@ const props = defineProps({
       background-color: var(--color-primary-light-1);
 
       &-mention {
-        color: #f1f1f1;
+        color: #2299dd;
       }
     }
 
     a {
-      color: #fff;
+      color: var(--color-text-1);
     }
   }
 

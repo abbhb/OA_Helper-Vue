@@ -15,20 +15,20 @@ import {
 /** 获取群成员列表 */
 export function getGroupList(params?: any) {
   return axios.get<ListResponse<ChatUserItem>>(
-    '/api/chat/public/member/page',
+    '/api/room/public/group/member/page',
     params
   );
 }
 
 /** 获取群成员统计 */
 export function getMemberStatistic() {
-  return axios.get<ChatGroupStatisticType>('/api/chat/public/member/page');
+  return axios.get<ChatGroupStatisticType>('/api/chat/public/member/statistic');
 }
 
 /** 房间内的所有群成员列表-@专用 */
 export function getAllUserBaseInfo(params?: any) {
   return axios.get<Pick<ChatCacheUserItem, 'avatar' | 'name' | 'uid'>[]>(
-    '/api/chat/member/list',
+    '/api/room/group/member/list',
     params
   );
 }

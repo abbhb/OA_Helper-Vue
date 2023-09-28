@@ -154,7 +154,7 @@ export const useChatStore = defineStore('chat', () => {
 
   // 查找消息在列表里面的索引
   const getMsgIndex = (msgId: string) => {
-    if (!msgId || msgId) return -1;
+    if (!msgId) return -1;
     const keys = Array.from(messageMap.keys());
     return keys.findIndex((key) => key === msgId);
   };

@@ -411,8 +411,8 @@ const client = judgeClient();
   .emoji-warpper {
     padding: 4px !important;
     padding-top: 8px !important;
-    color: var(--font-main) !important;
-    background-color: var(--background-wrapper) !important;
+    color: var(--color-text-1);
+    background-color: var(--color-bg-1);
     border: none !important;
   }
 </style>
