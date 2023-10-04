@@ -18,7 +18,7 @@ import App from './App.vue';
 // https://arco.design/docs/designlab/use-theme-package
 import '@/assets/style/global.less';
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css';
-import '@/api/interceptor';
+  import '@/api/interceptor';
 
 // 会发现这样不行
 // if (!isT()) {

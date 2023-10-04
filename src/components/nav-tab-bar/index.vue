@@ -2,36 +2,30 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-<!--        <img-->
-<!--          alt="logo"-->
-<!--          src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"-->
-<!--        />-->
-        <a-typography-title
-          :style="{ margin: 0, fontSize: '18px' }"
-          :heading="5"
+        <!--        向左返回-->
+        <a-trigger
+          position="bottom"
+          auto-fit-position
+          :unmount-on-close="false"
         >
-          AI_EN Helper
-        </a-typography-title>
-        <icon-menu-fold
-          v-if="!topMenu && appStore.device === 'mobile'"
-          style="font-size: 22px; cursor: pointer"
-          @click="toggleDrawerMenu"
-        />
+          <a-button
+            type="primary"
+            shape="circle"
+            @click="router.push({ name: 'Workplace' })"
+          >
+            <icon-home />
+          </a-button>
+          <template #content>
+            <div class="demo-basic"> 返回工作台 </div>
+          </template>
+        </a-trigger>
+        <TabBar v-if="appStore.tabBar" />
       </a-space>
     </div>
     <div class="center-side">
       <Menu v-if="topMenu" />
     </div>
     <ul class="right-side">
-<!--      <li>-->
-<!--        <a-tooltip :content="$t('settings.search')">-->
-<!--          <a-button class="nav-btn" type="outline" :shape="'circle'">-->
-<!--            <template #icon>-->
-<!--              <icon-search />-->
-<!--            </template>-->
-<!--          </a-button>-->
-<!--        </a-tooltip>-->
-<!--      </li>-->
       <li>
         <a-tooltip :content="$t('settings.language')">
           <a-button
@@ -139,7 +133,7 @@
             @click="setVisible"
           >
             <template #icon>
-              <icon-settings/>
+              <icon-settings />
             </template>
           </a-button>
         </a-tooltip>
@@ -174,7 +168,7 @@
             </a-doption>
             <a-doption>
               <a-space @click="gotoCASUserCenter()">
-                <icon-settings/>
+                <icon-settings />
                 <span>
                   {{ $t('messageBox.casCenter') }}
                 </span>
@@ -182,7 +176,7 @@
             </a-doption>
             <a-doption>
               <a-space @click="alert('此功能在2023年底前上线')">
-                <icon-export/>
+                <icon-export />
                 <span>
                   {{ $t('messageBox.switchUser') }}
                 </span>
@@ -204,16 +198,18 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from 'vue';
-import {Message} from '@arco-design/web-vue';
-import {useDark, useFullscreen, useToggle} from '@vueuse/core';
-import {useAppStore, useUserStore} from '@/store';
-import {LOCALE_OPTIONS} from '@/locale';
-import useLocale from '@/hooks/locale';
-import useUser from '@/hooks/user';
-import Menu from '@/components/menu/index.vue';
+  import { computed, inject, ref } from 'vue';
+  import { Message } from '@arco-design/web-vue';
+  import { useDark, useFullscreen, useToggle } from '@vueuse/core';
+  import { useAppStore, useUserStore } from '@/store';
+  import { LOCALE_OPTIONS } from '@/locale';
+  import useLocale from '@/hooks/locale';
+  import useUser from '@/hooks/user';
+  import Menu from '@/components/menu/index.vue';
+  import TabBar from '@/components/tab-bar/index.vue';
+  import router from '@/router';
 
-const appStore = useAppStore();
+  const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
@@ -243,7 +239,7 @@ const appStore = useAppStore();
     toggleTheme();
   };
   const setVisible = () => {
-    appStore.updateSettings({globalSettings: true});
+    appStore.updateSettings({ globalSettings: true });
   };
   const refBtn = ref();
   const triggerBtn = ref();
@@ -271,9 +267,9 @@ const appStore = useAppStore();
     Message.success(res as string);
   };
   const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
-const gotoCASUserCenter = () => {
-  window.location.href = 'http://10.15.247.254:55554';
-};
+  const gotoCASUserCenter = () => {
+    window.location.href = 'http://10.15.247.254:55554';
+  };
 </script>
 
 <style scoped lang="less">
