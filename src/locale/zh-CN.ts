@@ -19,6 +19,8 @@ export default {
   'menu.dashboard': '仪表盘',
   'menu.usercenter': '用户中心',
   'menu.sysmanger': '系统管理',
+  'menu.entertainment': '娱乐中心',
+  'menu.entertainment.center': '娱乐中心',
   'menu.chat': 'Chat',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
@@ -62,5 +64,5 @@ export default {
   ...localeSysMenuManger,
   ...localeSysRoleManger,
   ...localeSysDeptManger,
-  ...localeIndexImage
+  ...localeIndexImage,
 };

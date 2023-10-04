@@ -1,8 +1,7 @@
 <template>
   <a-layout class="layout" :class="{ mobile: appStore.hideMenu }">
-    <div v-if="navbar" class="layout-navbar">
-      <NavBar />
-      <TabBar v-if="appStore.tabBar" />
+    <div class="layout-navbar">
+      <NavTabBar v-if="navbar" />
     </div>
     <a-layout>
       <a-layout>
@@ -21,9 +20,7 @@
   import { computed, onMounted, provide, ref, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useAppStore, useUserStore } from '@/store';
-  import NavBar from '@/components/navbar/index.vue';
-  import Menu from '@/components/menu/index.vue';
-  import TabBar from '@/components/tab-bar/index.vue';
+  import NavTabBar from '@/components/nav-tab-bar/index.vue';
   import usePermission from '@/hooks/permission';
   import useResponsive from '@/hooks/responsive';
   import PageLayout from './page-layout.vue';
@@ -37,20 +34,10 @@
   useResponsive(true);
   const navbarHeight = `60px`;
   const navbar = computed(() => appStore.navbar);
-  const renderMenu = computed(() => appStore.menu && !appStore.topMenu);
-  const hideMenu = computed(() => appStore.hideMenu);
   const footer = computed(() => appStore.footer);
-  const menuWidth = computed(() => {
-    return appStore.menuCollapse ? 48 : appStore.menuWidth;
-  });
-  const collapsed = computed(() => {
-    return appStore.menuCollapse;
-  });
+
   const paddingStyle = computed(() => {
-    const paddingLeft =
-      renderMenu.value && !hideMenu.value
-        ? { paddingLeft: `${menuWidth.value}px` }
-        : {};
+    const paddingLeft = {};
     const paddingTop = navbar.value ? { paddingTop: navbarHeight } : {};
     return { ...paddingLeft, ...paddingTop };
   });

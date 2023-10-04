@@ -13,13 +13,44 @@
             shape="circle"
             @click="router.push({ name: 'Workplace' })"
           >
+            <icon-left />
+          </a-button>
+          <template #content>
+            <div class="demo-basic"> 返回上一级 </div>
+          </template>
+        </a-trigger>
+        <a-trigger
+          position="bottom"
+          auto-fit-position
+          :unmount-on-close="false"
+        >
+          <a-button
+            type="primary"
+            shape="circle"
+            @click="router.push({ name: 'Workplace' })"
+          >
             <icon-home />
           </a-button>
           <template #content>
             <div class="demo-basic"> 返回工作台 </div>
           </template>
         </a-trigger>
-        <TabBar v-if="appStore.tabBar" />
+        <a-breadcrumb
+          :max-count="3"
+          :routes="routers as BreadcrumbRoute[]"
+          :droplist="[]"
+        >
+          <template #item-render="{ route, paths }">
+            <a-link
+              :disabled="!routesPlus.isCanGo(route)"
+              @clic="router.push({ path: route.path })"
+            >
+              {{ $t(route.meta.locale) }}
+            </a-link>
+            <span style="display: none">{{ paths }}</span>
+          </template>
+        </a-breadcrumb>
+        <!--        <TabBar v-if="appStore.tabBar" />-->
       </a-space>
     </div>
     <div class="center-side">
@@ -198,8 +229,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, inject, ref } from 'vue';
-  import { Message } from '@arco-design/web-vue';
+  import { computed, inject, reactive, ref } from 'vue';
+  import { BreadcrumbRoute, Message } from '@arco-design/web-vue';
   import { useDark, useFullscreen, useToggle } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
   import { LOCALE_OPTIONS } from '@/locale';
@@ -207,8 +238,17 @@
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
   import TabBar from '@/components/tab-bar/index.vue';
+  import {
+    RouteLocationMatched,
+    RouteRecord,
+    RouteRecordRaw,
+    useRoute,
+  } from 'vue-router';
   import router from '@/router';
+  import useRouterPlus from "@/hooks/router";
 
+  const route = useRoute();
+  const routesPlus = useRouterPlus();
   const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
@@ -221,6 +261,33 @@
   const theme = computed(() => {
     return appStore.theme;
   });
+  const routers = computed((): BreadcrumbRoute[] => {
+    const aone = [
+      {
+        path: 'workplace',
+        name: 'Workplace',
+        meta: {
+          locale: 'menu.dashboard.workplace',
+        },
+      },
+    ];
+    const copy: (
+      | {
+          path: string;
+          name: string;
+          meta: { locale: string };
+          children?: RouteRecordRaw[];
+        }
+      | RouteRecord
+      | any
+    )[] = [...aone, ...route.matched];
+    for (let i = 0; i < copy.length; i += 1) {
+      copy[i].children = undefined;
+      console.log(`isccan:${routesPlus.isCanGo( copy[i])}`)
+    }
+    return copy;
+  });
+
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
   const isDark = useDark({
     selector: 'body',
