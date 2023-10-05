@@ -11,6 +11,8 @@ const ContentPromotion: AppRouteRecordRaw = {
     roles: ['*'],
     icon: 'icon-user',
     order: 1,
+    canGo:false
+
   },
   children: [
     {
@@ -22,6 +24,8 @@ const ContentPromotion: AppRouteRecordRaw = {
         locale: 'menu.docnotification.DocNotification',
         requiresAuth: true,
         roles: ['*'],
+        canGo:true
+
       },
     },
     {
@@ -33,6 +37,8 @@ const ContentPromotion: AppRouteRecordRaw = {
         locale: 'menu.docnotification.IndexImage',
         requiresAuth: true,
         roles: ['*'],
+        canGo:true
+
       },
     },
   ],

@@ -11,6 +11,8 @@ const USERCENTER: AppRouteRecordRaw = {
         roles: ['*'],
         icon: 'icon-user',
         order: 0,
+        canGo:false
+
     },
     children: [
         {
@@ -21,6 +23,8 @@ const USERCENTER: AppRouteRecordRaw = {
                 locale: 'menu.usercenter.usercenter',
                 requiresAuth: true,
                 roles: ['*'],
+                canGo:true
+
             },
         },
     ],

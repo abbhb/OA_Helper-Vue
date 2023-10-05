@@ -23,6 +23,8 @@ const router = createRouter({
       component: () => import('@/views/login/index.vue'),
       meta: {
         requiresAuth: false,
+        canGo:true
+
       },
     },
     {
@@ -31,6 +33,8 @@ const router = createRouter({
       component: () => import('@/views/callback/index.vue'),
       meta: {
         requiresAuth: false,
+        canGo:true
+
       },
     },
     ...appRoutes,

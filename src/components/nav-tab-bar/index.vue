@@ -11,7 +11,7 @@
           <a-button
             type="primary"
             shape="circle"
-            @click="router.push({ name: 'Workplace' })"
+            @click="router.back()"
           >
             <icon-left />
           </a-button>
@@ -43,7 +43,7 @@
           <template #item-render="{ route, paths }">
             <a-link
               :disabled="!routesPlus.isCanGo(route)"
-              @clic="router.push({ path: route.path })"
+              @click="router.push({ name: route.name })"
             >
               {{ $t(route.meta.locale) }}
             </a-link>
@@ -245,7 +245,7 @@
     useRoute,
   } from 'vue-router';
   import router from '@/router';
-  import useRouterPlus from "@/hooks/router";
+  import useRouterPlus from '@/hooks/router';
 
   const route = useRoute();
   const routesPlus = useRouterPlus();
@@ -283,7 +283,7 @@
     )[] = [...aone, ...route.matched];
     for (let i = 0; i < copy.length; i += 1) {
       copy[i].children = undefined;
-      console.log(`isccan:${routesPlus.isCanGo( copy[i])}`)
+      console.log(`isccan:${routesPlus.isCanGo(copy[i])}`);
     }
     return copy;
   });

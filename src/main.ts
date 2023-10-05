@@ -6,7 +6,6 @@ import '@arco-design/web-vue/dist/arco.css';
 import globalComponents from '@/components';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import useRSAStore from '@/store/modules/rsa';
-import {createPinia} from 'pinia';
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -31,12 +30,14 @@ const app = createApp(App);
 app.use(ArcoVue, {});
 app.use(ArcoVueIcon);
 app.use(router);
+// 持久化插件
+app.use(store.use(piniaPluginPersistedstate));
+
 app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
-// 持久化插件
-app.use(createPinia().use(piniaPluginPersistedstate));
+
 
 app.mount('#app');
 

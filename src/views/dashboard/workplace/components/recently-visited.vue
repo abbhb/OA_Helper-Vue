@@ -6,38 +6,37 @@
     :body-style="{ paddingTop: '26px' }"
   >
     <div style="margin-bottom: -1rem">
-<!--      <a-row :gutter="8">-->
-<!--        <a-col v-for="link in links" :key="link.text" :span="8" class="wrapper">-->
-<!--          <div class="icon">-->
-<!--            <component :is="link.icon" />-->
-<!--          </div>-->
-<!--          <a-typography-paragraph class="text">-->
-<!--            {{ $t(link.text) }}-->
-<!--          </a-typography-paragraph>-->
-<!--        </a-col>-->
-<!--      </a-row>-->
-        <a-typography-paragraph class="text">
-            {{ $t('workplace.noUse') }}
-        </a-typography-paragraph>
+      <a-row v-if="links.length>0" :gutter="8">
+        <a-col v-for="link in links" :key="link.path" :span="8" class="wrapper" @click="router.push({name:link.name})">
+          <div class="icon">
+            <functional-icons
+              :icon="link.meta.icon?link.meta.icon:'icon-loading'"
+              size="28"
+            ></functional-icons>
+          </div>
+          <a-typography-paragraph class="text">
+            <!--标红但不影响-->
+            {{ $t(link.meta.locale ? link.meta.locale : link.name) }}
+          </a-typography-paragraph>
+        </a-col>
+      </a-row>
+      <a-typography-paragraph v-else class="text">
+        {{ $t('workplace.noUse') }}
+      </a-typography-paragraph>
     </div>
   </a-card>
 </template>
 
 <script lang="ts" setup>
-  const links = [
-    {
-      text: 'workplace.contentManagement',
-      icon: 'icon-storage',
-    },
-    {
-      text: 'workplace.contentStatistical',
-      icon: 'icon-file',
-    },
-    {
-      text: 'workplace.advanced',
-      icon: 'icon-settings',
-    },
-  ];
+  import { useAppStore } from '@/store';
+  import { RecentlyRouter } from '@/store/modules/app/types';
+  import {ref} from "vue";
+  import FunctionalIcons from "@/components/icon/FunctionalIcons/index.vue";
+  import router from "@/router";
+
+  const appStore = useAppStore();
+  // console.log()
+  const links = ref<RecentlyRouter[]>(appStore.getRecentlyRouter());
 </script>
 
 <style lang="less" scoped>

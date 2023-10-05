@@ -14,5 +14,6 @@
   "tabBar": false,
   "menuFromServer": true,
   "serverMenu": [],
+  "recentlyRouter": [],
   "modelFullscreen": false
 }

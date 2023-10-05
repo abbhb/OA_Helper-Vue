@@ -1,4 +1,9 @@
-import {RouteRecord, RouteRecordNormalized, RouteRecordRaw, useRouter} from 'vue-router';
+import {
+  RouteRecord,
+  RouteRecordNormalized,
+  RouteRecordRaw,
+  useRouter,
+} from 'vue-router';
 import { useUserStore } from '@/store';
 import { BreadcrumbRoute, Message } from '@arco-design/web-vue';
 import { computed } from 'vue/dist/vue';
@@ -6,7 +11,7 @@ import { computed } from 'vue/dist/vue';
 export default function useRouterPlus() {
   const router = useRouter();
   // 也没用动态路由，获取一次就行
-  const routerList:RouteRecordNormalized[] = router.getRoutes();
+  const routerList: RouteRecordNormalized[] = router.getRoutes();
 
   function findObjectById(
     obj: RouteRecord | RouteRecordRaw,
@@ -30,17 +35,22 @@ export default function useRouterPlus() {
   }
 
   const isCanGo = (currentRouter: RouteRecord): boolean => {
-      debugger
     for (let i = 0; i < routerList.length; i += 1) {
       const itoj = findObjectById(routerList[i], currentRouter.path);
       if (itoj !== undefined) {
-          console.log(`child${itoj.children}`)
-        if (itoj.children && itoj.children.length > 0) {
+        if (itoj.meta.canGo === false) {
           return false;
+        }
+        if (
+          !itoj.meta.canGo ||
+          itoj.meta.canGo === true ||
+          itoj.path.includes('http')
+        ) {
+          return true;
         }
       }
     }
-    return true;
+    return false;
   };
   return {
     isCanGo,

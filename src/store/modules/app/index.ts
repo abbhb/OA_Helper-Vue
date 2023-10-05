@@ -1,11 +1,13 @@
-import {defineStore} from 'pinia';
-import {Notification} from '@arco-design/web-vue';
-import type {NotificationReturn} from '@arco-design/web-vue/es/notification/interface';
-import type {RouteRecordNormalized} from 'vue-router';
+import { defineStore } from 'pinia';
+import { Notification } from '@arco-design/web-vue';
+import type { NotificationReturn } from '@arco-design/web-vue/es/notification/interface';
+import type { RouteRecordNormalized } from 'vue-router';
 import defaultSettings from '@/config/settings.json';
-import {getMenuList} from '@/api/menu';
-import {getConfig} from '@/store/modules/app/persistence';
-import {AppState} from './types';
+import { getMenuList } from '@/api/menu';
+import { getConfig } from '@/store/modules/app/persistence';
+// eslint-disable-next-line import/namespace
+import useRouterPlus from '@/hooks/router';
+import { AppState, RecentlyRouter } from './types';
 
 const useAppStore = defineStore('app', {
   state: (): AppState => {
@@ -26,9 +28,12 @@ const useAppStore = defineStore('app', {
       return state.device;
     },
     appAsyncMenus(state: AppState): RouteRecordNormalized[] {
-      console.log("同步菜单");
-      console.log(state.serverMenu);
+      // console.log('同步菜单');
+      // console.log(state.serverMenu);
       return state.serverMenu as unknown as RouteRecordNormalized[];
+    },
+    appRecentlyRouter(state: AppState): RecentlyRouter[] {
+      return state.recentlyRouter as unknown as RecentlyRouter[];
     },
   },
 
@@ -49,11 +54,38 @@ const useAppStore = defineStore('app', {
         document.body.removeAttribute('arco-theme');
       }
     },
+    getRecentlyRouter(): RecentlyRouter[] {
+      const routerPlus = useRouterPlus();
+      const recentlyList = this.appRecentlyRouter;
+      recentlyList.sort((a, b) => a.visits - b.visits);
+      const canGoRecentlyList = [];
+      for (let i = 0; i < recentlyList.length; i += 1) {
+        if (routerPlus.isCanGo(recentlyList[i])) {
+          canGoRecentlyList.push(recentlyList[i]);
+        }
+        if (canGoRecentlyList.length >= 9) {
+          break;
+        }
+      }
+      return canGoRecentlyList;
+    },
     toggleDevice(device: string) {
       this.device = device;
     },
     toggleMenu(value: boolean) {
       this.hideMenu = value;
+    },
+    logAccess(route: RouteRecordNormalized) {
+      let isNew = false;
+      this.recentlyRouter.forEach((routeItem) => {
+        if (routeItem.path === route.path) {
+          isNew = true;
+          routeItem.visits += 1;
+        }
+      });
+      if (!isNew) {
+        this.recentlyRouter.push({ ...route, visits: 1 });
+      }
     },
     async fetchServerMenuConfig() {
       let notifyInstance: NotificationReturn | null = null;
@@ -82,6 +114,7 @@ const useAppStore = defineStore('app', {
       this.serverMenu = [];
     },
   },
+  persist: true,
 });
 
 export default useAppStore;

@@ -6,5 +6,6 @@ export default {
         icon: 'icon-folder',
         requiresAuth: false,
         order: 8,
+        canGo:true
     },
 };

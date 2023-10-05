@@ -7,11 +7,13 @@ import {NOT_FOUND, WHITE_LIST} from '../constants';
 
 export default function setupPermissionGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
+    const appStore = useAppStore();
+
+    // 统计用户跳转路由的次数来选出8个作为快捷操作，先使用浏览器本地存储，之后数据存数据库
+    appStore.logAccess(to as unknown as RouteRecordNormalized);
     if (to.meta.requiresAuth === false) {
       next();
     }
-    const appStore = useAppStore();
-    const userStore = useUserStore();
     const Permission = usePermission();
     const permissionsAllow = Permission.accessRouter(to);
     if (appStore.menuFromServer) {

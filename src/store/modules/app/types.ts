@@ -1,5 +1,8 @@
 import type { RouteRecordNormalized } from 'vue-router';
 
+export interface RecentlyRouter extends RouteRecordNormalized {
+  visits: number;
+}
 export interface AppState {
   theme: string;
   colorWeak: boolean;
@@ -17,5 +20,6 @@ export interface AppState {
   modelFullscreen: boolean;
   menuFromServer: boolean;
   serverMenu: RouteRecordNormalized[];
+  recentlyRouter: RecentlyRouter[];
   [key: string]: unknown;
 }

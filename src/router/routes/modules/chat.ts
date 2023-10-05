@@ -12,6 +12,8 @@ const Chat: AppRouteRecordRaw = {
     roles: ['*'],
     icon: 'icon-dashboard',
     order: 0,
+    canGo:false
+
   },
   children:[
     {
@@ -22,6 +24,8 @@ const Chat: AppRouteRecordRaw = {
         locale: 'menu.chat',
         requiresAuth: true,
         roles: ['*'],
+        canGo:true
+
       },
     },
   ]

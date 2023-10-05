@@ -12,6 +12,7 @@ const ENTERTAINMENT: AppRouteRecordRaw = {
     roles: ['*'],
     icon: 'icon-dashboard',
     order: 0,
+    canGo:false
   },
   children: [
     {
@@ -22,9 +23,9 @@ const ENTERTAINMENT: AppRouteRecordRaw = {
         locale: 'menu.entertainment.center',
         requiresAuth: false,
         roles: ['*'],
+        canGo:true
       },
     },
-
   ],
 };
 
