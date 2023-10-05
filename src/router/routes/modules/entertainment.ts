@@ -8,7 +8,7 @@ const ENTERTAINMENT: AppRouteRecordRaw = {
   component: FULL_LAYOUT,
   meta: {
     locale: 'menu.entertainment',
-    requiresAuth: false,
+    requiresAuth: true,
     roles: ['*'],
     icon: 'icon-dashboard',
     order: 0,
@@ -21,7 +21,18 @@ const ENTERTAINMENT: AppRouteRecordRaw = {
       component: () => import('@/views/entertainment/center/index.vue'),
       meta: {
         locale: 'menu.entertainment.center',
-        requiresAuth: false,
+        requiresAuth: true,
+        roles: ['*'],
+        canGo:true
+      },
+    },
+    {
+      path: 'game2048',
+      name: 'Game2048',
+      component: () => import('@/views/entertainment/game-2048/index.vue'),
+      meta: {
+        locale: 'menu.entertainment.game2048',
+        requiresAuth: true,
         roles: ['*'],
         canGo:true
       },

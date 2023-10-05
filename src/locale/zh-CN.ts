@@ -21,6 +21,7 @@ export default {
   'menu.sysmanger': '系统管理',
   'menu.entertainment': '娱乐中心',
   'menu.entertainment.center': '娱乐中心',
+  'menu.entertainment.game2048': '2048',
   'menu.chat': 'Chat',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
