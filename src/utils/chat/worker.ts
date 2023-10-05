@@ -1,5 +1,5 @@
 // 发消息给主进程
-import {getToken} from "@/utils/auth";
+import { getToken } from '@/utils/auth';
 
 const postMsg = ({ type, value }: { type: string; value?: object }) => {
   // eslint-disable-next-line no-restricted-globals
@@ -94,15 +94,13 @@ const onConnectOpen = () => {
 const onConnectMsg = (e: any) => postMsg({ type: 'message', value: e.data });
 
 // 初始化 ws 连接
-const initConnection = () => {
+const initConnection = (token?:string) => {
   console.log("new WebSocket")
 
   connection?.removeEventListener('message', onConnectMsg);
   connection?.removeEventListener('open', onConnectOpen);
   connection?.removeEventListener('close', onConnectClose);
   connection?.removeEventListener('error', onConnectError);
-  const token = getToken();
-
 
   // 建立链接
   // 本地配置到 .env 里面修改。生产配置在 .env.production 里面
@@ -123,6 +121,7 @@ const initConnection = () => {
   connection.addEventListener('error', onConnectError);
 };
 
+
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = (e: MessageEvent<string>) => {
   const { type, value } = JSON.parse(e.data);
@@ -130,7 +129,7 @@ self.onmessage = (e: MessageEvent<string>) => {
   switch (type) {
     case 'initWS': {
       reconnectCount = 0;
-      initConnection();
+      initConnection(value);
       break;
     }
     case 'message': {

@@ -18,8 +18,8 @@ export const useGlobalStore = defineStore('global', () => {
     show: false,
     msgId: null,
   });
-  const currentSession = reactive<{ roomId: number; type: RoomTypeEnum }>({
-    roomId: 1,
+  const currentSession = reactive<{ roomId: string; type: RoomTypeEnum }>({
+    roomId: '1',
     type: RoomTypeEnum.Group,
   });
   /** 点击联系人选中的联系人项 */

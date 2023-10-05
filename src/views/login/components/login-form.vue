@@ -87,12 +87,15 @@
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
+  import {useWsLoginStore} from "@/store/modules/chat/ws";
+  import {getToken} from "@/utils/auth";
 
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
+  const wsLoginStore = useWsLoginStore();
   const loginConfig = ref({
     useSSO: true,
   });
@@ -110,6 +113,7 @@
         ...othersQuery,
       },
     });
+    wsLoginStore.loginSuccess(getToken());
     Message.success(t('login.form.login.success'));
   };
   const gotoOAuth2 = () => {

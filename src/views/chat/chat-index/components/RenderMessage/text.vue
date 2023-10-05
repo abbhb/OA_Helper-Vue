@@ -12,7 +12,13 @@ const props = defineProps<{ body: TextBody }>();
     let content = props.body.content || '';
     content = content.replace(/&nbsp;/g, '\u00A0');
     const regex = new RegExp(`(@\\S+\\s|${keys.join('|')}|\\S+\\s)`, 'g');
-    return content.split(regex);
+    const regex2 = new RegExp( '/```(.*?)```', 'g');
+    const contenes = [];
+    const lists = content.split(regex)
+    for (let i = 0; i < lists.length; i+=1) {
+      contenes.push(lists[i].split(regex2));
+    }
+    return lists;
   });
 
   // 打开链接
@@ -33,7 +39,11 @@ const props = defineProps<{ body: TextBody }>();
       >
         {{ item }}
       </span>
-      <template v-else>{{ item }}</template>
+      <template v-else>
+        <span :key="item">
+          {{ item }}
+        </span>
+      </template>
       <div
         v-if="keys.includes(item)"
         :key="item + index"

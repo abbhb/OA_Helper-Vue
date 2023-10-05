@@ -4,10 +4,10 @@ import {MessageType} from '@/types/chat';
 import {useChatStore} from '@/store/modules/chat/chat';
 // eslint-disable-next-line import/no-named-as-default
 import useLikeToggle from '@/hooks/chat/useLikeToggle';
+import eventBus from "@/utils/chat/eventBus";
 
 const props = defineProps<{ msg: MessageType }>();
 
-  const focusMsgInput = inject<() => void>('focusMsgInput');
   const chatStore = useChatStore();
 
   const { isLike, isDisLike, onLike, onDisLike } = useLikeToggle(
@@ -20,7 +20,8 @@ const props = defineProps<{ msg: MessageType }>();
   const onReplyMsg = async (msgFromUser: MessageType) => {
     if (!msgFromUser) return;
     chatStore.currentMsgReply = msgFromUser;
-    focusMsgInput?.();
+    eventBus.emit('onSelectPerson', { uid:msgFromUser.fromUser.uid, ignoreCheck:true });
+    eventBus.emit('focusMsgInput')
   };
 </script>
 

@@ -79,6 +79,12 @@ export default defineComponent({
     const shepherd = ref<HTMLDivElement | null>(null);
     let virtual: Virtual;
 
+    // 预加载n屏数据
+    const page = {
+      type: Number,
+      default: 1
+    };
+
     // 根据id获取数据项大小
     const getSize = (id: string) => {
       return virtual.sizes.get(id);

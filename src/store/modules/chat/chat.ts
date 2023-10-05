@@ -8,6 +8,7 @@ import {computedTimeBlock} from '@/utils/chat/computedTime';
 import notify from '@/utils/chat/notification';
 import shakeTitle from '@/utils/chat/shakeTitle';
 import {ChatMarkEnum, ChatMsgEnum} from "@/types/enums/chat";
+import {notifyMe} from "@/utils/notify";
 
 export const pageSize = 20;
 
@@ -99,22 +100,24 @@ export const useChatStore = defineStore('chat', () => {
     if (!msg.fromUser.uid){
       return;
     }
-    console.log(msg.fromUser.uid)
     const cacheUser = cachedStore.userCachedList[ msg.fromUser.uid];
     cachedStore.getBatchUserInfo([
       {  uid:msg.fromUser.uid, lastModifyTime: cacheUser?.lastModifyTime },
     ]);
+
+    console.log("@Me",msg.message.body.atUidList)
 
     // 如果收到的消息里面是艾特自己的就发送系统通知
     if (
       msg.message.body.atUidList?.includes(userStore.userInfo.id) &&
       cacheUser
     ) {
-      notify({
-        name: cacheUser.name as string,
-        text: msg.message.body.content,
-        icon: cacheUser.avatar as string,
-      });
+      console.log("@Me")
+      notifyMe(
+        cacheUser.name as string,
+        msg.message.body.content,
+        cacheUser.avatar as string
+      );
     }
 
     // tab 在后台获得新消息，就开始闪烁！

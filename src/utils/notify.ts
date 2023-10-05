@@ -22,7 +22,7 @@ export function hasNotificationPermission() {
   return false;
 }
 
-export function notifyMe(title: string, message: string) {
+export function notifyMe(title: string, message: string,icon?:string) {
   // 先检查浏览器是否支持
   if (!('Notification' in window)) {
     alert('This browser does not support desktop notification');
@@ -30,7 +30,7 @@ export function notifyMe(title: string, message: string) {
   // 检查用户是否同意接受通知
   else if (Notification.permission === 'granted') {
     // If it's okay let's create a notification
-    const notification = new Notification(title, {body: message, tag: '1'});
+    const notification = new Notification(title, {body: message,icon:icon || undefined});
     onclickEvents(notification);
   }
   // 否则我们需要向用户获取权限
@@ -38,7 +38,7 @@ export function notifyMe(title: string, message: string) {
     Notification.requestPermission().then(function (permission) {
       // 如果用户接受权限，我们就可以发起一条消息
       if (permission === 'granted') {
-        const notification = new Notification(title, {body: message, tag: '1'});
+        const notification = new Notification(title, {body: message, icon:icon || undefined});
       }
     });
   }

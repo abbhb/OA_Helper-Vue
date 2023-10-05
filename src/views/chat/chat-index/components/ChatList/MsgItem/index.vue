@@ -1,18 +1,29 @@
 <script setup lang="ts">
-import {computed, inject, nextTick, onMounted, type PropType, ref, type Ref, toRefs,} from 'vue';
+  import {
+    computed,
+    inject,
+    nextTick,
+    onMounted,
+    type PropType,
+    ref,
+    type Ref,
+    toRefs,
+  } from 'vue';
 
-import {MessageType, MsgType} from '@/types/chat';
-import {useUserStore} from '@/store';
-import {pageSize, useChatStore} from '@/store/modules/chat/chat';
-import {useUserInfo} from '@/hooks/chat/useCached';
-import {ChatMsgEnum} from '@/types/enums/chat';
-import {useLikeToggle} from '@/hooks/chat/useLikeToggle';
-import {formatTimestamp} from '@/utils/chat/computedTime';
-import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
-import AvatarImage from '@/components/image/AvatarImage.vue';
-import MsgOption from '../MsgOption/index.vue';
+  import { MessageType, MsgType } from '@/types/chat';
+  import { useUserStore } from '@/store';
+  import { pageSize, useChatStore } from '@/store/modules/chat/chat';
+  import { useUserInfo } from '@/hooks/chat/useCached';
+  import { ChatMsgEnum } from '@/types/enums/chat';
+  import { useLikeToggle } from '@/hooks/chat/useLikeToggle';
+  import { formatTimestamp } from '@/utils/chat/computedTime';
+  import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
+  import AvatarImage from '@/components/image/AvatarImage.vue';
+  import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
+  import UserContextMenu from '@/views/chat/chat-index/components/ChatList/UserContextMenu/index.vue';
+  import MsgOption from '../MsgOption/index.vue';
 
-const props = defineProps({
+  const props = defineProps({
     // 消息体
     msg: {
       type: Object as PropType<MessageType>,
@@ -68,6 +79,8 @@ const props = defineProps({
   const tooltipPlacement = ref();
   const virtualListRef = inject<Ref>('virtualListRef');
   const isShowMenu = ref(false); // 是否显示菜单
+  const isShowUserMenu = ref(false); // 是否显示用户名及头像右键菜单
+
   // 弹出定位
   const menuOptions = ref({
     x: 0,
@@ -124,6 +137,21 @@ const props = defineProps({
     isShowMenu.value = true;
   };
 
+  /** 头像右键菜单 */
+  const handleUserRightClick = (e: MouseEvent) => {
+    // perf: 未登录时，禁用右键菜单功能
+    if (!userStore.isSign || isCurrentUser.value) {
+      return;
+    }
+
+    // TODO：看它源码里提供了一个transformMenuPosition函数可以控制在容器范围内弹窗 我试验了一下报错
+    // https://github.com/imengyu/vue3-context-menu/blob/f91a4140b4a425fa2770449a8be3570836cdfc23/examples/views/ChangeContainer.vue#LL242C5-L242C5
+    const { x, y } = e;
+    menuOptions.value.x = x;
+    menuOptions.value.y = y;
+    isShowUserMenu.value = true;
+  };
+
   onMounted(() => {
     nextTick(() => {
       if (renderMsgRef.value && boxRef.value) {
@@ -148,10 +176,10 @@ const props = defineProps({
   <span v-if="isRecall" class="send-time-block">{{ message.body }}</span>
   <transition name="remove">
     <div v-if="!isRecall" :class="chatCls">
-      <AvatarImage :avatar="userInfo.avatar" />
+      <AvatarImage :avatar="userInfo.avatar" @contextmenu.prevent.stop="handleUserRightClick($event)" />
       <div ref="boxRef" class="chat-item-box">
         <div class="chat-item-user-info">
-          <span class="user-name" @click="onAtUser?.(userInfo.uid!, true)">
+          <span class="user-name" @click="onAtUser?.(userInfo.uid!, true)" @contextmenu.prevent.stop="handleUserRightClick($event)">
             {{ userInfo.name }}
           </span>
           <span class="user-ip">({{ userInfo.locPlace || '未知' }})</span>
@@ -177,7 +205,7 @@ const props = defineProps({
             @contextmenu.prevent.stop="handleRightClick($event)"
           >
             <icon-loading v-if="msg?.loading" :size="20" spin />
-            <RenderMessage :message="message" />
+            <RenderMessage :key="message" :message="message" />
           </div>
         </a-tooltip>
 
@@ -200,7 +228,7 @@ const props = defineProps({
               :class="['extra-item like', { active: isLike }]"
               @click="onLike"
             >
-              <icon-thumb-up-fill/>
+              <icon-thumb-up-fill />
               <transition name="count-up" mode="out-in">
                 <span :key="likeCount" class="count">{{ likeCount }}</span>
               </transition>
@@ -213,7 +241,7 @@ const props = defineProps({
               :class="['extra-item dlike', { active: isDisLike }]"
               @click="onDisLike"
             >
-              <icon-thumb-down-fill  :size="17" />
+              <icon-thumb-down-fill :size="17" />
               <transition name="count-up" mode="out-in">
                 <span :key="dislikeCount" class="count">{{
                   dislikeCount
@@ -225,7 +253,12 @@ const props = defineProps({
       </div>
     </div>
   </transition>
-<!--  <ContextMenu v-model:show="isShowMenu" :options="menuOptions" :msg="msg" />-->
+  <ContextMenu v-model:show="isShowMenu" :options="menuOptions" :msg="msg" />
+  <UserContextMenu
+    v-model:show="isShowUserMenu"
+    :options="menuOptions"
+    :uid="msg.fromUser.uid"
+  />
 </template>
 
 <style lang="less">
@@ -253,7 +286,8 @@ const props = defineProps({
       column-gap: 4px;
       align-items: center;
       margin-bottom: 8px;
-      font-size: 12px;
+      //消息字号
+      font-size: 14px;
       color: var(--color-text-1);
       white-space: nowrap;
 
@@ -566,7 +600,7 @@ const props = defineProps({
       margin-right: auto;
       overflow: hidden;
       font-size: 12px;
-      color: var(--font-light);
+      color: var(--color-text-2);
       word-break: break-all;
       background-color: var(--color-bg-3);
       border-radius: 8px;
@@ -597,7 +631,7 @@ const props = defineProps({
         align-items: center;
         padding: 0 6px;
         cursor: pointer;
-        background-color: var(--color-border);
+        background-color: var(--color-bg-3);
         border: 1px solid var(--color-border);
         border-radius: 8px;
 
@@ -624,12 +658,12 @@ const props = defineProps({
 
       .active {
         &.like {
-          color: var(--font-pink);
+          color: var(--pinkpurple-1);
           border-color: var(--color-border-4);
         }
 
         &.dlike {
-          color: var(--font-light);
+          color: var(--color-text-1);
           border-color: var(--color-border);
         }
       }

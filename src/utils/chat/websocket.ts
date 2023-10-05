@@ -9,6 +9,7 @@ import {MarkItemType, MessageType, RevokedMsgType} from '@/types/chat';
 import {OnStatusChangeType, WsReqMsgContentType, WsResponseMessageType,} from '@/utils/chat/wsType';
 import {worker} from '@/utils/chat/initWorker';
 
+
 class WS {
   #tasks: WsReqMsgContentType[] = [];
 
