@@ -11,6 +11,7 @@
       <a-grid :cols="24" :row-gap="16">
         <a-grid-item :span="24">
           <div class="panel moduler-wrap">
+            <DeviceSelect/>
             <DeviceState/>
           </div>
         </a-grid-item>
@@ -35,6 +36,7 @@ import MultiUploadPrint from '@/views/dashboard/printer/components/MultiUploadPr
 import usePrintStore from '@/store/modules/print';
 import PrintDocumentTypeStatistics from '@/views/dashboard/printer/components/PrintDocumentTypeStatistics.vue';
 import PrintTopListNew from '@/views/dashboard/printer/components/PrintTopListNew.vue';
+import DeviceSelect from "@/views/dashboard/printer/components/DeviceSelect.vue";
 
 const printState = usePrintStore();
 </script>

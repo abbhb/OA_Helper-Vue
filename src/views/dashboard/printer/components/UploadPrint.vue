@@ -125,7 +125,7 @@
 
 <script lang="ts">
   import Upload from '@/components/upload/index.vue';
-  import {Message, Modal} from '@arco-design/web-vue';
+  import { Message, Modal } from '@arco-design/web-vue';
   import axios from 'axios';
 
   export default {
@@ -160,12 +160,12 @@
               title: '提示',
               content: `请点击复位然后重新上传文件`,
             });
-              this.state = 1;
+            this.state = 1;
 
-              return;
+            return;
           }
-            Message.info("开始打印,请勿关闭页面")
-            this.loading = true;
+          Message.info('开始打印,请勿关闭页面');
+          this.loading = true;
           let modeNum = 1;
           let Position = 1;
           if (this.form.mode === '单面打印') {
@@ -273,19 +273,20 @@
     background-color: var(--color-bg-2);
   }
 </style>
+
 <style lang="less" scoped>
-// responsive
-.mobile {
-  .s-upload {
-    padding: 10px 10px 10px 10px;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-flow: wrap;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--color-bg-2);
+  // responsive
+  .mobile {
+    .s-upload {
+      padding: 10px 10px 10px 10px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-flow: wrap;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--color-bg-2);
+    }
   }
-}
 </style>

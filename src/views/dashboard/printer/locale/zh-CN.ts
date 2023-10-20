@@ -43,4 +43,5 @@ export default {
   'printer.one.printTopListNew.name': '打印排行榜',
   'printer.one.printTopListNew.tip.none': '今日暂无人打印，请查看总榜！',
   'printer.one.printTopListNew.unit.page': '页',
+  'printer.one.device.select': '选择设备',
 };

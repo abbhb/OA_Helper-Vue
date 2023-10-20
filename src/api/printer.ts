@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {PageData} from '@/api/common';
+import { PageData } from '@/api/common';
 
 export interface Printer {
   contentHash: string;
@@ -31,6 +31,46 @@ export interface CountTop10VO {
   total: number;
 }
 
+interface UploadFile {
+  file: any;
+}
+
+interface PrintFileReq {
+  id: string;
+  copies: number;
+  isDuplex: number;
+  startNum: number;
+  endNum: number;
+  landscape: number;
+}
+
+export interface PrintDeviceResp {
+  id: string;
+  name: string;
+  description: string;
+  ip: string;
+  port: number;
+  status: number;
+}
+
+interface PrintImageResp {
+  id: string;
+  imgUrl: string;
+}
+
+interface PrintFileConfigResp {
+  id: string;
+  firstPage: number;
+  lastPage: number;
+  fileName: string;
+}
+
+interface PrinterBaseResp<T> {
+  type: number;
+  message: string;
+  data: T;
+}
+
 export function querySelfPrinterList(params: {
   page_num: number;
   page_size: number;
@@ -49,14 +89,61 @@ export function queryAllPrinterList(params: {
   });
 }
 
-export function getCountTop10VO(params: {
-  type: number;
-}) {
+export function getCountTop10VO(params: { type: number }) {
   return axios.get<CountTop10VO[]>('/api/printer/getUserPrintTopList', {
     params,
   });
 }
 
 export function getPrintDocumentTypeStatistics() {
-  return axios.get<PrintDocumentTypeStatistics[]>('/api/printer/getPrintDocumentTypeStatistics');
+  return axios.get<PrintDocumentTypeStatistics[]>(
+    '/api/printer/getPrintDocumentTypeStatistics'
+  );
+}
+
+/**
+ * 上传需要打印的文件
+ * @param data
+ */
+export function uploadPrintFile(data: UploadFile) {
+  return axios.post<string>('/api/printer/uploadPrintFile', data);
+}
+
+/**
+ * 确认打印文件
+ * @param data
+ */
+export function printFile(data: PrintFileReq) {
+  return axios.post<string>('/api/printer/print_file', data);
+}
+
+/**
+ * 缩略图轮询接口，查询缩略图状态，有就返回，没告诉前端
+ */
+export function thumbnailPolling(params: { id: string }) {
+  return axios.get<PrinterBaseResp<PrintImageResp>>(
+    '/api/printer/thumbnail polling',
+    {
+      params,
+    }
+  );
+}
+
+/**
+ * 设备轮询接口，获取哪些打印机注册了服务，且正常
+ */
+export function printDevicePolling() {
+  return axios.get<PrintDeviceResp[]>('/api/printer/print_device polling');
+}
+
+/**
+ * 文件配置轮询接口，查询缩略图状态，有就返回，没告诉前端
+ */
+export function fileConfigurationPolling(params: { id: string }) {
+  return axios.get<PrinterBaseResp<PrintFileConfigResp>>(
+    '/api/printer/file_configuration_polling',
+    {
+      params,
+    }
+  );
 }
