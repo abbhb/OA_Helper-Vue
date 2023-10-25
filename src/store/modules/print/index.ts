@@ -36,54 +36,59 @@ const usePrintStore = defineStore('print', {
     set(model: modelType) {
       this.model = model;
     },
-    startSelect(){
+    startSelect() {
       this.isSelecting = true;
     },
-    stopSelect(){
+    stopSelect() {
       this.isSelecting = false;
     },
-    stopPolling(){
+    stopPolling() {
       // 停止每个小的遍历
       // eslint-disable-next-line no-plusplus
       for (let i = this.printDeviceList.length - 1; i >= 0; i--) {
         this.printDeviceList[i].stopPolling();
       }
       // 停止大的遍历
-      if (this.timer!=null){
+      if (this.timer != null) {
         clearInterval(this.timer);
         this.timer = null;
       }
-
     },
-    // 离开页面一定要销毁，不然内存泄露
-    startPolling() {
-      if (this.timer!=null) {
-        clearInterval(this.timer);
+    isHavePrintDevice(id: string):(boolean|PrintDeviceImpl) {
+      if (id === '' || id == null) {
+        return false;
       }
-      this.timer = setInterval(
-        async () => {
-          const { data } = await printDevicePolling();
-          // 遍历 现有 列表
-          if (
-            this.printDeviceList == null ||
-            this.printDeviceList.length <= 0
-          ) {
-            this.printDeviceList = [];
-            // 首次为空,此时禁止进入select状态，点击选择框提示加载中
-            // 直接添加B
-            // eslint-disable-next-line no-plusplus
-            for (let i = data.length - 1; i >= 0; i--) {
-              if (this.needDelectId.length > 0) {
-                const index = this.needDelectId.findIndex(
-                  (need) => need === data[i].id
-                );
-                if (index !== -1) {
-                  // 把移除列表这项移除，不用删了
-                  this.needDelectId.splice(index, 1); // 删除 `find` 到的元素
-                }
-              }
-              this.printDeviceList.push(
-                new PrintDeviceImpl(
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.printDeviceList.length; i++) {
+        if (this.printDeviceList[i].id === id) {
+          return this.printDeviceList[i];
+        }
+      }
+      return false;
+    },
+    async getDevicePollCode() {
+      const {data} = await printDevicePolling();
+      // 遍历 现有 列表
+      if (
+          this.printDeviceList == null ||
+          this.printDeviceList.length <= 0
+      ) {
+        this.printDeviceList = [];
+        // 首次为空,此时禁止进入select状态，点击选择框提示加载中
+        // 直接添加B
+        // eslint-disable-next-line no-plusplus
+        for (let i = data.length - 1; i >= 0; i--) {
+          if (this.needDelectId.length > 0) {
+            const index = this.needDelectId.findIndex(
+                (need) => need === data[i].id
+            );
+            if (index !== -1) {
+              // 把移除列表这项移除，不用删了
+              this.needDelectId.splice(index, 1); // 删除 `find` 到的元素
+            }
+          }
+          this.printDeviceList.push(
+              new PrintDeviceImpl(
                   data[i].id,
                   data[i].name,
                   data[i].description,
@@ -92,44 +97,44 @@ const usePrintStore = defineStore('print', {
                   data[i].status,
                   '未知',
                   0
-                )
-              );
-            }
-          } else {
-            // 否则还需要判断，如果此时在select状态，只能修改状态，需要删除的放入删除列表
-            // eslint-disable-next-line no-plusplus
-            for (let i = this.printDeviceList.length - 1; i >= 0; i--) {
-              const itemA = this.printDeviceList[i];
-              const matchInB = data.findIndex(
-                (itemB) => String(itemB.id) === String(itemA.id)
-              );
+              )
+          );
+        }
+      } else {
+        // 否则还需要判断，如果此时在select状态，只能修改状态，需要删除的放入删除列表
+        // eslint-disable-next-line no-plusplus
+        for (let i = this.printDeviceList.length - 1; i >= 0; i--) {
+          const itemA = this.printDeviceList[i];
+          const matchInB = data.findIndex(
+              (itemB) => String(itemB.id) === String(itemA.id)
+          );
 
-              if (matchInB !== -1) {
-                // 相关属性匹配，但要检查属性是否为 1，如果不是则删除
-                if (itemA.status === '0') {
-                  if (this.isSelecting) {
-                    this.printDeviceList[i].status = '0'; // 置异常
-                    this.printDeviceList[i].statusTypeMessage = '异常';
-                    this.needDelectId.push(itemA.id);
-                  } else {
-                    // 直接删除
-                    this.printDeviceList.splice(matchInB, 1);
-                  }
-                }
+          if (matchInB !== -1) {
+            // 相关属性匹配，但要检查属性是否为 1，如果不是则删除
+            if (itemA.status === '0') {
+              if (this.isSelecting) {
+                this.printDeviceList[i].status = '0'; // 置异常
+                this.printDeviceList[i].statusTypeMessage = '异常';
+                this.needDelectId.push(itemA.id);
+              } else {
+                // 直接删除
+                this.printDeviceList.splice(matchInB, 1);
               }
             }
+          }
+        }
 
-            // 遍历新数据列表，发现新数据放在最后面
-            // eslint-disable-next-line no-restricted-syntax
-            for (const itemB of data) {
-              const matchInA = this.printDeviceList.findIndex(
-                (itemA) => itemA.id === String(itemB.id)
-              );
+        // 遍历新数据列表，发现新数据放在最后面
+        // eslint-disable-next-line no-restricted-syntax
+        for (const itemB of data) {
+          const matchInA = this.printDeviceList.findIndex(
+              (itemA) => itemA.id === String(itemB.id)
+          );
 
-              if (matchInA === -1) {
-                // 未找到匹配的项，添加到 A 列表的末尾
-                this.printDeviceList.push(
-                  new PrintDeviceImpl(
+          if (matchInA === -1) {
+            // 未找到匹配的项，添加到 A 列表的末尾
+            this.printDeviceList.push(
+                new PrintDeviceImpl(
                     itemB.id,
                     itemB.name,
                     itemB.description,
@@ -138,27 +143,35 @@ const usePrintStore = defineStore('print', {
                     itemB.status,
                     '未知',
                     0
-                  )
-                );
-              }
-            }
+                )
+            );
           }
-          // 启动每个小的遍历
-          // eslint-disable-next-line no-plusplus
-          for (let i = this.printDeviceList.length - 1; i >= 0; i--) {
-            this.printDeviceList[i].startPolling();
-          }
-
+        }
+      }
+      // 启动每个小的遍历
+      // eslint-disable-next-line no-plusplus
+      for (let i = this.printDeviceList.length - 1; i >= 0; i--) {
+        this.printDeviceList[i].startPolling();
+      }
+    },
+    // 离开页面一定要销毁，不然内存泄露
+    startPolling() {
+      if (this.timer != null) {
+        clearInterval(this.timer);
+      }
+      this.timer = setInterval(
+        async () => {
+          await this.getDevicePollCode();
         },
         this.isSelecting ? 12 * 10000 : 5000
       );
     },
-    cleanNeedDelete(){
-      if (!this.isSelecting&&this.needDelectId.length>0){
+    cleanNeedDelete() {
+      if (!this.isSelecting && this.needDelectId.length > 0) {
         // eslint-disable-next-line no-restricted-syntax
         for (const needId of this.needDelectId) {
           const matchInA = this.printDeviceList.findIndex(
-              (itemA) => itemA.id === String(needId)
+            (itemA) => itemA.id === String(needId)
           );
           if (matchInA !== -1) {
             // 未找到匹配的项，添加到 A 列表的末尾

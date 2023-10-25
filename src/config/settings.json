@@ -15,5 +15,6 @@
   "menuFromServer": true,
   "serverMenu": [],
   "recentlyRouter": [],
+  "lastPrintDevice": "",
   "modelFullscreen": false
 }

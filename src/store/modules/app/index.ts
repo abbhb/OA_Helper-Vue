@@ -110,6 +110,9 @@ const useAppStore = defineStore('app', {
         });
       }
     },
+    changePrintDevice(id: string) {
+      this.lastPrintDevice = id;
+    },
     clearServerMenu() {
       this.serverMenu = [];
     },

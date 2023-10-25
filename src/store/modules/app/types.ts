@@ -22,4 +22,5 @@ export interface AppState {
   serverMenu: RouteRecordNormalized[];
   recentlyRouter: RecentlyRouter[];
   [key: string]: unknown;
+  lastPrintDevice: string;// id
 }
