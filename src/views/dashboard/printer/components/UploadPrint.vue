@@ -228,16 +228,17 @@
       },
       uploadSuccess(data: any) {
         const ResResult = data;
-        console.log("上传文件结果")
+        console.log('上传文件结果');
         console.log(ResResult);
         if (ResResult.error <= 0) {
           this.tipMsg = ResResult.msg;
           this.visible = true;
           return;
         }
-        this.form.uuid = ResResult.uuid;
-        this.form.file_name = ResResult.file_name;
-        this.form.last_page = ResResult.page_num;
+        // 这些信息现在改为轮询获取了只返回任务id
+        // this.form.uuid = ResResult.uuid;
+        // this.form.file_name = ResResult.file_name;
+        // this.form.last_page = ResResult.page_num;
         setTimeout(async () => {
           const res = await axios.get(
             `http://10.15.247.254:8081/papi/get_thumbnail/${this.form.uuid}`,
