@@ -29,3 +29,5 @@ nginx
 实际代码里需要v-model:model-value="selectUser"
 完全得猜好吧...
 ```
+
+#### 打印机页面空指针引用会导致死循环

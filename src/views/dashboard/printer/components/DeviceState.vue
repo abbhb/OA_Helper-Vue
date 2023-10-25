@@ -5,7 +5,7 @@
     :header-style="{ paddingBottom: '0' }"
     :body-style="{ padding: '24px 20px 20px 20px' }"
   >
-    <a-list>
+    <a-list v-if="printState.printDevice!=null">
       <a-list-item>设备名：{{ printState.printDevice.name }}</a-list-item>
       <a-list-item
         >当前任务数：{{ printState.printDevice.listNums }}</a-list-item
@@ -23,6 +23,7 @@
         ></a-list-item
       >
     </a-list>
+    <span v-else>当前未选择打印机</span>
   </a-card>
 </template>
 

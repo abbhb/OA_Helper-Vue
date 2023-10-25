@@ -3,7 +3,7 @@
     <a-spin :loading="loading" :size="30" style="width: 500px" dot>
       <Upload
         v-if="!success_upload"
-        url="http://10.15.247.254:8081/papi/uploader"
+        url="/api/printer/uploadPrintFile"
         :draggable="true"
         @on-success="uploadSuccess"
         @on-error="uploadError"
@@ -103,7 +103,7 @@
         <a-radio-group v-model="form.mode">
           <a-radio value="单面打印">单面打印</a-radio>
           <a-radio value="双面打印">双面打印</a-radio>
-          <a-radio value="双面向上翻打印">双面向上翻打印</a-radio>
+          <!--          <a-radio value="双面向上翻打印">双面向上翻打印</a-radio>-->
         </a-radio-group>
       </a-form-item>
 
@@ -174,9 +174,9 @@
           if (this.form.mode === '双面打印') {
             modeNum = 2;
           }
-          if (this.form.mode === '双面向上翻打印') {
-            modeNum = 3;
-          }
+          // if (this.form.mode === '双面向上翻打印') {
+          //   modeNum = 3;
+          // }
 
           if (this.form.direction === '竖直') {
             Position = 1;
@@ -228,6 +228,7 @@
       },
       uploadSuccess(data: any) {
         const ResResult = data;
+        console.log("上传文件结果")
         console.log(ResResult);
         if (ResResult.error <= 0) {
           this.tipMsg = ResResult.msg;
