@@ -1,4 +1,4 @@
-import { PrintDevice } from '@/store/modules/print/types';
+import {PrintDevice, PrintJob} from '@/store/modules/print/types';
 import axios from 'axios';
 
 export class PrintDeviceImpl implements PrintDevice {
@@ -24,6 +24,8 @@ export class PrintDeviceImpl implements PrintDevice {
 
   pollingInterval: number; // 轮询间隔，单位：毫秒
 
+  printJobs: PrintJob[];
+
   constructor(
     id,
     name,
@@ -44,12 +46,16 @@ export class PrintDeviceImpl implements PrintDevice {
     this.statusTypeMessage = statusTypeMessage;
     this.pollingInterval = 5000; // 5s一次
     this.pollingTimer = null;
+    this.printJobs = [];
   }
 
   async updateDeviceData() {
     const resB = await axios.get(
       `http://${this.ip}:${this.port}/api/printDevice/status`
     );
+    if (resB.data.printJobs !== undefined) {
+      this.printJobs = resB.data.printJobs;
+    }
     if (String(resB.data.statusType) !== '0') {
       this.status = resB.data.statusType;
       this.statusTypeMessage = resB.data.statusTypeMessage;
@@ -62,6 +68,7 @@ export class PrintDeviceImpl implements PrintDevice {
   }
 
   startPolling() {
+
     if (this.timerStatus && this.pollingTimer) {
       return; // 已经有了
     }
@@ -81,4 +88,4 @@ export class PrintDeviceImpl implements PrintDevice {
   }
 }
 
-export default {PrintDeviceImpl}
+export default { PrintDeviceImpl };

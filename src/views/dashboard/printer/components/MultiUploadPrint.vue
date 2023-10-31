@@ -5,9 +5,10 @@
   import { useAppStore } from '@/store';
   import left from '@/assets/images/left.png';
   import setting from '@/config/setting';
-  import {fileItemType} from "@/types/printFille";
-
-
+  import { fileItemType } from '@/types/printFille';
+  import { PrintFileImpl } from '@/utils/print/PrintFileImpl';
+  import usePrintStore from "@/store/modules/print";
+  import item from "@/views/chat/chat-index/components/VirtualList/item";
 
   interface thisStateType {
     visible: boolean;
@@ -15,17 +16,19 @@
     loading: boolean;
     printing: boolean;
   }
+  const printStore = usePrintStore();
+  const errList = ref([]);
 
   const thisState = ref<thisStateType>({
     visible: false,
     loading: false,
     printing: false,
   });
-  const fileList = ref<fileItemType[]>([]);
+  const fileList = ref<PrintFileImpl[]>([]);
   const appState = useAppStore();
 
   const delListItem = (filename) => {
-    const aass = fileList.value.some((item, i) => {
+    fileList.value.some((item, i) => {
       if (item.file_name === filename) {
         fileList.value.splice(i, 1);
         // 在数组的some方法中，如果return true，就会立即终止这个数组的后续循环,所以相比较foreach，如果想要终止循环，那么建议使用some
@@ -33,7 +36,6 @@
       }
       return false;
     });
-    console.log(aass);
   };
   const customRequest = (option) => {
     const { onProgress, onError, onSuccess, fileItem, name } = option;
@@ -49,12 +51,12 @@
       return;
     }
     const formData = new FormData();
-    const myfilea = ref<fileItemType>({ state: 'init' });
-    myfilea.value.file_name = fileItem.file.name;
+    const myfilea = ref<PrintFileImpl>(new PrintFileImpl());
+    myfilea.value.addFile(fileItem.file.name);
     fileList.value.push(myfilea.value);
     formData.append(name || 'file', fileItem.file);
     axios
-      .post(`${setting.printBaseUrl}/uploader`, formData, {
+      .post(`/api/printer/uploadPrintFile`, formData, {
         timeout: 150000,
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -71,94 +73,80 @@
       })
       .then((res) => {
         // 这里需要根据自己的接口实际返回值修改
+        // @ts-ignore
         if (res.code !== 1) {
-          Message.error('服务器内部错误');
-          myfilea.value.state = 'error';
-          delListItem(fileItem.file.name);
+          delListItem(myfilea.value.file_name);
+          // @ts-ignore
+          Message.error(res.msg || '服务器内部错误');
+          // @ts-ignore
           return onError(res.msg);
         }
-        if (res.data.error) {
-          if (Number(res.data.error) < 1) {
-            // eslint-disable-next-line no-eval
-            Message.error(res.data.msg);
-            myfilea.value.state = 'error';
-            delListItem(fileItem.file.name);
-            return onError(res.msg);
-          }
-        } else {
-          const errordata = JSON.parse(res.data);
-          if (errordata.error < 1) {
-            // eslint-disable-next-line no-eval
-            Message.error(errordata.msg);
-            myfilea.value.state = 'error';
-            delListItem(fileItem.file.name);
-            return onError(errordata.msg);
-          }
-        }
-        myfilea.value.state = 'success';
-        myfilea.value.page_start = 1;
-        myfilea.value.max_num = res.data.page_num;
-        myfilea.value.page_end = res.data.page_num;
-        myfilea.value.uuid = res.data.uuid;
-        // 默认单面
-        myfilea.value.duplex = 1;
-        myfilea.value.position = 1;
-        // 默认份数
-        myfilea.value.copies_num = 1;
-
-        // eslint-disable-next-line vue/custom-event-name-casing
+        myfilea.value.uploadSuccess(res.data);
         return onSuccess(res.data);
       })
       .catch((error) => {
-        myfilea.value.state = 'error';
-        delListItem(fileItem.file.name);
+        delListItem(myfilea.value.file_name);
         Message.error('服务器内部错误');
         // eslint-disable-next-line vue/custom-event-name-casing
+        return onError(error);
       });
   };
   const Preview = async (record) => {
     thisState.value.loading = true;
-    thisState.value.visible = true;
-    const res = await axios.get(
-      `${setting.printBaseUrl}/get_thumbnail/${record.uuid}`,
-      {
-        withCredentials: true,
-      }
-    );
-    if (res.code !== 1) {
-      Message.error('错误');
-      return;
+    if (record.canGetImage) {
+      thisState.value.tempImg = record.imageUrl;
+      thisState.value.visible = true;
+    } else {
+      Message.info('当前文件图片还没转换完');
     }
-    thisState.value.tempImg = `data:image/png;base64,${res.data}`;
     thisState.value.loading = false;
   };
+
+  // eslint-disable-next-line camelcase
+  const printerrorCallback = (file_name: string) => {
+    errList.value.push(file_name);
+  };
+
   const printers = async () => {
-    // 开始打印
-    thisState.value.printing = true;
-    try {
-      const res = await axios.post(
-        `${setting.printBaseUrl}/prints`,
-        fileList.value
-      );
-      console.log(fileList.value);
-      const ResResult = res.data;
-      if (ResResult.error <= 0) {
-        Modal.error({
-          title: '错误',
-          content: `${ResResult.msg}`,
+    // 循环校验
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < fileList.value.length; i++) {
+      if (fileList.value[i].state<2) {
+        Modal.warning({
+          title: '检查异常',
+          content: `请删除${fileList.value[i].file_name}再提交打印`,
         });
-      } else {
-        console.log(ResResult.msg);
-        Modal.success({
-          title: '成功',
-          content: ResResult.msg,
-        });
-        fileList.value = [];
+        return;
       }
-    } catch (e: any) {
-      Modal.error({
+    }
+    if (printStore.printDevice == null || printStore.printDevice.id === '') {
+      Modal.warning({
         title: '提示',
-        content: `${e.message}`,
+        content: `请先选择打印机`,
+      });
+      return;
+    }
+    // 循环提交，然后异常的放入到另一个列表中，然后清空list
+    thisState.value.printing = true;
+    errList.value = [];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < fileList.value.length; i++) {
+      fileList.value[i].submitPrint(printStore.printDevice.id,printerrorCallback,false);
+    }
+    fileList.value = [];
+    if (errList.value.length===0){
+      // 全都成功了
+      Modal.success({
+        title: '提交成功',
+        content: `已加入打印队列`,
+      });
+    }else {
+      let a = "";
+      errList.value.forEach(item=>{a=`${a}[${item}]`})
+      // 显示没成功的打印任务名
+      Modal.info({
+        title: '部分任务已成功',
+        content: `不成功的任务:${a}`,
       });
     }
     thisState.value.printing = false;
@@ -243,7 +231,7 @@
               <a-table-column title="起始页">
                 <template #cell="{ record }">
                   <a-input-number
-                    v-if="record.state === 'success'"
+                    v-if="record.state === 3"
                     v-model="record.page_start"
                     :max="record.max_num"
                     :min="1"
@@ -257,7 +245,7 @@
               <a-table-column title="结束页">
                 <template #cell="{ record }">
                   <a-input-number
-                    v-if="record.state === 'success'"
+                    v-if="record.state === 3"
                     v-model="record.page_end"
                     :max="record.max_num"
                     :min="record.page_start"
@@ -272,34 +260,34 @@
               <a-table-column title="单双面">
                 <template #cell="{ record }">
                   <a-radio-group
-                    v-if="record.state === 'success'"
+                    v-if="record.state === 3"
                     v-model:model-value="record.duplex"
                     size="small"
                     type="button"
                   >
-                    <a-radio :value="1">单面</a-radio>
-                    <a-radio :value="2">双面</a-radio>
-                    <a-radio :value="3">双面向上翻</a-radio>
+                    <a-radio :value="1">单面打印</a-radio>
+                    <a-radio :value="2">双面打印</a-radio>
+                    <a-radio :value="3">双面向上翻打印</a-radio>
                   </a-radio-group>
                 </template>
               </a-table-column>
               <a-table-column title="打印方向">
                 <template #cell="{ record }">
                   <a-radio-group
-                    v-if="record.state === 'success'"
+                    v-if="record.state === 3"
                     v-model:model-value="record.position"
                     size="small"
                     type="button"
                   >
-                    <a-radio :value="1">垂直</a-radio>
-                    <a-radio :value="2">水平</a-radio>
+                    <a-radio :value="0">竖直</a-radio>
+                    <a-radio :value="1">横向</a-radio>
                   </a-radio-group>
                 </template>
               </a-table-column>
               <a-table-column title="份数">
                 <template #cell="{ record }">
                   <a-input-number
-                    v-if="record.state === 'success'"
+                    v-if="record.state === 3"
                     v-model="record.copies_num"
                     :max="20"
                     :min="1"
@@ -321,7 +309,7 @@
                     "
                   >
                     <a-button
-                      v-if="record.state === 'success'"
+                      v-if="record.state === 3"
                       type="primary"
                       @click="Preview(record)"
                       >预览

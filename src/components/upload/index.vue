@@ -15,13 +15,14 @@
     // 自定义事件
     // on-success: 上传成功后触发并返回response
     props: ['url', 'draggable'],
+    emits: ['on-success', 'on-error', 'on-before'],
     methods: {
       customRequest(option) {
         const { onProgress, onError, onSuccess, fileItem, name } = option;
         const formData = new FormData();
         formData.append(name || 'file', fileItem.file);
         // eslint-disable-next-line vue/custom-event-name-casing
-        this.$emit('on-before');
+        this.$emit('on-before',fileItem.file.name);
 
         axios
           .post(this.url, formData, {
@@ -38,12 +39,12 @@
             },
           })
           .then((res) => {
-            console.log(res);
             // 这里需要根据自己的接口实际返回值修改
             if (res.code !== 1) {
               Message.error(res.msg || '服务器内部错误');
               return onError(res.msg);
             }
+            console.log("123123123123")
             // eslint-disable-next-line vue/custom-event-name-casing
             this.$emit('on-success', res.data);
             return onSuccess(res.data);

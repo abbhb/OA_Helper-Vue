@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { printDevicePolling } from '@/api/printer';
 import { PrintDeviceImpl } from '@/utils/print/PrintDeviceImpl';
-import { modelType, PrintDevice, PrintState } from './types';
+import { modelType, PrintState } from './types';
 
 const usePrintStore = defineStore('print', {
   state: (): PrintState => ({

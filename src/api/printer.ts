@@ -42,6 +42,27 @@ interface PrintFileReq {
   startNum: number;
   endNum: number;
   landscape: number;
+  deviceId: string;
+}
+
+export interface PrintJobC {
+  id:string;
+  documentName:string;
+  startTime:string;
+  jobStatus:string;
+  pagesPrinted:number;
+  pageCount:number;
+}
+
+export interface PrintDeviceInfoResp {
+  printName:string;
+  printDescription:string;
+  statusTypeMessage:string;
+  listNums:number;
+  statusType:number;
+  printJobs:PrintJobC[];
+
+
 }
 
 export interface PrintDeviceResp {
@@ -51,6 +72,7 @@ export interface PrintDeviceResp {
   ip: string;
   port: number;
   status: number;
+  detailInfo: PrintDeviceInfoResp;
 }
 
 interface PrintImageResp {
