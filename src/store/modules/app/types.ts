@@ -22,5 +22,6 @@ export interface AppState {
   serverMenu: RouteRecordNormalized[];
   recentlyRouter: RecentlyRouter[];
   [key: string]: unknown;
-  lastPrintDevice: string;// id
+  lastPrintDevice: string; // id
+  versionRead: string; // 版本号不对或者为空即没阅读最新版本说明
 }

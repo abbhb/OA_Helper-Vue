@@ -38,6 +38,7 @@ const useAppStore = defineStore('app', {
   },
 
   actions: {
+
     // Update app settings
     updateSettings(partial: Partial<AppState>) {
       // @ts-ignore-next-line
