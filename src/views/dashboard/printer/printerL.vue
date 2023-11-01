@@ -1,25 +1,25 @@
 <template>
   <div class="container">
     <div class="left-side">
-      <UploadPrint v-if="printState.model === 1"/>
-      <MultiUploadPrint v-else-if="printState.model === 9"/>
+      <UploadPrint v-if="printState.model === 1" />
+      <MultiUploadPrint v-else-if="printState.model === 9" />
       <PrinterTaskList />
-      <HistoryRecord/>
-      <PrintDocumentTypeStatistics/>
+      <HistoryRecord />
+      <PrintDocumentTypeStatistics />
     </div>
     <div class="right-side">
       <a-grid :cols="24" :row-gap="16">
         <a-grid-item :span="24">
           <div class="panel moduler-wrap">
-            <DeviceSelect/>
-            <DeviceState/>
+            <DeviceSelect />
+            <DeviceState />
           </div>
         </a-grid-item>
         <a-grid-item :span="24" class="panel">
-          <StateManger/>
+          <StateManger />
         </a-grid-item>
         <a-grid-item :span="24" class="panel">
-          <PrintTopListNew/>
+          <PrintTopListNew />
         </a-grid-item>
       </a-grid>
     </div>
@@ -27,18 +27,18 @@
 </template>
 
 <script lang="ts" setup>
-import DeviceState from '@/views/dashboard/printer/components/DeviceState.vue';
-import UploadPrint from '@/views/dashboard/printer/components/UploadPrint.vue';
-import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
-import HistoryRecord from '@/views/dashboard/printer/components/HistoryRecord.vue';
-import StateManger from '@/views/dashboard/printer/components/StateManger.vue';
-import MultiUploadPrint from '@/views/dashboard/printer/components/MultiUploadPrint.vue';
-import usePrintStore from '@/store/modules/print';
-import PrintDocumentTypeStatistics from '@/views/dashboard/printer/components/PrintDocumentTypeStatistics.vue';
-import PrintTopListNew from '@/views/dashboard/printer/components/PrintTopListNew.vue';
-import DeviceSelect from "@/views/dashboard/printer/components/DeviceSelect.vue";
+  import DeviceState from '@/views/dashboard/printer/components/DeviceState.vue';
+  import UploadPrint from '@/views/dashboard/printer/components/UploadPrint.vue';
+  import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
+  import HistoryRecord from '@/views/dashboard/printer/components/HistoryRecord.vue';
+  import StateManger from '@/views/dashboard/printer/components/StateManger.vue';
+  import MultiUploadPrint from '@/views/dashboard/printer/components/MultiUploadPrint.vue';
+  import usePrintStore from '@/store/modules/print';
+  import PrintDocumentTypeStatistics from '@/views/dashboard/printer/components/PrintDocumentTypeStatistics.vue';
+  import PrintTopListNew from '@/views/dashboard/printer/components/PrintTopListNew.vue';
+  import DeviceSelect from '@/views/dashboard/printer/components/DeviceSelect.vue';
 
-const printState = usePrintStore();
+  const printState = usePrintStore();
 </script>
 
 <style lang="less" scoped>

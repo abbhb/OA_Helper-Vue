@@ -69,7 +69,7 @@
     printState.stopPolling();
   });
   const handleCancel = () => {
-    printState.isSelecting = false;
+    printState.stopSelect();
   }
   const changeOtherPrintDevice = (record) => {
     printState.setPrintDevice(record.id);
@@ -113,7 +113,7 @@
             :shape="'circle'"
             :type="'primary'"
             style="position: absolute; right: 1px; top: 0px"
-            @click="printState.isSelecting = true"
+            @click="printState.startSelect()"
           >选择</a-button
           >
         </div>
@@ -129,7 +129,7 @@
           <a-button
             :shape="'circle'"
             :type="'primary'"
-            @click="printState.isSelecting = true"
+            @click="printState.startSelect()"
           >更换</a-button
           >
         </div>

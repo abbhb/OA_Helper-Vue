@@ -5,11 +5,13 @@
         :is="Component"
         v-if="route.meta.ignoreCache"
         :key="route.fullPath"
-      />
+      >
+      </component>
       <keep-alive v-else :include="cacheList">
         <component :is="Component" :key="route.fullPath" />
       </keep-alive>
     </transition>
+
   </router-view>
 </template>
 

@@ -6,7 +6,7 @@
           <a-table-column data-index="id" title="任务ID" />
           <a-table-column data-index="documentName" title="文件名" />
           <a-table-column data-index="pagesPrinted" title="已印页" />
-          <a-table-column data-index="pageCount" title="总页" />
+          <a-table-column data-index="pageCount" title="剩余页" />
           <a-table-column data-index="jobStatus" title="状态" />
           <a-table-column title="操作">
             <template #cell="{ record }">

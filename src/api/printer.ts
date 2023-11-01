@@ -61,8 +61,6 @@ export interface PrintDeviceInfoResp {
   listNums:number;
   statusType:number;
   printJobs:PrintJobC[];
-
-
 }
 
 export interface PrintDeviceResp {
@@ -72,7 +70,6 @@ export interface PrintDeviceResp {
   ip: string;
   port: number;
   status: number;
-  detailInfo: PrintDeviceInfoResp;
 }
 
 interface PrintImageResp {
@@ -156,6 +153,13 @@ export function thumbnailPolling(params: { id: string }) {
  */
 export function printDevicePolling() {
   return axios.get<PrintDeviceResp[]>('/api/printer/print_device polling');
+}
+
+/**
+ * 设备轮询详情接口，获取打印机注详细状态
+ */
+export function printDeviceInfoPolling(id:string) {
+  return axios.get<PrintDeviceInfoResp>(`/api/printer/print_device_info polling/${id}`);
 }
 
 /**

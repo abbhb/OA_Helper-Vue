@@ -19,13 +19,9 @@
     </a-spin>
 
     <a-form :model="thisPrint" :style="{ width: '1200px' }" @submit="MakePrint">
-
-
-
-      
       <a-form-item
-        field="file_name"
         v-if="thisPrint.state !== 0"
+        field="file_name"
         label="文件名"
         :rules="[{ required: true, message: '请先上传文件' }]"
       >
@@ -36,27 +32,31 @@
         />
       </a-form-item>
 
-      <div v-if="thisPrint.state>=3">
+      <div v-if="thisPrint.state >= 3">
         <a-form-item
           field="uuid"
           label="文件UUID"
           :rules="[{ required: true, message: '请先上传文件' }]"
         >
-          <a-input v-model="thisPrint.uuid" readonly placeholder="请先上传文件" />
+          <a-input
+            v-model="thisPrint.uuid"
+            readonly
+            placeholder="请先上传文件"
+          />
         </a-form-item>
 
         <a-form-item
           field="page_start"
           label="起始页码"
           :rules="[
-          { required: true, message: '起始页码范围：1 - 结束页码' },
-          {
-            type: 'number',
-            min: 1,
-            max: thisPrint.max_num,
-            message: `起始页码范围：1 - 结束页码`,
-          },
-        ]"
+            { required: true, message: '起始页码范围：1 - 结束页码' },
+            {
+              type: 'number',
+              min: 1,
+              max: thisPrint.max_num,
+              message: `起始页码范围：1 - 结束页码`,
+            },
+          ]"
         >
           <a-input-number
             v-model="thisPrint.page_start"
@@ -68,17 +68,17 @@
           field="page_end"
           label="结束页码"
           :rules="[
-          {
-            required: true,
-            message: '最大页码范围：文件起始页 - 文件最后一页',
-          },
-          {
-            type: 'number',
-            min: thisPrint.page_start,
-            max: thisPrint.max_num,
-            message: `最大页码范围：1 - 文件最后一页`,
-          },
-        ]"
+            {
+              required: true,
+              message: '最大页码范围：文件起始页 - 文件最后一页',
+            },
+            {
+              type: 'number',
+              min: thisPrint.page_start,
+              max: thisPrint.max_num,
+              message: `最大页码范围：1 - 文件最后一页`,
+            },
+          ]"
         >
           <a-input-number
             v-model="thisPrint.page_end"
@@ -90,14 +90,14 @@
           field="copies"
           label="份数"
           :rules="[
-          { required: true, message: '份数范围：1-20' },
-          {
-            type: 'number',
-            min: 1,
-            max: 20,
-            message: `份数范围：1-20`,
-          },
-        ]"
+            { required: true, message: '份数范围：1-20' },
+            {
+              type: 'number',
+              min: 1,
+              max: 20,
+              message: `份数范围：1-20`,
+            },
+          ]"
         >
           <a-input-number
             v-model="thisPrint.copies_num"
@@ -121,13 +121,11 @@
           </a-radio-group>
         </a-form-item>
       </div>
-      <div v-else-if="thisPrint.state!==0">
-        解析中！
-      </div>
+      <div v-else-if="thisPrint.state !== 0"> 解析中！ </div>
       <a-form-item>
         <a-space>
           <a-button :disabled="thisPrint.state < 3" html-type="submit"
-          >提交打印</a-button
+            >提交打印</a-button
           >
           <a-button @click="onRest()">复位</a-button>
         </a-space>
@@ -145,18 +143,22 @@
   import { PrintFileImpl } from '@/utils/print/PrintFileImpl';
   import { Message, Modal } from '@arco-design/web-vue';
   import Upload from '@/components/upload/index.vue';
-  import usePrintStore from "@/store/modules/print";
+  import usePrintStore from '@/store/modules/print';
 
   const printStore = usePrintStore();
   const thisPrint = ref(new PrintFileImpl());
-  const tishi = ref({ visible: false, tipMsg: '', loading: false,showUpload:true });
+  const tishi = ref({
+    visible: false,
+    tipMsg: '',
+    loading: false,
+    showUpload: true,
+  });
 
   const onRest = () => {
     // 复位
     thisPrint.value.endThisClass();
     tishi.value.loading = false;
     tishi.value.showUpload = true;
-
   };
 
   const uploadSuccess = (data: any) => {
@@ -168,7 +170,7 @@
     tishi.value.showUpload = false;
   };
 
-  const beforeUpload = (name:any) => {
+  const beforeUpload = (name: any) => {
     tishi.value.loading = true;
     thisPrint.value.addFile(name);
   };
@@ -180,14 +182,14 @@
   };
 
   const MakePrint = (value: any, errors: any) => {
-    if (thisPrint.value.state<2) {
+    if (thisPrint.value.state < 2) {
       Modal.warning({
         title: '提示',
         content: `请点击复位然后重新上传文件`,
       });
       return;
     }
-    if (printStore.printDevice==null||printStore.printDevice.id===''){
+    if (printStore.printDevice == null || printStore.printDevice.id === '') {
       Modal.warning({
         title: '提示',
         content: `请先选择打印机`,
@@ -198,7 +200,6 @@
     tishi.value.tipMsg = '已添加打印队列';
     tishi.value.visible = true;
   };
-
 </script>
 
 <style scoped lang="less">

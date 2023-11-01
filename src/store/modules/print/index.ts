@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { printDevicePolling } from '@/api/printer';
 import { PrintDeviceImpl } from '@/utils/print/PrintDeviceImpl';
+import { Message } from '@arco-design/web-vue';
 import { modelType, PrintState } from './types';
 
 const usePrintStore = defineStore('print', {
@@ -37,6 +38,10 @@ const usePrintStore = defineStore('print', {
       this.model = model;
     },
     startSelect() {
+      if (this.printDeviceList.length < 1) {
+        Message.info('当前没有打印机');
+        return;
+      }
       this.isSelecting = true;
     },
     stopSelect() {
@@ -54,7 +59,7 @@ const usePrintStore = defineStore('print', {
         this.timer = null;
       }
     },
-    isHavePrintDevice(id: string):(boolean|PrintDeviceImpl) {
+    isHavePrintDevice(id: string): boolean | PrintDeviceImpl {
       if (id === '' || id == null) {
         return false;
       }
@@ -67,12 +72,9 @@ const usePrintStore = defineStore('print', {
       return false;
     },
     async getDevicePollCode() {
-      const {data} = await printDevicePolling();
+      const { data } = await printDevicePolling();
       // 遍历 现有 列表
-      if (
-          this.printDeviceList == null ||
-          this.printDeviceList.length <= 0
-      ) {
+      if (this.printDeviceList == null || this.printDeviceList.length <= 0) {
         this.printDeviceList = [];
         // 首次为空,此时禁止进入select状态，点击选择框提示加载中
         // 直接添加B
@@ -80,7 +82,7 @@ const usePrintStore = defineStore('print', {
         for (let i = data.length - 1; i >= 0; i--) {
           if (this.needDelectId.length > 0) {
             const index = this.needDelectId.findIndex(
-                (need) => need === data[i].id
+              (need) => need === data[i].id
             );
             if (index !== -1) {
               // 把移除列表这项移除，不用删了
@@ -88,16 +90,16 @@ const usePrintStore = defineStore('print', {
             }
           }
           this.printDeviceList.push(
-              new PrintDeviceImpl(
-                  data[i].id,
-                  data[i].name,
-                  data[i].description,
-                  data[i].ip,
-                  data[i].port,
-                  data[i].status,
-                  '未知',
-                  0
-              )
+            new PrintDeviceImpl(
+              data[i].id,
+              data[i].name,
+              data[i].description,
+              data[i].ip,
+              data[i].port,
+              data[i].status,
+              '未知',
+              0
+            )
           );
         }
       } else {
@@ -106,7 +108,7 @@ const usePrintStore = defineStore('print', {
         for (let i = this.printDeviceList.length - 1; i >= 0; i--) {
           const itemA = this.printDeviceList[i];
           const matchInB = data.findIndex(
-              (itemB) => String(itemB.id) === String(itemA.id)
+            (itemB) => String(itemB.id) === String(itemA.id)
           );
 
           if (matchInB !== -1) {
@@ -128,22 +130,22 @@ const usePrintStore = defineStore('print', {
         // eslint-disable-next-line no-restricted-syntax
         for (const itemB of data) {
           const matchInA = this.printDeviceList.findIndex(
-              (itemA) => itemA.id === String(itemB.id)
+            (itemA) => itemA.id === String(itemB.id)
           );
 
           if (matchInA === -1) {
             // 未找到匹配的项，添加到 A 列表的末尾
             this.printDeviceList.push(
-                new PrintDeviceImpl(
-                    itemB.id,
-                    itemB.name,
-                    itemB.description,
-                    itemB.ip,
-                    itemB.port,
-                    itemB.status,
-                    '未知',
-                    0
-                )
+              new PrintDeviceImpl(
+                itemB.id,
+                itemB.name,
+                itemB.description,
+                itemB.ip,
+                itemB.port,
+                itemB.status,
+                '未知',
+                0
+              )
             );
           }
         }
@@ -163,7 +165,7 @@ const usePrintStore = defineStore('print', {
         async () => {
           await this.getDevicePollCode();
         },
-        this.isSelecting ? 12 * 10000 : 5000
+        this.isSelecting ? 12 * 1000 : 6000
       );
     },
     cleanNeedDelete() {
