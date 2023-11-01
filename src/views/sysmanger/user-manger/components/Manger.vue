@@ -1,233 +1,233 @@
 <script lang="ts" setup>
-import {useI18n} from 'vue-i18n';
-import {computed, ref} from 'vue';
-import {useAppStore} from '@/store';
-import {GroupUserFront} from '@/api/group';
-import {getUserListManger, updataUserByAdmin, UserManger} from '@/api/user';
-import {Message} from '@arco-design/web-vue';
-import AvatarImage from '@/components/image/AvatarImage.vue';
-import {getColor} from '@/utils/color-index';
-import {deptListTree} from '@/api/dept';
-import {Role, roleTagList} from '@/api/role';
-import ImageUpload from '@/components/image/ImageUpload.vue';
+  import { useI18n } from 'vue-i18n';
+  import { computed, ref } from 'vue';
+  import { useAppStore } from '@/store';
+  import { GroupUserFront } from '@/api/group';
+  import { getUserListManger, updataUserByAdmin, UserManger } from '@/api/user';
+  import { Message } from '@arco-design/web-vue';
+  import AvatarImage from '@/components/image/AvatarImage.vue';
+  import { getColor } from '@/utils/color-index';
+  import { deptListTree } from '@/api/dept';
+  import { Role, roleTagList } from '@/api/role';
+  import ImageUpload from '@/components/image/ImageUpload.vue';
 
-const {t} = useI18n();
-const appStore = useAppStore();
+  const { t } = useI18n();
+  const appStore = useAppStore();
 
-interface statuEI {
-  name?: string;
-  searchStatus?: boolean;
-  clickLoading: boolean;
-  modelstatus: boolean;
-  modelType: string;
-  modelTitle: string;
-  modelData?: GroupUserFront;
-  deptId?: string;
-  formModel: boolean;
-  refreshKey: number;
-}
+  interface statuEI {
+    name?: string;
+    searchStatus?: boolean;
+    clickLoading: boolean;
+    modelstatus: boolean;
+    modelType: string;
+    modelTitle: string;
+    modelData?: GroupUserFront;
+    deptId?: string;
+    formModel: boolean;
+    refreshKey: number;
+  }
 
-const statuEs = ref<statuEI>({
-  name: '',
-  clickLoading: false,
-  modelstatus: false,
-  modelType: 'add',
-  modelTitle: 'syscenter.user.manger.add.button',
-  deptId: '1',
-  formModel: false,
-  refreshKey: 1,
-});
-
-const form = ref<UserManger>({
-  id: '',
-  name: '',
-  username: '',
-  sex: '',
-  studentId: '',
-  phone: '',
-  avatar: '',
-  roles: [],
-  deptId: '',
-  status: 1,
-  email: '',
-  password: '',
-});
-
-const tableData = ref<UserManger[]>([]);
-const deptTreeData = ref([]);
-const rolesStore = ref<Role[]>([]);
-
-const initSelect = async () => {
-  const {data} = await roleTagList();
-  rolesStore.value = data;
-};
-initSelect();
-const initDeptTree = async () => {
-  const {data} = await deptListTree();
-  deptTreeData.value = data;
-};
-initDeptTree();
-const getData = async (pagination) => {
-  const {data} = await getUserListManger({
-    pageNum: pagination.value.current,
-    pageSize: pagination.value.pageSize,
-    name: statuEs.value.name,
-    deptId:
-      statuEs.value.deptId && statuEs.value.deptId.length >= 1
-        ? statuEs.value.deptId[0]
-        : undefined,
+  const statuEs = ref<statuEI>({
+    name: '',
+    clickLoading: false,
+    modelstatus: false,
+    modelType: 'add',
+    modelTitle: 'syscenter.user.manger.add.button',
+    deptId: '1',
+    formModel: false,
+    refreshKey: 1,
   });
-  tableData.value = data.records;
-  pagination.value.total = data.total;
-};
-const pagination = ref({
-  current: 1,
-  defaultPageSize: 10,
-  total: 0,
-  pageSize: 5,
-  pageSizeOptions: [5, 10, 20, 50],
-  showPageSize: true,
-  showJumper: true,
-  onChange(page) {
-    pagination.value.current = page;
-    getData(pagination);
-  },
-  onPageSizeChange(pageSize) {
-    pagination.value.pageSize = pageSize;
-    getData(pagination);
-  },
-  showTotal: () => `共 ${11} 条`,
-});
-getData(pagination);
 
-const getDataB = async () => {
-  statuEs.value.refreshKey += 1;
-  statuEs.value.searchStatus = true;
-  const {data} = await getUserListManger({
-    pageNum: pagination.value.current,
-    pageSize: pagination.value.pageSize,
-    name: statuEs.value.name,
-    deptId:
-      statuEs.value.deptId && statuEs.value.deptId.length >= 1
-        ? statuEs.value.deptId[0]
-        : undefined,
+  const form = ref<UserManger>({
+    id: '',
+    name: '',
+    username: '',
+    sex: '',
+    studentId: '',
+    phone: '',
+    avatar: '',
+    roles: [],
+    deptId: '',
+    status: 1,
+    email: '',
+    password: '',
   });
-  statuEs.value.searchStatus = false;
-  tableData.value = data.records;
-  pagination.value.total = Number(data.total);
-};
-const editAGroup = (record) => {
-  statuEs.value.modelData = record;
-  statuEs.value.modelstatus = true;
-  statuEs.value.modelType = 'edit';
-  statuEs.value.modelTitle = 'syscenter.user.manger.edit.button';
 
-  // 数据传入
-  form.value.deptId = record.deptId;
-  form.value.id = record.id;
-  form.value.avatar = record.avatar;
-  form.value.status = record.status;
-  form.value.sex = record.sex;
-  form.value.username = record.username;
-  form.value.name = record.name;
-  const sadas = [];
-  if (record.roles) {
-    record.roles.forEach((item) => {
-      sadas.push(item.id);
+  const tableData = ref<UserManger[]>([]);
+  const deptTreeData = ref([]);
+  const rolesStore = ref<Role[]>([]);
+
+  const initSelect = async () => {
+    const { data } = await roleTagList();
+    rolesStore.value = data;
+  };
+  initSelect();
+  const initDeptTree = async () => {
+    const { data } = await deptListTree();
+    deptTreeData.value = data;
+  };
+  initDeptTree();
+  const getData = async (pagination) => {
+    const { data } = await getUserListManger({
+      pageNum: pagination.value.current,
+      pageSize: pagination.value.pageSize,
+      name: statuEs.value.name,
+      deptId:
+        statuEs.value.deptId && statuEs.value.deptId.length >= 1
+          ? statuEs.value.deptId[0]
+          : undefined,
     });
-  }
-  form.value.roles = sadas;
-  form.value.email = record.email;
-  form.value.phone = record.phone;
-  form.value.studentId = record.studentId;
-  form.value.password = '';
-};
-const IBan = (record) => {
-  if (record.status === 1) {
-    // 封禁
-    console.log(record);
-    return;
-  }
-  console.log(record);
-  // 解封
-};
-
-const handleCancel = () => {
+    tableData.value = data.records;
+    pagination.value.total = data.total;
+  };
+  const pagination = ref({
+    current: 1,
+    defaultPageSize: 10,
+    total: 0,
+    pageSize: 5,
+    pageSizeOptions: [5, 10, 20, 50],
+    showPageSize: true,
+    showJumper: true,
+    onChange(page) {
+      pagination.value.current = page;
+      getData(pagination);
+    },
+    onPageSizeChange(pageSize) {
+      pagination.value.pageSize = pageSize;
+      getData(pagination);
+    },
+    showTotal: () => `共 ${11} 条`,
+  });
   getData(pagination);
-};
 
-const getRolesNameList = computed(() => (roles) => {
-  const roleKeyList = [];
-  roles.forEach((item) => {
-    roleKeyList.push(item.name);
-  });
-  return roleKeyList;
-});
-const refreshData = () => {
-  getDataB();
-};
-const handelEditOK = async (done) => {
-  const rolesIdList = [];
-  form.value.roles.forEach((role) => {
-    rolesIdList.push({id: role});
-  });
-  // 拿取form数据进行修改，成功就done(true);
-  try {
-    const {data} = await updataUserByAdmin({
-      id: form.value.id,
-      deptId: form.value.deptId,
-      username: form.value.username,
-      studentId: form.value.studentId,
-      status: form.value.status,
-      roles: rolesIdList,
-      name: form.value.name,
-      sex: form.value.sex,
-      phone: form.value.phone,
-      avatar: form.value.avatar,
-      email: form.value.email,
+  const getDataB = async () => {
+    statuEs.value.refreshKey += 1;
+    statuEs.value.searchStatus = true;
+    const { data } = await getUserListManger({
+      pageNum: pagination.value.current,
+      pageSize: pagination.value.pageSize,
+      name: statuEs.value.name,
+      deptId:
+        statuEs.value.deptId && statuEs.value.deptId.length >= 1
+          ? statuEs.value.deptId[0]
+          : undefined,
     });
-    refreshData();
-    Message.success(data);
-    done(true);
-  } catch (e) {
-    done(false);
-  }
-};
+    statuEs.value.searchStatus = false;
+    tableData.value = data.records;
+    pagination.value.total = Number(data.total);
+  };
+  const editAGroup = (record) => {
+    statuEs.value.modelData = record;
+    statuEs.value.modelstatus = true;
+    statuEs.value.modelType = 'edit';
+    statuEs.value.modelTitle = 'syscenter.user.manger.edit.button';
 
-const handleBeforeOk = (done) => {
-  if (statuEs.value.modelType === 'edit') {
-    handelEditOK(done);
-  } else {
-    Message.error('无此类别');
-    done(false);
-  }
-};
-const handleModelCancel = () => {
-  statuEs.value.modelstatus = false;
-  // 表单数据清除
-  form.value.deptId = '';
-  form.value.id = '';
-  form.value.avatar = '';
-  form.value.status = 1;
-  form.value.sex = '男';
-  form.value.username = '';
-  form.value.roles = [];
-  form.value.email = '';
-  form.value.phone = '';
-  form.value.studentId = '';
-  form.value.password = '';
-};
+    // 数据传入
+    form.value.deptId = record.deptId;
+    form.value.id = record.id;
+    form.value.avatar = record.avatar;
+    form.value.status = record.status;
+    form.value.sex = record.sex;
+    form.value.username = record.username;
+    form.value.name = record.name;
+    const sadas = [];
+    if (record.roles) {
+      record.roles.forEach((item) => {
+        sadas.push(item.id);
+      });
+    }
+    form.value.roles = sadas;
+    form.value.email = record.email;
+    form.value.phone = record.phone;
+    form.value.studentId = record.studentId;
+    form.value.password = '';
+  };
+  const IBan = (record) => {
+    if (record.status === 1) {
+      // 封禁
+      console.log(record);
+      return;
+    }
+    console.log(record);
+    // 解封
+  };
 
-const handleSuccess = (data) => {
-  // r为data
-  if (data.indexOf('http') !== -1) {
-    // eslint-disable-next-line prefer-destructuring
-    form.value.avatar = data.split('aistudio/')[1];
-  } else {
-    form.value.avatar = data;
-  }
-  Message.success('上传成功!');
-};
+  const handleCancel = () => {
+    getData(pagination);
+  };
+
+  const getRolesNameList = computed(() => (roles) => {
+    const roleKeyList = [];
+    roles.forEach((item) => {
+      roleKeyList.push(item.name);
+    });
+    return roleKeyList;
+  });
+  const refreshData = () => {
+    getDataB();
+  };
+  const handelEditOK = async (done) => {
+    const rolesIdList = [];
+    form.value.roles.forEach((role) => {
+      rolesIdList.push({ id: role });
+    });
+    // 拿取form数据进行修改，成功就done(true);
+    try {
+      const { data } = await updataUserByAdmin({
+        id: form.value.id,
+        deptId: form.value.deptId,
+        username: form.value.username,
+        studentId: form.value.studentId,
+        status: form.value.status,
+        roles: rolesIdList,
+        name: form.value.name,
+        sex: form.value.sex,
+        phone: form.value.phone,
+        avatar: form.value.avatar,
+        email: form.value.email,
+      });
+      refreshData();
+      Message.success(data);
+      done(true);
+    } catch (e) {
+      done(false);
+    }
+  };
+
+  const handleBeforeOk = (done) => {
+    if (statuEs.value.modelType === 'edit') {
+      handelEditOK(done);
+    } else {
+      Message.error('无此类别');
+      done(false);
+    }
+  };
+  const handleModelCancel = () => {
+    statuEs.value.modelstatus = false;
+    // 表单数据清除
+    form.value.deptId = '';
+    form.value.id = '';
+    form.value.avatar = '';
+    form.value.status = 1;
+    form.value.sex = '男';
+    form.value.username = '';
+    form.value.roles = [];
+    form.value.email = '';
+    form.value.phone = '';
+    form.value.studentId = '';
+    form.value.password = '';
+  };
+
+  const handleSuccess = (data) => {
+    // r为data
+    if (data.indexOf('http') !== -1) {
+      // eslint-disable-next-line prefer-destructuring
+      form.value.avatar = data.split('aistudio/')[1];
+    } else {
+      form.value.avatar = data;
+    }
+    Message.success('上传成功!');
+  };
 </script>
 
 <template>
@@ -266,7 +266,7 @@ const handleSuccess = (data) => {
                 @press-enter="getDataB()"
               >
                 <template #button-icon>
-                  <icon-search/>
+                  <icon-search />
                 </template>
                 <template #button-default>
                   {{ $t('syscenter.user.manger.search') }}
@@ -281,7 +281,7 @@ const handleSuccess = (data) => {
                   {{ $t('syscenter.user.manger.add') }}
                 </a-button>
               </a-space>
-              <a-divider class="split-line" style="margin: 3px"/>
+              <a-divider class="split-line" style="margin: 3px" />
             </a-space>
 
             <a-table-column
@@ -337,7 +337,7 @@ const handleSuccess = (data) => {
             >
               <template #cell="{ record }">
                 <a-tag :color="record.status === 1 ? 'green' : 'red'" bordered
-                >{{ record.status === 1 ? '正常' : '封禁' }}
+                  >{{ record.status === 1 ? '正常' : '封禁' }}
                 </a-tag>
               </template>
             </a-table-column>
@@ -352,7 +352,7 @@ const handleSuccess = (data) => {
                   :key="index"
                   :color="getColor(role.sort)"
                   bordered
-                >{{ role.name }}
+                  >{{ role.name }}
                 </a-tag>
               </template>
             </a-table-column>
@@ -362,18 +362,18 @@ const handleSuccess = (data) => {
             >
               <template #cell="{ record }">
                 <a-button @click="editAGroup(record)"
-                >{{ $t('syscenter.user.manger.control.edit') }}
+                  >{{ $t('syscenter.user.manger.control.edit') }}
                 </a-button>
                 <a-button
                   :status="record.status === 1 ? 'danger' : 'success'"
                   @click="IBan(record)"
                 >
                   <span v-if="record.status === 1">{{
-                      $t('syscenter.user.manger.control.banned')
-                    }}</span>
+                    $t('syscenter.user.manger.control.banned')
+                  }}</span>
                   <span v-else>{{
-                      $t('syscenter.user.manger.control.Nobanned')
-                    }}</span>
+                    $t('syscenter.user.manger.control.Nobanned')
+                  }}</span>
                 </a-button>
               </template>
             </a-table-column>
@@ -481,7 +481,7 @@ const handleSuccess = (data) => {
             </a-col>
             <a-col :span="6">
               <a-tag color="green"
-              >请注意，此处电子邮箱涉及用户安全邮箱!勿轻易改动
+                >请注意，此处电子邮箱涉及用户安全邮箱!勿轻易改动
               </a-tag>
             </a-col>
           </a-row>
@@ -495,10 +495,10 @@ const handleSuccess = (data) => {
               >
                 <a-radio-group v-model:model-value="form.status">
                   <a-radio :value="1"
-                  >{{ $t('syscenter.user.manger.status.1') }}
+                    >{{ $t('syscenter.user.manger.status.1') }}
                   </a-radio>
                   <a-radio :value="0"
-                  >{{ $t('syscenter.user.manger.status.0') }}
+                    >{{ $t('syscenter.user.manger.status.0') }}
                   </a-radio>
                 </a-radio-group>
               </a-form-item>
@@ -572,7 +572,7 @@ const handleSuccess = (data) => {
             label-col-flex="80px"
           >
             <a-checkbox v-model:model-value="statuEs.formModel" :value="true"
-            >高级模式
+              >高级模式
             </a-checkbox>
           </a-form-item>
         </a-form>
@@ -582,24 +582,28 @@ const handleSuccess = (data) => {
 </template>
 
 <style lang="less" scoped>
-.arco-btn-size-medium {
-  margin-inline: 2px;
-}
+  .arco-btn-size-medium {
+    margin-inline: 2px;
+  }
 
-.left-side {
-  width: 280px;
-  margin-left: 16px;
-}
+  .left-side {
+    width: 280px;
+    margin-left: 16px;
+    padding: 3px 3px 3px 3px;
+    border-radius: 3px;
+    border: 1px solid var(--color-border-1);
+    background-color: var(--color-bg-1);
+  }
 
-.right-side {
-  flex: 1;
-  overflow: auto;
-}
+  .right-side {
+    flex: 1;
+    overflow: auto;
+  }
 
-.container {
-  background-color: var(--color-fill-2);
-  padding: 16px 20px;
-  padding-bottom: 0;
-  display: flex;
-}
+  .container {
+    background-color: var(--color-fill-2);
+    padding: 16px 20px;
+    padding-bottom: 0;
+    display: flex;
+  }
 </style>
