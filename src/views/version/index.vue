@@ -33,6 +33,10 @@
           title: 'Chat功能',
           content: '集成chatgpt，快来@ta使用吧。',
         },
+        {
+          title: '回到旧版',
+          content: '<a href="http://192.168.12.122:8082">点我新版出了问题，回到旧版[旧版数据部分数据不会同步！且1个月内全面下线]</a>',
+        },
       ],
     },
   ];
@@ -43,7 +47,7 @@
   <div style="display: flex; flex-direction: row; width: 100%; height: 97%">
     <div style="overflow-y: auto; height: 50rem; margin-top: 12rem">
       <a-timeline :mode="'left'" :reverse="true" label-position="relative">
-        <a-timeline-item label="2022-04" v-for="timeit in data" :key="timeit" @click="selectVersion = timeit;">
+        <a-timeline-item v-for="timeit in data" label="2022-04" :key="timeit" @click="selectVersion = timeit;">
           <a-row
             class="hover-click"
             :style="{ display: 'inline-flex', alignItems: 'center' }"
@@ -79,7 +83,7 @@
               iteminfo.title
             }}</a-tag></div
           >
-          <div class="info-content">{{ iteminfo.content }}</div>
+          <div class="info-content" v-html="iteminfo.content"></div>
         </div>
       </div>
     </div>

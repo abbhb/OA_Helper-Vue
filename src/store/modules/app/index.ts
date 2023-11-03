@@ -78,6 +78,11 @@ const useAppStore = defineStore('app', {
     },
     logAccess(route: RouteRecordNormalized) {
       let isNew = false;
+      if ('ignore' in route.meta) {
+        if (route.meta.ignore){
+          return;
+        }
+      }
       this.recentlyRouter.forEach((routeItem) => {
         if (routeItem.path === route.path) {
           isNew = true;
@@ -118,7 +123,6 @@ const useAppStore = defineStore('app', {
       this.serverMenu = [];
     },
   },
-  persist: true,
 });
 
 export default useAppStore;

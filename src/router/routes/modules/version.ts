@@ -24,6 +24,8 @@ const VERSION: AppRouteRecordRaw = {
         requiresAuth: true,
         roles: ['*'],
         canGo: true,
+        ignore:true,
+
       },
     },
   ],
