@@ -93,6 +93,7 @@ const useAppStore = defineStore('app', {
         this.recentlyRouter.push({ ...route, visits: 1 });
       }
     },
+    // todo:如果在回调登录页或者登录页会导致报错
     async fetchServerMenuConfig() {
       let notifyInstance: NotificationReturn | null = null;
       try {

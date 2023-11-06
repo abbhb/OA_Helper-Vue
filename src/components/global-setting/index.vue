@@ -38,23 +38,41 @@
   const { copy } = useClipboard();
   const visible = computed(() => appStore.globalSettings);
   const contentOpts = computed(() => [
-    {name: 'settings.navbar', key: 'navbar', defaultVal: appStore.navbar, isNew: false},
+    {
+      name: 'settings.navbar',
+      key: 'navbar',
+      defaultVal: appStore.navbar,
+      isNew: false,
+    },
     {
       name: 'settings.menu',
       key: 'menu',
-      defaultVal: appStore.menu, isNew: false
+      defaultVal: appStore.menu,
+      isNew: false,
     },
     {
       name: 'settings.topMenu',
       key: 'topMenu',
-      defaultVal: appStore.topMenu, isNew: false
+      defaultVal: appStore.topMenu,
+      isNew: false,
     },
-    {name: 'settings.footer', key: 'footer', defaultVal: appStore.footer, isNew: false},
-    {name: 'settings.tabBar', key: 'tabBar', defaultVal: appStore.tabBar, isNew: false},
+    {
+      name: 'settings.footer',
+      key: 'footer',
+      defaultVal: appStore.footer,
+      isNew: false,
+    },
+    {
+      name: 'settings.tabBar',
+      key: 'tabBar',
+      defaultVal: appStore.tabBar,
+      isNew: false,
+    },
     {
       name: 'settings.modelFullscreen',
       key: 'modelFullscreen',
-      defaultVal: appStore.modelFullscreen, isNew: false
+      defaultVal: appStore.modelFullscreen,
+      isNew: false,
     },
     // {
     //   name: 'settings.menuFromServer',
@@ -72,7 +90,8 @@
     {
       name: 'settings.colorWeak',
       key: 'colorWeak',
-      defaultVal: appStore.colorWeak, isNew: true
+      defaultVal: appStore.colorWeak,
+      isNew: true,
     },
   ]);
 

@@ -3,7 +3,7 @@
   import { computed, ref } from 'vue';
   import { useAppStore } from '@/store';
   import { GroupUserFront } from '@/api/group';
-  import { getUserListManger, updataUserByAdmin, UserManger } from '@/api/user';
+  import {getUserListManger, updataUserByAdmin, updataUserStatusByAdmin, UserManger} from '@/api/user';
   import { Message } from '@arco-design/web-vue';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { getColor } from '@/utils/color-index';
@@ -25,6 +25,7 @@
     deptId?: string;
     formModel: boolean;
     refreshKey: number;
+    jilian:boolean;
   }
 
   const statuEs = ref<statuEI>({
@@ -36,6 +37,7 @@
     deptId: '1',
     formModel: false,
     refreshKey: 1,
+    jilian:true,
   });
 
   const form = ref<UserManger>({
@@ -72,6 +74,7 @@
       pageNum: pagination.value.current,
       pageSize: pagination.value.pageSize,
       name: statuEs.value.name,
+      cascade: statuEs.value.jilian ? 1 : 0,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
@@ -107,6 +110,7 @@
       pageNum: pagination.value.current,
       pageSize: pagination.value.pageSize,
       name: statuEs.value.name,
+      cascade:statuEs.value.jilian?1:0,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
@@ -142,13 +146,22 @@
     form.value.studentId = record.studentId;
     form.value.password = '';
   };
-  const IBan = (record) => {
+
+  const refreshData = () => {
+    getDataB();
+  };
+
+  const IBan = async (record) => {
     if (record.status === 1) {
       // 封禁
-      console.log(record);
+      const {data} = await updataUserStatusByAdmin(record.id, '0');
+      Message.success(data);
+      refreshData();
       return;
     }
-    console.log(record);
+    await updataUserStatusByAdmin(record.id, '1');
+    refreshData();
+
     // 解封
   };
 
@@ -163,9 +176,8 @@
     });
     return roleKeyList;
   });
-  const refreshData = () => {
-    getDataB();
-  };
+
+
   const handelEditOK = async (done) => {
     const rolesIdList = [];
     form.value.roles.forEach((role) => {
@@ -233,6 +245,12 @@
 <template>
   <div class="container">
     <div class="left-side">
+      <div style="padding: 2px 2px 2px 2px;margin-bottom: 3px;display: flex;align-items: center;">
+        <span>包含下级部门用户</span>
+        <a-switch v-model:model-value="statuEs.jilian" style="margin-left: auto" type="round" @change="getDataB"/>
+      </div>
+
+
       <a-tree
         v-model:selected-keys="statuEs.deptId"
         :data="deptTreeData"

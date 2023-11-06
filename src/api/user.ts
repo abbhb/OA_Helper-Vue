@@ -58,6 +58,14 @@ export function updataUserInfo(data: UserInfo) {
 export function updataUserByAdmin(data: UserManger) {
   return axios.put<string>('/api/user/updateByAdmin', data);
 }
+
+export function updataUserStatusByAdmin(id: string,status:string) {
+  return axios.get<string>('/api/user/updateStatus', {
+    params:{
+      id,status
+    }
+  });
+}
 export function setPassword(data: Password) {
   return axios.put<string>('/api/user/setPassword', data);
 }
@@ -87,8 +95,9 @@ export function getUserListManger(params: {
   pageSize: number;
   name?: string;
   deptId?: string;
+  cascade:number;
 }) {
-  return axios.get<PageData<UserManger[]>>('/api/user/user_manger', {params});
+  return axios.get<PageData<UserManger[]>>('/api/user/user_manger', { params });
 }
 
 export function getUserPassword() {

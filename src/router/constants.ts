@@ -1,6 +1,8 @@
+// 白名单，不放会导致某些问题，比如死循环跳登录
 export const WHITE_LIST = [
   { name: 'notFound', children: [] },
   { name: 'login', children: [] },
+  { name: 'callback', children: [] },
 ];
 
 export const NOT_FOUND = {

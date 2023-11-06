@@ -8,6 +8,7 @@ import {ChatOnlineEnum} from '@/types/enums/chat';
 import {MarkItemType, MessageType, RevokedMsgType} from '@/types/chat';
 import {OnStatusChangeType, WsReqMsgContentType, WsResponseMessageType,} from '@/utils/chat/wsType';
 import {worker} from '@/utils/chat/initWorker';
+import {log} from "echarts/types/src/util/log";
 
 
 class WS {
@@ -111,6 +112,7 @@ class WS {
           // 点赞、倒赞消息通知
         case WsResponseMessageType.WSMsgMarkItem: {
           const data = params.data as { markList: MarkItemType[] };
+          console.log(data)
           chatStore.updateMarkCount(data.markList);
           break;
         }

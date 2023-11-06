@@ -141,6 +141,7 @@ const imageStore = useImgPreviewStore();
       padding: 4px 0;
       background-color: var(--background-secondary);
       transform: scale(0.9);
+
     }
   }
   .chat {

@@ -2,8 +2,9 @@ import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message, Modal } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
-import {getToken} from '@/utils/auth';
-import {notifyMe} from '@/utils/notify';
+import { getToken } from '@/utils/auth';
+import { notifyMe } from '@/utils/notify';
+import router from '@/router';
 
 export interface HttpResponse<T = unknown> {
   msg: string;
@@ -44,14 +45,17 @@ axios.interceptors.response.use(
     if (res.code !== 1) {
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (
-          [900].includes(res.code) &&
-          response.config.url !== '/api/user/login_by_token'
+        [900].includes(res.code) &&
+        response.config.url !== '/api/user/login_by_token' &&
+        router.currentRoute.value.name !== 'login' &&
+          router.currentRoute.value.name !== 'callback'
       ) {
         Message.success({
           content: res.msg || '下线成功',
           duration: 5 * 1000,
         });
         useUserStore().logoutCallBack();
+        router.push({ name: 'login' });
         return res;
       }
       notifyMe('异常', res.msg);

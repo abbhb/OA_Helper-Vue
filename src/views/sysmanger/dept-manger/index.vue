@@ -1,185 +1,191 @@
 <script lang="ts" setup>
-import {computed, h, reactive, ref} from 'vue';
-import {getColor} from '@/utils/color-index';
-import {setChildrenUndefined} from '@/utils/utils';
-import {useAppStore} from '@/store';
-import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {Message} from '@arco-design/web-vue';
-import {addDept, deleteDept, deptList, DeptManger, updateDept,} from '@/api/dept';
-import {Role, roleTagList} from '@/api/role';
+  import { computed, h, reactive, ref } from 'vue';
+  import { getColor } from '@/utils/color-index';
+  import { setChildrenUndefined } from '@/utils/utils';
+  import { useAppStore } from '@/store';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { Message } from '@arco-design/web-vue';
+  import {
+    addDept,
+    deleteDept,
+    deptList,
+    DeptManger,
+    updateDept,
+  } from '@/api/dept';
+  import { Role, roleTagList } from '@/api/role';
 
-interface statuEI {
-  clickLoading: boolean;
-  model?: boolean;
-  modelTitle?: string;
-  modelType?: string;
-}
+  interface statuEI {
+    clickLoading: boolean;
+    model?: boolean;
+    modelTitle?: string;
+    modelType?: string;
+  }
 
-const statuEs = ref<statuEI>({
-  clickLoading: false,
-  model: false,
-  modelTitle: '部门',
-  modelType: 'add',
-});
-const form = reactive({
-  id: '',
-  parentId: '1',
-  leader: '',
-  deptName: '',
-  orderNum: 1,
-  phone: '',
-  email: '',
-  status: 1,
-  roles: [],
-});
-
-const appStore = useAppStore();
-const tableData = ref<DeptManger[]>([]);
-const selectTree = ref([]);
-const rolesStore = ref<Role[]>([]);
-const buildSelectTree = (tabel: any) => {
-  selectTree.value = [];
-  tabel.forEach((item) => {
-    selectTree.value.push(item);
+  const statuEs = ref<statuEI>({
+    clickLoading: false,
+    model: false,
+    modelTitle: '部门',
+    modelType: 'add',
   });
-};
+  const form = reactive({
+    id: '',
+    parentId: '1',
+    leader: '',
+    deptName: '',
+    orderNum: 1,
+    phone: '',
+    email: '',
+    status: 1,
+    roles: [],
+  });
 
-const initSelect = async () => {
-  const {data} = await roleTagList();
-  rolesStore.value = data;
-};
-const initData = async () => {
-  statuEs.value.clickLoading = true;
-  const {data} = await deptList();
-  setChildrenUndefined(data);
-  tableData.value = data;
-  buildSelectTree(data);
-  statuEs.value.clickLoading = false;
-};
-initData();
-initSelect();
-
-const stateChange = computed(() => (status: any) => {
-  return status === 1 || status === '1' ? '正常' : '停用';
-});
-const cleanForm = () => {
-  form.id = '';
-  form.parentId = '1';
-  form.status = 1;
-  form.leader = '';
-  form.deptName = '';
-  form.orderNum = 1;
-  form.phone = '';
-  form.email = '';
-  form.status = 1;
-  form.roles = [];
-};
-
-const editHandel = (record) => {
-  statuEs.value.modelTitle = '编辑';
-  statuEs.value.modelType = 'edit';
-  form.id = record.id;
-  form.parentId = record.parentId;
-  form.status = Number(record.status);
-  form.email = record.email;
-  form.phone = record.phone;
-  form.deptName = record.deptName;
-  form.orderNum = record.orderNum;
-  form.leader = record.leader;
-  const sadas = [];
-  if (record.roles) {
-    record.roles.forEach((item) => {
-      sadas.push(item.id);
+  const appStore = useAppStore();
+  const tableData = ref<DeptManger[]>([]);
+  const selectTree = ref([]);
+  const rolesStore = ref<Role[]>([]);
+  const buildSelectTree = (tabel: any) => {
+    selectTree.value = [];
+    tabel.forEach((item) => {
+      selectTree.value.push(item);
     });
-  }
-  form.roles = sadas;
-  statuEs.value.model = true;
-};
-const addHandel = (record) => {
-  if (record) {
-    form.parentId = record.id;
-  } else {
-    form.parentId = '1';
-  }
-  statuEs.value.modelTitle = '添加部门';
-  statuEs.value.modelType = 'add';
-  statuEs.value.model = true;
-};
-const delHandel = async (record) => {
-  const {data} = await deleteDept(record.id);
-  Message.success(data);
+  };
+
+  const initSelect = async () => {
+    const { data } = await roleTagList();
+    rolesStore.value = data;
+  };
+  const initData = async () => {
+    statuEs.value.clickLoading = true;
+    const { data } = await deptList();
+    setChildrenUndefined(data);
+    tableData.value = data;
+    buildSelectTree(data);
+    statuEs.value.clickLoading = false;
+  };
   initData();
-};
-const handleCancel = () => {
-  cleanForm();
-};
-const update = async (done) => {
-  const dasf = ref<Role[]>([]);
-  if (form.roles) {
-    form.roles.forEach((item) => {
-      dasf.value.push({id: item});
-    });
-  }
-  const forms = ref<DeptManger>({
-    id: form.id,
-    parentId: form.parentId,
-    leader: form.leader,
-    deptName: form.deptName,
-    orderNum: form.orderNum,
-    phone: form.phone,
-    email: form.email,
-    roles: dasf.value,
-    status: Number(form.status),
+  initSelect();
+
+  const stateChange = computed(() => (status: any) => {
+    return status === 1 || status === '1' ? '正常' : '停用';
   });
-  try {
-    const {data} = await updateDept(forms.value);
+  const cleanForm = () => {
+    form.id = '';
+    form.parentId = '1';
+    form.status = 1;
+    form.leader = '';
+    form.deptName = '';
+    form.orderNum = 1;
+    form.phone = '';
+    form.email = '';
+    form.status = 1;
+    form.roles = [];
+  };
+
+  const editHandel = (record) => {
+    statuEs.value.modelTitle = '编辑';
+    statuEs.value.modelType = 'edit';
+    form.id = record.id;
+    form.parentId = record.parentId;
+    form.status = Number(record.status);
+    form.email = record.email;
+    form.phone = record.phone;
+    form.deptName = record.deptName;
+    form.orderNum = record.orderNum;
+    form.leader = record.leader;
+    const sadas = [];
+    if (record.roles) {
+      record.roles.forEach((item) => {
+        sadas.push(item.id);
+      });
+    }
+    form.roles = sadas;
+    statuEs.value.model = true;
+  };
+  const addHandel = (record) => {
+    if (record) {
+      form.parentId = record.id;
+    } else {
+      form.parentId = '1';
+    }
+    statuEs.value.modelTitle = '添加部门';
+    statuEs.value.modelType = 'add';
+    statuEs.value.model = true;
+  };
+  const delHandel = async (record) => {
+    const { data } = await deleteDept(record.id);
     Message.success(data);
-    done(true);
     initData();
-  } catch (e) {
-    done(false);
-  }
-};
-const add = async (done) => {
-  const dasf = ref<Role[]>([]);
-  if (form.roles) {
-    form.roles.forEach((item) => {
-      dasf.value.push({id: item});
+  };
+  const handleCancel = () => {
+    cleanForm();
+  };
+  const update = async (done) => {
+    const dasf = ref<Role[]>([]);
+    if (form.roles) {
+      form.roles.forEach((item) => {
+        dasf.value.push({ id: item });
+      });
+    }
+    const forms = ref<DeptManger>({
+      id: form.id,
+      parentId: form.parentId,
+      leader: form.leader,
+      deptName: form.deptName,
+      orderNum: form.orderNum,
+      phone: form.phone,
+      email: form.email,
+      roles: dasf.value,
+      status: Number(form.status),
     });
-  }
-  const forms = ref<DeptManger>({
-    parentId: form.parentId,
-    leader: form.leader,
-    deptName: form.deptName,
-    orderNum: form.orderNum,
-    phone: form.phone,
-    email: form.email,
-    roles: dasf.value,
-    status: Number(form.status),
-  });
-  try {
-    const {data} = await addDept(forms.value);
-    Message.success(data);
-    done(true);
-    initData();
-  } catch (e) {
-    done(false);
-  }
-};
-const handelOk = (done) => {
-  // 根据form加上statuEs判断
-  if (statuEs.value.modelType !== 'add') {
-    update(done);
-  } else {
-    add(done);
-  }
-};
+    try {
+      const { data } = await updateDept(forms.value);
+      Message.success(data);
+      done(true);
+      initData();
+    } catch (e) {
+      done(false);
+    }
+  };
+  const add = async (done) => {
+    const dasf = ref<Role[]>([]);
+    if (form.roles) {
+      form.roles.forEach((item) => {
+        dasf.value.push({ id: item });
+      });
+    }
+    const forms = ref<DeptManger>({
+      parentId: form.parentId,
+      leader: form.leader,
+      deptName: form.deptName,
+      orderNum: form.orderNum,
+      phone: form.phone,
+      email: form.email,
+      roles: dasf.value,
+      status: Number(form.status),
+    });
+    try {
+      const { data } = await addDept(forms.value);
+      Message.success(data);
+      done(true);
+      initData();
+    } catch (e) {
+      done(false);
+    }
+  };
+  const handelOk = (done) => {
+    // 根据form加上statuEs判断
+    if (statuEs.value.modelType !== 'add') {
+      update(done);
+    } else {
+      add(done);
+    }
+  };
 </script>
 
 <template>
   <a-card>
     <a-alert banner center
-    >注意:用户侧的部门的更新只会在重新登录后！！！
+      >注意:用户侧的部门的更新只会在重新登录后！！！
     </a-alert>
     <a-space>
       <a-table
@@ -230,7 +236,7 @@ const handelOk = (done) => {
                 {{ $t('syscenter.dept-manger.dept.control.add') }}
               </a-button>
             </a-space>
-            <a-divider class="split-line" style="margin: 3px"/>
+            <a-divider class="split-line" style="margin: 3px" />
           </a-space>
 
           <a-table-column
@@ -284,7 +290,7 @@ const handelOk = (done) => {
                 :color="getColor(role.roleSort)"
                 bordered
                 style="margin-left: 3px"
-              >{{ role.roleName }}
+                >{{ role.roleName }}
               </a-tag>
             </template>
           </a-table-column>
@@ -307,17 +313,17 @@ const handelOk = (done) => {
           <a-table-column :title="$t(`syscenter.dept-manger.dept.control`)">
             <template #cell="{ record }">
               <a-button @click="editHandel(record)"
-              >{{ $t('syscenter.dept-manger.dept.control.edit') }}
+                >{{ $t('syscenter.dept-manger.dept.control.edit') }}
               </a-button>
               <a-button @click="addHandel(record)"
-              >{{ $t('syscenter.dept-manger.dept.control.add.item') }}
+                >{{ $t('syscenter.dept-manger.dept.control.add.item') }}
               </a-button>
               <a-popconfirm
                 content="危险！将会级联删除子部门，确认删除?"
                 @ok="delHandel(record)"
               >
                 <a-button
-                >{{ $t('syscenter.dept-manger.dept.control.delete') }}
+                  >{{ $t('syscenter.dept-manger.dept.control.delete') }}
                 </a-button>
               </a-popconfirm>
             </template>
@@ -453,6 +459,7 @@ const handelOk = (done) => {
                 {{ role.roleName }}
               </a-option>
             </a-select>
+            <a-tag color="green">下级部门也会继承此角色</a-tag>
           </a-col>
           <a-col :span="10">
             <a-form-item
@@ -463,10 +470,10 @@ const handelOk = (done) => {
             >
               <a-radio-group v-model:model-value="form.status">
                 <a-radio :value="1"
-                >{{ $t('syscenter.dept-manger.dept.form.status.1') }}
+                  >{{ $t('syscenter.dept-manger.dept.form.status.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.dept-manger.dept.form.status.0') }}
+                  >{{ $t('syscenter.dept-manger.dept.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>

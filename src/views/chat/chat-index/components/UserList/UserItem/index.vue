@@ -7,6 +7,7 @@
   import { useUserStore } from '@/store';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import ContextMenu from '@/views/chat/chat-index/components/UserList/ContextMenu/index.vue';
+  import { ChatOnlineEnum } from '@/types/enums/chat';
 
   const props = defineProps({
     user: {
@@ -44,20 +45,17 @@
       :avatar="userInfo.avatar"
       :size="24"
       show-status
-      :online="true"
+      :online="user.activeStatus === ChatOnlineEnum.ONLINE"
     />
     <span style="margin-left: 5px">
       {{ userInfo.name }}
     </span>
-
 
     <ContextMenu
       v-model:show="isShowMenu"
       :options="menuOptions"
       :uid="(user?.uid as string)"
     />
-
-
   </li>
 </template>
 
