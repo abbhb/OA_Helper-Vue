@@ -12,6 +12,7 @@ import { clearToken, setToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import rsautils from '@/utils/rsautils';
 import { deleteLocalMenu } from '@/store/modules/app/persistence';
+import router from "@/router";
 import { UserState } from './types';
 import useAppStore from '../app';
 
@@ -66,8 +67,13 @@ const useUserStore = defineStore('user', {
 
     // Get user's information
     async info() {
-      const res = await getUserInfo();
-      this.setInfo(res.data);
+      try {
+        const res = await getUserInfo();
+        this.setInfo(res.data);
+        // eslint-disable-next-line no-console
+      } catch (e) {
+        console.log(e);
+      }
     },
 
     // Login

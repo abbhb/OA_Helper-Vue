@@ -5,6 +5,7 @@ import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
 import { notifyMe } from '@/utils/notify';
 import router from '@/router';
+import {WHITE_LIST} from "@/router/constants";
 
 export interface HttpResponse<T = unknown> {
   msg: string;
@@ -44,11 +45,15 @@ axios.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 1) {
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+      const whiles = [];
+      // eslint-disable-next-line no-restricted-syntax
+      for (const whitelistElement of WHITE_LIST) {
+        whiles.push(whitelistElement.name)
+      }
       if (
         [900].includes(res.code) &&
-        response.config.url !== '/api/user/login_by_token' &&
-        router.currentRoute.value.name !== 'login' &&
-          router.currentRoute.value.name !== 'callback'
+        !response.config.url.includes('/api/user/login_by_token') &&
+        !(whiles.includes(router.currentRoute.value.name))
       ) {
         Message.success({
           content: res.msg || '下线成功',
@@ -58,7 +63,6 @@ axios.interceptors.response.use(
         router.push({ name: 'login' });
         return res;
       }
-      notifyMe('异常', res.msg);
       Message.error({
         content: res.msg || 'Error',
         duration: 5 * 1000,

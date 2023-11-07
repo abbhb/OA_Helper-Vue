@@ -8,15 +8,13 @@ export default function setupUserLoginInfoGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     NProgress.start();
     const userStore = useUserStore();
-     if (!to.meta.requiresAuth) {
+    if (!to.meta.requiresAuth) {
       next();
-    }
-    else if (isLogin()) {
+    } else if (isLogin()) {
       if (userStore.id) {
         next();
       } else {
         try {
-          console.log('userStore.info()');
           await userStore.info();
           next();
         } catch (error) {
@@ -30,14 +28,14 @@ export default function setupUserLoginInfoGuard(router: Router) {
           });
         }
       }
-    }else {
-        next({
-          name: 'login',
-          query: {
-            redirect: to.name,
-            ...to.query,
-          } as LocationQueryRaw,
-        });
-      }
+    } else {
+      next({
+        name: 'login',
+        query: {
+          redirect: to.name,
+          ...to.query,
+        } as LocationQueryRaw,
+      });
+    }
   });
 }
