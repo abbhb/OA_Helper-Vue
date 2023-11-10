@@ -25,6 +25,14 @@ const {currentLocale} = useLocale();
   });
 </script>
 <style>
+/* 在 App.vue 中定义全局的过渡效果 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
 /* 1. 声明过渡效果 */
 .fade-move,
 .fade-enter-active,
@@ -44,4 +52,6 @@ const {currentLocale} = useLocale();
 .fade-leave-active {
   position: absolute;
 }
+
+
 </style>

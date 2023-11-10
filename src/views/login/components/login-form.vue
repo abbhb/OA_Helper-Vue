@@ -4,7 +4,6 @@
     <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
-      v-if="!loginConfig.useSSO"
       ref="loginForm"
       :model="userInfo"
       class="login-form"
@@ -56,25 +55,12 @@
           type="text"
           long
           class="login-form-register-btn"
-          @click="gotoOAuth2"
+          @click="register"
         >
-          {{ $t('login.form.oauth2') }}
+          {{ $t('login.form.register') }}
         </a-button>
       </a-space>
     </a-form>
-    <div v-else-if="loginConfig.useSSO" class="login-2">
-      <a-button size="large" type="primary" long @click="gotoOAuth2">{{
-        $t('login.form.oauth2')
-      }}</a-button>
-      <a-button
-        size="large"
-        style="margin-top: 10px"
-        type="outline"
-        long
-        @click="changeLoginConfig(false)"
-        >{{ $t('login.form.traditionLogin') }}</a-button
-      >
-    </div>
   </div>
 </template>
 
@@ -96,9 +82,7 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
   const wsLoginStore = useWsLoginStore();
-  const loginConfig = ref({
-    useSSO: true,
-  });
+
   const userInfo = ref({
     username: '',
     password: '',
@@ -120,9 +104,14 @@
     window.location.href =
       'http://10.15.247.254:55554/?response_type=code&client_id=891d832ff2204a858ad4d0f0dc0d203f';
   };
-  const changeLoginConfig = (config) => {
-    loginConfig.value.useSSO = config;
+  const register = () => {
+    // 跳转注册页
+    router.push({
+      name:  'register',
+      query: router.currentRoute.value.query,
+    });
   };
+
   const loginByToken = async () => {
     try {
       await userStore.loginByToken();

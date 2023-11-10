@@ -28,6 +28,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/views/register/index.vue'),
+      meta: {
+        requiresAuth: false,
+        canGo: true,
+        ignore: true,
+      },
+    },
+    {
       path: '/callback',
       name: 'callback',
       component: () => import('@/views/callback/index.vue'),

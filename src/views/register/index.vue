@@ -1,17 +1,17 @@
 <template>
   <transition name="fade">
     <div class="container">
-      <div class="logo">
-        <img
-          alt="logo"
-          src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
-        />
-        <div class="logo-text">{{ $t('footer.company') }}</div>
-      </div>
-      <LoginBanner />
+      <!--    <div class="logo">-->
+      <!--      <img-->
+      <!--        alt="logo"-->
+      <!--        src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"-->
+      <!--      />-->
+      <!--      <div class="logo-text">{{$t('footer.company')}}</div>-->
+      <!--    </div>-->
+      <!--    <div>左侧</div>-->
       <div class="content">
         <div class="content-inner">
-          <LoginForm />
+          <RegisterForm />
         </div>
         <div class="footer">
           <Footer />
@@ -23,14 +23,16 @@
 
 <script lang="ts" setup>
   import Footer from '@/components/footer/index.vue';
-  import LoginBanner from './components/banner.vue';
-  import LoginForm from './components/login-form.vue';
+  import RegisterForm from './components/register-form.vue';
 </script>
 
 <style lang="less" scoped>
   .container {
     display: flex;
     height: 100vh;
+    width: 100%;
+    background: url("../../assets/images/register_background.jpeg") center center no-repeat;
+    background-size: 100% 100%;
 
     .banner {
       width: 550px;
@@ -41,8 +43,8 @@
       position: relative;
       display: flex;
       flex: 1;
-      align-items: center;
-      justify-content: center;
+      margin-top: 18rem;
+      margin-left: 15rem;
       padding-bottom: 40px;
     }
 
