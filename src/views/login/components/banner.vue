@@ -22,20 +22,11 @@
   const { t } = useI18n();
   const carouselItem = computed(() => [
     {
-      slogan: t('login.banner.slogan1'),
-      subSlogan: t('login.banner.subSlogan1'),
+      slogan: '升级公告',
+      subSlogan: '原来的用户已迁移至此平台，邮箱加原密码登录即可！',
       image: bannerImage,
     },
-    {
-      slogan: t('login.banner.slogan2'),
-      subSlogan: t('login.banner.subSlogan2'),
-      image: bannerImage,
-    },
-    {
-      slogan: t('login.banner.slogan3'),
-      subSlogan: t('login.banner.subSlogan3'),
-      image: bannerImage,
-    },
+
   ]);
 </script>
 

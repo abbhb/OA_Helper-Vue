@@ -9,6 +9,9 @@
       class="login-form"
       layout="vertical"
       @submit="handleSubmit"
+      autocomplete="off"
+
+
     >
       <a-form-item
         field="username"
@@ -18,7 +21,10 @@
       >
         <a-input
           v-model="userInfo.username"
+          name="uname"
+
           :placeholder="$t('login.form.userName.placeholder')"
+          autocomplete="off"
         >
           <template #prefix>
             <icon-user />
@@ -33,8 +39,10 @@
       >
         <a-input-password
           v-model="userInfo.password"
+          name="upass"
           :placeholder="$t('login.form.password.placeholder')"
           allow-clear
+          autocomplete="new-password"
         >
           <template #prefix>
             <icon-lock />
@@ -46,7 +54,7 @@
           <a-checkbox v-model="userInfo.week" checked="week">
             {{ $t('login.form.weekNoLogin') }}
           </a-checkbox>
-          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+          <a-link @click="forgetHandel">{{ $t('login.form.forgetPassword') }}</a-link>
         </div>
         <a-button type="primary" html-type="submit" long :loading="loading">
           {{ $t('login.form.login') }}
@@ -121,6 +129,12 @@
     }
   };
 
+  const forgetHandel = () => {
+    router.push({
+      name:  'forgotPassword',
+      query: router.currentRoute.value.query,
+    });
+  }
   const handleSubmit = async ({
     errors,
     values,

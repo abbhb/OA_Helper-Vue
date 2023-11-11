@@ -38,6 +38,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: () => import('@/views/forget-password/index.vue'),
+      meta: {
+        requiresAuth: false,
+        canGo: true,
+        ignore: true,
+      },
+    },
+    {
       path: '/callback',
       name: 'callback',
       component: () => import('@/views/callback/index.vue'),

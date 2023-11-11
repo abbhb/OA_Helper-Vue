@@ -5,6 +5,7 @@ export const WHITE_LIST = [
   { name: 'register', children: [] },
   { name: 'callback', children: [] },
   { name: 'oauthShow', children: [] },
+  { name: 'forgotPassword', children: [] },
 ];
 
 export const NOT_FOUND = {

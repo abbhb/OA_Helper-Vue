@@ -1,13 +1,11 @@
 <template>
-  <div v-if="!status.registerSuccess" class="login-form-wrapper">
-    <div class="login-form-title">{{ $t('login.form.title.register') }}</div>
-    <div class="login-form-sub-title">{{
-      $t('login.form.title.register')
-    }}</div>
+  <div v-if="!status.forgetSuccess" class="login-form-wrapper">
+    <div class="login-form-title">重设密码</div>
+
     <div class="login-2">
       <a-form
         ref="loginForm"
-        :model="userInfoForRegister"
+        :model="userInfoForForget"
         class="login-form"
         layout="vertical"
         autocomplete="off"
@@ -19,7 +17,7 @@
           hide-label
         >
           <a-input
-            v-model="userInfoForRegister.email"
+            v-model="userInfoForForget.email"
             :placeholder="$t('login.form.email.placeholder')"
             autocomplete="off"
           >
@@ -37,7 +35,7 @@
           hide-label
         >
           <a-input
-            v-model="userInfoForRegister.emailCode"
+            v-model="userInfoForForget.emailCode"
             :placeholder="$t('login.form.emailCode.placeholder')"
             autocomplete="emailCode"
             :max-length="6"
@@ -67,8 +65,8 @@
           hide-label
         >
           <a-input-password
-            v-model="userInfoForRegister.password"
-            :placeholder="$t('login.form.password.placeholder')"
+            v-model="userInfoForForget.password"
+            placeholder="重设密码"
             allow-clear
             autocomplete="new-password"
           >
@@ -78,16 +76,14 @@
           </a-input-password>
         </a-form-item>
       </a-form>
-      <a-button size="large" type="primary" long @click="registerHandel">{{
-        $t('login.form.register')
-      }}</a-button>
+      <a-button size="large" type="primary" long @click="changePasswordHandel">重设密码</a-button>
       <a-button
         size="large"
         style="margin-top: 10px"
         type="outline"
         long
         @click="changeLoginConfig()"
-        >{{ $t('login.form.haveUsername') }}</a-button
+        >想起来了，直接登录</a-button
       >
     </div>
     <a-modal
@@ -105,15 +101,15 @@
     </a-modal>
   </div>
   <div v-else class="login-form-wrapper">
-    <div class="login-form-title">注册成功!请牢记你的登录账号和密码</div>
+    <div class="login-form-title">重设密码成功!请牢记你的登录账号和密码</div>
     <div style="display: flex; align-items: center">
       <h2>用户名：</h2>
-      <span>{{ userInfoForRegister.email }}</span>
+      <span>{{ userInfoForForget.email }}</span>
     </div>
     <div style="display: flex; align-items: center">
       <h2>密码：</h2>
       <a-input-password
-        v-model="userInfoForRegister.password"
+        v-model="userInfoForForget.password"
         style="width: 200px"
         :readonly="true"
         autocomplete="new-password"
@@ -140,7 +136,7 @@
   import { useWsLoginStore } from '@/store/modules/chat/ws';
   import { getToken, setToken } from '@/utils/auth';
   import CaptchaC from '@/components/captcha/index.vue';
-  import { getEmailCode, registerByEmail } from '@/api/email';
+  import {forgetPasswordEmail, getEmailCode, registerByEmail} from '@/api/email';
 
   const router = useRouter();
   const { t } = useI18n();
@@ -149,7 +145,7 @@
   const userStore = useUserStore();
   const wsLoginStore = useWsLoginStore();
 
-  const userInfoForRegister = ref({
+  const userInfoForForget = ref({
     email: '',
     password: '',
     emailCode: '',
@@ -163,7 +159,7 @@
     timerS: null,
     buttonText: '获取验证码',
     vailModel: false,
-    registerSuccess: false,
+    forgetSuccess: false,
   });
 
   const loginSuccess = () => {
@@ -177,33 +173,33 @@
     wsLoginStore.loginSuccess(getToken());
     Message.success(t('login.form.login.success'));
   };
-  const registerHandel = () => {
-    if (!userInfoForRegister.value.email.includes('@')) {
+  const changePasswordHandel = () => {
+    if (!userInfoForForget.value.email.includes('@')) {
       Message.error('邮箱不合法');
       return;
     }
-    if (userInfoForRegister.value.password.indexOf(' ') !== -1) {
+    if (userInfoForForget.value.password.indexOf(' ') !== -1) {
       Message.error('密码不应该包含空格');
       return;
     }
     const passwordreg = /(?=.*[a-zA-Z])(?=.*[0-9]).{6,30}/;
 
-    if (!passwordreg.test(userInfoForRegister.value.password)) {
+    if (!passwordreg.test(userInfoForForget.value.password)) {
       Message.error('密码必须由数字、字母组合,请输入6-30位');
       return;
     }
-    if (!userInfoForRegister.value.emailCode) {
+    if (!userInfoForForget.value.emailCode) {
       Message.error('防呆不防傻，你还没输验证码呢');
       return;
     }
-    registerByEmail({
-      email: userInfoForRegister.value.email,
-      emailCode: userInfoForRegister.value.emailCode,
-      password: userInfoForRegister.value.password,
+    forgetPasswordEmail({
+      email: userInfoForForget.value.email,
+      emailCode: userInfoForForget.value.emailCode,
+      password: userInfoForForget.value.password,
     }).then((res) => {
       setToken(res.data.token);
-      // 注册成功
-      status.value.registerSuccess = true;
+      // 找回成功
+      status.value.forgetSuccess = true;
     });
   };
 
@@ -277,17 +273,17 @@
   };
 
   const vailSuccess = (code) => {
-    userInfoForRegister.value.vailCode = code;
+    userInfoForForget.value.vailCode = code;
     status.value.vailModel = false;
     status.value.emailCodeLoading = true;
 
     // 获取
     getEmailCode({
-      email: userInfoForRegister.value.email,
+      email: userInfoForForget.value.email,
       vail_code:
-        userInfoForRegister.value.vailCode === ''
+        userInfoForForget.value.vailCode === ''
           ? undefined
-          : userInfoForRegister.value.vailCode,
+          : userInfoForForget.value.vailCode,
     })
       .then((res) => {
         Message.success(res.data);
