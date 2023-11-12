@@ -79,9 +79,10 @@ const useUserStore = defineStore('user', {
     // Login
     async login(loginForm: LoginData) {
       try {
-        loginForm.password = <string>(
-          rsautils.encryptByPublicKey(loginForm.password)
-        );
+        // 移除ras加密
+        // loginForm.password = <string>(
+        //   rsautils.encryptByPublicKey(loginForm.password)
+        // );
         const res = await userLogin(loginForm);
         setToken(res.data.token);
       } catch (err) {
