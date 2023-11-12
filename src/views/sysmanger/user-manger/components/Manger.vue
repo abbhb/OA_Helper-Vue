@@ -105,6 +105,7 @@
 
   const getDataB = async () => {
     statuEs.value.refreshKey += 1;
+    pagination.value.current = 1;
     statuEs.value.searchStatus = true;
     const { data } = await getUserListManger({
       pageNum: pagination.value.current,

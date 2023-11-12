@@ -299,10 +299,10 @@
             >
             <a-button
               :size="'large'"
-              type="primary"
+              style="margin-top: 10px"
               long
               @click="registerHandel"
-              >授权访问</a-button
+              >注册账号</a-button
             >
           </div>
         </div>
