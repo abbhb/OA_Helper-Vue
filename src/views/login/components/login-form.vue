@@ -22,9 +22,7 @@
         <a-input
           v-model="userInfo.username"
           name="uname"
-
           :placeholder="$t('login.form.userName.placeholder')"
-          autocomplete="off"
         >
           <template #prefix>
             <icon-user />
@@ -42,7 +40,6 @@
           name="upass"
           :placeholder="$t('login.form.password.placeholder')"
           allow-clear
-          autocomplete="new-password"
         >
           <template #prefix>
             <icon-lock />
