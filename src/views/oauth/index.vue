@@ -302,7 +302,8 @@
               style="margin-top: 10px"
               long
               @click="registerHandel"
-              >注册账号</a-button
+              v-if="!userStore.id || userStore.id === ''"
+            >注册账号</a-button
             >
           </div>
         </div>
