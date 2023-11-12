@@ -3,6 +3,7 @@
   import { ref } from 'vue';
   import { agree, agreeLogin, getClientName } from '@/api/oauth';
   import { clearToken, setToken } from '@/utils/auth';
+  import router from '@/router';
 
   const winDatas = ref({
     response_type: '',
@@ -109,6 +110,12 @@
         }
       }
     }
+  };
+  const registerHandel = () => {
+    router.push({
+      name: 'register',
+      query: router.currentRoute.value.query,
+    });
   };
   const shouquanHandel = async () => {
     let myscope = '';
@@ -278,15 +285,23 @@
           <div
             style="
               display: flex;
-              flex-direction: row;
+              flex-direction: column;
               justify-content: center;
               align-items: center;
             "
           >
             <a-button
               :size="'large'"
-              style="background-color: #47ade8"
+              type="primary"
+              long
               @click="shouquanHandel"
+              >授权访问</a-button
+            >
+            <a-button
+              :size="'large'"
+              type="primary"
+              long
+              @click="registerHandel"
               >授权访问</a-button
             >
           </div>

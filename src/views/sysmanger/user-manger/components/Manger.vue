@@ -240,6 +240,11 @@
     }
     Message.success('上传成功!');
   };
+  const changeJiLiHandel = () => {
+    pagination.value.current = 1;
+    getDataB();
+
+  }
 </script>
 
 <template>
@@ -247,7 +252,7 @@
     <div class="left-side">
       <div style="padding: 2px 2px 2px 2px;margin-bottom: 3px;display: flex;align-items: center;">
         <span>包含下级部门用户</span>
-        <a-switch v-model:model-value="statuEs.jilian" style="margin-left: auto" type="round" @change="getDataB"/>
+        <a-switch v-model:model-value="statuEs.jilian" style="margin-left: auto" type="round" @change="changeJiLiHandel"/>
       </div>
 
 
