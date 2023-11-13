@@ -69,6 +69,17 @@ const SysManger: AppRouteRecordRaw = {
         canGo: true,
       },
     },
+    {
+      path: 'oauth-manger',
+      name: 'OauthManger',
+      component: () => import('@/views/sysmanger/oauth-manger/index.vue'),
+      meta: {
+        locale: 'menu.sysmanger.OauthManger',
+        requiresAuth: true,
+        roles: ['*'],
+        canGo: true,
+      },
+    },
   ],
 };
 

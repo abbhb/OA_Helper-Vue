@@ -34,6 +34,7 @@ export default {
   'menu.sysmanger.MenuManger': '菜单管理',
   'menu.sysmanger.RoleManger': '角色管理',
   'menu.sysmanger.DeptManger': '部门管理',
+  'menu.sysmanger.OauthManger': 'Oauth2管理',
   'menu.dashboard.printer': 'AI_EN打印',
   'menu.docnotification.DocNotification': '通知管理',
   'menu.docnotification.IndexImage': '图片通知',
