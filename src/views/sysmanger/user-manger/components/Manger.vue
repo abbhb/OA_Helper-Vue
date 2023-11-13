@@ -7,7 +7,7 @@
   import { Message } from '@arco-design/web-vue';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { getColor } from '@/utils/color-index';
-  import { deptListTree } from '@/api/dept';
+  import {deptListTree, DeptManger} from '@/api/dept';
   import { Role, roleTagList } from '@/api/role';
   import ImageUpload from '@/components/image/ImageUpload.vue';
 
@@ -57,6 +57,7 @@
 
   const tableData = ref<UserManger[]>([]);
   const deptTreeData = ref([]);
+  const needExpend = ref([]);
   const rolesStore = ref<Role[]>([]);
 
   const initSelect = async () => {
@@ -64,9 +65,28 @@
     rolesStore.value = data;
   };
   initSelect();
+  const findDepartmentsWithNonEmptyChildren = (departments:DeptManger[]) => {
+    const result: string[] = [];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const department of departments) {
+      if (department.children.length > 0) {
+        result.push(department.id);
+      }
+      if (department.children&&department.children.length>0){
+        // 递归查找子部门
+        result.push(...findDepartmentsWithNonEmptyChildren(department.children));
+      }
+
+    }
+
+    return result;
+  }
   const initDeptTree = async () => {
     const { data } = await deptListTree();
     deptTreeData.value = data;
+    needExpend.value = findDepartmentsWithNonEmptyChildren(data);
+
   };
   initDeptTree();
   const getData = async (pagination) => {
@@ -259,6 +279,7 @@
 
       <a-tree
         v-model:selected-keys="statuEs.deptId"
+        v-model:expanded-keys="needExpend"
         :data="deptTreeData"
         :default-expand-all="true"
         :default-selected-keys="['1']"
