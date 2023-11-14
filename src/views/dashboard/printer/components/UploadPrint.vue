@@ -171,6 +171,7 @@
   };
 
   const beforeUpload = (name: any) => {
+
     tishi.value.loading = true;
     thisPrint.value.addFile(name);
   };

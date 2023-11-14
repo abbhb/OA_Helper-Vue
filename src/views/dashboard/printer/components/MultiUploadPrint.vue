@@ -50,6 +50,12 @@
       Message.info('保障性能，最大支持同时5个文件！');
       return;
     }
+    const tuozhanming = fileItem.file.name.split('.')[fileItem.file.name.split('.').length-1];
+    if (".xls,.xlsx,.doc,.docx,.pdf,.jpg,.png,.ppt,.pptx".indexOf(tuozhanming)<0){
+      Message.info(`${tuozhanming}文件格式不支持`);
+      return;
+    }
+
     const formData = new FormData();
     const myfilea = ref<PrintFileImpl>(new PrintFileImpl());
     myfilea.value.addFile(fileItem.file.name);
@@ -164,6 +170,7 @@
             :custom-request="customRequest"
             :draggable="true"
             :multiple="true"
+            accept=".xls,.xlsx,.doc,.docx,.pdf,.jpg,.png,.ppt,.pptx"
             :show-file-list="false"
           >
           </a-upload>
