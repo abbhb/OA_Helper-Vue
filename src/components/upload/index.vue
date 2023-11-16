@@ -19,15 +19,6 @@
     methods: {
       customRequest(option) {
         const { onProgress, onError, onSuccess, fileItem, name } = option;
-        const tuozhanming = fileItem.file.name.split('.')[fileItem.file.name.split('.').length-1];
-        if (
-          '.xls,.xlsx,.doc,.docx,.pdf,.jpg,.png,.ppt,.pptx'.indexOf(
-            tuozhanming
-          ) < 0
-        ) {
-          Message.info(`${tuozhanming}文件格式不支持`);
-          return;
-        }
         const formData = new FormData();
         formData.append(name || 'file', fileItem.file);
         // eslint-disable-next-line vue/custom-event-name-casing

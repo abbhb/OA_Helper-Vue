@@ -1,0 +1,53 @@
+export default {
+  'syscenter.oauth2-manger.title': 'Oauth2 管理',
+  'syscenter.oauth2-manger.oauth2.client_name': 'Oauth2 客户端名称',
+  'syscenter.oauth2-manger.oauth2.redirect_uri': '回调地址',
+  'syscenter.oauth2-manger.oauth2.domain_name': '业务域名',
+  'syscenter.oauth2-manger.oauth2.no_sert_redirect': '不安全的回调',
+  'syscenter.oauth2-manger.oauth2.grant_type': 'grant类型',
+  'syscenter.oauth2-manger.oauth2.status': '当前状态',
+  'syscenter.oauth2-manger.oauth2.client_image': '客户端logo',
+
+  'syscenter.oauth2-manger.oauth2.create_time': '创建时间',
+  'syscenter.oauth2-manger.oauth2.update_time': '更新时间',
+  'syscenter.oauth2-manger.oauth2.control': '操作',
+  'syscenter.oauth2-manger.oauth2.control.readinfo': '查看更多',
+  'syscenter.oauth2-manger.oauth2.control.edit': '编辑',
+  'syscenter.oauth2-manger.oauth2.control.delete': '删除',
+  'syscenter.oauth2-manger.oauth2.form.noSertRedirect.1': '不允许',
+  'syscenter.oauth2-manger.oauth2.form.noSertRedirect.0': '允许',
+  'syscenter.oauth2-manger.oauth2.form.clientId': '客户端ID',
+  'syscenter.oauth2-manger.oauth2.form.clientSecret': '客户端密钥',
+  'syscenter.oauth2-manger.oauth2.form.syscenter.oauth2-manger.oauth2.form.clientName': '客户端名称',
+  'syscenter.oauth2-manger.oauth2.form.tip.redirect_uri': '回调地址',
+  'syscenter.oauth2-manger.oauth2.form.tip.domain_name': '业务域名',
+  'syscenter.oauth2-manger.oauth2.form.tip.grantType': 'oauth2模式',
+
+  'syscenter.oauth2-manger.oauth2.form.clientId.tip': '客户端ID',
+  'syscenter.oauth2-manger.oauth2.form.clientName': '客户端名称',
+  'syscenter.oauth2-manger.oauth2.form.grantType': 'oauth2模式',
+  'syscenter.oauth2-manger.oauth2.form.domain_name': '业务域名',
+  'syscenter.oauth2-manger.oauth2.form.client_image': '客户端logo',
+  'syscenter.oauth2-manger.oauth2.form.status': '状态',
+  'syscenter.oauth2-manger.oauth2.form.status.1': '启用',
+  'syscenter.oauth2-manger.oauth2.form.status.0': '停用',
+  'syscenter.oauth2-manger.oauth2.form.noSertRedirect': '不安全的回调',
+  'syscenter.oauth2-manger.oauth2.form.clientSecret.tip': '客户端密钥',
+  'syscenter.oauth2-manger.oauth2.form.syscenter.oauth2-manger.oauth2.form.clientName.tip': '客户端名称',
+  'syscenter.oauth2-manger.oauth2.form.syscenter.oauth2-manger.oauth2.form.redirect_uri.tip': '回调地址',
+  'syscenter.oauth2-manger.oauth2.form.redirect_uri': '回调地址',
+  'syscenter.oauth2-manger.oauth2.form.syscenter.oauth2-manger.oauth2.form.domain_name.tip': '业务域名',
+  'syscenter.oauth2-manger.oauth2.form.syscenter.oauth2-manger.oauth2.form.grantType.tip': 'oauth2模式',
+
+  'syscenter.oauth2-manger.oauth2.form.tip.clientId': '请输入客户端ID',
+  'syscenter.oauth2-manger.oauth2.form.tip.clientSecret': '请输入客户端密钥',
+  'syscenter.oauth2-manger.oauth2.form.tip.syscenter.oauth2-manger.oauth2.form.clientName': '请输入客户端名称',
+  'syscenter.oauth2-manger.oauth2.form.tip.syscenter.oauth2-manger.oauth2.form.redirect_uri': '请输入回调地址',
+  'syscenter.oauth2-manger.oauth2.form.tip.syscenter.oauth2-manger.oauth2.form.domain_name': '请输入业务域名',
+  'syscenter.oauth2-manger.oauth2.form.tip.syscenter.oauth2-manger.oauth2.form.grantType': '请选择oauth2模式',
+
+
+
+  'syscenter.oauth2-manger.oauth2.form.grantType.code': '授权码模式',
+
+};

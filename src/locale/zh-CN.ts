@@ -13,6 +13,7 @@ import localeSysMenuManger from '@/views/sysmanger/menu-manger/locale/zh-CN';
 import localeSysRoleManger from '@/views/sysmanger/role-manger/locale/zh-CN';
 import localeSysDeptManger from '@/views/sysmanger/dept-manger/locale/zh-CN';
 import localeIndexImage from '@/views/content-promotion/index-image/locale/zh-CN';
+import localOauth2Manger from '@/views/sysmanger/oauth-manger/locale/zh-CN';
 
 import localeSettings from './zh-CN/settings';
 
@@ -71,4 +72,5 @@ export default {
   ...localeSysDeptManger,
   ...localeIndexImage,
   ...localeRegister,
+  ...localOauth2Manger,
 };
