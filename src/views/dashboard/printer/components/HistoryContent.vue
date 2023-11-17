@@ -1,12 +1,8 @@
 <template>
   <a-space direction="vertical" :size="10" fill>
     <a-radio-group v-model="type" type="button" @change="typeChange as any">
-      <a-radio value="个人">
-        个人
-      </a-radio>
-      <a-radio value="全部">
-        全部
-      </a-radio>
+      <a-radio value="个人"> 个人 </a-radio>
+      <a-radio value="全部"> 全部 </a-radio>
     </a-radio-group>
     <a-table :columns="columns" :data="tableData" :pagination="pagination">
       <template #columns>
@@ -30,6 +26,7 @@
             <a-button class="button_item" @click="button(record.url)">{{
               $t('printer.one.HistoryRecord.download')
             }}</a-button>
+            <a-button class="button_item" @click="onePrint(record.url)">一键打印</a-button>
             <a-button class="button_item" @click="buttonDelete(record.url)">{{
               $t('printer.one.HistoryRecord.delete')
             }}</a-button>
@@ -41,13 +38,16 @@
 </template>
 
 <script lang="ts">
-import {h, reactive, ref} from 'vue';
-import {useI18n} from 'vue-i18n';
-import {queryAllPrinterList, querySelfPrinterList} from '@/api/printer';
-import {IconFaceSmileFill} from '@arco-design/web-vue/es/icon';
-import {Message} from '@arco-design/web-vue';
+  import { h, reactive, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
+  import { queryAllPrinterList, querySelfPrinterList } from '@/api/printer';
+  import { IconFaceSmileFill } from '@arco-design/web-vue/es/icon';
+  import { Message } from '@arco-design/web-vue';
+  import printEventBus from "@/utils/print/printEventBus";
+  import eventBus from "@/utils/chat/eventBus";
+  import printEventHub from "@/utils/print/printEventBus";
 
-export default {
+  export default {
     name: 'HistoryContent',
     setup() {
       const { t } = useI18n();
@@ -91,7 +91,7 @@ export default {
       const fetchSelfData = async (current, pageSize) => {
         try {
           if (type.value === '个人') {
-            const {data} = await querySelfPrinterList({
+            const { data } = await querySelfPrinterList({
               page_num: current,
               page_size: pageSize,
             });
@@ -135,6 +135,9 @@ export default {
         // fetchDate1(contentType);
         window.open(url);
       };
+      const onePrint = (url: string) => {
+        printEventHub.emit('onOneClickPrinting', { fileUrl:url });
+      };
       const buttonDelete = (url: string) => {
         Message.info({
           content: () => t('printer.one.HistoryRecord.noDelete'),
@@ -150,6 +153,7 @@ export default {
         tableData,
         typeChange,
         button,
+        onePrint,
         buttonDelete,
       };
     },

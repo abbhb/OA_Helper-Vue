@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import axios from 'axios';
   import { Message, Modal } from '@arco-design/web-vue';
-  import { ref } from 'vue';
+  import {onBeforeUnmount, onMounted, ref} from 'vue';
   import { useAppStore } from '@/store';
   import left from '@/assets/images/left.png';
   import setting from '@/config/setting';
@@ -9,6 +9,7 @@
   import { PrintFileImpl } from '@/utils/print/PrintFileImpl';
   import usePrintStore from "@/store/modules/print";
   import item from "@/views/chat/chat-index/components/VirtualList/item";
+  import printEventHub, {downloadFileFromUrl} from "@/utils/print/printEventBus";
 
   interface thisStateType {
     visible: boolean;
@@ -151,6 +152,41 @@
     }
     thisState.value.printing = false;
   };
+
+  // 一件打印
+  const onOneClickPrinting = ({ fileUrl }: { fileUrl: string }) => {
+    // 为了严谨还是判断一下打印模式
+    if (printStore.getModel !== 9) {
+      return;
+    }
+    // 否则就是该处理的逻辑
+    if (!fileUrl || fileUrl === '') {
+      return;
+    }
+    if (fileList.value.length <= 4) {
+      // todo: 多文件打印模式的一键打印
+      // downloadFileFromUrl(fileUrl)
+      //     .then((file) => {
+      //       uploadRef.value.getUploadRef().value.upload([file]);
+      //     })
+      //     .catch((error) => {
+      //       Message.error('该文件无法一键打印，请尝试手动!');
+      //     });
+    } else {
+      // 先询问
+      Modal.error({
+        title: '警告',
+        content: '为了性能考虑，最大一次五个文件',
+
+      });
+    }
+  };
+  onMounted(() => {
+    printEventHub.on('onOneClickPrinting', onOneClickPrinting);
+  });
+  onBeforeUnmount(() => {
+    printEventHub.off('onOneClickPrinting', onOneClickPrinting);
+  });
 </script>
 
 <template>

@@ -3,6 +3,7 @@
     <a-spin :loading="tishi.loading" :size="30" style="width: 500px" dot>
       <Upload
         v-if="tishi.showUpload"
+        ref="uploadRef"
         url="/api/printer/uploadPrintFile"
         :draggable="true"
         @on-success="uploadSuccess"
@@ -139,13 +140,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { onBeforeUnmount, onMounted, ref, h } from 'vue';
   import { PrintFileImpl } from '@/utils/print/PrintFileImpl';
-  import { Message, Modal } from '@arco-design/web-vue';
+  import { Message, Modal, Button } from '@arco-design/web-vue';
   import Upload from '@/components/upload/index.vue';
   import usePrintStore from '@/store/modules/print';
+  import printEventHub, {
+    downloadFileFromUrl,
+  } from '@/utils/print/printEventBus';
+  import { error } from 'echarts/types/src/util/log';
 
   const printStore = usePrintStore();
+  const uploadRef = ref(null);
   const thisPrint = ref(new PrintFileImpl());
   const tishi = ref({
     visible: false,
@@ -153,7 +159,7 @@
     loading: false,
     showUpload: true,
   });
-
+  const onePrintFileUrl = ref(null);
   const onRest = () => {
     // 复位
     thisPrint.value.endThisClass();
@@ -171,7 +177,6 @@
   };
 
   const beforeUpload = (name: any) => {
-
     tishi.value.loading = true;
     thisPrint.value.addFile(name);
   };
@@ -201,6 +206,57 @@
     tishi.value.tipMsg = '已添加打印队列';
     tishi.value.visible = true;
   };
+
+  const oneClickPrintOkHandel = (e?: Event) => {
+    if (onePrintFileUrl.value === null || !onePrintFileUrl.value) {
+      Message.error('该文件无法一键打印，请尝试手动!');
+      return;
+    }
+    // 先复位
+    onRest();
+    downloadFileFromUrl(onePrintFileUrl.value)
+      .then((file) => {
+        uploadRef.value.getUploadRef().value.upload([file]);
+      })
+      .catch((error) => {
+        Message.error('该文件无法一键打印，请尝试手动!');
+      });
+  };
+
+  const onOneClickPrinting = ({ fileUrl }: { fileUrl: string }) => {
+    // 为了严谨还是判断一下打印模式
+    if (printStore.getModel !== 1) {
+      return;
+    }
+    // 否则就是该处理的逻辑
+    if (!fileUrl || fileUrl === '') {
+      return;
+    }
+    onePrintFileUrl.value = fileUrl;
+    if (tishi.value.showUpload) {
+      // 一键打印
+      oneClickPrintOkHandel();
+    } else {
+      // 先询问
+      Modal.info({
+        title: '警告',
+        content: '您当前似乎一键选择了文件，是要覆盖吗？',
+        closable: false,
+        okText: '覆盖',
+        cancelText: '取消操作',
+        mask: true,
+        escToClose: false,
+        hideCancel:false,
+        onOk: oneClickPrintOkHandel,
+      });
+    }
+  };
+  onMounted(() => {
+    printEventHub.on('onOneClickPrinting', onOneClickPrinting);
+  });
+  onBeforeUnmount(() => {
+    printEventHub.off('onOneClickPrinting', onOneClickPrinting);
+  });
 </script>
 
 <style scoped lang="less">
