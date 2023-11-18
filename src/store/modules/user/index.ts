@@ -12,7 +12,8 @@ import { clearToken, setToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import rsautils from '@/utils/rsautils';
 import { deleteLocalMenu } from '@/store/modules/app/persistence';
-import router from "@/router";
+import router from '@/router';
+import { checkPermissionByServer } from '@/api/permission';
 import { UserState } from './types';
 import useAppStore from '../app';
 
@@ -38,6 +39,7 @@ const useUserStore = defineStore('user', {
         roleKey: 'roomuser',
       },
     ],
+    permissionCache: [], // 用作缓存，后端有权限校验，所以没必要每次刷新组件都去请求服务器，先经过缓存
   }),
 
   getters: {
@@ -88,6 +90,42 @@ const useUserStore = defineStore('user', {
       } catch (err) {
         clearToken();
         throw err;
+      }
+    },
+    // eslint-disable-next-line consistent-return
+    async checkPermission(permission: string) {
+      let isCache = false;
+      let isHavePermission = false;
+      if (this.permissionCache.length > 0) {
+        // eslint-disable-next-line array-callback-return,consistent-return,no-plusplus
+        for (let i = 0; i < this.permissionCache.length; i++) {
+          if (this.permissionCache[i].permission === permission) {
+            isCache = true;
+            if (this.permissionCache[i].type === 1) {
+              isHavePermission = true;
+              return true;
+            }
+          }
+        }
+      }
+      if (isHavePermission) {
+        return true;
+      }
+      if (isCache && !isHavePermission) {
+        return false;
+      }
+      if (!isCache) {
+        try {
+          const { data } = await checkPermissionByServer({ permission });
+          this.permissionCache.push({ permission, type: data });
+          if (data === 1) {
+            return true;
+          }
+          return false;
+        }catch (e){
+          return false;
+
+        }
       }
     },
     async loginByCode(loginForm: LoginDataByCode) {

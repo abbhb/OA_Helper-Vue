@@ -20,6 +20,7 @@
         />
       </div>
 
+
       <div class="left-margin">
         <label>文件名</label>
         <a-input-search
@@ -30,6 +31,17 @@
           @search="typeChange as any"
           @press-enter="typeChange as any"
           @clear="typeChange as any"
+        />
+      </div>
+      <div class="left-margin">
+        日期筛选
+        <a-range-picker
+          style="width: 360px; "
+          show-time
+          :time-picker-props="{ defaultValue: ['00:00:00', '09:09:06'] }"
+          format="YYYY-MM-DD HH:mm"
+          @clear="cleanTime"
+          @ok="onOk"
         />
       </div>
     </div>
@@ -84,6 +96,8 @@
     type: '个人',
     onlyPrinted: 1,
     name: '',
+    startTime:'',
+    endTime:'',
   });
 
   const columns = [
@@ -139,6 +153,8 @@
           page_size: pageSize,
           onlyPrinted: config.value.onlyPrinted,
           name: config.value.name,
+          startDate:config.value.startTime,
+          endDate:config.value.endTime
         });
         tableData.value = data.records;
         tabelRDataTotal.value = data.total;
@@ -166,7 +182,7 @@
     showTotal: () => `共 ${11} 条`,
   });
 
-  const typeChange = (contentType: string) => {
+  const typeChange = (contentType?: string) => {
     fetchSelfData(pagination.value.current, pagination.value.pageSize);
   };
   const button = (url: string) => {
@@ -183,6 +199,24 @@
     });
   };
   fetchSelfData(1, 5);
+
+  const onOk = (dateString) => {
+    // eslint-disable-next-line prefer-destructuring
+    config.value.startTime = dateString[0];
+
+    // eslint-disable-next-line prefer-destructuring
+    config.value.endTime = dateString[1];
+    typeChange();
+  }
+  const cleanTime = () => {
+    // eslint-disable-next-line prefer-destructuring
+    config.value.startTime = '';
+
+    // eslint-disable-next-line prefer-destructuring
+    config.value.endTime = '';
+    typeChange();
+  }
+
 </script>
 
 <style scoped>

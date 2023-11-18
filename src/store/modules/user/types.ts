@@ -2,7 +2,10 @@ import {Role} from "@/api/role";
 
 export type StatusType = 1 | 0;
 
-
+export type PermissionType = {
+  permission:string;
+  type:number;
+}
 
 export interface UserState {
   name?: string;
@@ -19,4 +22,5 @@ export interface UserState {
   deptId?: string;
   deptName?: string;
   roles?: Role[];
+  permissionCache:PermissionType[];
 }
