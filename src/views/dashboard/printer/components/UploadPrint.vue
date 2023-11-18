@@ -221,6 +221,10 @@
       .catch((error) => {
         Message.error('该文件无法一键打印，请尝试手动!');
       });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth' // 使用平滑滚动
+    });
   };
 
   const onOneClickPrinting = ({ fileUrl }: { fileUrl: string }) => {

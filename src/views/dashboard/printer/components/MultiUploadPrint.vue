@@ -1,15 +1,17 @@
 <script lang="ts" setup>
   import axios from 'axios';
   import { Message, Modal } from '@arco-design/web-vue';
-  import {onBeforeUnmount, onMounted, ref} from 'vue';
+  import { onBeforeUnmount, onMounted, ref } from 'vue';
   import { useAppStore } from '@/store';
   import left from '@/assets/images/left.png';
   import setting from '@/config/setting';
   import { fileItemType } from '@/types/printFille';
   import { PrintFileImpl } from '@/utils/print/PrintFileImpl';
-  import usePrintStore from "@/store/modules/print";
-  import item from "@/views/chat/chat-index/components/VirtualList/item";
-  import printEventHub, {downloadFileFromUrl} from "@/utils/print/printEventBus";
+  import usePrintStore from '@/store/modules/print';
+  import item from '@/views/chat/chat-index/components/VirtualList/item';
+  import printEventHub, {
+    downloadFileFromUrl,
+  } from '@/utils/print/printEventBus';
 
   interface thisStateType {
     visible: boolean;
@@ -19,6 +21,7 @@
   }
   const printStore = usePrintStore();
   const errList = ref([]);
+  const uploadRef = ref(null);
 
   const thisState = ref<thisStateType>({
     visible: false,
@@ -112,7 +115,7 @@
     // 循环校验
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < fileList.value.length; i++) {
-      if (fileList.value[i].state<2) {
+      if (fileList.value[i].state < 2) {
         Modal.warning({
           title: '检查异常',
           content: `请删除${fileList.value[i].file_name}再提交打印`,
@@ -132,18 +135,24 @@
     errList.value = [];
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < fileList.value.length; i++) {
-      fileList.value[i].submitPrint(printStore.printDevice.id,printerrorCallback,false);
+      fileList.value[i].submitPrint(
+        printStore.printDevice.id,
+        printerrorCallback,
+        false
+      );
     }
     fileList.value = [];
-    if (errList.value.length===0){
+    if (errList.value.length === 0) {
       // 全都成功了
       Modal.success({
         title: '提交成功',
         content: `已加入打印队列`,
       });
-    }else {
-      let a = "";
-      errList.value.forEach(item=>{a=`${a}[${item}]`})
+    } else {
+      let a = '';
+      errList.value.forEach((item) => {
+        a = `${a}[${item}]`;
+      });
       // 显示没成功的打印任务名
       Modal.info({
         title: '部分任务已成功',
@@ -165,19 +174,22 @@
     }
     if (fileList.value.length <= 4) {
       // todo: 多文件打印模式的一键打印
-      // downloadFileFromUrl(fileUrl)
-      //     .then((file) => {
-      //       uploadRef.value.getUploadRef().value.upload([file]);
-      //     })
-      //     .catch((error) => {
-      //       Message.error('该文件无法一键打印，请尝试手动!');
-      //     });
+      downloadFileFromUrl(fileUrl)
+        .then((file) => {
+          uploadRef.value.upload([file]);
+        })
+        .catch((error) => {
+          Message.error('该文件无法一键打印，请尝试手动!');
+        });
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // 使用平滑滚动
+      });
     } else {
-      // 先询问
+      // 阻止
       Modal.error({
         title: '警告',
         content: '为了性能考虑，最大一次五个文件',
-
       });
     }
   };
@@ -197,6 +209,7 @@
           <span v-if="fileList.length >= 5">最大同时5个文件！！！</span>
           <a-upload
             v-if="fileList.length < 5"
+            ref="uploadRef"
             :custom-request="customRequest"
             :draggable="true"
             :multiple="true"

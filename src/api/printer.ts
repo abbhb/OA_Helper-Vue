@@ -93,6 +93,9 @@ interface PrinterBaseResp<T> {
 export function querySelfPrinterList(params: {
   page_num: number;
   page_size: number;
+  onlyPrinted?:number;
+  name?:string;
+
 }) {
   return axios.get<PageData<Printer[]>>('/api/printer/getMyHistoryPrints', {
     params,
@@ -102,6 +105,9 @@ export function querySelfPrinterList(params: {
 export function queryAllPrinterList(params: {
   page_num: number;
   page_size: number;
+  onlyPrinted?:number;
+  name?:string;
+
 }) {
   return axios.get<PageData<Printer[]>>('/api/printer/getAllHistoryPrints', {
     params,

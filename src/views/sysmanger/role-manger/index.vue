@@ -1,213 +1,219 @@
 <script lang="ts" setup>
-import {computed, h, reactive, ref} from 'vue';
-import {getColor} from '@/utils/color-index';
-import {addrole, deleterole, roleList, RoleManger, updaterole,} from '@/api/role';
-import {useAppStore} from '@/store';
-import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {Message} from '@arco-design/web-vue';
+  import { computed, h, reactive, ref } from 'vue';
+  import { getColor } from '@/utils/color-index';
+  import {
+    addrole,
+    deleterole,
+    roleList,
+    RoleManger,
+    updaterole,
+  } from '@/api/role';
+  import { useAppStore } from '@/store';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { Message } from '@arco-design/web-vue';
 
-interface statuEI {
-  clickLoading: boolean;
-  model?: boolean;
-  modelTitle?: string;
-  modelType?: string;
-}
+  interface statuEI {
+    clickLoading: boolean;
+    model?: boolean;
+    modelTitle?: string;
+    modelType?: string;
+  }
 
-const statuEs = ref<statuEI>({
-  clickLoading: false,
-  model: false,
-  modelTitle: '角色',
-  modelType: 'add',
-});
-const form = reactive({
-  id: '',
-  name: '',
-  key: '',
-  sort: 1,
-  status: 1,
-  zhankai: false,
-  quanxuan: false,
-  fuziliandong: false,
-});
-
-const appStore = useAppStore();
-const tableData = ref<RoleManger[]>([]);
-
-const allCheckedKeys = ref([]);
-const allExpandedKeys = ref([]);
-
-const selectedKeys = ref([]);
-const checkedKeys = ref([]);
-const expandedKeys = ref([]);
-const treeData = ref([]);
-
-/**
- *  :fieldNames="{
- *       key: 'value',
- *       title: 'label',
- *       children: 'items'
- *     }"
- *     官方虽然有api来指定字段，但还是需要添加根节点，不如手写
- * @param table
- */
-const tableDataToTreeData = (table: any) => {
-  const newas = [];
-  console.log(table);
-  table.forEach((item) => {
-    if (item.parentId === '0') {
-      const thischild = [];
-      if (item.children) {
-        item.children.forEach((asd) => {
-          if (asd.parentId === item.id) {
-            if (asd.children) {
-              const thisssachild = [];
-              asd.children.forEach((asdd) => {
-                thisssachild.push({key: asdd.id, title: asdd.locale});
-              });
-              thischild.push({
-                key: asd.id,
-                title: asd.locale,
-                children: thisssachild,
-              });
-            } else {
-              thischild.push({key: asd.id, title: asd.locale});
-            }
-          }
-        });
-        newas.push({key: item.id, title: item.locale, children: thischild});
-      } else {
-        newas.push({key: item.id, title: item.locale});
-      }
-    }
+  const statuEs = ref<statuEI>({
+    clickLoading: false,
+    model: false,
+    modelTitle: '角色',
+    modelType: 'add',
   });
-};
-const getAllId = (yuan) => {
-  if (yuan) {
-    for (let i = 0; i < yuan.length; i += 1) {
-      allExpandedKeys.value.push(yuan[i].id);
-      if (yuan[i].children) {
-        if (yuan[i].children.length > 0) {
-          getAllId(yuan[i].children);
+  const form = reactive({
+    id: '',
+    name: '',
+    key: '',
+    sort: 1,
+    status: 1,
+    zhankai: false,
+    quanxuan: false,
+    fuziliandong: false,
+  });
+
+  const appStore = useAppStore();
+  const tableData = ref<RoleManger[]>([]);
+
+  const allCheckedKeys = ref([]);
+  const allExpandedKeys = ref([]);
+
+  const selectedKeys = ref([]);
+  const checkedKeys = ref([]);
+  const expandedKeys = ref([]);
+  const treeData = ref([]);
+
+  /**
+   *  :fieldNames="{
+   *       key: 'value',
+   *       title: 'label',
+   *       children: 'items'
+   *     }"
+   *     官方虽然有api来指定字段，但还是需要添加根节点，不如手写
+   * @param table
+   */
+  const tableDataToTreeData = (table: any) => {
+    const newas = [];
+    console.log(table);
+    table.forEach((item) => {
+      if (item.parentId === '0') {
+        const thischild = [];
+        if (item.children) {
+          item.children.forEach((asd) => {
+            if (asd.parentId === item.id) {
+              if (asd.children) {
+                const thisssachild = [];
+                asd.children.forEach((asdd) => {
+                  thisssachild.push({ key: asdd.id, title: asdd.locale });
+                });
+                thischild.push({
+                  key: asd.id,
+                  title: asd.locale,
+                  children: thisssachild,
+                });
+              } else {
+                thischild.push({ key: asd.id, title: asd.locale });
+              }
+            }
+          });
+          newas.push({ key: item.id, title: item.locale, children: thischild });
+        } else {
+          newas.push({ key: item.id, title: item.locale });
+        }
+      }
+    });
+  };
+  const getAllId = (yuan) => {
+    if (yuan) {
+      for (let i = 0; i < yuan.length; i += 1) {
+        allExpandedKeys.value.push(yuan[i].id);
+        if (yuan[i].children) {
+          if (yuan[i].children.length > 0) {
+            getAllId(yuan[i].children);
+          }
         }
       }
     }
-  }
-};
-const initData = async () => {
-  statuEs.value.clickLoading = true;
-  const {data} = await roleList();
-  tableData.value = data.mangers;
-  treeData.value = data.menuMangerList;
-  getAllId(data.menuMangerList);
-  allCheckedKeys.value = allExpandedKeys.value;
-  statuEs.value.clickLoading = false;
-};
-initData();
-
-const stateChange = computed(() => (status: any) => {
-  return status === 1 || status === '1' ? '正常' : '停用';
-});
-const cleanForm = () => {
-  form.id = '';
-  form.name = '';
-  form.key = '';
-  form.fuziliandong = false;
-  form.quanxuan = false;
-  form.zhankai = false;
-  form.sort = 1;
-  form.status = 1;
-};
-
-const editHandel = (record) => {
-  statuEs.value.modelTitle = '编辑角色';
-  statuEs.value.modelType = 'edit';
-  checkedKeys.value = record.haveKey;
-  form.id = record.id;
-  form.name = record.roleName;
-  form.sort = record.roleSort;
-  form.status = Number(record.status);
-  form.key = record.roleKey;
-  statuEs.value.model = true;
-};
-const addHandel = (record) => {
-  statuEs.value.modelTitle = '添加角色';
-  statuEs.value.modelType = 'add';
-  statuEs.value.model = true;
-};
-const delHandel = async (record) => {
-  const {data} = await deleterole(record.id);
-  Message.success(data);
+  };
+  const initData = async () => {
+    statuEs.value.clickLoading = true;
+    const { data } = await roleList();
+    tableData.value = data.mangers;
+    treeData.value = data.menuMangerList;
+    getAllId(data.menuMangerList);
+    allCheckedKeys.value = allExpandedKeys.value;
+    statuEs.value.clickLoading = false;
+  };
   initData();
-};
-const handleCancel = () => {
-  cleanForm();
-};
-const update = async (done) => {
-  const forms = ref<RoleManger>({
-    id: form.id,
-    roleName: form.name,
-    roleSort: form.sort,
-    status: Number(form.status),
-    roleKey: form.key,
-    haveKey: checkedKeys.value,
+
+  const stateChange = computed(() => (status: any) => {
+    return status === 1 || status === '1' ? '正常' : '停用';
   });
-  try {
-    const {data} = await updaterole(forms.value);
+  const cleanForm = () => {
+    form.id = '';
+    form.name = '';
+    form.key = '';
+    form.fuziliandong = false;
+    form.quanxuan = false;
+    form.zhankai = false;
+    form.sort = 1;
+    form.status = 1;
+  };
+
+  const editHandel = (record) => {
+    statuEs.value.modelTitle = '编辑角色';
+    statuEs.value.modelType = 'edit';
+    checkedKeys.value = record.haveKey;
+    form.id = record.id;
+    form.name = record.roleName;
+    form.sort = record.roleSort;
+    form.status = Number(record.status);
+    form.key = record.roleKey;
+    statuEs.value.model = true;
+  };
+  const addHandel = (record) => {
+    statuEs.value.modelTitle = '添加角色';
+    statuEs.value.modelType = 'add';
+    statuEs.value.model = true;
+  };
+  const delHandel = async (record) => {
+    const { data } = await deleterole(record.id);
     Message.success(data);
-    done(true);
     initData();
-  } catch (e) {
-    done(false);
-  }
-};
-const add = async (done) => {
-  const forms = ref<RoleManger>({
-    roleName: form.name,
-    roleSort: form.sort,
-    status: Number(form.status),
-    roleKey: form.key,
-    haveKey: checkedKeys.value,
-  });
-  try {
-    const {data} = await addrole(forms.value);
-    Message.success(data);
-    done(true);
-    initData();
-  } catch (e) {
-    done(false);
-  }
-};
-const handelOk = (done) => {
-  // 根据form加上statuEs判断
-  if (statuEs.value.modelType !== 'add') {
-    update(done);
-  } else {
-    add(done);
-  }
-};
-const toggleChecked = () => {
-  checkedKeys.value = checkedKeys?.value.length ? [] : allCheckedKeys.value;
-};
-const toggleExpanded = () => {
-  expandedKeys.value = expandedKeys?.value.length
-    ? []
-    : allExpandedKeys.value;
-};
-const onSelect = (newSelectedKeys, event) => {
-  // console.log('select: ', newSelectedKeys, event);
-};
-const onCheck = (newCheckedKeys, event) => {
-  // console.log('check: ', newCheckedKeys, event);
-};
-const onExpand = (newExpandedKeys, event) => {
-  // console.log('expand: ', newExpandedKeys, event);
-};
+  };
+  const handleCancel = () => {
+    cleanForm();
+  };
+  const update = async (done) => {
+    const forms = ref<RoleManger>({
+      id: form.id,
+      roleName: form.name,
+      roleSort: form.sort,
+      status: Number(form.status),
+      roleKey: form.key,
+      haveKey: checkedKeys.value,
+    });
+    try {
+      const { data } = await updaterole(forms.value);
+      Message.success(data);
+      done(true);
+      initData();
+    } catch (e) {
+      done(false);
+    }
+  };
+  const add = async (done) => {
+    const forms = ref<RoleManger>({
+      roleName: form.name,
+      roleSort: form.sort,
+      status: Number(form.status),
+      roleKey: form.key,
+      haveKey: checkedKeys.value,
+    });
+    try {
+      const { data } = await addrole(forms.value);
+      Message.success(data);
+      done(true);
+      initData();
+    } catch (e) {
+      done(false);
+    }
+  };
+  const handelOk = (done) => {
+    // 根据form加上statuEs判断
+    if (statuEs.value.modelType !== 'add') {
+      update(done);
+    } else {
+      add(done);
+    }
+  };
+  const toggleChecked = () => {
+    checkedKeys.value = checkedKeys?.value.length ? [] : allCheckedKeys.value;
+  };
+  const toggleExpanded = () => {
+    expandedKeys.value = expandedKeys?.value.length
+      ? []
+      : allExpandedKeys.value;
+  };
+  const onSelect = (newSelectedKeys, event) => {
+    // console.log('select: ', newSelectedKeys, event);
+  };
+  const onCheck = (newCheckedKeys, event) => {
+    // console.log('check: ', newCheckedKeys, event);
+  };
+  const onExpand = (newExpandedKeys, event) => {
+    // console.log('expand: ', newExpandedKeys, event);
+  };
 </script>
 
 <template>
   <a-card>
     <a-alert banner center
-    >注意:用户侧的角色的更新只会在重新登录后！！！
+      >注意:用户侧的角色的更新只会在重新登录后！！！
     </a-alert>
     <a-space>
       <a-table
@@ -229,7 +235,7 @@ const onExpand = (newExpandedKeys, event) => {
                 {{ $t('syscenter.role-manger.role.control.add') }}
               </a-button>
             </a-space>
-            <a-divider class="split-line" style="margin: 3px"/>
+            <a-divider class="split-line" style="margin: 3px" />
           </a-space>
 
           <a-table-column
@@ -282,17 +288,17 @@ const onExpand = (newExpandedKeys, event) => {
           <a-table-column :title="$t(`syscenter.role-manger.role.control`)">
             <template #cell="{ record }">
               <a-button @click="editHandel(record)"
-              >{{ $t('syscenter.role-manger.role.control.edit') }}
+                >{{ $t('syscenter.role-manger.role.control.edit') }}
               </a-button>
               <a-button @click="addHandel(record)"
-              >{{ $t('syscenter.role-manger.role.control.add.item') }}
+                >{{ $t('syscenter.role-manger.role.control.add.item') }}
               </a-button>
               <a-popconfirm
                 content="危险！将会级联删除子角色，确认删除?"
                 @ok="delHandel(record)"
               >
                 <a-button
-                >{{ $t('syscenter.role-manger.role.control.delete') }}
+                  >{{ $t('syscenter.role-manger.role.control.delete') }}
                 </a-button>
               </a-popconfirm>
             </template>
@@ -362,10 +368,10 @@ const onExpand = (newExpandedKeys, event) => {
             >
               <a-radio-group v-model:model-value="form.status">
                 <a-radio :value="1"
-                >{{ $t('syscenter.role-manger.role.form.status.1') }}
+                  >{{ $t('syscenter.role-manger.role.form.status.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.role-manger.role.form.status.0') }}
+                  >{{ $t('syscenter.role-manger.role.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -383,6 +389,7 @@ const onExpand = (newExpandedKeys, event) => {
                 </a-button>
               </a-button-group>
               <a-tree
+                style="overflow-y: scroll;height: 30rem"
                 v-model:checked-keys="checkedKeys"
                 v-model:expanded-keys="expandedKeys"
                 v-model:selected-keys="selectedKeys"
