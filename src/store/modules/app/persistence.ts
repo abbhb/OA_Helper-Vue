@@ -8,7 +8,4 @@ const setConfig = (config: string) => {
   localStorage.setItem(CONFIG_JSON, config);
 };
 
-const deleteLocalMenu = () => {
-  localStorage.removeItem(CONFIG_JSON);
-};
-export { getConfig, setConfig, deleteLocalMenu };
+export { getConfig, setConfig };

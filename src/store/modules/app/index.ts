@@ -4,12 +4,14 @@ import defaultSettings from '@/config/settings.json';
 import { getConfig } from '@/store/modules/app/persistence';
 // eslint-disable-next-line import/namespace
 import useRouterPlus from '@/hooks/router';
+import {getUserFrontConfig, setUserFrontConfig} from "@/api/user";
 import { AppState, RecentlyRouter } from './types';
 
 const useAppStore = defineStore('app', {
   state: (): AppState => {
-    if (getConfig()) {
-      if (getConfig().indexOf('globalSettings') !== -1) {
+    const configs = getConfig();
+    if (configs) {
+      if (configs.indexOf('globalSettings') !== -1) {
         return { ...JSON.parse(getConfig()) };
       }
     }
@@ -30,18 +32,24 @@ const useAppStore = defineStore('app', {
 
   actions: {
     // Update app settings
-    updateSettings(partial: Partial<AppState>) {
-      // @ts-ignore-next-line
+    updateSettings(partial: Partial<AppState>,ignoreUpdate?:boolean) {
       this.$patch(partial);
+      if (!ignoreUpdate){
+        this.updateConfigServer();
+      }
     },
-
+    async initSettings() {
+      // 每次登录成功首次就同步一次配置
+      const {data} = await getUserFrontConfig();
+      this.$patch(JSON.parse(data));
+    },
     // Change theme color
     toggleTheme(dark: boolean) {
       if (dark) {
-        this.theme = 'dark';
+        this.updateSettings({ theme: 'dark' });
         document.body.setAttribute('arco-theme', 'dark');
       } else {
-        this.theme = 'light';
+        this.updateSettings({ theme: 'light' });
         document.body.removeAttribute('arco-theme');
       }
     },
@@ -61,10 +69,10 @@ const useAppStore = defineStore('app', {
       return canGoRecentlyList;
     },
     toggleDevice(device: string) {
-      this.device = device;
+      this.updateSettings({ device },true);
     },
     toggleMenu(value: boolean) {
-      this.hideMenu = value;
+      this.updateSettings({ hideMenu: value },true);
     },
     logAccess(route: RouteRecordNormalized) {
       let isNew = false;
@@ -82,10 +90,15 @@ const useAppStore = defineStore('app', {
       if (!isNew) {
         this.recentlyRouter.push({ ...route, visits: 1 });
       }
+      this.updateConfigServer();
     },
     changePrintDevice(id: string) {
-      this.lastPrintDevice = id;
+      this.updateSettings({ lastPrintDevice: id });
     },
+    async updateConfigServer() {
+      const text = JSON.stringify(this.$state, null, 2);
+      await setUserFrontConfig({req:text});
+    }
   },
 });
 

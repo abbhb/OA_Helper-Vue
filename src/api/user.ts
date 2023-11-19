@@ -1,7 +1,7 @@
 import axios from 'axios';
-import {UserState} from '@/store/modules/user/types';
-import {PageData} from '@/api/common';
-import {Role} from "@/api/role";
+import { UserState } from '@/store/modules/user/types';
+import { PageData } from '@/api/common';
+import { Role } from '@/api/role';
 
 export interface LoginData {
   username: string;
@@ -16,7 +16,6 @@ export interface Password {
   rePassword: string;
   newPassword: string;
 }
-
 
 export interface UserInfo {
   username?: string;
@@ -42,6 +41,10 @@ export interface LoginRes {
   token: string;
 }
 
+interface UserFrontConfigReq {
+  req: string;
+}
+
 export function login(data: LoginData) {
   return axios.post<LoginRes>('/api/user/login', data);
 }
@@ -59,11 +62,12 @@ export function updataUserByAdmin(data: UserManger) {
   return axios.put<string>('/api/user/updateByAdmin', data);
 }
 
-export function updataUserStatusByAdmin(id: string,status:string) {
+export function updataUserStatusByAdmin(id: string, status: string) {
   return axios.get<string>('/api/user/updateStatus', {
-    params:{
-      id,status
-    }
+    params: {
+      id,
+      status,
+    },
   });
 }
 export function setPassword(data: Password) {
@@ -82,6 +86,17 @@ export function getUserCount() {
   return axios.get<number>('/api/user/user_count');
 }
 
+export function getUserFrontConfig() {
+  return axios.get<string>('/api/user_front_config/get_user_front_config');
+}
+
+export function setUserFrontConfig(data: UserFrontConfigReq) {
+  return axios.post<string>(
+    '/api/user_front_config/set_user_front_config',
+    data
+  );
+}
+
 export function getRoleName(roles: string) {
   return axios.get<string[]>('/api/user/role_name', {
     params: {
@@ -95,7 +110,7 @@ export function getUserListManger(params: {
   pageSize: number;
   name?: string;
   deptId?: string;
-  cascade:number;
+  cascade: number;
 }) {
   return axios.get<PageData<UserManger[]>>('/api/user/user_manger', { params });
 }

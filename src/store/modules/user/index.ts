@@ -10,12 +10,10 @@ import {
 } from '@/api/user';
 import { clearToken, setToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
-import rsautils from '@/utils/rsautils';
-import { deleteLocalMenu } from '@/store/modules/app/persistence';
-import router from '@/router';
 import { checkPermissionByServer } from '@/api/permission';
+import useMenuStore from '@/store/modules/menu';
+import {useAppStore} from "@/store";
 import { UserState } from './types';
-import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
@@ -87,6 +85,7 @@ const useUserStore = defineStore('user', {
         // );
         const res = await userLogin(loginForm);
         setToken(res.data.token);
+        await useAppStore().initSettings();
       } catch (err) {
         clearToken();
         throw err;
@@ -122,9 +121,8 @@ const useUserStore = defineStore('user', {
             return true;
           }
           return false;
-        }catch (e){
+        } catch (e) {
           return false;
-
         }
       }
     },
@@ -132,6 +130,7 @@ const useUserStore = defineStore('user', {
       try {
         const res = await loginbycode(loginForm);
         setToken(res.data.token);
+        await useAppStore().initSettings();
       } catch (err) {
         clearToken();
         throw err;
@@ -146,12 +145,12 @@ const useUserStore = defineStore('user', {
       }
     },
     logoutCallBack() {
-      const appStore = useAppStore();
+      const menuStore = useMenuStore();
+
       this.resetInfo();
       clearToken();
-      deleteLocalMenu();
       removeRouteListener();
-      appStore.clearServerMenu();
+      menuStore.clearServerMenu();
     },
     // Logout
     async logout() {
