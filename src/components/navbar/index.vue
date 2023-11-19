@@ -216,6 +216,8 @@
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
   import router from "@/router";
+  import version from '@/config/version.json';
+
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -230,7 +232,7 @@
     return appStore.theme;
   });
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
-  const currentVersion = 'v2.0.8';
+  const currentVersion = version[version.length-1].version;
   const isDark = useDark({
     selector: 'body',
     attribute: 'arco-theme',

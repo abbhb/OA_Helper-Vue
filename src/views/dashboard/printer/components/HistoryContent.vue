@@ -87,8 +87,6 @@
   import { queryAllPrinterList, querySelfPrinterList } from '@/api/printer';
   import { IconFaceSmileFill } from '@arco-design/web-vue/es/icon';
   import { Message } from '@arco-design/web-vue';
-  import printEventBus from '@/utils/print/printEventBus';
-  import eventBus from '@/utils/chat/eventBus';
   import printEventHub from '@/utils/print/printEventBus';
 
   const { t } = useI18n();
@@ -144,6 +142,8 @@
           page_size: pageSize,
           onlyPrinted: config.value.onlyPrinted,
           name: config.value.name,
+          startDate:config.value.startTime,
+          endDate:config.value.endTime
         });
         tableData.value = data.records;
         tabelRDataTotal.value = data.total;

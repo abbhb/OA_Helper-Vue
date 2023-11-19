@@ -95,7 +95,8 @@ export function querySelfPrinterList(params: {
   page_size: number;
   onlyPrinted?:number;
   name?:string;
-
+  startDate?:string;
+  endDate?:string
 }) {
   return axios.get<PageData<Printer[]>>('/api/printer/getMyHistoryPrints', {
     params,
