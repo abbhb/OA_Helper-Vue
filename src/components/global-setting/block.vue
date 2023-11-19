@@ -19,6 +19,7 @@
   import { PropType, ref } from 'vue';
   import { useAppStore } from '@/store';
   import { setConfig } from '@/store/modules/app/persistence';
+  import useMenuStore from "@/store/modules/menu";
   import FormWrapper from './form-wrapper.vue';
 
   interface OptionsProps {
@@ -41,6 +42,7 @@
     },
   });
   const appStore = useAppStore();
+  const menuStore = useMenuStore();
   const handleChange = async ({
     key,
     value,
@@ -52,7 +54,7 @@
       document.body.style.filter = value ? 'invert(80%)' : 'none';
     }
     if (key === 'menuFromServer' && value) {
-      await appStore.fetchServerMenuConfig();
+      await menuStore.fetchServerMenuConfig();
     }
     if (key === 'topMenu') {
       appStore.updateSettings({

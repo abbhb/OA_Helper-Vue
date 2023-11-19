@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia';
-import { Notification } from '@arco-design/web-vue';
-import type { NotificationReturn } from '@arco-design/web-vue/es/notification/interface';
 import type { RouteRecordNormalized } from 'vue-router';
 import defaultSettings from '@/config/settings.json';
-import { getMenuList } from '@/api/menu';
 import { getConfig } from '@/store/modules/app/persistence';
 // eslint-disable-next-line import/namespace
 import useRouterPlus from '@/hooks/router';
@@ -12,7 +9,6 @@ import { AppState, RecentlyRouter } from './types';
 const useAppStore = defineStore('app', {
   state: (): AppState => {
     if (getConfig()) {
-      console.log(getConfig());
       if (getConfig().indexOf('globalSettings') !== -1) {
         return { ...JSON.parse(getConfig()) };
       }
@@ -27,18 +23,12 @@ const useAppStore = defineStore('app', {
     appDevice(state: AppState) {
       return state.device;
     },
-    appAsyncMenus(state: AppState): RouteRecordNormalized[] {
-      // console.log('同步菜单');
-      // console.log(state.serverMenu);
-      return state.serverMenu as unknown as RouteRecordNormalized[];
-    },
     appRecentlyRouter(state: AppState): RecentlyRouter[] {
       return state.recentlyRouter as unknown as RecentlyRouter[];
     },
   },
 
   actions: {
-
     // Update app settings
     updateSettings(partial: Partial<AppState>) {
       // @ts-ignore-next-line
@@ -79,7 +69,7 @@ const useAppStore = defineStore('app', {
     logAccess(route: RouteRecordNormalized) {
       let isNew = false;
       if ('ignore' in route.meta) {
-        if (route.meta.ignore){
+        if (route.meta.ignore) {
           return;
         }
       }
@@ -93,35 +83,8 @@ const useAppStore = defineStore('app', {
         this.recentlyRouter.push({ ...route, visits: 1 });
       }
     },
-    // todo:如果在回调登录页或者登录页会导致报错
-    async fetchServerMenuConfig() {
-      let notifyInstance: NotificationReturn | null = null;
-      try {
-        notifyInstance = Notification.info({
-          id: 'menuNotice', // Keep the instance id the same
-          content: 'loading',
-          closable: true,
-        });
-        const { data } = await getMenuList();
-        this.serverMenu = data;
-        notifyInstance = Notification.success({
-          id: 'menuNotice',
-          content: 'success',
-          closable: true,
-        });
-      } catch (error) {
-        notifyInstance = Notification.error({
-          id: 'menuNotice',
-          content: 'error',
-          closable: true,
-        });
-      }
-    },
     changePrintDevice(id: string) {
       this.lastPrintDevice = id;
-    },
-    clearServerMenu() {
-      this.serverMenu = [];
     },
   },
 });

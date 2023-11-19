@@ -12,8 +12,6 @@
   "globalSettings": false,
   "device": "desktop",
   "tabBar": false,
-  "menuFromServer": true,
-  "serverMenu": [],
   "recentlyRouter": [],
   "lastPrintDevice": "",
   "modelFullscreen": false,

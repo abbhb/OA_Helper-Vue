@@ -18,8 +18,6 @@ export interface AppState {
   device: string;
   tabBar: boolean;
   modelFullscreen: boolean;
-  menuFromServer: boolean;
-  serverMenu: RouteRecordNormalized[];
   recentlyRouter: RecentlyRouter[];
   [key: string]: unknown;
   lastPrintDevice: string; // id

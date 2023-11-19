@@ -2,12 +2,14 @@ import type {Router, RouteRecordNormalized} from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
 import usePermission from '@/hooks/permission';
 import {useAppStore, useUserStore} from '@/store';
+import useMenuStore from "@/store/modules/menu";
 import {appRoutes} from '../routes';
 import {NOT_FOUND, WHITE_LIST} from '../constants';
 
 export default function setupPermissionGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     const appStore = useAppStore();
+    const menuStore = useMenuStore();
 
     // 统计用户跳转路由的次数来选出8个作为快捷操作，先使用浏览器本地存储，之后数据存数据库
     appStore.logAccess(to as unknown as RouteRecordNormalized);
@@ -16,20 +18,20 @@ export default function setupPermissionGuard(router: Router) {
     }
     const Permission = usePermission();
     const permissionsAllow = Permission.accessRouter(to);
-    if (appStore.menuFromServer) {
+    if (menuStore.menuFromServer) {
       // 针对来自服务端的菜单配置进行处理
       // Handle routing configuration from the server
 
       // 根据需要自行完善来源于服务端的菜单配置的permission逻辑
       // Refine the roles logic from the server's menu configuration as needed
       if (
-        !appStore.appAsyncMenus ||
-        (appStore.appAsyncMenus.length === 0 &&
+        !menuStore.appAsyncMenus ||
+        (menuStore.appAsyncMenus.length === 0 &&
           !WHITE_LIST.find((el) => el.name === to.name))
       ) {
-        await appStore.fetchServerMenuConfig();
+        await menuStore.fetchServerMenuConfig();
       }
-      const serverMenuConfig = [...appStore.appAsyncMenus, ...WHITE_LIST];
+      const serverMenuConfig = [...menuStore.appAsyncMenus, ...WHITE_LIST];
 
       let exist = false;
       while (serverMenuConfig.length && !exist) {
