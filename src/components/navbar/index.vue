@@ -283,7 +283,7 @@
   };
 
   const readVersion = () => {
-    appStore.versionRead = currentVersion;
+    appStore.updateSettings({versionRead:currentVersion})
     router.push({ name: 'VersionIndex' });
   };
 </script>
