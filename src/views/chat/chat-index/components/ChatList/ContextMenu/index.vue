@@ -36,9 +36,9 @@
   const isCurrentUser = computed(() => props.msg?.fromUser.uid === userInfo.id);
   // 撤回
   const onRecall = async () => {
-    const { id } = props.msg.message;
+    const { id, roomId } = props.msg.message;
     if (id) {
-      await apis.recallMsg({ roomId: '1', msgId: id });
+      await apis.recallMsg({ roomId, msgId: id });
       chatStore.updateRecallStatus({ msgId: id });
     }
   };

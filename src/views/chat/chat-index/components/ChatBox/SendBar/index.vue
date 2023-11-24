@@ -71,19 +71,24 @@ const onSelectPerson = ({ uid, ignoreCheck }: { uid: string; ignoreCheck?: boole
 
   // 发送消息
   const send = async (msgType: ChatMsgEnum, body: any, roomId = '1') => {
-    const { data } = await sendMsg({ roomId, msgType, body });
-    if (data.message.type === ChatMsgEnum.TEXT) {
-      chatStore.pushMsg(data); // 消息列表新增一条消息
-    } else {
-      // 更新上传状态下的消息
-      chatStore.updateMsg(tempMessageId.value, data);
+    try {
+      const { data } = await sendMsg({ roomId, msgType, body });
+      if (data.message.type === ChatMsgEnum.TEXT) {
+        // chatStore.pushMsg(data); // 消息列表新增一条消息,发送消息没必要再push了，收到ws的消息就能push
+      } else {
+        // 更新上传状态下的消息
+        chatStore.updateMsg(tempMessageId.value, data);
+      }
+    }catch (e) {
+      Message.error(e)
+    }finally {
+      inputMsg.value = ''; // 清空输入列表
+      // eslint-disable-next-line no-use-before-define
+      onClearReply(); // 置空回复的消息
+      isSending.value = false;
+      focusMsgInput(); // 输入框重新获取焦点
+      chatStore.chatListToBottomAction?.(); // 滚动到消息列表底部
     }
-    inputMsg.value = ''; // 清空输入列表
-    // eslint-disable-next-line no-use-before-define
-    onClearReply(); // 置空回复的消息
-    isSending.value = false;
-    focusMsgInput(); // 输入框重新获取焦点
-    chatStore.chatListToBottomAction?.(); // 滚动到消息列表底部
   };
 
   const sendMsgHandler = () => {

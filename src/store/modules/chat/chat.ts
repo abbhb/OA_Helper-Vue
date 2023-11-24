@@ -99,7 +99,7 @@ export const useChatStore = defineStore('chat', () => {
 
   const pushMsg = (msg: MessageType) => {
     messageMap.set(msg.message.id, msg);
-
+    console.log(`新增消息${msg.message.id}`)
     // 获取用户信息缓存
     // 尝试取缓存user, 如果有 lastModifyTime 说明缓存过了，没有就一定是要缓存的用户了
     if (!msg.fromUser.uid) {
@@ -186,7 +186,9 @@ export const useChatStore = defineStore('chat', () => {
     if (message) {
       message.message.type = ChatMsgEnum.RECALL;
       console.log('撤回');
+      console.log(message)
       if (typeof data.recallUid === 'string') {
+        console.log("真撤回")
         const cacheUser = cachedStore.userCachedList[data.recallUid];
         // 如果撤回者的 id 不等于消息发送人的 id, 或者你本人就是管理员，那么显示管理员撤回的。
         if (data.recallUid !== message.fromUser.uid) {

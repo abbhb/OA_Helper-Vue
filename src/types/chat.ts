@@ -268,6 +268,7 @@ export type MsgType = {
   sendTime: number;
   /** 消息互动信息 */
   messageMark: MessageMarkType;
+  roomId:string;
 };
 
 /**
@@ -355,7 +356,7 @@ export type SessionItem = {
   /** 会话名称 */
   name: string;
   /** 房间id */
-  roomId: number;
+  roomId: string;
   /** 最新消息 */
   text: string;
   /** 房间类型 1群聊 2单聊 */
