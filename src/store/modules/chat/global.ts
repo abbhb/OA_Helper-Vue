@@ -3,6 +3,7 @@ import {reactive, ref, watch} from 'vue';
 import {RoomTypeEnum} from '@/types/enums/chat';
 import {ContactItem, RequestFriendItem} from '@/types/chat';
 
+
 export const useGlobalStore = defineStore('global', () => {
   const unReadMark = reactive<{
     newFriendUnreadCount: number;
@@ -39,17 +40,23 @@ export const useGlobalStore = defineStore('global', () => {
     selectedUid: [],
   });
 
-  // 切换会话的时候重置消息已读数查询
+  // 切换会话的时候重置消息已读数查询，暂时不做消息已读功能
   watch(currentSession, (val) => {
     // 清理已读数查询
-    // clearQueue();
-    // setTimeout(readCountQueue, 1000);
+    // clearQueue()
+    // setTimeout(readCountQueue, 1000)
     // // 标记房间最新消息已读
-    // markMsgRead({ roomId: val.roomId }).send();
-    // const unreadCount = chatStore.markSessionRead(val.roomId);
-    // const resultCount = unReadMark.newMsgUnreadCount - unreadCount;
-    // unReadMark.newMsgUnreadCount = resultCount > 0 ? resultCount : 0;
-  });
+    // apis.markMsgRead({ roomId: val.roomId }).send()
+    // const unreadCount = chatStore.markSessionRead(val.roomId)
+    // // console.log(unReadMark.newMsgUnreadCount, unreadCount)
+    // // setTimeout(() => {
+    // //   if (unReadMark.newMsgUnreadCount !== unReadMark.newMsgUnreadCount - unreadCount) {
+    // //     // unReadMark.newMsgUnreadCount = unReadMark.newMsgUnreadCount - unreadCount
+    // //   }
+    // // })
+    // const resultCount = unReadMark.newMsgUnreadCount - unreadCount
+    // unReadMark.newMsgUnreadCount = resultCount > 0 ? resultCount : 0
+  })
 
   return {
     unReadMark,

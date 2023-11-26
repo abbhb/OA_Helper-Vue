@@ -2,6 +2,7 @@
 import {useImgPreviewStore, useVideoPreviewStore,} from '@/store/modules/chat/preview';
 import {onUnmounted, watch} from 'vue';
 import SideBar from './components/SideBar/index.vue';
+import ToolBar from './components/ToolBar/index.vue';
 import ChatBox from './components/ChatBox/index.vue';
 import VideoPlayer from './components/VideoPlayer/index.vue';
 
@@ -33,6 +34,7 @@ const imageStore = useImgPreviewStore();
 <template>
   <main class="home chat">
     <div class="wrapper">
+      <ToolBar />
       <SideBar />
       <ChatBox />
     </div>
@@ -59,7 +61,7 @@ const imageStore = useImgPreviewStore();
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: 10vh 0;
+    padding: 2vh 0;
 
     .video-play {
       position: absolute;

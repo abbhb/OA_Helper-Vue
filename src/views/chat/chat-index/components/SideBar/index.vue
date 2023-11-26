@@ -1,64 +1,76 @@
 <script setup lang="ts">
-  import { computed, ref } from 'vue';
+  import { computed, onBeforeMount, ref } from 'vue';
   import { useChatStore } from '@/store/modules/chat/chat';
   import { useUserInfo } from '@/hooks/chat/useCached';
   import { formatTimestamp } from '@/utils/chat/computedTime';
   import AvatarImage from '@/components/image/AvatarImage.vue';
+  import {ChatMsgEnum, RoomTypeEnum} from '@/types/enums/chat';
+  import { IsAllUserEnum } from '@/types/chat';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import renderReplyContent from '@/utils/chat/renderReplyContent';
 
   // 选中的聊天对话
-  const activeChat = ref('1');
   const chatStore = useChatStore();
+  const globalStore = useGlobalStore();
 
-  // 计算最后一条消息
-  const lastMassage = computed(
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    () => chatStore.chatMessageList?.[chatStore.chatMessageList?.length - 1]
-  );
-  const lastUid = computed(() => lastMassage.value?.fromUser.uid);
-  const lastUserInfo = useUserInfo(lastUid);
-
-  // mock数据等后端接口完成后变动0
-  const mockData = computed(() => {
-    const message = lastMassage.value?.message;
-    return [
-      {
-        id: '1',
-        msgName: 'MallChat 用户群',
-        name: lastUserInfo.value.name,
-        avatar: '',
-        tag: '官方',
-        // TODO 接收到艾特的时候，当前聊天没有被选中的时候，显示红色文本
-        lastMsg:
-          message?.type === 2
-            ? '撤回了一条消息'
-            : message?.body?.content || '欢迎使用AI-Chat',
-        lastMsgTime: formatTimestamp(message?.sendTime),
-      },
-      {
-        id: '2',
-        msgName: '通知',
-        name: '机器人',
-        avatar: '',
-        tag: '机器人',
-        lastMsg: '欢迎使用AI-Chat',
-        lastMsgTime: '13:54',
-      },
-    ];
+  onBeforeMount(() => {
+    // 请求回话列表
+    chatStore.getSessionList();
   });
+
+  // 选中的聊天对话
+  const currentSession = computed(() => globalStore.currentSession);
+  const sessionList = computed(() =>
+    chatStore.sessionList.map((item) => {
+      // 最后一条消息内容
+      const lastMsg = Array.from(
+        chatStore.messageMap.get(item.roomId)?.values() || []
+      )?.slice(-1)?.[0];
+      let LastUserMsg = '';
+      if (lastMsg) {
+        const lastMsgUserName = useUserInfo(lastMsg.fromUser.uid);
+        LastUserMsg =
+          lastMsg.message?.type === ChatMsgEnum.RECALL
+            ? `${lastMsgUserName.value.name}:'撤回了一条消息'`
+            : renderReplyContent(
+                lastMsgUserName.value.name,
+                lastMsg.message?.type,
+                lastMsg.message?.body?.content || lastMsg.message?.body
+              );
+      }
+      return {
+        ...item,
+        tag: item.hot_Flag === IsAllUserEnum.Yes ? '官方' : '',
+        lastMsg: LastUserMsg || item.text || '欢迎使用本Chat功能',
+        lastMsgTime: formatTimestamp(item?.activeTime),
+      };
+    })
+  );
+  // 选中会话
+  const onSelectSelectSession = (roomId: string, roomType: RoomTypeEnum) => {
+    globalStore.currentSession.roomId = roomId;
+    globalStore.currentSession.type = roomType;
+    console.log("切换")
+  };
+
+  // 加载更多
+  const load = () => {
+    chatStore.getSessionList();
+  };
 </script>
 
 <template>
   <div class="chat-message">
     <div
-      v-for="(item, index) in mockData"
+      v-for="(item, index) in sessionList"
       :key="index"
-      :class="['chat-message-item ', { active: activeChat === item.id }]"
-      @click="activeChat = item.id"
+      :class="['chat-message-item ', { active: currentSession.roomId === item.roomId }]"
+      @click="onSelectSelectSession(item.roomId, item.type)"
     >
       <AvatarImage shape="circle" :size="38" :avatar="item.avatar" />
       <div class="message-info">
         <div style="white-space: nowrap">
-          <span class="person">{{ item.msgName }}</span>
+          <span class="person">{{ item.name }}</span>
           <span v-if="item.tag" class="tag">{{ item.tag }}</span>
         </div>
         <div class="message-message">{{

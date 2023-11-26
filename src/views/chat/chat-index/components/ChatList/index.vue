@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import {nextTick, onMounted, provide, ref} from 'vue';
-import throttle from 'lodash/throttle';
+  import { computed, nextTick, onMounted, provide, ref } from 'vue';
+  import throttle from 'lodash/throttle';
 
-import {useChatStore} from '@/store/modules/chat/chat';
-import {MessageType} from '@/types/chat';
-// eslint-disable-next-line import/extensions
-import VirtualList from '@/views/chat/chat-index/components/VirtualList/index.tsx';
-import MsgItem from './MsgItem/index.vue';
+  import { useChatStore } from '@/store/modules/chat/chat';
+  import { MessageType } from '@/types/chat';
+  // eslint-disable-next-line import/extensions
+  import VirtualList from '@/views/chat/chat-index/components/VirtualList/index.tsx';
+  import MsgItem from './MsgItem/index.vue';
+  import RoomName from './RoomName/index.vue';
 
-const chatStore = useChatStore();
+  const chatStore = useChatStore();
   const virtualListRef = ref();
-
+  const messageOptions = computed(() => chatStore.currentMessageOptions);
+  const chatMessageList = computed(() => chatStore.chatMessageList);
+  const currentNewMsgCount = computed(() => chatStore.currentNewMsgCount);
   // 回到底部
   const goToBottom = () => {
     if (virtualListRef.value) {
@@ -23,7 +26,7 @@ const chatStore = useChatStore();
   const goToNewMessage = () => {
     // 未读消息数 = 总数 - 新消息数
     virtualListRef.value.scrollToIndex(
-      chatStore.chatMessageList.length - chatStore.newMsgCount
+      chatMessageList.value.length - (currentNewMsgCount.value?.count || 0)
     );
     chatStore.clearNewMsgCount();
   };
@@ -41,7 +44,7 @@ const chatStore = useChatStore();
 
   // 到顶部时触发函数 记录旧的滚动高度，加载更多消息后滚动回加载时那条消息的位置
   const onTotop = async () => {
-    if (chatStore.isLoading) return;
+    if (messageOptions.value?.isLoading) return;
     const oldIndex = virtualListRef.value.getSizes();
     await chatStore.loadMore();
     virtualListRef.value.scrollToIndex(
@@ -58,19 +61,24 @@ const chatStore = useChatStore();
     // 是否已滚动到底部最后一个可视范围内
     const isScrollEnd = offset + clientSize >= scrollSize - clientSize;
     if (isScrollEnd) {
-      chatStore.isStartCount = false;
+      // eslint-disable-next-line no-unused-expressions
+      currentNewMsgCount.value && (currentNewMsgCount.value.isStart = false);
       chatStore.clearNewMsgCount();
     } else {
-      chatStore.isStartCount = true;
+      // eslint-disable-next-line no-unused-expressions
+      currentNewMsgCount.value && (currentNewMsgCount.value.isStart = true);
     }
   }, 100);
 
-  const getKey = (item: MessageType) => item.message.id;
+  const getKey = (item: MessageType) => {
+    return item.message.id;
+  }
 </script>
 
 <template>
-  <div class="chat-msg-list" >
-    <icon-loading v-if="chatStore.isLoading" style="width: 100%" :size="14">
+  <div class="chat-msg-list">
+    <RoomName />
+    <icon-loading v-if="messageOptions?.isLoading" style="width: 100%" :size="14">
       消息加载中
     </icon-loading>
     <VirtualList
@@ -88,12 +96,12 @@ const chatStore = useChatStore();
     />
     <!-- <VideoPlayer></VideoPlayer> -->
     <template
-      v-if="!chatStore.isLoading && chatStore.chatMessageList?.length === 0"
+      v-if="!messageOptions?.isLoading && chatMessageList?.length === 0"
     >
       <div class="empty">暂无消息，快来发送第一条消息吧~</div>
     </template>
     <span
-      v-show="chatStore.newMsgCount > 0"
+      v-show="currentNewMsgCount?.count && currentNewMsgCount.count > 0"
       class="new-msgs-tips"
       @click="goToNewMessage"
     >
@@ -121,7 +129,6 @@ const chatStore = useChatStore();
     // 强制硬件加速
     transform: translate3d(0, 0, 0);
     //perspective: 1000;
-
 
     .empty {
       display: flex;

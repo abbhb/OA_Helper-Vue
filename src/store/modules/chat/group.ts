@@ -40,18 +40,17 @@ export const useGroupStore = defineStore('group', () => {
   const cachedStore = useCachedStore();
   // 消息列表
   const userList = ref([]);
-  const isLast = ref(false);
-  const loading = ref(true);
-  const cursor = ref();
+  const userListOptions = reactive({ isLast: false, loading: true, cursor: '' })
+
   const countInfo = reactive({ onlineNum: 0, totalNum: 0 });
 
   // 移动端控制显隐
   const showGroupList = ref(false);
 
   // 获取群成员
-  const getGroupUserList = async () => {
+  const getGroupUserList = async (refresh = false) => {
     const { data } = await apis.getGroupList({
-      params: { pageSize, cursor: cursor.value },
+      params: { pageSize, cursor: refresh ? undefined : userListOptions.cursor, },
     });
     if (!data) return;
     const tempNew = cloneDeep(
@@ -59,23 +58,16 @@ export const useGroupStore = defineStore('group', () => {
     );
     tempNew.sort(sorAction);
     userList.value = tempNew;
-    cursor.value = data.cursor;
-    isLast.value = data.isLast;
-    loading.value = false;
+    userListOptions.cursor = data.cursor
+    userListOptions.isLast = data.isLast
+    userListOptions.loading = false
+
 
     /** 收集需要请求用户详情的 uid */
-    const uidCollectYet: Set<string> = new Set(); // 去重用
-    const uidCollects: CacheUserReq[] = [];
-    const collectUidItem = (uid: string) => {
-      if (uidCollectYet.has(uid)) return;
-      const cacheUser = cachedStore.userCachedList[uid];
-      uidCollects.push({ uid, lastModifyTime: cacheUser?.lastModifyTime });
-      // 添加收集过的 uid
-      uidCollectYet.add(uid);
-    };
-    data.list?.forEach((user) => collectUidItem(user.uid));
+    const uidCollectYet: Set<string> = new Set() // 去重用
+    data.list?.forEach((user) => uidCollectYet.add(user.uid))
     // 获取用户信息缓存
-    cachedStore.getBatchUserInfo(uidCollects);
+    cachedStore.getBatchUserInfo([...uidCollectYet])
   };
 
   // 获取群成员数量统计
@@ -91,7 +83,7 @@ export const useGroupStore = defineStore('group', () => {
 
   // 加载更多群成员
   const loadMore = async () => {
-    if (isLast.value) return;
+    if (userListOptions.loading) return;
     await getGroupUserList();
   };
 
@@ -116,7 +108,6 @@ export const useGroupStore = defineStore('group', () => {
 
   return {
     userList,
-    loading,
     loadMore,
     getGroupUserList,
     countInfo,

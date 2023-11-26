@@ -70,9 +70,9 @@ const onSelectPerson = ({ uid, ignoreCheck }: { uid: string; ignoreCheck?: boole
   });
 
   // 发送消息
-  const send = async (msgType: ChatMsgEnum, body: any, roomId = '1') => {
+  const send = async (msgType: ChatMsgEnum, body: any) => {
     try {
-      const { data } = await sendMsg({ roomId, msgType, body });
+      const { data } = await sendMsg({ roomId:globalStore.currentSession.roomId, msgType, body });
       if (data.message.type === ChatMsgEnum.TEXT) {
         // chatStore.pushMsg(data); // 消息列表新增一条消息,发送消息没必要再push了，收到ws的消息就能push
       } else {

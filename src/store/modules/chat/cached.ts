@@ -3,8 +3,7 @@ import { defineStore } from 'pinia';
 import { isDiffNow10Min } from '@/utils/chat/computedTime';
 import { CacheUserItem, CacheUserReq } from '@/types/chat';
 import * as Api from '@/api/chat';
-import { useGlobalStore } from '@/store/modules/chat/global'
-
+import { useGlobalStore } from '@/store/modules/chat/global';
 
 type BaseUserItem = Pick<CacheUserItem, 'uid' | 'avatar' | 'name'>;
 
@@ -37,13 +36,26 @@ export const useCachedStore = defineStore(
     });
 
     /** 批量获取用户详细信息 */
-    const getBatchUserInfo = async (users: CacheUserReq[]) => {
+    const getBatchUserInfo = async (uids: string[]) => {
       // 没有 lastModifyTime 的要更新，lastModifyTime 距离现在 10 分钟已上的也要更新
-      const result = users.filter(
-        (item) => !item.lastModifyTime || isDiffNow10Min(item.lastModifyTime)
-      );
+      const result = uids
+        .map((uid) => {
+          const cacheUser = userCachedList[uid];
+          return { uid, lastModifyTime: cacheUser?.lastModifyTime };
+        })
+        .filter(
+          (item) => !item.lastModifyTime || isDiffNow10Min(item.lastModifyTime)
+        );
       if (!result.length) return;
-      const { data } = await Api.getUserInfoBatch(result);
+      // 这个才是真的数据，不知道为什么出错
+      const  rsa = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const resultElement of result) {
+            rsa.push(resultElement.uid);
+        }
+        console.log(rsa)
+
+      const { data } = await Api.getUserInfoBatch(rsa);
       data?.forEach((item) => {
         // 更新最后更新时间。
         const curItemResult = {

@@ -21,6 +21,7 @@ const isSelect = ref(false);
         />
       </template>
       <div v-else class="chat">
+
         <ChatList />
         <SendBar />
       </div>

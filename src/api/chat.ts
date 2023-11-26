@@ -11,7 +11,7 @@ import {
   MarkMsgReq,
   MessageReq,
   MessageType,
-  RequestFriendItem,
+  RequestFriendItem, SessionItem,
 } from '@/types/chat';
 
 /** 获取群成员列表 */
@@ -51,6 +51,14 @@ export function getMsgList(params?: any) {
   );
 }
 
+/** 会话详情 */
+export function sessionDetail(params: { id: string }) {
+  return axios.get<SessionItem>(
+    '/api/chat/public/contact/detail',
+      { params }
+  );
+}
+
 /** 发送消息 */
 export function sendMsg(data?: MessageReq) {
   return axios.post<MessageType>('/api/chat/msg', data);
@@ -65,6 +73,14 @@ export function markMsg(data?: MarkMsgReq) {
 export function recallMsg(data: { msgId: string; roomId: string }) {
   return axios.put<void>('/api/chat/msg/recall', data);
 }
+
+export function getSessionList(params?: any) {
+  return axios.get<ListResponse<SessionItem>>('/api/chat/public/contact/page', {
+    params,
+  });
+}
+
+
 
 interface uploadT {
   downloadUrl: string;
@@ -95,6 +111,8 @@ export function deleteEmoji(params: { id: string }) {
     params,
   });
 }
+
+
 
 // -------------- 好友相关 ---------------
 export function getContactList(params?: any) {
