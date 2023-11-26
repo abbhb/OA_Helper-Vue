@@ -6,7 +6,7 @@ export type ChatUserItem = {
   /** 头像 */
   avatar: string;
   /** 最后一次上下线时间 */
-  lastOptTime: number;
+  lastOptTime: string;
   /** 用户名称 */
   name: string;
   /** uid */
@@ -41,7 +41,7 @@ export type ChatCacheUserItem = {
   /** 头像 */
   avatar: string;
   /** 最后一次上下线时间 */
-  lastOptTime: number;
+  lastOptTime: string;
   /** 用户名称 */
   name: string;
   /** uid */
@@ -69,7 +69,7 @@ export type CacheUserItem = {
   /** 头像 */
   avatar: string;
   /** 最后一次上下线时间 */
-  lastOptTime: number;
+  lastOptTime: string;
   /** 用户名称 */
   name: string;
   /** uid */
@@ -82,7 +82,7 @@ export type UserItem = {
   /** 头像 */
   avatar: string;
   /** 最后一次上下线时间 */
-  lastOptTime: number;
+  lastOptTime: string;
   /** 用户名称 */
   name: string;
   /** uid */
@@ -333,7 +333,7 @@ export type ContactItem = {
   /** 在线状态 1在线 2离线 */
   activeStatus: ChatOnlineEnum;
   /** 最后一次上下线时间 */
-  lastOptTime: number;
+  lastOptTime: string;
   uid: string;
 };
 

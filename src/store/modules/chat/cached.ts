@@ -47,15 +47,9 @@ export const useCachedStore = defineStore(
           (item) => !item.lastModifyTime || isDiffNow10Min(item.lastModifyTime)
         );
       if (!result.length) return;
-      // 这个才是真的数据，不知道为什么出错
-      const  rsa = [];
-        // eslint-disable-next-line no-restricted-syntax
-        for (const resultElement of result) {
-            rsa.push(resultElement.uid);
-        }
-        console.log(rsa)
 
-      const { data } = await Api.getUserInfoBatch(rsa);
+
+      const { data } = await Api.getUserInfoBatch(result);
       data?.forEach((item) => {
         // 更新最后更新时间。
         const curItemResult = {
