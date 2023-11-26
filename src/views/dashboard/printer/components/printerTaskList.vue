@@ -21,17 +21,16 @@
 
 <script setup lang="ts">
   import axios from 'axios';
-  import { Modal } from '@arco-design/web-vue';
+  import {Message, Modal} from '@arco-design/web-vue';
   import { onMounted, onUnmounted, reactive, ref } from 'vue';
   import usePrintStore from '@/store/modules/print';
+  import {cancelPrint} from "@/api/printer";
 
   const printStore = usePrintStore();
 
-  const handleChangeJob = (FileUuid: any, state: any) => {
-    Modal.error({
-      title: '提示',
-      content: `这个按钮是摆设`,
-    });
+  const handleChangeJob = async (FileUuid: any, state: any) => {
+    const {data} = await cancelPrint(FileUuid, printStore.printDevice.id);
+    Message.success(data)
   };
 </script>
 
