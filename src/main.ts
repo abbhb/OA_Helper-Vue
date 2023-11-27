@@ -6,7 +6,7 @@ import '@arco-themes/vue-gi-demo/index.less';
 // 官方主题 import '@arco-design/web-vue/dist/arco.css';
 import globalComponents from '@/components';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
-import useRSAStore from '@/store/modules/rsa';
+import useServerConfigStore from './store/modules/server-config';
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -42,7 +42,5 @@ app.use(directive);
 app.mount('#app');
 
 // 初始化加密
-const rsaState = useRSAStore();
-if (!rsaState.getPublicKey) {
-  rsaState.updateRSA();
-}
+const serverConfigStore = useServerConfigStore();
+serverConfigStore.initDate();

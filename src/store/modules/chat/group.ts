@@ -83,7 +83,7 @@ export const useGroupStore = defineStore('group', () => {
 
   // 加载更多群成员
   const loadMore = async () => {
-    if (userListOptions.loading) return;
+    if (userListOptions.isLast) return;
     await getGroupUserList();
   };
 

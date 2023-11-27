@@ -20,6 +20,7 @@ import { useContactStore } from '@/store/modules/chat/contacts';
 import { cloneDeep } from 'lodash';
 import router from '@/router';
 import { sessionDetail } from '@/api/chat';
+import {pushNotifyByMessage} from "@/utils/chat/systemMessageNotify";
 
 export const pageSize = 20;
 // 标识是否第一次请求
@@ -54,11 +55,8 @@ export const useChatStore = defineStore('chat', () => {
     new Map([[currentRoomId.value, new Map()]])
   ); // 回复消息映射
   const { userInfo } = userStore;
-  const isAdmin = computed(() =>
-    userInfo?.roles?.forEach((item) => {
-      return item.id === '1';
-    })
-  );
+
+
   const currentMessageMap = computed({
     get: () => {
       const current = messageMap.get(currentRoomId.value as string);
@@ -116,9 +114,8 @@ export const useChatStore = defineStore('chat', () => {
   );
 
   const chatListToBottomAction = ref<() => void>(); // 外部提供消息列表滚动到底部事件
-  const isLast = ref(false); // 是否到底了
-  const isStartCount = ref(false); // 是否开始计数
-  const cursor = ref();
+
+
   const newMsgCount = reactive<
     Map<string, { count: number; isStart: boolean }>
   >(
@@ -195,7 +192,7 @@ export const useChatStore = defineStore('chat', () => {
     const { data } = await Api.getMsgList({
       params: {
         pageSize: size,
-        cursor: cursor.value,
+        cursor: currentMessageOptions.value?.cursor,
         roomId: currentRoomId.value,
       },
     });
@@ -350,7 +347,7 @@ export const useChatStore = defineStore('chat', () => {
         cacheUser.avatar as string
       );
     }
-
+    pushNotifyByMessage(msg);
     // tab 在后台获得新消息，就开始闪烁！
     if (document.hidden && !shakeTitle.isShaking) {
       shakeTitle.start();
@@ -489,8 +486,6 @@ export const useChatStore = defineStore('chat', () => {
     messageMap,
     sessionOptions,
     sessionList,
-    isStartCount,
-    isLast,
     loadMore,
     currentMsgReply,
     filterUser,
