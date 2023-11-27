@@ -1,6 +1,6 @@
 <template>
   <div title="打印机列表" hoverable>
-    <a-card title="当前打印机任务列表" :bordered="true">
+    <a-card title="当前打印机任务列表[2s刷新一次]" :bordered="true">
       <a-table :data="printStore.printDevice == null?[]:printStore.printDevice.printJobs" :bordered="false">
         <template #columns>
           <a-table-column data-index="id" title="任务ID" />
