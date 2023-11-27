@@ -68,7 +68,7 @@
             <a-button class="button_item" @click="button(record.url)">{{
               $t('printer.one.HistoryRecord.download')
             }}</a-button>
-            <a-button class="button_item" @click="onePrint(record.url)"
+            <a-button class="button_item" @click="onePrint(record.url,record.name)"
               >一键打印</a-button
             >
             <a-button class="button_item" @click="buttonDelete(record.url)">{{
@@ -189,8 +189,8 @@
     // fetchDate1(contentType);
     window.open(url);
   };
-  const onePrint = (url: string) => {
-    printEventHub.emit('onOneClickPrinting', { fileUrl: url });
+  const onePrint = (url: string,name?:string) => {
+    printEventHub.emit('onOneClickPrinting', { fileUrl: url,fileName:name});
   };
   const buttonDelete = (url: string) => {
     Message.info({

@@ -159,7 +159,14 @@
     loading: false,
     showUpload: true,
   });
-  const onePrintFileUrl = ref(null);
+  type OnePrintFileType = {
+    fileUrl: string;
+    fileName?: string;
+  };
+  const onePrintFileUrl = ref<OnePrintFileType>({
+    fileUrl: '',
+    fileName: null,
+  });
   const onRest = () => {
     // 复位
     thisPrint.value.endThisClass();
@@ -208,14 +215,16 @@
   };
 
   const oneClickPrintOkHandel = (e?: Event) => {
-    if (onePrintFileUrl.value === null || !onePrintFileUrl.value) {
+    if (onePrintFileUrl.value.fileUrl === null || !onePrintFileUrl.value.fileUrl) {
       Message.error('该文件无法一键打印，请尝试手动!');
       return;
     }
     // 先复位
     onRest();
-    downloadFileFromUrl(onePrintFileUrl.value)
+    downloadFileFromUrl(onePrintFileUrl.value.fileUrl,onePrintFileUrl.value.fileName)
       .then((file) => {
+        console.log('file---------------object');
+        console.log(file);
         uploadRef.value.getUploadRef().value.upload([file]);
       })
       .catch((error) => {
@@ -223,11 +232,11 @@
       });
     window.scrollTo({
       top: 0,
-      behavior: 'smooth' // 使用平滑滚动
+      behavior: 'smooth', // 使用平滑滚动
     });
   };
 
-  const onOneClickPrinting = ({ fileUrl }: { fileUrl: string }) => {
+  const onOneClickPrinting = ({ fileUrl,fileName }: { fileUrl: string;fileName?:string }) => {
     // 为了严谨还是判断一下打印模式
     if (printStore.getModel !== 1) {
       return;
@@ -236,7 +245,8 @@
     if (!fileUrl || fileUrl === '') {
       return;
     }
-    onePrintFileUrl.value = fileUrl;
+    onePrintFileUrl.value.fileUrl = fileUrl;
+    onePrintFileUrl.value.fileName = fileName;
     if (tishi.value.showUpload) {
       // 一键打印
       oneClickPrintOkHandel();
@@ -250,7 +260,7 @@
         cancelText: '取消操作',
         mask: true,
         escToClose: false,
-        hideCancel:false,
+        hideCancel: false,
         onOk: oneClickPrintOkHandel,
       });
     }

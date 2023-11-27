@@ -163,7 +163,7 @@
   };
 
   // 一件打印
-  const onOneClickPrinting = ({ fileUrl }: { fileUrl: string }) => {
+  const onOneClickPrinting = ({ fileUrl,fileName }: { fileUrl: string;fileName?:string; }) => {
     // 为了严谨还是判断一下打印模式
     if (printStore.getModel !== 9) {
       return;
@@ -174,7 +174,7 @@
     }
     if (fileList.value.length <= 4) {
       // todo: 多文件打印模式的一键打印
-      downloadFileFromUrl(fileUrl)
+      downloadFileFromUrl(fileUrl,fileName)
         .then((file) => {
           uploadRef.value.upload([file]);
         })
