@@ -1,15 +1,18 @@
 import shakeTitle from '@/utils/chat/shakeTitle';
-import {useUserStore} from '@/store';
-import {Message} from '@arco-design/web-vue';
-import {useCachedStore} from '@/store/modules/chat/cached';
-import {useGroupStore} from '@/store/modules/chat/group';
-import {useChatStore} from '@/store/modules/chat/chat';
-import {ChatOnlineEnum} from '@/types/enums/chat';
-import {MarkItemType, MessageType, RevokedMsgType} from '@/types/chat';
-import {OnStatusChangeType, WsReqMsgContentType, WsResponseMessageType,} from '@/utils/chat/wsType';
-import {worker} from '@/utils/chat/initWorker';
-import {log} from "echarts/types/src/util/log";
-
+import { useUserStore } from '@/store';
+import { Message } from '@arco-design/web-vue';
+import { useCachedStore } from '@/store/modules/chat/cached';
+import { useGroupStore } from '@/store/modules/chat/group';
+import { useChatStore } from '@/store/modules/chat/chat';
+import { ChatOnlineEnum } from '@/types/enums/chat';
+import { MarkItemType, MessageType, RevokedMsgType } from '@/types/chat';
+import {
+  OnStatusChangeType,
+  WsReqMsgContentType,
+  WsResponseMessageType,
+} from '@/utils/chat/wsType';
+import { worker } from '@/utils/chat/initWorker';
+import { log } from 'echarts/types/src/util/log';
 
 class WS {
   #tasks: WsReqMsgContentType[] = [];
@@ -45,34 +48,32 @@ class WS {
   onMessage = (value: string) => {
     // FIXME 可能需要 try catch,
     try {
-
-
       const params: { type: WsResponseMessageType; data: unknown } =
-          JSON.parse(value);
+        JSON.parse(value);
       const userStore = useUserStore();
       const chatStore = useChatStore();
       const groupStore = useGroupStore();
       const cachedStore = useCachedStore();
       switch (params.type) {
-          // 获取登录二维码
-          // case WsResponseMessageType.LoginQrCode: {
-          //   const data = params.data as LoginInitResType;
-          //   loginStore.loginQrCode = data.loginUrl;
-          //   break;
-          // }
-          // // 等待授权
-          // case WsResponseMessageType.WaitingAuthorize: {
-          //   loginStore.loginStatus = LoginStatus.Waiting;
-          //   break;
-          // }
-          // 登录成功
+        // 获取登录二维码
+        // case WsResponseMessageType.LoginQrCode: {
+        //   const data = params.data as LoginInitResType;
+        //   loginStore.loginQrCode = data.loginUrl;
+        //   break;
+        // }
+        // // 等待授权
+        // case WsResponseMessageType.WaitingAuthorize: {
+        //   loginStore.loginStatus = LoginStatus.Waiting;
+        //   break;
+        // }
+        // 登录成功
         case WsResponseMessageType.LoginSuccess: {
           // 自己更新自己上线
           groupStore.batchUpdateUserStatus([
             {
               activeStatus: ChatOnlineEnum.ONLINE,
               avatar: userStore.avatar,
-              lastOptTime: Date.now(),
+              lastOptTime: String(Date.now()),
               name: userStore.name,
               uid: userStore.id,
             },
@@ -81,18 +82,18 @@ class WS {
           cachedStore.initAllUserBaseInfo();
           break;
         }
-          // 用户 token 过期
+        // 用户 token 过期
         case WsResponseMessageType.TokenExpired: {
           // 调用统一的下线接口
 
           break;
         }
-          // 收到消息
+        // 收到消息
         case WsResponseMessageType.ReceiveMessage: {
           chatStore.pushMsg(params.data as MessageType);
           break;
         }
-          // 用户下线
+        // 用户下线
         case WsResponseMessageType.OnOffLine: {
           const data = params.data as OnStatusChangeType;
           groupStore.countInfo.onlineNum = data.onlineNum;
@@ -100,7 +101,7 @@ class WS {
           groupStore.batchUpdateUserStatus(data.changeList);
           break;
         }
-          // 小黑子的发言在禁用后，要删除他的发言
+        // 小黑子的发言在禁用后，要删除他的发言
         case WsResponseMessageType.InValidUser: {
           const data = params.data as { uid: number };
           // 消息列表删掉小黑子发言
@@ -109,16 +110,16 @@ class WS {
           groupStore.filterUser(data.uid);
           break;
         }
-          // 点赞、倒赞消息通知
+        // 点赞、倒赞消息通知
         case WsResponseMessageType.WSMsgMarkItem: {
           const data = params.data as { markList: MarkItemType[] };
-          console.log(data)
+          console.log(data);
           chatStore.updateMarkCount(data.markList);
           break;
         }
-          // 消息撤回通知
+        // 消息撤回通知
         case WsResponseMessageType.WSMsgRecall: {
-          const {data} = params as { data: RevokedMsgType };
+          const { data } = params as { data: RevokedMsgType };
           chatStore.updateRecallStatus(data);
           break;
         }
@@ -127,8 +128,8 @@ class WS {
           break;
         }
       }
-    }catch (e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -151,8 +152,6 @@ class WS {
       }
     }
   };
-
-
 
   // 重置一些属性
   #onClose = () => {
@@ -198,8 +197,6 @@ class WS {
       this.#tasks.push(params);
     }
   };
-
-
 }
 
 export default new WS();
