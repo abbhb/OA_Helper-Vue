@@ -107,6 +107,8 @@
         phone: undefined,
         avatar: '',
       });
+      const isCommit = ref(true);
+      // vs 打印文件转换节点优化，异常捕获
       const userStore = useUserStore();
       const info = userStore.userInfo;
       const handleSubmit = async (data) => {
@@ -118,6 +120,7 @@
           const res = await updataUserInfo(form);
           Message.success(res.msg);
           userStore.info();
+          isCommit.value = true;
         } catch (e) {
           Message.error(e);
         }
@@ -131,7 +134,6 @@
       form.phone = info.phone;
       form.avatar = info.avatar;
       form.age = info.age;
-      console.log(info);
       const handleSuccess = (data) => {
         // r为data
         if (data.indexOf('http') !== -1) {
@@ -143,7 +145,6 @@
         Message.success('上传成功!');
       };
 
-      const isCommit = ref(true);
 
       watch(
         form,

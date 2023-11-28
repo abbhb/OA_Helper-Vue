@@ -88,7 +88,7 @@
   });
   const { isLike, isDisLike, likeCount, dislikeCount, onLike, onDisLike } =
     useLikeToggle(props.msg.message);
-  const isRecall = computed(() => message.value.type === ChatMsgEnum.RECALL);
+  const isRecall = computed(() => [ChatMsgEnum.RECALL, ChatMsgEnum.SYSTEM].includes(message.value.type))
 
   // 滚动到消息
   const scrollToMsg = async (msg: MsgType) => {
@@ -186,6 +186,7 @@
           <span v-if="isShowTime" class="send-time">
             {{ formatTimestamp(msg.message.sendTime) }}
           </span>
+
         </div>
         <a-tooltip
           effect="light"
@@ -544,6 +545,7 @@
         width: auto;
         background-color: var(--color-bg-2);
         border-radius: 4px;
+        margin-bottom: 30px;
 
         img {
           width: 100%;

@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+  import { ref } from 'vue';
+  import UserList from '../UserList/index.vue';
+  import ChatList from '../ChatList/index.vue';
+  import SendBar from './SendBar/index.vue';
 
-import UserList from '../UserList/index.vue';
-import ChatList from '../ChatList/index.vue';
-import SendBar from './SendBar/index.vue';
-
-const isSelect = ref(false);
-
+  const isSelect = ref(false);
 
 </script>
 
@@ -15,15 +13,11 @@ const isSelect = ref(false);
     <div class="chat-wrapper">
       <template v-if="isSelect">
         <!--        此处可能出问题-->
-        <icon-reply
-          color="var(--font-light)"
-          :style="{ fontSize: '160px' }"
-        />
+        <icon-reply color="var(--font-light)" :style="{ fontSize: '160px' }" />
       </template>
       <div v-else class="chat">
-
         <ChatList />
-        <SendBar />
+        <SendBar  />
       </div>
     </div>
     <UserList />
@@ -339,8 +333,6 @@ const isSelect = ref(false);
       transform: scaleY(1);
     }
   }
-
-
 
   @media only screen and (max-width: 640px) {
     .chat-box {

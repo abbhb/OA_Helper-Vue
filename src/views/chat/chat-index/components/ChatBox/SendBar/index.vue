@@ -25,6 +25,7 @@ import setting from '@/config/setting';
 import renderReplyContent from '@/utils/chat/renderReplyContent';
 import {useGroupStore} from '@/store/modules/chat/group';
 import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
+import useServerConfigStore from "@/store/modules/server-config";
 
 const client = judgeClient();
 
@@ -108,8 +109,9 @@ const onSelectPerson = ({ uid, ignoreCheck }: { uid: string; ignoreCheck?: boole
 
   const userStore = useUserStore(); // 是否已登录
   const emojiStore = useEmojiStore();
-  const groupStore = useGroupStore();
+
   const isSign = computed(() => userStore.isSign);
+
   const currentMsgReply = computed(
     () => (userStore.isSign && chatStore.currentMsgReply) || {}
   );

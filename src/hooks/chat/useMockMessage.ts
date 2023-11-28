@@ -1,4 +1,7 @@
-import {computed} from 'vue';
+import { computed } from 'vue';
+import { MessageType } from '@/types/chat';
+import { useGlobalStore } from '@/store/modules/chat/global';
+import { useUserStore } from '@/store';
 
 /**
  * Mock 消息 Hook
@@ -6,10 +9,18 @@ import {computed} from 'vue';
 // eslint-disable-next-line import/prefer-default-export
 export const useMockMessage = () => {
   // 获取本地存储的用户信息
-  const userInfo = computed(() =>
-    JSON.parse(localStorage.getItem('USER_INFO') || '{}')
-  );
+  const globalStore = useGlobalStore();
+  const userStore = useUserStore();
+  // 获取本地存储的用户信息
+  const currentRoomId = computed(() => globalStore.currentSession.roomId);
 
+  /**
+   * 模拟消息生成
+   * @param type 消息类型
+   * @param body 消息体
+   * @param messageMark 互动信息
+   * @returns 服务器格式消息
+   */
   /**
    * 模拟消息生成
    * @param type 消息类型
@@ -21,36 +32,23 @@ export const useMockMessage = () => {
     type: number,
     body: any,
     messageMark?: any
-  ): {
-    fromUser: { uid: any; avatar: any; locPlace: string; username: any };
-    message: {
-      messageMark: any;
-      id: string;
-      type: number;
-      body: any;
-      urlContentMap: NonNullable<unknown>;
-      content: any;
-      sendTime: number
-    };
-    loading: boolean;
-    sendTime: string
-  } => {
+  ): MessageType => {
     const currentTimeStamp: number = Date.now();
     const random: number = Math.floor(Math.random() * 15);
     // 唯一id 后五位时间戳+随机数
     const uniqueId = String(currentTimeStamp).slice(-7) + random;
     const content = type === 1 ? body.content : null;
-    const { uid, name: username, avatar } = userInfo.value;
-
+    const { id, name, avatar } = userStore;
     const data = {
       fromUser: {
-        username,
-        uid,
+        username: name,
+        uid: id,
         avatar,
         locPlace: 'XX',
       },
       message: {
         id: uniqueId,
+        roomId: currentRoomId.value,
         sendTime: Number(currentTimeStamp),
         content,
         urlContentMap: {},

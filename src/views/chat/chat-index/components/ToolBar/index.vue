@@ -65,10 +65,12 @@
     flex-direction: column;
     align-items: center;
     width: 80px;
-    padding: 20px 0;
     color: var(--font-family);
     user-select: none;
-
+    border: var(--color-border) 1px solid;
+    padding: 20px 0;
+    overflow-y: auto;
+    margin: 20px 0px;
     .menu {
       display: flex;
       flex: 1;
@@ -92,15 +94,6 @@
       }
     }
 
-    // 语雀图标不标准，需要特殊处理
-    .icon-yuque {
-      width: 30px;
-      height: 30px;
-      font-size: 23px !important;
-      line-height: 28px;
-      background: #fff;
-      border-radius: 50%;
-    }
 
     .icon-qcloud {
       font-size: 23px !important;

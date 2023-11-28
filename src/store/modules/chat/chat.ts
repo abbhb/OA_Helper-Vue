@@ -459,7 +459,7 @@ export const useChatStore = defineStore('chat', () => {
   };
   // 删除消息
   const deleteMsg = (msgId: string) => {
-    messageMap.delete(msgId);
+    currentMessageMap.value?.delete(msgId)
   };
   // 更新消息
   const updateMsg = (msgId: string, newMessage: MessageType) => {

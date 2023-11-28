@@ -45,8 +45,7 @@ const props = defineProps<{ body: ImageBody }>();
     <template v-else>
       <a-image
         v-if="body?.url"
-        :width="100"
-        :height="150"
+        :height="getImageHeight"
         :src="body?.url"
         :zoom-rate="1.1"
         @click="imageStore.show(body?.url)"

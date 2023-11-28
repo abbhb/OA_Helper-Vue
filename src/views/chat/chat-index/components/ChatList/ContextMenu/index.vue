@@ -39,7 +39,8 @@
     const { id, roomId } = props.msg.message;
     if (id) {
       await apis.recallMsg({ roomId, msgId: id });
-      chatStore.updateRecallStatus({ msgId: id });
+      // chatStore.updateRecallStatus({ msgId: id });
+      // 无需多此一举，ws会推送撤回消息
     }
   };
 

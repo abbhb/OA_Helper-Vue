@@ -86,9 +86,10 @@
   .chat-message {
     display: none;
     padding: 4px;
-    margin: 20px 10px;
+    margin: 20px 0px;
     overflow-y: auto;
     background-color: var(--color-bg-3);
+    border: var(--color-border) 1px solid;
     &-item {
       position: relative;
       display: flex;
@@ -154,7 +155,7 @@
       }
 
       &.active {
-        background-color: var(--color-bg-5);
+        background-color: var(--color-secondary-active);
       }
     }
   }
