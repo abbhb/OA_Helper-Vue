@@ -9,12 +9,15 @@ import { AppState, RecentlyRouter } from './types';
 
 const useAppStore = defineStore('app', {
   state: (): AppState => {
-    const configs = getConfig();
-    if (configs) {
-      if (configs.indexOf('globalSettings') !== -1) {
-        return { ...JSON.parse(getConfig()) };
-      }
-    }
+    // const data = this.getUserFrontConfigS();
+    // return { ...data };
+    // const configs = getConfig();
+    // if (configs) {
+    //   if (configs.indexOf('globalSettings') !== -1) {
+    //
+    //   }
+    // }
+
     return { ...defaultSettings };
   },
 

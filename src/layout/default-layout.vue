@@ -16,9 +16,10 @@
           :style="{ paddingTop: navbar ? '60px' : '' }"
           :hide-trigger="true"
           @collapse="setCollapsed"
+
         >
           <div class="menu-wrapper">
-            <Menu />
+            <Menu/>
           </div>
         </a-layout-sider>
         <a-drawer

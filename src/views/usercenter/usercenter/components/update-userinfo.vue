@@ -88,8 +88,12 @@
   import { reactive, ref, watch } from 'vue';
   import { useUserStore } from '@/store';
   import ImageUpload from '@/components/image/ImageUpload.vue';
-  import { Message } from '@arco-design/web-vue';
+  import { Message, Modal } from '@arco-design/web-vue';
   import { updataUserInfo } from '@/api/user';
+  import {confirmToServer, isConfirm} from '@/api/common';
+  import { h } from 'vue';
+  import {FIRST_SUCCESS_UPDATE_USER_INFO} from "@/utils/my-string";
+
 
   export default {
     components: { ImageUpload },
@@ -153,7 +157,45 @@
         },
         { deep: true, immediate: true }
       );
+      const ModalContent = {
+        setup() {
+          return () =>
+            h('div', { class: 'info-modal-content' }, [
+              h(
+                'h1',
+                { style: 'margin-bottom: 10px;' },
+                '欢迎你使用本平台！'
+              ),
+              h(
+                'h2',
+                { style: 'margin-bottom: 10px;' },
+                '请先完善下个人信息，以便您获得更好的服务！'
+              ),
+              h(
+                'h4',
+                { style: 'margin-bottom: 10px;' },
+                '本提示只会显示一次，若您拒不完善也不会影响大多数功能的使用！'
+              ),
+            ]);
+        },
+      };
+      const okButtonHandel = async () => {
+        await confirmToServer(FIRST_SUCCESS_UPDATE_USER_INFO);
 
+      }
+      const successUserUpdataSelfInfo = async () => {
+        // 先判断该用户是不是建议过了！
+        const { data } = await isConfirm(FIRST_SUCCESS_UPDATE_USER_INFO);
+        if (!data) {
+          // 需要弹出提示信息!
+          Modal.info({
+            title: '新人提示',
+            content: () => h(ModalContent),
+            onOk:okButtonHandel
+          });
+        }
+      };
+      successUserUpdataSelfInfo();
       return {
         form,
         isCommit,

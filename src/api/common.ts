@@ -23,6 +23,13 @@ export function getSystemMessage() {
   return axios.get<SystemMessageConfig>('/api/common/get_system_message');
 }
 
+export function isConfirm(key: string) {
+  return axios.get<boolean>(`/api/common/is_confirm/${key}`);
+}
+export function confirmToServer(key: string) {
+  return axios.get<string>(`/api/common/confirm/${key}`);
+}
+
 export function getAllImageUrl(params: { key: string }) {
   return axios.get<string>('/api/common/get_all_image_url', { params });
 }

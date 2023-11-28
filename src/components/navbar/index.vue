@@ -12,7 +12,13 @@
         >
           Easy_OA
         </a-typography-title>
-        <a-badge style="cursor: pointer;" dot :count="appStore.versionRead!==currentVersion?1:0" @click="readVersion" :dot-style="{ width: '10px', height: '10px' }">
+        <a-badge
+          style="cursor: pointer"
+          dot
+          :count="appStore.versionRead !== currentVersion ? 1 : 0"
+          :dot-style="{ width: '10px', height: '10px' }"
+          @click="readVersion"
+        >
           <a-tag>{{ currentVersion }}</a-tag>
         </a-badge>
         <icon-menu-fold
@@ -85,6 +91,8 @@
           </a-button>
         </a-tooltip>
       </li>
+
+      <!--     // todo:消息模块单独做，需要添加到此处的消息直接添加至表即可，每次点开此处都请求 -->
       <!--      <li>-->
       <!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
       <!--          <div class="message-box-trigger">-->
@@ -108,7 +116,7 @@
       <!--        >-->
       <!--          <div ref="refBtn" class="ref-btn"></div>-->
       <!--          <template #content>-->
-      <!--            <message-box />-->
+      <!--            <MessageBox />-->
       <!--          </template>-->
       <!--        </a-popover>-->
       <!--      </li>-->
@@ -215,9 +223,9 @@
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
-  import router from "@/router";
+  import MessageBox from '@/components/message-box/index.vue';
+  import router from '@/router';
   import version from '@/config/version.json';
-
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -232,7 +240,7 @@
     return appStore.theme;
   });
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
-  const currentVersion = version[version.length-1].version;
+  const currentVersion = version[version.length - 1].version;
   const isDark = useDark({
     selector: 'body',
     attribute: 'arco-theme',
@@ -283,7 +291,7 @@
   };
 
   const readVersion = () => {
-    appStore.updateSettings({versionRead:currentVersion})
+    appStore.updateSettings({ versionRead: currentVersion });
     router.push({ name: 'VersionIndex' });
   };
 </script>
