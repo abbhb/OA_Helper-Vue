@@ -8,10 +8,17 @@
       <!--      />-->
       <!--      <div class="logo-text">{{$t('footer.company')}}</div>-->
       <!--    </div>-->
-      <!--    <div>左侧</div>-->
+
       <div class="content">
+
         <div class="content-inner">
-          <RegisterForm />
+          <div style="width: 50%; text-align: right;margin-left: 29rem;margin-top: 11rem">
+            <a-image :src="a1226326" :width="550"/>
+          </div>
+          <div style="width: 50%;margin-top: 10rem">
+            <RegisterForm/>
+          </div>
+
         </div>
         <div class="footer">
           <Footer />
@@ -22,8 +29,9 @@
 </template>
 
 <script lang="ts" setup>
-  import Footer from '@/components/footer/index.vue';
-  import RegisterForm from './components/register-form.vue';
+import Footer from '@/components/footer/index.vue';
+import a1226326 from '@/assets/images/banner2.a1226326.png';
+import RegisterForm from './components/register-form.vue';
 </script>
 
 <style lang="less" scoped>
@@ -31,7 +39,7 @@
     display: flex;
     height: 100vh;
     width: 100%;
-    background: url("../../assets/images/register_background.jpeg") center center no-repeat;
+    //background: url("../../assets/images/register_background.jpeg") center center no-repeat;
     background-size: 100% 100%;
 
     .banner {
@@ -40,12 +48,14 @@
     }
 
     .content {
-      position: relative;
       display: flex;
-      flex: 1;
-      margin-top: 18rem;
-      margin-left: 15rem;
-      padding-bottom: 40px;
+
+      justify-content: center;
+
+      .content-inner {
+        display: flex;
+        width: 100%;
+      }
     }
 
     .footer {

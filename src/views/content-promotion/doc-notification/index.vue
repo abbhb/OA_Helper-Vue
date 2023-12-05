@@ -1,15 +1,13 @@
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
-  import {
-    NoticeAddReq,
-    NoticeMangerListResp,
-    publishNoticeList,
-  } from '@/api/notice';
-  import { getColor } from '@/utils/color-index';
-  import { useAppStore } from '@/store';
-  import { deptListTree } from '@/api/dept';
+import {reactive, ref} from 'vue';
+import {addNotice, NoticeAddReq, NoticeMangerListResp, publishNoticeList,} from '@/api/notice';
+import {getColor} from '@/utils/color-index';
+import {useAppStore} from '@/store';
+import {deptListTree} from '@/api/dept';
+import {Message} from '@arco-design/web-vue';
+import router from '@/router';
 
-  const appStore = useAppStore();
+const appStore = useAppStore();
   const deptTreeData = ref([]);
   const deptAllCheckedKeys = ref([]);
   const deptAllExpandedKeys = ref([]);
@@ -49,6 +47,10 @@
       visibility: 1,
     },
     deptIds: [],
+  });
+
+  const formExt = reactive({
+    tagList: [],
   });
 
   const getData = async (pagination) => {
@@ -114,7 +116,7 @@
     form.notice.visibility = 1;
     form.notice.urgency = 1;
     form.deptIds = [];
-  }
+  };
   const addNoticeButtonHandel = () => {
     // 点击了添加通知
     // 先清除残余信息
@@ -134,9 +136,7 @@
     }
   };
   const toggleChecked = () => {
-    form.deptIds = form.deptIds?.length
-      ? []
-      : deptAllCheckedKeys.value;
+    form.deptIds = form.deptIds?.length ? [] : deptAllCheckedKeys.value;
   };
   const toggleExpanded = () => {
     deptExpandedKeys.value = deptExpandedKeys?.value.length
@@ -157,10 +157,18 @@
   initData();
 
   // 添加通知确认
-  const addHandleBeforeOk = (done) => {
-    console.log(form)
+  const addHandleBeforeOk = async (done) => {
+    form.notice.tag = formExt.tagList.join(',');
+    const {data} = await addNotice(form);
+    Message.success('发布成功');
     done(true);
-  }
+    // 完成后直接跳转编辑通知页
+    router.push({name: 'NoticeEdit', query: {noticeId: data.notice.id}});
+  };
+
+  const EditNotice = (record: any) => {
+    router.push({name: 'NoticeEdit', query: {noticeId: record.id}});
+  };
 </script>
 
 <template>
@@ -295,7 +303,7 @@
               >
                 <span>快速编辑</span>
               </a-button>
-              <a-button class="item" @click="IBan(record)">
+              <a-button class="item" @click="EditNotice(record)">
                 <span>编辑</span>
               </a-button>
               <a-button class="item" :status="'danger'" @click="IBan(record)">
@@ -333,10 +341,13 @@
           </a-col>
         </a-row>
         <a-form-item label="通知Tag" field="tag" label-col-flex="80px">
-          <a-input
-            v-model="form.notice.tag"
+          <a-input-tag
+            v-model:model-value="formExt.tagList"
+            :default-value="form.notice.tag.split(',')"
+            :style="{ width: '320px' }"
             placeholder="请输入通知的tag（回车创建tag）"
-          ></a-input>
+            allow-clear
+          />
         </a-form-item>
         <div style="display: flex; flex-direction: row-reverse">
           <a-form-item

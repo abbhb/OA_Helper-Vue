@@ -1,95 +1,118 @@
 <template>
   <div v-if="!status.registerSuccess" class="login-form-wrapper">
-    <div class="login-form-title">{{ $t('login.form.title.register') }}</div>
-    <div class="login-form-sub-title">{{
-      $t('login.form.title.register')
-    }}</div>
-    <div class="login-2">
-      <a-form
-        ref="loginForm"
-        :model="userInfoForRegister"
-        class="login-form"
-        layout="vertical"
-        autocomplete="off"
-      >
-        <a-form-item
-          field="email"
-          :rules="[{ required: true, message: $t('login.form.email.errMsg') }]"
-          :validate-trigger="['change', 'blur']"
-          hide-label
-        >
-          <a-input
-            v-model="userInfoForRegister.email"
-            :placeholder="$t('login.form.email.placeholder')"
+    <div class="register-title">
+      <span class="register-title-span" style="font-size: 40px;"> Hello ,</span> <span class="register-title-span"
+                                                                                       style="font-size: 21px;"> 欢迎使用Easy OA！</span>
+    </div>
+    <div class="login-form-sub-title"
+         style="height: 15px;font-size: 15px;font-weight: 300;color: #10141c;line-height: 20px;margin-bottom: 5px;">
+      注册成为Easy OA用户~
+    </div>
+    <a-tabs default-active-key="1">
+      <a-tab-pane key="1" title="邮箱注册">
+        <div class="login-2">
+
+          <a-form
+            ref="loginForm"
+            :model="userInfoForRegister"
             autocomplete="off"
+            class="login-form"
+            layout="vertical"
           >
-            <template #prefix>
-              <icon-email />
-            </template>
-          </a-input>
-        </a-form-item>
-        <a-form-item
-          field="emailCode"
-          :rules="[
+            <a-form-item
+              :rules="[{ required: true, message: $t('login.form.email.errMsg') }]"
+              :validate-trigger="['change', 'blur']"
+              field="email"
+              hide-label
+            >
+              <a-input
+                v-model="userInfoForRegister.email"
+                :placeholder="$t('login.form.email.placeholder')"
+                autocomplete="off"
+              >
+                <template #prefix>
+                  <icon-email/>
+                </template>
+              </a-input>
+            </a-form-item>
+            <a-form-item
+              :rules="[
             { required: true, message: $t('login.form.emailCode.errMsg') },
           ]"
-          :validate-trigger="['change', 'blur']"
-          hide-label
-        >
-          <a-input
-            v-model="userInfoForRegister.emailCode"
-            :placeholder="$t('login.form.emailCode.placeholder')"
-            autocomplete="emailCode"
-            :max-length="6"
-            allow-clear
-          >
-            <template #prefix>
-              <icon-code />
-            </template>
-            <template #append>
-              <a-link
-                :disabled="status.timerS != null"
-                :loading="status.emailCodeLoading"
-                @click="getEmailCodeHandel"
-                >{{ status.buttonText }}{{ status.timerTime }}</a-link
+              :validate-trigger="['change', 'blur']"
+              field="emailCode"
+              hide-label
+            >
+              <a-input
+                v-model="userInfoForRegister.emailCode"
+                :max-length="6"
+                :placeholder="$t('login.form.emailCode.placeholder')"
+                allow-clear
+                autocomplete="emailCode"
               >
-            </template>
-          </a-input>
-        </a-form-item>
-        <a-form-item
-          field="password"
-          :rules="[
+                <template #prefix>
+                  <icon-code/>
+                </template>
+                <template #append>
+                  <a-link
+                    :disabled="status.timerS != null"
+                    :loading="status.emailCodeLoading"
+                    @click="getEmailCodeHandel"
+                  >{{ status.buttonText }}{{ status.timerTime }}
+                  </a-link
+                  >
+                </template>
+              </a-input>
+            </a-form-item>
+            <a-form-item
+              :rules="[
             { required: true, message: $t('login.form.password.errMsg') },
             { minLength: 6, message: '密码最少6位' },
             { maxLength: 30, message: '密码最长30位' },
           ]"
-          :validate-trigger="['change', 'blur']"
-          hide-label
-        >
-          <a-input-password
-            v-model="userInfoForRegister.password"
-            :placeholder="$t('login.form.password.placeholder')"
-            allow-clear
-            autocomplete="new-password"
+              :validate-trigger="['change', 'blur']"
+              field="password"
+              hide-label
+            >
+              <a-input-password
+                v-model="userInfoForRegister.password"
+                :placeholder="$t('login.form.password.placeholder')"
+                allow-clear
+                autocomplete="new-password"
+              >
+                <template #prefix>
+                  <icon-lock/>
+                </template>
+              </a-input-password>
+            </a-form-item>
+          </a-form>
+          <a-button long size="large" type="primary" @click="registerHandel">{{
+              $t('login.form.register')
+            }}
+          </a-button>
+          <a-button
+            long
+            size="large"
+            style="margin-top: 10px"
+            type="outline"
+            @click="changeLoginConfig()"
+          >{{ $t('login.form.haveUsername') }}
+          </a-button
           >
-            <template #prefix>
-              <icon-lock />
-            </template>
-          </a-input-password>
-        </a-form-item>
-      </a-form>
-      <a-button size="large" type="primary" long @click="registerHandel">{{
-        $t('login.form.register')
-      }}</a-button>
-      <a-button
-        size="large"
-        style="margin-top: 10px"
-        type="outline"
-        long
-        @click="changeLoginConfig()"
-        >{{ $t('login.form.haveUsername') }}</a-button
-      >
-    </div>
+          <div
+            style="display: flex;flex-direction: column;font-size: 14px;font-weight: 400;color: #c0c4cc;line-height: 18px;margin-top: 25px;">
+            <span>
+              关于Easy OA登录
+            </span>
+            <span>
+              若邮箱已被使用，请打开 忘记密码 找回密码 若无法收到验证码， 可多等一会，可能是网络延迟导致！也可以检查邮箱的垃圾箱
+            </span>
+          </div>
+        </div>
+      </a-tab-pane>
+
+    </a-tabs>
+
     <a-modal
       v-model:visible="status.vailModel"
       :mask-closable="true"
@@ -125,24 +148,23 @@
         >我已牢记，登录吧!</a-button
       >
     </div>
+
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { Message } from '@arco-design/web-vue';
-  import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
-  import { useI18n } from 'vue-i18n';
-  import { useUserStore } from '@/store';
-  import useLoading from '@/hooks/loading';
-  import type { LoginData } from '@/api/user';
-  import { useWsLoginStore } from '@/store/modules/chat/ws';
-  import { getToken, setToken } from '@/utils/auth';
-  import CaptchaC from '@/components/captcha/index.vue';
-  import { getEmailCode, registerByEmail } from '@/api/email';
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {Message} from '@arco-design/web-vue';
+import {useI18n} from 'vue-i18n';
+import {useUserStore} from '@/store';
+import useLoading from '@/hooks/loading';
+import {useWsLoginStore} from '@/store/modules/chat/ws';
+import {getToken, setToken} from '@/utils/auth';
+import CaptchaC from '@/components/captcha/index.vue';
+import {getEmailCode, registerByEmail} from '@/api/email';
 
-  const router = useRouter();
+const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
@@ -326,12 +348,12 @@
 <style lang="less" scoped>
   .login-form-wrapper {
     background: #ffffff;
-    padding: 5rem 5rem 5rem 5rem;
+
     border-radius: 5px;
   }
   .login-form {
     &-wrapper {
-      width: 450px;
+      width: 400px;
     }
 
     &-title {
@@ -360,6 +382,14 @@
 
     &-register-btn {
       color: var(--color-text-3) !important;
+    }
+  }
+
+  .register-title {
+    .register-title-span {
+      line-height: 134px;
+      font-weight: 700;
+      color: #10141c;
     }
   }
 </style>

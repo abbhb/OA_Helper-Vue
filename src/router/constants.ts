@@ -6,6 +6,7 @@ export const WHITE_LIST = [
   { name: 'callback', children: [] },
   { name: 'oauthShow', children: [] },
   { name: 'forgotPassword', children: [] },
+    {name: 'NoticeEdit', children: []}, // 通知编辑组件
 ];
 
 export const NOT_FOUND = {

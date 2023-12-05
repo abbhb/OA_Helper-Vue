@@ -44,12 +44,14 @@ const imageStore = useImgPreviewStore();
       class="video-play"
       style="pointer-events: none"
     >
-      <icon-reply
-        icon="guanbi1"
+      <icon-close
         class="close"
-        :size="30"
+
+        :size="136"
         @click="videoStore.close()"
       />
+
+
       <VideoPlayer :url="videoStore.previewUrl" style="pointer-events: auto" />
     </div>
   </main>
@@ -78,13 +80,13 @@ const imageStore = useImgPreviewStore();
 
       .close {
         position: absolute;
-        top: 40px;
-        right: 40px;
+        top: 100px;
+        left: 250px;
         padding: 8px;
-        line-height: 30px;
-        color: #fff;
+        line-height: 20px;
+        color: var(--color-text-1);
         pointer-events: auto;
-        background-color: var(--el-text-color-regular);
+        background-color: var(--color-mask-bg);
         border-color: #fff;
         border-radius: 50%;
 

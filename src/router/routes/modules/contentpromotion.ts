@@ -11,8 +11,7 @@ const ContentPromotion: AppRouteRecordRaw = {
     roles: ['*'],
     icon: 'icon-user',
     order: 1,
-    canGo:false
-
+      canGo: false,
   },
   children: [
     {
@@ -24,8 +23,19 @@ const ContentPromotion: AppRouteRecordRaw = {
         locale: 'menu.docnotification.DocNotification',
         requiresAuth: true,
         roles: ['*'],
-        canGo:true
-
+          canGo: true,
+      },
+    },
+      {
+          path: 'notice-edit',
+          name: 'NoticeEdit',
+          component: () =>
+              import('@/views/content-promotion/notice-edit/index.vue'),
+          meta: {
+              locale: 'menu.notice-edit.NoticeEdit',
+              requiresAuth: true,
+              roles: ['*'],
+              canGo: true, // 不展示在菜单区
       },
     },
     {
@@ -37,8 +47,7 @@ const ContentPromotion: AppRouteRecordRaw = {
         locale: 'menu.docnotification.IndexImage',
         requiresAuth: true,
         roles: ['*'],
-        canGo:true
-
+          canGo: true,
       },
     },
   ],
