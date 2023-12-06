@@ -19,7 +19,7 @@ import localeSettings from './zh-CN/settings';
 
 export default {
   'menu.dashboard': '仪表盘',
-  'menu.usercenter': '用户中心',
+  'menu.usercenter': '个人中心',
   'menu.sysmanger': '系统管理',
   'menu.entertainment': '娱乐中心',
   'menu.entertainment.center': '娱乐中心',
@@ -29,7 +29,7 @@ export default {
   'menu.chat': 'Chat',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
-  'menu.usercenter.usercenter': '用户中心',
+  'menu.usercenter.usercenter': '个人中心',
   'menu.sysmanger.group': '用户分组',
   'menu.sysmanger.UserManger': '用户管理',
   'menu.sysmanger.MenuManger': '菜单管理',
