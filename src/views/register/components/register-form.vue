@@ -1,17 +1,27 @@
 <template>
   <div v-if="!status.registerSuccess" class="login-form-wrapper">
     <div class="register-title">
-      <span class="register-title-span" style="font-size: 40px;"> Hello ,</span> <span class="register-title-span"
-                                                                                       style="font-size: 21px;"> 欢迎使用Easy OA！</span>
+      <span class="register-title-span" style="font-size: 40px"> Hello ,</span>
+      <span class="register-title-span" style="font-size: 21px">
+        欢迎使用Easy OA！</span
+      >
     </div>
-    <div class="login-form-sub-title"
-         style="height: 15px;font-size: 15px;font-weight: 300;color: #10141c;line-height: 20px;margin-bottom: 5px;">
+    <div
+      class="login-form-sub-title"
+      style="
+        height: 15px;
+        font-size: 15px;
+        font-weight: 300;
+        color: #10141c;
+        line-height: 20px;
+        margin-bottom: 5px;
+      "
+    >
       注册成为Easy OA用户~
     </div>
     <a-tabs default-active-key="1">
       <a-tab-pane key="1" title="邮箱注册">
         <div class="login-2">
-
           <a-form
             ref="loginForm"
             :model="userInfoForRegister"
@@ -20,7 +30,9 @@
             layout="vertical"
           >
             <a-form-item
-              :rules="[{ required: true, message: $t('login.form.email.errMsg') }]"
+              :rules="[
+                { required: true, message: $t('login.form.email.errMsg') },
+              ]"
               :validate-trigger="['change', 'blur']"
               field="email"
               hide-label
@@ -37,8 +49,8 @@
             </a-form-item>
             <a-form-item
               :rules="[
-            { required: true, message: $t('login.form.emailCode.errMsg') },
-          ]"
+                { required: true, message: $t('login.form.emailCode.errMsg') },
+              ]"
               :validate-trigger="['change', 'blur']"
               field="emailCode"
               hide-label
@@ -59,17 +71,16 @@
                     :loading="status.emailCodeLoading"
                     @click="getEmailCodeHandel"
                   >{{ status.buttonText }}{{ status.timerTime }}
-                  </a-link
-                  >
+                  </a-link>
                 </template>
               </a-input>
             </a-form-item>
             <a-form-item
               :rules="[
-            { required: true, message: $t('login.form.password.errMsg') },
-            { minLength: 6, message: '密码最少6位' },
-            { maxLength: 30, message: '密码最长30位' },
-          ]"
+                { required: true, message: $t('login.form.password.errMsg') },
+                { minLength: 6, message: '密码最少6位' },
+                { maxLength: 30, message: '密码最长30位' },
+              ]"
               :validate-trigger="['change', 'blur']"
               field="password"
               hide-label
@@ -86,9 +97,8 @@
               </a-input-password>
             </a-form-item>
           </a-form>
-          <a-button long size="large" type="primary" @click="registerHandel">{{
-              $t('login.form.register')
-            }}
+          <a-button long size="large" type="primary" @click="registerHandel"
+          >{{ $t('login.form.register') }}
           </a-button>
           <a-button
             long
@@ -97,20 +107,26 @@
             type="outline"
             @click="changeLoginConfig()"
           >{{ $t('login.form.haveUsername') }}
-          </a-button
-          >
+          </a-button>
           <div
-            style="display: flex;flex-direction: column;font-size: 14px;font-weight: 400;color: #c0c4cc;line-height: 18px;margin-top: 25px;">
+            style="
+              display: flex;
+              flex-direction: column;
+              font-size: 14px;
+              font-weight: 400;
+              color: #c0c4cc;
+              line-height: 18px;
+              margin-top: 25px;
+            "
+          >
+            <span> 关于Easy OA登录 </span>
             <span>
-              关于Easy OA登录
-            </span>
-            <span>
-              若邮箱已被使用，请打开 忘记密码 找回密码 若无法收到验证码， 可多等一会，可能是网络延迟导致！也可以检查邮箱的垃圾箱
+              若邮箱已被使用，请打开 忘记密码 找回密码 若无法收到验证码，
+              可多等一会，可能是网络延迟导致！也可以检查邮箱的垃圾箱
             </span>
           </div>
         </div>
       </a-tab-pane>
-
     </a-tabs>
 
     <a-modal
@@ -148,7 +164,6 @@
         >我已牢记，登录吧!</a-button
       >
     </div>
-
   </div>
 </template>
 

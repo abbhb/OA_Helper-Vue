@@ -13,6 +13,7 @@ export interface Captcha {
   block_x?: string;
   block_y?: string;
   place?: string;
+    is_use?: number;
 }
 
 export function getCodeImg(data: Captcha) {

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import {
   getUserInfo,
   login as userLogin,
@@ -8,12 +8,12 @@ import {
   LoginDataByCode,
   logout as userLogout,
 } from '@/api/user';
-import { clearToken, setToken } from '@/utils/auth';
-import { removeRouteListener } from '@/utils/route-listener';
-import { checkPermissionByServer } from '@/api/permission';
+import {clearToken, setToken} from '@/utils/auth';
+import {removeRouteListener} from '@/utils/route-listener';
+import {checkPermissionByServer} from '@/api/permission';
 import useMenuStore from '@/store/modules/menu';
 import {useAppStore} from "@/store";
-import { UserState } from './types';
+import {UserState} from './types';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
@@ -76,6 +76,10 @@ const useUserStore = defineStore('user', {
       }
     },
 
+    async loginSuccess(token: string) {
+      setToken(token);
+      await useAppStore().initSettings();
+    },
     // Login
     async login(loginForm: LoginData) {
       try {
@@ -84,8 +88,7 @@ const useUserStore = defineStore('user', {
         //   rsautils.encryptByPublicKey(loginForm.password)
         // );
         const res = await userLogin(loginForm);
-        setToken(res.data.token);
-        await useAppStore().initSettings();
+        await this.loginSuccess(res.data.token);
       } catch (err) {
         clearToken();
         throw err;
@@ -129,8 +132,7 @@ const useUserStore = defineStore('user', {
     async loginByCode(loginForm: LoginDataByCode) {
       try {
         const res = await loginbycode(loginForm);
-        setToken(res.data.token);
-        await useAppStore().initSettings();
+        await this.loginSuccess(res.data.token);
       } catch (err) {
         clearToken();
         throw err;

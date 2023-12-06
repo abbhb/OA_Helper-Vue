@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { UserState } from '@/store/modules/user/types';
-import { PageData } from '@/api/common';
-import { Role } from '@/api/role';
+import {UserState} from '@/store/modules/user/types';
+import {PageData} from '@/api/common';
+import {Role} from '@/api/role';
 
 export interface LoginData {
   username: string;
@@ -39,6 +39,14 @@ export interface UserManger extends UserInfo {
 }
 export interface LoginRes {
   token: string;
+    toSetPassword?: number;
+    oneTimeSetPasswordCode?: string;
+}
+
+export interface LoginByEmailCodeReq {
+    week: boolean;
+    emailCode: string;
+    email: string;
 }
 
 interface UserFrontConfigReq {
@@ -50,6 +58,10 @@ export function login(data: LoginData) {
 }
 export function loginbycode(data: LoginDataByCode) {
   return axios.post<LoginRes>('/api/user/loginbycode', data);
+}
+
+export function loginByEmailCode(data: LoginByEmailCodeReq) {
+    return axios.post<LoginRes>('/api/user/login_by_email_code', data);
 }
 export function loginbytoken() {
   return axios.post<LoginRes>('/api/user/login_by_token');

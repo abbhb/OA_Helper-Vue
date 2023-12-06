@@ -183,16 +183,16 @@
                 </span>
               </a-space>
             </a-doption>
+            <!--            <a-doption>-->
+            <!--              <a-space @click="gotoCASUserCenter()">-->
+            <!--                <icon-settings />-->
+            <!--                <span>-->
+            <!--                  {{ $t('messageBox.casCenter') }}-->
+            <!--                </span>-->
+            <!--              </a-space>-->
+            <!--            </a-doption>-->
             <a-doption>
-              <a-space @click="gotoCASUserCenter()">
-                <icon-settings />
-                <span>
-                  {{ $t('messageBox.casCenter') }}
-                </span>
-              </a-space>
-            </a-doption>
-            <a-doption>
-              <a-space @click="alert('此功能在2023年底前上线')">
+              <a-space @click="Message.info('此功能在2023年底前上线')">
                 <icon-export />
                 <span>
                   {{ $t('messageBox.switchUser') }}
@@ -215,19 +215,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, inject, ref } from 'vue';
-  import { Message } from '@arco-design/web-vue';
-  import { useDark, useFullscreen, useToggle } from '@vueuse/core';
-  import { useAppStore, useUserStore } from '@/store';
-  import { LOCALE_OPTIONS } from '@/locale';
-  import useLocale from '@/hooks/locale';
-  import useUser from '@/hooks/user';
-  import Menu from '@/components/menu/index.vue';
-  import MessageBox from '@/components/message-box/index.vue';
-  import router from '@/router';
-  import version from '@/config/version.json';
+import {computed, inject, ref} from 'vue';
+import {Message} from '@arco-design/web-vue';
+import {useDark, useFullscreen, useToggle} from '@vueuse/core';
+import {useAppStore, useUserStore} from '@/store';
+import {LOCALE_OPTIONS} from '@/locale';
+import useLocale from '@/hooks/locale';
+import useUser from '@/hooks/user';
+import Menu from '@/components/menu/index.vue';
+import router from '@/router';
+import version from '@/config/version.json';
 
-  const appStore = useAppStore();
+const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();

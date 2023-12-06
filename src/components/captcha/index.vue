@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-  import { checkCaptchaCode, getCodeImg } from '@/api/captcha';
-  import { Message } from '@arco-design/web-vue';
+import {checkCaptchaCode, getCodeImg} from '@/api/captcha';
+import {Message} from '@arco-design/web-vue';
 
-  const emit = defineEmits(['success']);
+const emit = defineEmits(['success']);
 
   const props = defineProps({
     // 阻塞块长度
@@ -142,10 +142,15 @@ import {onMounted, ref} from 'vue';
     getCodeImg(data)
       .then((response) => {
         const { data } = response;
+        if (data.is_use !== 1) {
+          // 无需验证
+          vailData.value.isLoading = false;
+          vailData.value.verifySuccess = true;
+          emit('success', '');
+        }
         vailData.value.nonce_str = data.nonce_str;
         noce.value.src = data.block_src;
         noce.value.style.top = `${data.block_y}px`;
-        console.log(canvansss.value)
         canvansss.value.src = data.canvas_src;
       })
       .finally(() => {
