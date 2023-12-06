@@ -1,26 +1,20 @@
-import { computed, reactive, ref, watch } from 'vue';
-import { defineStore } from 'pinia';
-import { useCachedStore } from '@/store/modules/chat/cached';
-import { useUserStore } from '@/store';
-import {
-  CacheUserReq,
-  MarkItemType,
-  MessageType,
-  RevokedMsgType,
-  SessionItem,
-} from '@/types/chat';
+import {computed, reactive, ref, watch} from 'vue';
+import {defineStore} from 'pinia';
+import {useCachedStore} from '@/store/modules/chat/cached';
+import {useUserStore} from '@/store';
+import {MarkItemType, MessageType, RevokedMsgType, SessionItem,} from '@/types/chat';
 import * as Api from '@/api/chat';
-import { computedTimeBlock } from '@/utils/chat/computedTime';
+import {sessionDetail} from '@/api/chat';
+import {computedTimeBlock} from '@/utils/chat/computedTime';
 import shakeTitle from '@/utils/chat/shakeTitle';
-import { ChatMarkEnum, ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
-import { notifyMe } from '@/utils/notify';
-import { useGlobalStore } from '@/store/modules/chat/global';
-import { useGroupStore } from '@/store/modules/chat/group';
-import { useContactStore } from '@/store/modules/chat/contacts';
-import { cloneDeep } from 'lodash';
+import {ChatMarkEnum, ChatMsgEnum, RoomTypeEnum} from '@/types/enums/chat';
+import {notifyMe} from '@/utils/notify';
+import {useGlobalStore} from '@/store/modules/chat/global';
+import {useGroupStore} from '@/store/modules/chat/group';
+import {useContactStore} from '@/store/modules/chat/contacts';
+import {cloneDeep} from 'lodash';
 import router from '@/router';
-import { sessionDetail } from '@/api/chat';
-import {pushNotifyByMessage} from "@/utils/chat/systemMessageNotify";
+import {pushNotifyByMessage} from '@/utils/chat/systemMessageNotify';
 
 export const pageSize = 20;
 // 标识是否第一次请求
@@ -55,7 +49,6 @@ export const useChatStore = defineStore('chat', () => {
     new Map([[currentRoomId.value, new Map()]])
   ); // 回复消息映射
   const { userInfo } = userStore;
-
 
   const currentMessageMap = computed({
     get: () => {
@@ -114,7 +107,6 @@ export const useChatStore = defineStore('chat', () => {
   );
 
   const chatListToBottomAction = ref<() => void>(); // 外部提供消息列表滚动到底部事件
-
 
   const newMsgCount = reactive<
     Map<string, { count: number; isStart: boolean }>
@@ -434,10 +426,7 @@ export const useChatStore = defineStore('chat', () => {
     const message = currentMessageMap.value?.get(msgId);
     if (message) {
       message.message.type = ChatMsgEnum.RECALL;
-      console.log('撤回');
-      console.log(message);
       if (typeof data.recallUid === 'string') {
-        console.log('真撤回');
         const cacheUser = cachedStore.userCachedList[data.recallUid];
         // 如果撤回者的 id 不等于消息发送人的 id, 或者你本人就是管理员，那么显示管理员撤回的。
         if (data.recallUid !== message.fromUser.uid) {
@@ -459,7 +448,7 @@ export const useChatStore = defineStore('chat', () => {
   };
   // 删除消息
   const deleteMsg = (msgId: string) => {
-    currentMessageMap.value?.delete(msgId)
+    currentMessageMap.value?.delete(msgId);
   };
   // 更新消息
   const updateMsg = (msgId: string, newMessage: MessageType) => {

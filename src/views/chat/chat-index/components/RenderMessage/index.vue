@@ -23,5 +23,5 @@ const componentMap = {
 </script>
 
 <template>
-  <component :is="componentMap[message.type]" :body="message.body" />
+  <component :is="componentMap[message.type]" :key="message" :body="message.body"/>
 </template>

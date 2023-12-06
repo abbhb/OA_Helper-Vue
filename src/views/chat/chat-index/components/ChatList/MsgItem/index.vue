@@ -1,29 +1,20 @@
 <script setup lang="ts">
-  import {
-    computed,
-    inject,
-    nextTick,
-    onMounted,
-    type PropType,
-    ref,
-    type Ref,
-    toRefs,
-  } from 'vue';
+import {computed, inject, nextTick, onMounted, type PropType, ref, type Ref, toRefs,} from 'vue';
 
-  import { MessageType, MsgType } from '@/types/chat';
-  import { useUserStore } from '@/store';
-  import { pageSize, useChatStore } from '@/store/modules/chat/chat';
-  import { useUserInfo } from '@/hooks/chat/useCached';
-  import { ChatMsgEnum } from '@/types/enums/chat';
-  import { useLikeToggle } from '@/hooks/chat/useLikeToggle';
-  import { formatTimestamp } from '@/utils/chat/computedTime';
-  import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
-  import AvatarImage from '@/components/image/AvatarImage.vue';
-  import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
-  import UserContextMenu from '@/views/chat/chat-index/components/ChatList/UserContextMenu/index.vue';
-  import MsgOption from '../MsgOption/index.vue';
+import {MessageType, MsgType} from '@/types/chat';
+import {useUserStore} from '@/store';
+import {pageSize, useChatStore} from '@/store/modules/chat/chat';
+import {useUserInfo} from '@/hooks/chat/useCached';
+import {ChatMsgEnum} from '@/types/enums/chat';
+import {useLikeToggle} from '@/hooks/chat/useLikeToggle';
+import {formatTimestamp} from '@/utils/chat/computedTime';
+import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
+import AvatarImage from '@/components/image/AvatarImage.vue';
+import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
+import UserContextMenu from '@/views/chat/chat-index/components/ChatList/UserContextMenu/index.vue';
+import MsgOption from '../MsgOption/index.vue';
 
-  const props = defineProps({
+const props = defineProps({
     // 消息体
     msg: {
       type: Object as PropType<MessageType>,
@@ -88,7 +79,9 @@
   });
   const { isLike, isDisLike, likeCount, dislikeCount, onLike, onDisLike } =
     useLikeToggle(props.msg.message);
-  const isRecall = computed(() => [ChatMsgEnum.RECALL, ChatMsgEnum.SYSTEM].includes(message.value.type))
+  const isRecall = computed(() =>
+    [ChatMsgEnum.RECALL, ChatMsgEnum.SYSTEM].includes(message.value.type)
+  );
 
   // 滚动到消息
   const scrollToMsg = async (msg: MsgType) => {
@@ -176,17 +169,23 @@
   <span v-if="isRecall" class="send-time-block">{{ message.body }}</span>
   <transition name="remove">
     <div v-if="!isRecall" :class="chatCls">
-      <AvatarImage :avatar="userInfo.avatar" @contextmenu.prevent.stop="handleUserRightClick($event)" />
+      <AvatarImage
+        :avatar="userInfo.avatar"
+        @contextmenu.prevent.stop="handleUserRightClick($event)"
+      />
       <div ref="boxRef" class="chat-item-box">
         <div class="chat-item-user-info">
-          <span class="user-name" @click="onAtUser?.(userInfo.uid!, true)" @contextmenu.prevent.stop="handleUserRightClick($event)">
+          <span
+            class="user-name"
+            @click="onAtUser?.(userInfo.uid!, true)"
+            @contextmenu.prevent.stop="handleUserRightClick($event)"
+          >
             {{ userInfo.name }}
           </span>
           <span class="user-ip">({{ userInfo.locPlace || '未知' }})</span>
           <span v-if="isShowTime" class="send-time">
             {{ formatTimestamp(msg.message.sendTime) }}
           </span>
-
         </div>
         <a-tooltip
           effect="light"
