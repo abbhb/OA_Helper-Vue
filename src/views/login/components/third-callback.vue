@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import { getQueryVariable } from '@/utils/utils';
-  import { uniCallback, uniFirstLogin } from '@/api/third-login';
-  import { Message } from '@arco-design/web-vue';
-  import { useUserStore } from '@/store';
-  import { getEmailCode } from '@/api/email';
-  import ImagePreview from '@/components/image/ImagePreview.vue';
-  import CaptchaC from '@/components/captcha/index.vue';
-  import {useRouter} from "vue-router";
+import {ref} from 'vue';
+import {getQueryVariable} from '@/utils/utils';
+import {uniCallback, uniFirstLogin} from '@/api/third-login';
+import {Message} from '@arco-design/web-vue';
+import {useUserStore} from '@/store';
+import {getEmailCode} from '@/api/email';
+import ImagePreview from '@/components/image/ImagePreview.vue';
+import CaptchaC from '@/components/captcha/index.vue';
+import {useRouter} from "vue-router";
 
-  const code = getQueryVariable('code');
+const code = getQueryVariable('code');
   const type = getQueryVariable('type');
   const userStore = useUserStore();
   const router = useRouter();
@@ -39,12 +39,13 @@
   // 成功后清除多于参数
   const successClean = () => {
     // 获取当前 URL
-    let currentUrl = window.location.href;
+    const currentUrl = window.location.href;
     // 移除参数（这里示例移除名为 "param" 的参数）
-    let updatedUrl = currentUrl.replace(/(\?|&)type=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
-    let updatedUrl2 = updatedUrl.replace(/(\?|&)code=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
+    const updatedUrl = currentUrl.replace(/(\?|&)type=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
+    const updatedUrl2 = updatedUrl.replace(/(\?|&)code=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
 
     // 更新 URL（不刷新页面）
+    // eslint-disable-next-line no-restricted-globals
     history.replaceState(null, null, updatedUrl2);
   }
 
