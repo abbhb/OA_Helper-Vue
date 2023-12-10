@@ -36,6 +36,18 @@
     thirdSocialUid: '',
   });
 
+  // 成功后清除多于参数
+  const successClean = () => {
+    // 获取当前 URL
+    let currentUrl = window.location.href;
+    // 移除参数（这里示例移除名为 "param" 的参数）
+    let updatedUrl = currentUrl.replace(/(\?|&)type=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
+    let updatedUrl2 = updatedUrl.replace(/(\?|&)code=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
+
+    // 更新 URL（不刷新页面）
+    history.replaceState(null, null, updatedUrl2);
+  }
+
   const oauth2ErrorHandel = () => {
     // 获取当前 URL
     const currentUrl = window.location.href;
@@ -87,6 +99,7 @@
         }
         // 正常逻辑
         await userStore.loginSuccess(data.token);
+        successClean();
         const {redirect, ...othersQuery} = router.currentRoute.value.query;
         router.push({
           name: (redirect as string) || 'Workplace',
@@ -206,6 +219,7 @@
       }
       // 正常逻辑
       await userStore.loginSuccess(data.token);
+      successClean();
       const {redirect, ...othersQuery} = router.currentRoute.value.query;
       router.push({
         name: (redirect as string) || 'Workplace',
