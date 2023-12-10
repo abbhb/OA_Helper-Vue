@@ -1,73 +1,194 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
-import {getQueryVariable} from '@/utils/utils';
-import {uniCallback, uniFirstLogin} from '@/api/third-login';
-import {Message} from '@arco-design/web-vue';
-import {useUserStore} from '@/store';
-import {getEmailCode} from '@/api/email';
-import ImagePreview from '@/components/image/ImagePreview.vue';
-import CaptchaC from '@/components/captcha/index.vue';
+  import { ref } from 'vue';
+  import { getQueryVariable } from '@/utils/utils';
+  import { uniCallback, uniFirstLogin } from '@/api/third-login';
+  import { Message } from '@arco-design/web-vue';
+  import { useUserStore } from '@/store';
+  import { getEmailCode } from '@/api/email';
+  import ImagePreview from '@/components/image/ImagePreview.vue';
+  import CaptchaC from '@/components/captcha/index.vue';
+  import {useRouter} from "vue-router";
 
-const code = getQueryVariable('code');
-const type = getQueryVariable('type');
-const userStore = useUserStore();
+  const code = getQueryVariable('code');
+  const type = getQueryVariable('type');
+  const userStore = useUserStore();
+  const router = useRouter();
 
-const status = ref({
-  sta: 1, // 1为准备模式，2为返回了token，登录中，3为新用户,0为异常
-  errMsg: '',
-  // email
-  emailCodeLoading: false,
-  timerTime: '',
-  timerTimeNumber: 0,
-  timerS: null,
-  buttonText: '获取验证码',
-  vailModel: false,
-  registerSuccess: false,
-  nickname: '',
-  avatar: '',
-});
-const userInfoForEmailCode = ref({
-  email: '',
-  veryCode: '',
-  code: '',
-  thirdType: '',
-  thirdSocialUid: '',
-});
+  const status = ref({
+    sta: 1, // 1为准备模式，2为返回了token，登录中，3为新用户,0为异常
+    errMsg: '',
+    // email
+    emailCodeLoading: false,
+    timerTime: '',
+    timerTimeNumber: 0,
+    timerS: null,
+    buttonText: '获取验证码',
+    vailModel: false,
+    registerSuccess: false,
+    nickname: '',
+    avatar: '',
+  });
+  const userInfoForEmailCode = ref({
+    email: '',
+    veryCode: '',
+    code: '',
+    thirdType: '',
+    thirdSocialUid: '',
+  });
 
-const oauth2ErrorHandel = () => {
-  // 获取当前 URL
-  const currentUrl = window.location.href;
+  const oauth2ErrorHandel = () => {
+    // 获取当前 URL
+    const currentUrl = window.location.href;
 
-  // 移除参数（这里示例移除名为 "param" 的参数）
-  const updatedUrl = currentUrl
-    .replace(/(\?|&)type=.*?(&|$)/, '$1')
-    .replace(/(&|\?)$/, '');
-  const updatedUrl2 = updatedUrl
-    .replace(/(\?|&)code=.*?(&|$)/, '$1')
-    .replace(/(&|\?)$/, '');
-  // 重新加载页面
-  window.location.href = updatedUrl2;
-};
+    // 移除参数（这里示例移除名为 "param" 的参数）
+    const updatedUrl = currentUrl
+      .replace(/(\?|&)type=.*?(&|$)/, '$1')
+      .replace(/(&|\?)$/, '');
+    const updatedUrl2 = updatedUrl
+      .replace(/(\?|&)code=.*?(&|$)/, '$1')
+      .replace(/(&|\?)$/, '');
+    // 重新加载页面
+    window.location.href = updatedUrl2;
+  };
 
-if (code === '' || type === '') {
-  // 不应该是该模式，返回登录
-  oauth2ErrorHandel();
-}
-
-const startCallback = async () => {
-  status.value.errMsg = '';
   if (code === '' || type === '') {
-    Message.error('code不存在！');
-    return;
+    // 不应该是该模式，返回登录
+    oauth2ErrorHandel();
   }
-  status.value.sta = 1;
-  try {
-    const {data} = await uniCallback(type, code);
-    if (data.isCanLogin) {
+
+  const startCallback = async () => {
+    status.value.errMsg = '';
+    if (code === '' || type === '') {
+      Message.error('code不存在！');
+      return;
+    }
+    status.value.sta = 1;
+    try {
+      const { data } = await uniCallback(type, code);
+      if (data.canLogin) {
+        if (!data.token) {
+          status.value.sta = 0;
+          status.value.errMsg = '登录失败!';
+          return;
+        }
+        // 直接登录
+        status.value.sta = 2;
+        if (data.toSetPassword === 1) {
+          let baseUrl = '';
+          if (import.meta.env.VITE_API_BASE_URL) {
+            baseUrl = import.meta.env.VITE_API_BASE_URL;
+          }
+          // 需要设置密码
+          window.open(
+            `${baseUrl}/api/ext-thymeleaf/re-new-password?oneTimeCode=${data.oneTimeSetPasswordCode}`,
+            'newwindow',
+            'height=880, width=670, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
+          );
+        }
+        // 正常逻辑
+        await userStore.loginSuccess(data.token);
+        const {redirect, ...othersQuery} = router.currentRoute.value.query;
+        router.push({
+          name: (redirect as string) || 'Workplace',
+          query: {
+            ...othersQuery,
+          },
+        });
+        return;
+        // 逻辑结束
+      }
+      if (!data.newUser){
+        Message.error('系统异常!');
+        oauth2ErrorHandel();
+        return;
+      }
+      // 新用户,输入邮箱绑定平台用户，无论是以前有无，系统后台自动判断
+      status.value.sta = 3;
+      status.value.nickname = data.thirdName;
+      status.value.avatar = data.thirdAvatar;
+      userInfoForEmailCode.value.thirdSocialUid = data.thirdSocialUid;
+      userInfoForEmailCode.value.thirdType = type;
+    } catch (e) {
+      status.value.sta = 0;
+      status.value.errMsg = e;
+    }
+  };
+
+  const vailCancel = () => {
+    status.value.emailCodeLoading = false;
+    status.value.vailModel = false;
+  };
+  const stopTimer = () => {
+    if (status.value.timerS == null) {
+      return;
+    }
+    clearInterval(status.value.timerS);
+    status.value.buttonText = '获取验证码';
+    status.value.timerTimeNumber = 60;
+    status.value.timerTime = '';
+    status.value.timerS = null;
+  };
+  const startTimer = () => {
+    status.value.buttonText = '再次获取等待';
+    status.value.timerTimeNumber = 60;
+    status.value.timerTime = '60s';
+    status.value.timerS = setInterval(() => {
+      // eslint-disable-next-line no-plusplus
+      status.value.timerTimeNumber -= 1;
+      status.value.timerTime = `${status.value.timerTimeNumber}s`;
+
+      // 最多录制60秒
+      if (status.value.timerTimeNumber <= 0) {
+        stopTimer();
+      }
+    }, 1000);
+  };
+  const vailSuccess = (code) => {
+    userInfoForEmailCode.value.veryCode = code;
+    status.value.vailModel = false;
+    status.value.emailCodeLoading = true;
+
+    // 获取
+    getEmailCode({
+      email: userInfoForEmailCode.value.email,
+      vail_code:
+        userInfoForEmailCode.value.veryCode === ''
+          ? undefined
+          : userInfoForEmailCode.value.veryCode,
+    })
+      .then((res) => {
+        Message.success(res.data);
+        // 开启倒计时
+        startTimer();
+        // 获取完成
+        status.value.emailCodeLoading = false;
+      })
+      .catch((e) => {
+        // 获取失败
+        status.value.emailCodeLoading = false;
+      });
+
+    // 倒计时一分钟不让获取，后期获取电话的话需要升级加上验证码
+  };
+  const getEmailCodeHandel = () => {
+    status.value.emailCodeLoading = true;
+    // 获取
+    // getVailCodeImage();
+    status.value.vailModel = true;
+  };
+
+  const emailWithOtherIdHandel = async () => {
+    // 绑定email
+    try {
+      const { data } = await uniFirstLogin({
+        thirdSocialUid: userInfoForEmailCode.value.thirdSocialUid,
+        thirdType: userInfoForEmailCode.value.thirdType,
+        email: userInfoForEmailCode.value.email,
+        emailCode: userInfoForEmailCode.value.code,
+      });
       if (!data.token) {
         status.value.sta = 0;
-        status.value.errMsg = '登录失败!';
-        return;
+        status.value.errMsg = '登录异常';
       }
       // 直接登录
       status.value.sta = 2;
@@ -85,128 +206,29 @@ const startCallback = async () => {
       }
       // 正常逻辑
       await userStore.loginSuccess(data.token);
+      const {redirect, ...othersQuery} = router.currentRoute.value.query;
+      router.push({
+        name: (redirect as string) || 'Workplace',
+        query: {
+          ...othersQuery,
+        },
+      });
       return;
-      // 逻辑结束
-    }
-    // 新用户,输入邮箱绑定平台用户，无论是以前有无，系统后台自动判断
-    status.value.sta = 3;
-    status.value.nickname = data.thirdName;
-    status.value.avatar = data.thirdAvatar;
-    userInfoForEmailCode.value.thirdSocialUid = data.thirdSocialUid;
-    userInfoForEmailCode.value.thirdType = type;
-  } catch (e) {
-    status.value.sta = 0;
-    status.value.errMsg = e;
-  }
-};
-
-const vailCancel = () => {
-  status.value.emailCodeLoading = false;
-  status.value.vailModel = false;
-};
-const stopTimer = () => {
-  if (status.value.timerS == null) {
-    return;
-  }
-  clearInterval(status.value.timerS);
-  status.value.buttonText = '获取验证码';
-  status.value.timerTimeNumber = 60;
-  status.value.timerTime = '';
-  status.value.timerS = null;
-};
-const startTimer = () => {
-  status.value.buttonText = '再次获取等待';
-  status.value.timerTimeNumber = 60;
-  status.value.timerTime = '60s';
-  status.value.timerS = setInterval(() => {
-    // eslint-disable-next-line no-plusplus
-    status.value.timerTimeNumber -= 1;
-    status.value.timerTime = `${status.value.timerTimeNumber}s`;
-
-    // 最多录制60秒
-    if (status.value.timerTimeNumber <= 0) {
-      stopTimer();
-    }
-  }, 1000);
-};
-const vailSuccess = (code) => {
-  userInfoForEmailCode.value.veryCode = code;
-  status.value.vailModel = false;
-  status.value.emailCodeLoading = true;
-
-  // 获取
-  getEmailCode({
-    email: userInfoForEmailCode.value.email,
-    vail_code:
-      userInfoForEmailCode.value.veryCode === ''
-        ? undefined
-        : userInfoForEmailCode.value.veryCode,
-  })
-    .then((res) => {
-      Message.success(res.data);
-      // 开启倒计时
-      startTimer();
-      // 获取完成
-      status.value.emailCodeLoading = false;
-    })
-    .catch((e) => {
-      // 获取失败
-      status.value.emailCodeLoading = false;
-    });
-
-  // 倒计时一分钟不让获取，后期获取电话的话需要升级加上验证码
-};
-const getEmailCodeHandel = () => {
-  status.value.emailCodeLoading = true;
-  // 获取
-  // getVailCodeImage();
-  status.value.vailModel = true;
-};
-
-const emailWithOtherIdHandel = async () => {
-  // 绑定email
-  try {
-    const {data} = await uniFirstLogin({
-      thirdSocialUid: userInfoForEmailCode.value.thirdSocialUid,
-      thirdType: userInfoForEmailCode.value.thirdType,
-      email: userInfoForEmailCode.value.email,
-      emailCode: userInfoForEmailCode.value.code,
-    });
-    if (!data.token) {
+    } catch (e) {
       status.value.sta = 0;
-      status.value.errMsg = '登录异常';
+      status.value.errMsg = e;
     }
-    // 直接登录
-    status.value.sta = 2;
-    if (data.toSetPassword === 1) {
-      let baseUrl = '';
-      if (import.meta.env.VITE_API_BASE_URL) {
-        baseUrl = import.meta.env.VITE_API_BASE_URL;
-      }
-      // 需要设置密码
-      window.open(
-        `${baseUrl}/api/ext-thymeleaf/re-new-password?oneTimeCode=${data.oneTimeSetPasswordCode}`,
-        'newwindow',
-        'height=880, width=670, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
-      );
-    }
-    // 正常逻辑
-    await userStore.loginSuccess(data.token);
-    return;
-  } catch (e) {
-    status.value.sta = 0;
-    status.value.errMsg = e;
-  }
-};
+  };
+  startCallback();
 </script>
 
 <template>
   <div>
-    <a-spin v-if="status.sta === 1" tip="第三方回调登录中..."/>
-    <a-spin v-if="status.sta === 2" tip="登录成功。请稍等！"/>
+    <a-spin v-if="status.sta === 1" tip="第三方回调登录中..." />
+    <a-spin v-if="status.sta === 2" tip="登录成功。请稍等！" />
     <a-result v-if="status.sta === 0" status="error" title="第三方登录失败">
       <template #icon>
-        <IconFaceFrownFill/>
+        <IconFaceFrownFill />
       </template>
       <template #subtitle> 原因</template>
 
@@ -236,8 +258,7 @@ const emailWithOtherIdHandel = async () => {
           />
           <div> [{{ status.nickname }}]</div>
         </div>
-        <div
-        >
+        <div>
           <svg
             class="icon"
             height="200"
@@ -285,8 +306,7 @@ const emailWithOtherIdHandel = async () => {
                 fill-opacity=".54"
                 p-id="5269"
               ></path>
-            </svg
-            >
+            </svg>
           </div>
           <div> 本平台账号</div>
           <div>
@@ -322,7 +342,7 @@ const emailWithOtherIdHandel = async () => {
               autocomplete="email"
             >
               <template #prefix>
-                <icon-email/>
+                <icon-email />
               </template>
             </a-input>
           </a-form-item>
@@ -342,14 +362,14 @@ const emailWithOtherIdHandel = async () => {
               autocomplete="off"
             >
               <template #prefix>
-                <icon-code/>
+                <icon-code />
               </template>
               <template #append>
                 <a-link
                   :disabled="status.timerS != null"
                   :loading="status.emailCodeLoading"
                   @click="getEmailCodeHandel"
-                >{{ status.buttonText }}{{ status.timerTime }}
+                  >{{ status.buttonText }}{{ status.timerTime }}
                 </a-link>
               </template>
             </a-input>
@@ -364,7 +384,7 @@ const emailWithOtherIdHandel = async () => {
           size="large"
           type="primary"
           @click="emailWithOtherIdHandel"
-        >绑定
+          >绑定
         </a-button>
         <div
           style="
@@ -396,15 +416,15 @@ const emailWithOtherIdHandel = async () => {
       :width="375"
       @cancel="vailCancel"
     >
-      <CaptchaC v-if="status.vailModel" @success="vailSuccess"/>
+      <CaptchaC v-if="status.vailModel" @success="vailSuccess" />
     </a-modal>
   </div>
 </template>
 
 <style lang="less" scoped>
-.biaoshi-2 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .biaoshi-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 </style>

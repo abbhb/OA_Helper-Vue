@@ -27,7 +27,7 @@
               name="uname"
             >
               <template #prefix>
-                <icon-user/>
+                <icon-user />
               </template>
             </a-input>
           </a-form-item>
@@ -46,7 +46,7 @@
               name="upass"
             >
               <template #prefix>
-                <icon-lock/>
+                <icon-lock />
               </template>
             </a-input-password>
           </a-form-item>
@@ -56,7 +56,7 @@
                 {{ $t('login.form.weekNoLogin') }}
               </a-checkbox>
               <a-link @click="forgetHandel"
-              >{{ $t('login.form.forgetPassword') }}
+                >{{ $t('login.form.forgetPassword') }}
               </a-link>
             </div>
             <a-button :loading="loading" html-type="submit" long type="primary">
@@ -96,7 +96,7 @@
                 autocomplete="email"
               >
                 <template #prefix>
-                  <icon-email/>
+                  <icon-email />
                 </template>
               </a-input>
             </a-form-item>
@@ -116,14 +116,14 @@
                 autocomplete="off"
               >
                 <template #prefix>
-                  <icon-code/>
+                  <icon-code />
                 </template>
                 <template #append>
                   <a-link
                     :disabled="status.timerS != null"
                     :loading="status.emailCodeLoading"
                     @click="getEmailCodeHandel"
-                  >{{ status.buttonText }}{{ status.timerTime }}
+                    >{{ status.buttonText }}{{ status.timerTime }}
                   </a-link>
                 </template>
               </a-input>
@@ -146,7 +146,7 @@
             size="large"
             type="primary"
             @click="emailLoginHandel"
-          >登录
+            >登录
           </a-button>
           <div
             style="
@@ -180,25 +180,25 @@
       :width="375"
       @cancel="vailCancel"
     >
-      <CaptchaC v-if="status.vailModel" @success="vailSuccess"/>
+      <CaptchaC v-if="status.vailModel" @success="vailSuccess" />
     </a-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue';
-import {useRouter} from 'vue-router';
-import {Message} from '@arco-design/web-vue';
-import {ValidatedError} from '@arco-design/web-vue/es/form/interface';
-import {useI18n} from 'vue-i18n';
-import {useUserStore} from '@/store';
-import useLoading from '@/hooks/loading';
-import type {LoginData} from '@/api/user';
-import {loginByEmailCode} from '@/api/user';
-import CaptchaC from '@/components/captcha/index.vue';
-import {getEmailCode} from '@/api/email';
+  import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { Message } from '@arco-design/web-vue';
+  import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
+  import { useI18n } from 'vue-i18n';
+  import { useUserStore } from '@/store';
+  import useLoading from '@/hooks/loading';
+  import type { LoginData } from '@/api/user';
+  import { loginByEmailCode } from '@/api/user';
+  import CaptchaC from '@/components/captcha/index.vue';
+  import { getEmailCode } from '@/api/email';
 
-const router = useRouter();
+  const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
@@ -228,7 +228,7 @@ const router = useRouter();
 
   const emailLoginHandel = async () => {
     // 邮箱验证码一键登录,不存在用户就自动创建
-    const {data} = await loginByEmailCode({
+    const { data } = await loginByEmailCode({
       week: userInfoForEmailCode.value.week,
       email: userInfoForEmailCode.value.email,
       emailCode: userInfoForEmailCode.value.code,
@@ -248,6 +248,13 @@ const router = useRouter();
 
     // 正常逻辑
     await userStore.loginSuccess(data.token);
+    const { redirect, ...othersQuery } = router.currentRoute.value.query;
+    router.push({
+      name: (redirect as string) || 'Workplace',
+      query: {
+        ...othersQuery,
+      },
+    });
   };
   const register = () => {
     // 跳转注册页
@@ -321,6 +328,13 @@ const router = useRouter();
   const loginByToken = async () => {
     try {
       await userStore.loginByToken();
+      const { redirect, ...othersQuery } = router.currentRoute.value.query;
+      router.push({
+        name: (redirect as string) || 'Workplace',
+        query: {
+          ...othersQuery,
+        },
+      });
     } catch (err) {
       errorMessage.value = (err as Error).message;
     }
@@ -345,6 +359,13 @@ const router = useRouter();
       try {
         console.log(values);
         await userStore.login(values as LoginData);
+        const { redirect, ...othersQuery } = router.currentRoute.value.query;
+        router.push({
+          name: (redirect as string) || 'Workplace',
+          query: {
+            ...othersQuery,
+          },
+        });
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {

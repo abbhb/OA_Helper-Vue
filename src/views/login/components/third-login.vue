@@ -1,8 +1,13 @@
 <script lang="ts" setup>
 import {thirdLogin} from '@/api/third-login';
+import {Message} from "@arco-design/web-vue";
 
 const otherLogin = async (type) => {
-  await thirdLogin(type);
+  const {data} = await thirdLogin(type);
+  if (data){
+    Message.success('服务器收到了你的登录请求，加载中...');
+    window.location.href = data;
+  }
 };
 </script>
 

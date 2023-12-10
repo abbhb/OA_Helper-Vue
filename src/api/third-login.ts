@@ -3,8 +3,8 @@ import {LoginRes} from '@/api/user';
 
 export interface ThirdCallbackResp extends LoginRes {
   thirdType?: string;
-  isNewUser?: boolean;
-  isCanLogin?: boolean;
+  newUser?: boolean;
+  canLogin?: boolean;
   thirdSocialUid?: string;
   thirdName?: string;
   thirdAvatar?: string;
@@ -22,7 +22,7 @@ export interface ThirdFirstLoginReq {
  * @param type
  */
 export function thirdLogin(type: string) {
-  return axios.get<void>('/api/user/third_login', {
+  return axios.get<string>('/api/user/third_login', {
     params: {
       type,
     },

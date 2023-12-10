@@ -15,7 +15,6 @@ import useMenuStore from '@/store/modules/menu';
 import {useAppStore} from '@/store';
 import {Message} from '@arco-design/web-vue';
 import {useWsLoginStore} from '@/store/modules/chat/ws';
-import {useRouter} from 'vue-router';
 import {UserState} from './types';
 
 const useUserStore = defineStore('user', {
@@ -83,14 +82,6 @@ const useUserStore = defineStore('user', {
       setToken(token);
       await useAppStore().initSettings();
       const wsLoginStore = useWsLoginStore();
-      const router = useRouter();
-      const {redirect, ...othersQuery} = router.currentRoute.value.query;
-      router.push({
-        name: (redirect as string) || 'Workplace',
-        query: {
-          ...othersQuery,
-        },
-      });
       wsLoginStore.loginSuccess(getToken());
       Message.success('登录成功');
     },
