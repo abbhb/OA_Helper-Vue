@@ -124,5 +124,20 @@
         "content": "全新学习打卡即将上线。全新的收集表功能即将上线。一键打印历史文件即将上线。吐槽中心即将上线。"
       }
     ]
+  },
+  {
+    "time": "2023-12-10",
+    "icon": "https://unpkg.byted-static.com/latest/byted/arco-config/assets/favicon.ico",
+    "version": "v2.2.0",
+    "info": [
+      {
+        "title": "登录方式接入更多",
+        "content": "支持QQ登录！"
+      },
+      {
+        "title": "敬请期待",
+        "content": "全新学习打卡即将上线。全新的收集表功能即将上线。一键打印历史文件即将上线。吐槽中心即将上线。"
+      }
+    ]
   }
 ]

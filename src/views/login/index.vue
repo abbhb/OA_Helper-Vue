@@ -26,8 +26,8 @@
 
 <script lang="ts" setup>
 import Footer from '@/components/footer/index.vue';
-import {getQueryVariable} from "@/utils/utils";
-import {ref} from "vue";
+import {getQueryVariable} from '@/utils/utils';
+import {ref} from 'vue';
 import LoginBanner from './components/banner.vue';
 import LoginForm from './components/login-form.vue';
 import ThirdLogin from './components/third-login.vue';
@@ -41,7 +41,6 @@ const callbackType = getQueryVariable('type');
 if (callbackCode !== '' && callbackType !== '') {
   isCallback.value = true;
 }
-
 </script>
 
 <style lang="less" scoped>
