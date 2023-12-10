@@ -8,11 +8,14 @@ import {
   LoginDataByCode,
   logout as userLogout,
 } from '@/api/user';
-import {clearToken, setToken} from '@/utils/auth';
+import {clearToken, getToken, setToken} from '@/utils/auth';
 import {removeRouteListener} from '@/utils/route-listener';
 import {checkPermissionByServer} from '@/api/permission';
 import useMenuStore from '@/store/modules/menu';
-import {useAppStore} from "@/store";
+import {useAppStore} from '@/store';
+import {Message} from '@arco-design/web-vue';
+import {useWsLoginStore} from '@/store/modules/chat/ws';
+import {useRouter} from 'vue-router';
 import {UserState} from './types';
 
 const useUserStore = defineStore('user', {
@@ -79,6 +82,17 @@ const useUserStore = defineStore('user', {
     async loginSuccess(token: string) {
       setToken(token);
       await useAppStore().initSettings();
+      const wsLoginStore = useWsLoginStore();
+      const router = useRouter();
+      const {redirect, ...othersQuery} = router.currentRoute.value.query;
+      router.push({
+        name: (redirect as string) || 'Workplace',
+        query: {
+          ...othersQuery,
+        },
+      });
+      wsLoginStore.loginSuccess(getToken());
+      Message.success('登录成功');
     },
     // Login
     async login(loginForm: LoginData) {

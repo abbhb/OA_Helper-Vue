@@ -9,4 +9,18 @@ export function setChildrenUndefined(data: any[]) {
     }
 }
 
-export default {setChildrenUndefined};
+export function getQueryVariable(variable: string): string {
+    const query = window.location.search.substring(1);
+    const vars = query.split('&');
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split('=');
+        // eslint-disable-next-line eqeqeq
+        if (pair[0] == variable) {
+            return pair[1];
+        }
+    }
+    return '';
+}
+
+export default {setChildrenUndefined, getQueryVariable};

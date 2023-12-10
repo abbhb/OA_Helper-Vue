@@ -55,9 +55,8 @@
               <a-checkbox v-model="userInfo.week" checked="week">
                 {{ $t('login.form.weekNoLogin') }}
               </a-checkbox>
-              <a-link @click="forgetHandel">{{
-                  $t('login.form.forgetPassword')
-                }}
+              <a-link @click="forgetHandel"
+              >{{ $t('login.form.forgetPassword') }}
               </a-link>
             </div>
             <a-button :loading="loading" html-type="submit" long type="primary">
@@ -196,8 +195,6 @@ import {useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {loginByEmailCode} from '@/api/user';
-import {useWsLoginStore} from '@/store/modules/chat/ws';
-import {getToken} from '@/utils/auth';
 import CaptchaC from '@/components/captcha/index.vue';
 import {getEmailCode} from '@/api/email';
 
@@ -206,7 +203,6 @@ const router = useRouter();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
-  const wsLoginStore = useWsLoginStore();
 
   const userInfo = ref({
     username: '',
@@ -230,17 +226,6 @@ const router = useRouter();
     registerSuccess: false,
   });
 
-  const loginSuccess = () => {
-    const { redirect, ...othersQuery } = router.currentRoute.value.query;
-    router.push({
-      name: (redirect as string) || 'Workplace',
-      query: {
-        ...othersQuery,
-      },
-    });
-    wsLoginStore.loginSuccess(getToken());
-    Message.success(t('login.form.login.success'));
-  };
   const emailLoginHandel = async () => {
     // 邮箱验证码一键登录,不存在用户就自动创建
     const {data} = await loginByEmailCode({
@@ -249,19 +234,20 @@ const router = useRouter();
       emailCode: userInfoForEmailCode.value.code,
     });
     if (data.toSetPassword === 1) {
-      let baseUrl = ''
+      let baseUrl = '';
       if (import.meta.env.VITE_API_BASE_URL) {
         baseUrl = import.meta.env.VITE_API_BASE_URL;
       }
       // 需要设置密码
       window.open(
-        `${baseUrl}/api/ext-thymeleaf/re-new-password?oneTimeCode=${data.oneTimeSetPasswordCode}`
-        , 'newwindow', 'height=880, width=670, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
+        `${baseUrl}/api/ext-thymeleaf/re-new-password?oneTimeCode=${data.oneTimeSetPasswordCode}`,
+        'newwindow',
+        'height=880, width=670, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
+      );
     }
 
     // 正常逻辑
     await userStore.loginSuccess(data.token);
-    loginSuccess();
   };
   const register = () => {
     // 跳转注册页
@@ -335,7 +321,6 @@ const router = useRouter();
   const loginByToken = async () => {
     try {
       await userStore.loginByToken();
-      loginSuccess();
     } catch (err) {
       errorMessage.value = (err as Error).message;
     }
@@ -360,7 +345,6 @@ const router = useRouter();
       try {
         console.log(values);
         await userStore.login(values as LoginData);
-        loginSuccess();
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {

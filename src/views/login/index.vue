@@ -12,7 +12,9 @@
 
       <div class="content">
         <div class="content-inner">
-          <LoginForm />
+          <LoginForm v-if="!isCallback"/>
+          <ThirdLogin v-if="!isCallback"/>
+          <ThirdCallback v-if="isCallback"/>
         </div>
         <div class="footer">
           <Footer />
@@ -24,8 +26,22 @@
 
 <script lang="ts" setup>
 import Footer from '@/components/footer/index.vue';
+import {getQueryVariable} from "@/utils/utils";
+import {ref} from "vue";
 import LoginBanner from './components/banner.vue';
 import LoginForm from './components/login-form.vue';
+import ThirdLogin from './components/third-login.vue';
+import ThirdCallback from './components/third-callback.vue';
+
+const isCallback = ref(false);
+
+const callbackCode = getQueryVariable('code');
+const callbackType = getQueryVariable('type');
+
+if (callbackCode !== '' && callbackType !== '') {
+  isCallback.value = true;
+}
+
 </script>
 
 <style lang="less" scoped>
