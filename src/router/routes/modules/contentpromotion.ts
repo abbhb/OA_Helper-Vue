@@ -26,18 +26,6 @@ const ContentPromotion: AppRouteRecordRaw = {
           canGo: true,
       },
     },
-      {
-          path: 'notice-edit',
-          name: 'NoticeEdit',
-          component: () =>
-              import('@/views/content-promotion/notice-edit/index.vue'),
-          meta: {
-              locale: 'menu.notice-edit.NoticeEdit',
-              requiresAuth: true,
-              roles: ['*'],
-              canGo: true, // 不展示在菜单区
-      },
-    },
     {
       path: 'indeximage',
       name: 'IndexImage',

@@ -41,6 +41,7 @@ export default {
   'menu.docnotification.IndexImage': '图片通知',
   'menu.contentpromotion': '内容管理',
     'menu.notice-edit.NoticeEdit': '通知编辑',
+  'menu.edit': '编辑',
   'menu.dashboard.keep': '学习打卡',
   'menu.server.monitor': '实时监控-服务端',
   'menu.list': '列表页',
