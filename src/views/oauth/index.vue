@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { useUserStore } from '@/store';
-  import { ref } from 'vue';
-  import { agree, agreeLogin, getClientName } from '@/api/oauth';
-  import { clearToken, setToken } from '@/utils/auth';
-  import router from '@/router';
+import {useUserStore} from '@/store';
+import {ref} from 'vue';
+import {agree, agreeLogin, getClientName} from '@/api/oauth';
+import {setToken} from '@/utils/auth';
+import router from '@/router';
 
-  const winDatas = ref({
+const winDatas = ref({
     response_type: '',
     client_id: '',
     which: '',
@@ -169,6 +169,19 @@
       console.log(e);
     }
   };
+
+  if (!userStore.id || userStore.id === '') {
+    // 直接先登录
+    const currentRoute = router.currentRoute.value;
+
+    router.push({
+      name: 'login',
+      query: {
+        ...router.currentRoute.value.query,
+        redirect: currentRoute.name as string,
+      },
+    });
+  }
 </script>
 
 <template>
@@ -298,12 +311,13 @@
               >授权访问</a-button
             >
             <a-button
+              v-if="!userStore.id || userStore.id === ''"
               :size="'large'"
               style="margin-top: 10px"
               long
               @click="registerHandel"
-              v-if="!userStore.id || userStore.id === ''"
-            >注册账号</a-button
+            >注册账号
+            </a-button
             >
           </div>
         </div>
