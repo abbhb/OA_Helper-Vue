@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { AgreeReq, AgreeResp, SysOauth } from '@/api/oauth';
 import { PageData } from '@/api/common';
 
 export interface Notice {
@@ -29,6 +28,8 @@ export interface NoticeAddReq {
   notice: Notice;
   deptIds?: string[];
 }
+
+
 export interface NoticeDept {
   id?: string;
   noticeId?: string;
@@ -37,10 +38,35 @@ export interface NoticeDept {
   createUser?: string;
 }
 
+export interface NoticeAnnex {
+    id?: string;
+    noticeId?: string;
+    sortNum?: number;
+    fileUrl?: string;
+    fileName?: string;
+    downloadCount?: number;
+    createTime?: string;
+    createUser?: string;
+}
+
 export interface NoticeAddResp {
   notice: Notice;
   noticeDepts: NoticeDept[];
 }
+
+export interface NoticeViewResp {
+    notice: Notice;
+    noticeDepts?: NoticeDept[];
+    noticeAnnexes?: NoticeAnnex[]
+}
+
+
+export interface NoticeUpdateReq {
+    notice: Notice;
+    deptIds?: string[];
+    annexes?: NoticeAnnex[];
+}
+
 
 export interface NoticeMangerListResp {
   id?: string;
@@ -65,6 +91,12 @@ export function addNotice(data: NoticeAddReq) {
   return axios.post<NoticeAddResp>('/api/notice/add', data);
 }
 
+export function updateNotice(data: NoticeUpdateReq) {
+    return axios.put<string>('/api/notice/update', data);
+}
+
+
+
 export function publishNoticeList(
   type: number,
   pageNum: number,
@@ -86,4 +118,12 @@ export function publishNoticeList(
       },
     }
   );
+}
+
+export function viewNotice(
+    noticeId: string
+) {
+    return axios.get<NoticeViewResp>(
+        `/api/notice/view/edit/${noticeId}`,
+    );
 }

@@ -23,7 +23,7 @@ const ContentEdit: AppRouteRecordRaw = {
                 locale: 'menu.notice-edit.NoticeEdit',
                 requiresAuth: true,
                 roles: ['*'],
-                canGo: true, // 不展示在菜单区
+                canGo: false, // 不展示在菜单区
             },
         },
     ],
