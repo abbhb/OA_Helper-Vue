@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PageData } from '@/api/common';
+import {PageData} from '@/api/common';
 
 export interface Notice {
   id?: string;
@@ -29,7 +29,6 @@ export interface NoticeAddReq {
   deptIds?: string[];
 }
 
-
 export interface NoticeDept {
   id?: string;
   noticeId?: string;
@@ -57,16 +56,14 @@ export interface NoticeAddResp {
 export interface NoticeViewResp {
     notice: Notice;
     noticeDepts?: NoticeDept[];
-    noticeAnnexes?: NoticeAnnex[]
+    noticeAnnexes?: NoticeAnnex[];
 }
-
 
 export interface NoticeUpdateReq {
     notice: Notice;
     deptIds?: string[];
     annexes?: NoticeAnnex[];
 }
-
 
 export interface NoticeMangerListResp {
   id?: string;
@@ -85,17 +82,20 @@ export interface NoticeMangerListResp {
   urgency?: number;
   version?: number;
   visibility?: number;
+    deptIds?: string[];
 }
 
 export function addNotice(data: NoticeAddReq) {
   return axios.post<NoticeAddResp>('/api/notice/add', data);
 }
 
+export function quickEditNotice(data: NoticeAddReq) {
+    return axios.put<string>('/api/notice/quick_update', data);
+}
+
 export function updateNotice(data: NoticeUpdateReq) {
     return axios.put<string>('/api/notice/update', data);
 }
-
-
 
 export function publishNoticeList(
   type: number,
@@ -120,10 +120,10 @@ export function publishNoticeList(
   );
 }
 
-export function viewNotice(
-    noticeId: string
-) {
-    return axios.get<NoticeViewResp>(
-        `/api/notice/view/edit/${noticeId}`,
-    );
+export function viewNotice(noticeId: string) {
+    return axios.get<NoticeViewResp>(`/api/notice/view/edit/${noticeId}`);
+}
+
+export function deleteNotice(noticeId: string) {
+    return axios.delete<string>(`/api/notice/delete/${noticeId}`);
 }

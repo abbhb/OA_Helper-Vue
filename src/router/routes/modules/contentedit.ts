@@ -24,6 +24,7 @@ const ContentEdit: AppRouteRecordRaw = {
                 requiresAuth: true,
                 roles: ['*'],
                 canGo: false, // 不展示在菜单区
+                keepAlive: false,
             },
         },
     ],

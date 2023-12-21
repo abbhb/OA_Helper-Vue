@@ -3,13 +3,11 @@ import {onMounted, onUnmounted, reactive, ref} from 'vue';
 import router from '@/router';
 import {onBeforeRouteLeave} from 'vue-router';
 import tinymce from 'tinymce/tinymce'; //  tinymce核心文件
-import Editor from '@tinymce/tinymce-vue';
 
 import 'tinymce/models/dom'; //   引入dom模块。从 Tinymce6，开始必须有此模块导入
 import 'tinymce/themes/silver'; //  默认主题
 import 'tinymce/icons/default'; //  引入编辑器图标icon，不引入则不显示对应图标
 import 'tinymce/langs/zh-Hans'; //  引入编辑器语言包
-
 /* 引入编辑器插件
  * 位于 ./node_modules/tinymce/plugins 目录下，版本不同，插件会有所差异。根据自己版本来导入，若不存在的，不能导入，会报错。
  */
@@ -49,12 +47,7 @@ import 'tinymce/plugins/wordcount';
 import axios from 'axios';
 import {Message} from '@arco-design/web-vue';
 import {getUploadUrl} from '@/api/chat';
-import {
-  NoticeAnnex,
-  NoticeViewResp,
-  updateNotice,
-  viewNotice,
-} from '@/api/notice';
+import {NoticeAnnex, NoticeViewResp, updateNotice, viewNotice,} from '@/api/notice';
 import {deptListTree} from '@/api/dept';
 import {NoticeAnnexItem} from '@/utils/notice/NoticeAnnexItem';
 
@@ -138,7 +131,6 @@ const getAllId = (yuan) => {
   }
 };
 
-
 // 先获取基本信息
 const init = async () => {
   const {data} = await viewNotice(statusE.value.id);
@@ -172,11 +164,9 @@ const initData = async () => {
   if (deptExpandedKeys.value?.length === 0) {
     toggleExpanded();
   }
-
 };
 
 initData();
-init();
 onBeforeRouteLeave((to, from, next) => {
   if (!statusE.value.saved) {
     const answer = window.confirm(
@@ -195,7 +185,9 @@ onBeforeRouteLeave((to, from, next) => {
   }
 });
 
-onMounted(() => {
+onMounted(async () => {
+  await init();
+
   tinymce.remove();
   //  eslint-disable-next-line vue/no-export-in-script-setup
   tinymce.init({
@@ -625,8 +617,7 @@ const deleteAnnexFile = (record) => {
           </div>
           <div v-else style="margin-left: 5rem">
             上次更新于{{ noticeData.notice.updateTime }}
-          </div
-          >
+          </div>
         </div>
         <div class="top-menu-right">
           <a-button
@@ -635,14 +626,12 @@ const deleteAnnexFile = (record) => {
             class="button-item"
             @click="updateToCaoGao"
           >保存为草稿
-          </a-button
-          >
+          </a-button>
 
           <a-button class="button-item" @click="update">更新</a-button>
           <a-button type="primary" class="button-item" @click="updateR"
           >更新并返回
-          </a-button
-          >
+          </a-button>
         </div>
       </div>
       <div style="display: flex">
@@ -705,11 +694,9 @@ const deleteAnnexFile = (record) => {
                   <a-option :value="2">
                     <a-tag color="green">不急</a-tag>
                   </a-option>
-                  <a-option :value="3"
-                  >
+                  <a-option :value="3">
                     <a-tag color="red">紧急</a-tag>
-                  </a-option
-                  >
+                  </a-option>
                 </a-select>
               </div>
               <div class="menu-item">
@@ -727,8 +714,7 @@ const deleteAnnexFile = (record) => {
               <div v-if="noticeData.notice.visibility === 2" class="menu-item">
                 <a-button @click="statusE.visibilityManger = true"
                 >管理可见部门
-                </a-button
-                >
+                </a-button>
               </div>
               <div class="menu-item">
                 <div style="font-size: 20px; font-weight: 800"> 添加附件</div>
@@ -777,8 +763,7 @@ const deleteAnnexFile = (record) => {
                                     })
                                   "
                                 >查看
-                                </a-button
-                                >
+                                </a-button>
                                 <a-button
                                   type="primary"
                                   @click="deleteAnnexFile(record)"
@@ -846,14 +831,13 @@ const deleteAnnexFile = (record) => {
           </a-button>
         </a-button-group>
         <a-tree
-          :data="deptTreeData"
           v-model:checked-keys="statusE.noticeDepts"
           v-model:expanded-keys="deptExpandedKeys"
           v-model:selected-keys="deptSelectedKeys"
+          :data="deptTreeData"
           style="overflow-y: scroll; height: 20rem"
           :check-strictly="!statusE.deptFuziliandong"
           :checkable="true"
-
           :field-names="{
             key: 'id',
             title: 'deptName',
