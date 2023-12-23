@@ -93,7 +93,6 @@ const appStore = useAppStore();
     showTotal: () => `共 ${11} 条`,
   });
 
-
   const getDataB = async () => {
     pagination.value.current = 1;
     statuEs.value.searchStatus = true;
@@ -113,7 +112,7 @@ const appStore = useAppStore();
   // 单元格合并
   // eslint-disable-next-line consistent-return
   const dataSpanMethod = ({ record, column }) => {
-    if (record.status !== 2 && column.dataIndex === 'releasUserName') {
+    if (record.status !== 2 && column.dataIndex === 'releaseUserName') {
       return {
         colspan: 3,
       };
@@ -202,7 +201,7 @@ const editAGroup = (record: any) => {
   form.notice.title = record.title;
   statuEs.value.addModelStatus = false;
   statuEs.value.editModelStatus = true;
-}
+};
 const editHandleBeforeOk = async () => {
   // 快速更新通知
   form.notice.tag = formExt.tagList.join(',');
@@ -210,8 +209,7 @@ const editHandleBeforeOk = async () => {
   await getDataB();
   Message.success(data);
   statuEs.value.editModelStatus = false;
-
-}
+};
 </script>
 
 <template>
@@ -260,24 +258,20 @@ const editHandleBeforeOk = async () => {
           ></a-table-column>
           <a-table-column
             :sortable="{ sortDirections: ['ascend', 'descend'] }"
-            title="通知状态"
-            data-index="status"
-            :width="120"
-          ></a-table-column>
-          <a-table-column
-            :sortable="{ sortDirections: ['ascend', 'descend'] }"
-            title="阅读量"
-            data-index="amount"
-            :width="100"
-          ></a-table-column>
-
-          <a-table-column
-            :sortable="{ sortDirections: ['ascend', 'descend'] }"
-            title="是否包含附件"
+            title="状态"
             :width="100"
           >
             <template #cell="{ record }">
-              <a-tag>{{ record.isAnnex ? '存在附件' : '无' }}</a-tag>
+              <a-tag :color="getColor(record.status)">{{
+                  record.status === 0
+                    ? '草稿'
+                    : record.status === 1
+                      ? '预发布'
+                      : record.status === 2
+                        ? '发布/定时发布'
+                        : '禁止查看'
+                }}
+              </a-tag>
             </template>
           </a-table-column>
           <a-table-column
@@ -292,6 +286,52 @@ const editHandleBeforeOk = async () => {
             :width="120"
             data-index="updateTime"
           ></a-table-column>
+          <a-table-column :width="200" title="通知详情">
+            <template #cell="{ record }">
+              <div>
+                <div class="row-info-detail">
+                  <div> 是否存在附件</div>
+                  <a-tag>{{ record.isAnnex ? '存在附件' : '无' }}</a-tag>
+                </div>
+                <div class="row-info-detail">
+                  <div> 阅读量</div>
+                  <div>
+                    {{ record.amount }}
+                  </div>
+                </div>
+                <div class="row-info-detail">
+                  <div> 标签</div>
+                  <a-tag
+                    v-for="(item, key) in record.tag.split(',')"
+                    :key="key"
+                    :color="getColor(key)"
+                    bordered
+                  >{{ item }}
+                  </a-tag>
+                </div>
+                <div class="row-info-detail">
+                  <div> 紧急状态</div>
+                  <a-tag
+                    :color="
+                      record.urgency === 2
+                        ? 'green'
+                        : record.urgency === 3
+                        ? 'red'
+                        : ''
+                    "
+                  >
+                    {{
+                      record.urgency === 2
+                        ? '不急'
+                        : record.urgency === 1
+                          ? '一般'
+                          : '紧急'
+                    }}
+                  </a-tag>
+                </div>
+              </div>
+            </template>
+          </a-table-column>
           <a-table-column
             title="创建人"
             :width="120"
@@ -302,22 +342,11 @@ const editHandleBeforeOk = async () => {
             :width="120"
             data-index="updateUserName"
           ></a-table-column>
-          <a-table-column title="标签" :width="90">
-            <template #cell="{ record }">
-              <a-tag
-                v-for="(item, key) in record.tag.split(',')"
-                :key="key"
-                :color="getColor(key)"
-                bordered
-                >{{ item }}
-              </a-tag>
-            </template>
-          </a-table-column>
           <a-table-column title="发布信息[若发布]">
             <a-table-column
               title="发布用户"
               :width="120"
-              data-index="releasUserName"
+              data-index="releaseUserName"
             >
               <template #cell="{ record }">
                 <div style="display: flex; justify-content: center">
@@ -351,12 +380,15 @@ const editHandleBeforeOk = async () => {
               <a-button class="item" @click="EditNotice(record)">
                 <span>编辑</span>
               </a-button>
-              <a-popconfirm content="确认删除该条通知?" position="left" @ok="DeleteNotice(record)">
+              <a-popconfirm
+                content="确认删除该条通知?"
+                position="left"
+                @ok="DeleteNotice(record)"
+              >
                 <a-button :status="'danger'" class="item">
                   <span>删除</span>
                 </a-button>
               </a-popconfirm>
-
             </template>
           </a-table-column>
         </template>
@@ -591,5 +623,10 @@ const editHandleBeforeOk = async () => {
 <style lang="less" scoped>
   .item {
     margin-right: 5px;
+  }
+
+  .row-info-detail {
+    display: flex;
+    flex-direction: row;
   }
 </style>
