@@ -9,6 +9,12 @@
         {{ $t('workplace.popularContent') }}
       </template>
       <a-space :size="10" direction="vertical" fill>
+        <div style="display: flex;">
+          <tag-ellipse :is-select="true" tag="全部部门"/>
+        </div>
+        <div style="display: flex;">
+          <tag-ellipse :is-select="true" tag="全部Tag"/>
+        </div>
         <a-radio-group
           v-model:model-value="statuEs.type"
           :default-value="0"
@@ -30,6 +36,7 @@
           :data="tableData"
           :pagination="pagination"
           :show-header="false"
+          :row-class="rowClass"
           @row-click="toNoticeContentView"
         >
           <template #columns>
@@ -40,30 +47,31 @@
                 title="通知标题"
               >
                 <template #cell="{ record }">
-                  <div style="display: flex;flex-direction: column;">
+                  <div style="display: flex; flex-direction: column">
                     <div
                       style="
-                      display: flex;
-                      flex-direction: row;
-                      align-items: center;
-                      cursor: pointer;
-                    "
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        cursor: pointer;
+                      "
                     >
-                      <div style="font-size: 16px; cursor: pointer">
-                        {{ record.title }}
+                      <div v-if="!record.userRead" class="userweidu">
+                        new
                       </div>
                       <div v-if="record.isAnnex === 1" class="fujiancunzai">
                         <img :src="attachment"/>
                       </div>
-                      <div v-if="record.userRead === 1" class="userweidu">
-                        new
+                      <div style="font-size: 16px; cursor: pointer">
+                        {{ record.title }}
+                      </div>
+                      <div style="display: flex">
+                        <TagEllipse v-for="(item,key) in record.tag.split(',')" :key="key" :tag="item"/>
+
                       </div>
                     </div>
-                    <div>
-                      第二行
-                    </div>
+                    <div> {{ record.title }}{{ getIntroContent(record.content) }}</div>
                   </div>
-
                 </template>
               </a-table-column>
 
@@ -73,25 +81,22 @@
                 data-index="releaseDeptName"
                 title="发布部门"
               >
-                <template #cell="{record}">
+                <template #cell="{ record }">
                   <div class="notice-item">
                     {{ record.releaseDeptName }}
                   </div>
-
                 </template>
               </a-table-column>
-              <a-table-column
-                :width="50"
-                title="标签">
-                <template #cell="{record}">
+              <a-table-column :width="50" title="标签">
+                <template #cell="{ record }">
                   <a-tag
                     :color="
-                          record.urgency === 2
-                            ? 'green'
-                            : record.urgency === 3
-                            ? 'red'
-                            : ''
-                        "
+                      record.urgency === 2
+                        ? 'green'
+                        : record.urgency === 3
+                        ? 'red'
+                        : ''
+                    "
                     class="notice-item"
                   >
                     {{
@@ -124,7 +129,8 @@ import {ref} from 'vue';
 import useLoading from '@/hooks/loading';
 import {getViewNoticeList, NoticeUserResp} from '@/api/notice';
 import attachment from '@/assets/images/attachment.png';
-import {Message} from '@arco-design/web-vue';
+import {Message, TableData} from '@arco-design/web-vue';
+import TagEllipse from '@/components/tag-ellipse/index.vue';
 
 const statuEs = ref({
   type: 0,
@@ -187,7 +193,22 @@ const toNoticeContentView = () => {
   Message.info('测试');
 };
 
+// eslint-disable-next-line consistent-return
+const rowClass = (record: TableData, rowIndex: number) => {
+  if (record.userRead) {
+    return "not-read";
+  }
+  return "";
+}
 // fetchData('text');
+
+const getIntroContent = (content) => {
+  let jieguo = content.replace(/&nbsp;/g, "").replace(/<.*?>/g, "");
+  if (jieguo.length > 30) {
+    jieguo = jieguo.substring(0, 30);
+  }
+  return jieguo;
+};
 </script>
 
 <style lang="less" scoped>
@@ -240,10 +261,21 @@ const toNoticeContentView = () => {
   min-width: 20px;
   line-height: 1;
   background-color: #93d36e;
-  margin: 0 0 10px 2px;
+  margin: 0 2px 10px 0;
 }
 
 .notice-item {
   cursor: pointer;
+}
+
+/deep/ .not-read {
+  background-color: #e5e6eb;
+}
+
+</style>
+
+<style lang="css">
+.not-read {
+  background-color: #e5e6eb;
 }
 </style>
