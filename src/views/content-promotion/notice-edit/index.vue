@@ -3,7 +3,6 @@ import {onMounted, onUnmounted, reactive, ref} from 'vue';
 import router from '@/router';
 import {onBeforeRouteLeave} from 'vue-router';
 import tinymce from 'tinymce/tinymce'; //  tinymce核心文件
-
 import 'tinymce/models/dom'; //   引入dom模块。从 Tinymce6，开始必须有此模块导入
 import 'tinymce/themes/silver'; //  默认主题
 import 'tinymce/icons/default'; //  引入编辑器图标icon，不引入则不显示对应图标
@@ -821,6 +820,7 @@ const deleteAnnexFile = (record) => {
       :mask="true"
       title="管理可见部门"
     >
+      <div>不包含子部门！请手动选择所需要的所有部门</div>
       <div v-if="noticeData.notice.visibility === 2">
         <a-button-group style="margin-bottom: 20px">
           <a-button type="primary" @click="toggleChecked">

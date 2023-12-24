@@ -25,7 +25,17 @@ const Chat: AppRouteRecordRaw = {
         requiresAuth: true,
         roles: ['*'],
         canGo:true
-
+      },
+    },
+      {
+          path: 'notice-list',
+          name: 'Notice-List',
+          component: () => import('@/views/content-promotion/notice-list/index.vue'),
+          meta: {
+              locale: 'menu.notice-list',
+              requiresAuth: true,
+              roles: ['*'],
+              canGo: true
       },
     },
   ]

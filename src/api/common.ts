@@ -6,8 +6,8 @@ export interface PageData<T> {
   pages: string;
   records: T;
   size: string;
-  MaxLimit: string;
-  total: string;
+  MaxLimit: number;
+  total: number;
 }
 
 export interface SystemMessageConfig {

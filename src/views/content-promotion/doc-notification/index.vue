@@ -262,7 +262,8 @@ const editHandleBeforeOk = async () => {
             :width="100"
           >
             <template #cell="{ record }">
-              <a-tag :color="getColor(record.status)">{{
+              <a-tag :color="getColor(record.status)"
+              >{{
                   record.status === 0
                     ? '草稿'
                     : record.status === 1
@@ -472,6 +473,9 @@ const editHandleBeforeOk = async () => {
           </a-form-item>
         </div>
         <div v-if="form.notice.visibility === 2">
+          <div>
+            不包含子部门！请手动选择所需要的所有部门
+          </div>
           <a-button-group style="margin-bottom: 20px">
             <a-button type="primary" @click="toggleChecked">
               {{ form.deptIds?.length ? '反全选' : '全选' }}
@@ -591,6 +595,9 @@ const editHandleBeforeOk = async () => {
           </a-form-item>
         </div>
         <div v-if="form.notice.visibility === 2">
+          <div>
+            不包含子部门！请手动选择所需要的所有部门
+          </div>
           <a-button-group style="margin-bottom: 20px">
             <a-button type="primary" @click="toggleChecked">
               {{ form.deptIds?.length ? '反全选' : '全选' }}

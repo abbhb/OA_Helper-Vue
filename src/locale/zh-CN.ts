@@ -27,6 +27,7 @@ export default {
   'menu.version': '版本中心',
   'menu.version.index': '版本详情',
   'menu.chat': 'Chat',
+    'menu.notice-list': '通知中心',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
   'menu.usercenter.usercenter': '个人中心',

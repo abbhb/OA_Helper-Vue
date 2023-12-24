@@ -24,6 +24,10 @@ export interface Notice {
   visibility?: number;
 }
 
+export interface NoticeUserResp extends Notice {
+  userRead?: boolean;
+}
+
 export interface NoticeAddReq {
   notice: Notice;
   deptIds?: string[];
@@ -38,14 +42,14 @@ export interface NoticeDept {
 }
 
 export interface NoticeAnnex {
-    id?: string;
-    noticeId?: string;
-    sortNum?: number;
-    fileUrl?: string;
-    fileName?: string;
-    downloadCount?: number;
-    createTime?: string;
-    createUser?: string;
+  id?: string;
+  noticeId?: string;
+  sortNum?: number;
+  fileUrl?: string;
+  fileName?: string;
+  downloadCount?: number;
+  createTime?: string;
+  createUser?: string;
 }
 
 export interface NoticeAddResp {
@@ -54,15 +58,15 @@ export interface NoticeAddResp {
 }
 
 export interface NoticeViewResp {
-    notice: Notice;
-    noticeDepts?: NoticeDept[];
-    noticeAnnexes?: NoticeAnnex[];
+  notice: Notice;
+  noticeDepts?: NoticeDept[];
+  noticeAnnexes?: NoticeAnnex[];
 }
 
 export interface NoticeUpdateReq {
-    notice: Notice;
-    deptIds?: string[];
-    annexes?: NoticeAnnex[];
+  notice: Notice;
+  deptIds?: string[];
+  annexes?: NoticeAnnex[];
 }
 
 export interface NoticeMangerListResp {
@@ -82,7 +86,7 @@ export interface NoticeMangerListResp {
   urgency?: number;
   version?: number;
   visibility?: number;
-    deptIds?: string[];
+  deptIds?: string[];
 }
 
 export function addNotice(data: NoticeAddReq) {
@@ -90,11 +94,11 @@ export function addNotice(data: NoticeAddReq) {
 }
 
 export function quickEditNotice(data: NoticeAddReq) {
-    return axios.put<string>('/api/notice/quick_update', data);
+  return axios.put<string>('/api/notice/quick_update', data);
 }
 
 export function updateNotice(data: NoticeUpdateReq) {
-    return axios.put<string>('/api/notice/update', data);
+  return axios.put<string>('/api/notice/update', data);
 }
 
 export function publishNoticeList(
@@ -121,9 +125,24 @@ export function publishNoticeList(
 }
 
 export function viewNotice(noticeId: string) {
-    return axios.get<NoticeViewResp>(`/api/notice/view/edit/${noticeId}`);
+  return axios.get<NoticeViewResp>(`/api/notice/view/edit/${noticeId}`);
+}
+
+export function getViewNoticeList(
+    urgency: number,
+    pageNum: number,
+    pageSize: number,
+    deptId?: string
+) {
+  return axios.get<PageData<NoticeUserResp[]>>(`/api/notice/list/${urgency}`, {
+    params: {
+      pageNum,
+      pageSize,
+      deptId,
+    },
+  });
 }
 
 export function deleteNotice(noticeId: string) {
-    return axios.delete<string>(`/api/notice/delete/${noticeId}`);
+  return axios.delete<string>(`/api/notice/delete/${noticeId}`);
 }
