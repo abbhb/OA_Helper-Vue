@@ -15,7 +15,7 @@
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <PopularContent @alert-some="StatusTh.popularContentStatus = true" />
+          <PopularContent @alert-some="router.push({ name: 'Notice-List' })"/>
         </a-grid-item>
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
@@ -66,28 +66,25 @@
 </template>
 
 <script lang="ts" setup>
-  import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
-  import { Message } from '@arco-design/web-vue';
-  import { onBeforeMount, onMounted, ref } from 'vue';
-  import { useAppStore } from '@/store';
-  import { driver } from 'driver.js';
-  import { confirmToServer, isConfirm } from '@/api/common';
-  import router from '@/router';
-  import {
-    FIRST_PAGE_HELPER,
-    FIRST_SUCCESS_UPDATE_USER_INFO,
-  } from '@/utils/my-string';
-  import Banner from './components/banner.vue';
-  import DataPanel from './components/data-panel.vue';
-  import PopularContent from './components/popular-content.vue';
-  import RecentlyVisited from './components/recently-visited.vue';
-  import QuickOperation from './components/quick-operation.vue';
-  import Announcement from './components/announcement.vue';
-  import Carousel from './components/carousel.vue';
-  import Docs from './components/docs.vue';
-  import 'driver.js/dist/driver.css';
+import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
+import {Message} from '@arco-design/web-vue';
+import {onMounted, ref} from 'vue';
+import {useAppStore} from '@/store';
+import {driver} from 'driver.js';
+import {confirmToServer, isConfirm} from '@/api/common';
+import router from '@/router';
+import {FIRST_PAGE_HELPER, FIRST_SUCCESS_UPDATE_USER_INFO,} from '@/utils/my-string';
+import Banner from './components/banner.vue';
+import DataPanel from './components/data-panel.vue';
+import PopularContent from './components/popular-content.vue';
+import RecentlyVisited from './components/recently-visited.vue';
+import QuickOperation from './components/quick-operation.vue';
+import Announcement from './components/announcement.vue';
+import Carousel from './components/carousel.vue';
+import Docs from './components/docs.vue';
+import 'driver.js/dist/driver.css';
 
-  const appStore = useAppStore();
+const appStore = useAppStore();
   const selectMenu = (item) => {
     Message.info(item.label);
   };
@@ -108,10 +105,9 @@
     await confirmToServer(FIRST_PAGE_HELPER);
   };
 
-
   onMounted(async () => {
     // 先判断该用户是不是建议过了！
-    const { data:dataas } = await isConfirm(FIRST_SUCCESS_UPDATE_USER_INFO);
+    const {data: dataas} = await isConfirm(FIRST_SUCCESS_UPDATE_USER_INFO);
     if (!dataas) {
       // 需要跳转更新信息界面
       router.push({

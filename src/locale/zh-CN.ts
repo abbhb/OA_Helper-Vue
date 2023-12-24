@@ -26,6 +26,7 @@ export default {
   'menu.entertainment.game2048': '2048',
   'menu.version': '版本中心',
   'menu.version.index': '版本详情',
+  'menu.Message': '消息',
   'menu.chat': 'Chat',
     'menu.notice-list': '通知中心',
   'menu.server.dashboard': '仪表盘-服务端',

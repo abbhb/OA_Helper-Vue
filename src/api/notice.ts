@@ -28,6 +28,10 @@ export interface NoticeUserResp extends Notice {
   userRead?: boolean;
 }
 
+export interface NoticeUserReadResp extends Notice {
+  userRead?: boolean;
+}
+
 export interface NoticeAddReq {
   notice: Notice;
   deptIds?: string[];

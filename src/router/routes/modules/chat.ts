@@ -21,7 +21,7 @@ const Chat: AppRouteRecordRaw = {
       name: 'Chat-Index',
       component: () => import('@/views/chat/chat-index/index.vue'),
       meta: {
-        locale: 'menu.chat',
+          locale: 'menu.Message',
         requiresAuth: true,
         roles: ['*'],
         canGo:true

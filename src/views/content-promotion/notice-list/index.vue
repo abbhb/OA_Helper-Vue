@@ -9,10 +9,10 @@
         {{ $t('workplace.popularContent') }}
       </template>
       <a-space :size="10" direction="vertical" fill>
-        <div style="display: flex;">
+        <div style="display: flex">
           <tag-ellipse :is-select="true" tag="全部部门"/>
         </div>
-        <div style="display: flex;">
+        <div style="display: flex">
           <tag-ellipse :is-select="true" tag="全部Tag"/>
         </div>
         <a-radio-group
@@ -56,9 +56,7 @@
                         cursor: pointer;
                       "
                     >
-                      <div v-if="!record.userRead" class="userweidu">
-                        new
-                      </div>
+                      <div v-if="!record.userRead" class="userweidu"> new</div>
                       <div v-if="record.isAnnex === 1" class="fujiancunzai">
                         <img :src="attachment"/>
                       </div>
@@ -66,11 +64,19 @@
                         {{ record.title }}
                       </div>
                       <div style="display: flex">
-                        <TagEllipse v-for="(item,key) in record.tag.split(',')" :key="key" :tag="item"/>
-
+                        <TagEllipse
+                          v-for="(item, key) in record.tag.split(',')"
+                          :key="key"
+                          :tag="item"
+                        />
                       </div>
                     </div>
-                    <div> {{ record.title }}{{ getIntroContent(record.content) }}</div>
+                    <div>
+                      {{
+                        record.title
+                      }}{{ getIntroContent(record.content) }}
+                    </div
+                    >
                   </div>
                 </template>
               </a-table-column>
@@ -121,22 +127,38 @@
         </a-table>
       </a-space>
     </a-card>
+    <a-modal
+      v-model:visible="statuEs.noticeRead"
+      :draggable="true"
+      :footer="false"
+      :fullscreen="false"
+      :title="statuEs.noticeReadLoading ? '加载中' : noticeReadData?.title"
+      :unmount-on-close="true"
+      :width="1600"
+    >
+      <NoticeRead/>
+    </a-modal>
   </a-spin>
 </template>
 
 <script lang="ts" setup>
 import {ref} from 'vue';
 import useLoading from '@/hooks/loading';
-import {getViewNoticeList, NoticeUserResp} from '@/api/notice';
+import {getViewNoticeList, NoticeUserReadResp, NoticeUserResp,} from '@/api/notice';
 import attachment from '@/assets/images/attachment.png';
 import {Message, TableData} from '@arco-design/web-vue';
 import TagEllipse from '@/components/tag-ellipse/index.vue';
+import NoticeRead from '@/components/notice-read/index.vue';
 
 const statuEs = ref({
   type: 0,
   searchStatus: false,
   name: '',
+  noticeRead: false,
+  noticeReadId: '',
+  noticeReadLoading: false,
 });
+const noticeReadData = ref<NoticeUserReadResp>(null);
 
 const tableData = ref<NoticeUserResp[]>([]);
 
@@ -188,22 +210,27 @@ const typeChange = (contentType: number) => {
   getDataB();
 };
 
-const toNoticeContentView = () => {
+const toNoticeContentView = (record) => {
   // 前往通知查看页
   Message.info('测试');
+  statuEs.value.noticeReadId = record.id;
+  // 开始加载
+  statuEs.value.noticeReadLoading = true;
+  statuEs.value.noticeRead = true;
+  // 获取最新的该通知信息
 };
 
 // eslint-disable-next-line consistent-return
 const rowClass = (record: TableData, rowIndex: number) => {
   if (record.userRead) {
-    return "not-read";
+    return 'not-read';
   }
-  return "";
-}
+  return '';
+};
 // fetchData('text');
 
 const getIntroContent = (content) => {
-  let jieguo = content.replace(/&nbsp;/g, "").replace(/<.*?>/g, "");
+  let jieguo = content.replace(/&nbsp;/g, '').replace(/<.*?>/g, '');
   if (jieguo.length > 30) {
     jieguo = jieguo.substring(0, 30);
   }
@@ -271,7 +298,6 @@ const getIntroContent = (content) => {
 /deep/ .not-read {
   background-color: #e5e6eb;
 }
-
 </style>
 
 <style lang="css">
