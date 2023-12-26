@@ -9,9 +9,8 @@
         {{ $t('workplace.popularContent') }}
       </template>
       <template #extra>
-        <a-link v-if="!props.noMore" @click="emit('alertSome')">{{
-            $t('workplace.viewMore')
-          }}
+        <a-link v-if="!props.noMore" @click="emit('alertSome')"
+        >{{ $t('workplace.viewMore') }}
         </a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
@@ -49,24 +48,24 @@
                 <template #cell="{ record }">
                   <div
                     style="
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    cursor:pointer;
-                  "
+                      display: flex;
+                      flex-direction: row;
+                      align-items: center;
+                      cursor: pointer;
+                    "
                   >
-                    <div style="font-size: 16px;cursor:pointer;">
+                    <div style="font-size: 16px; cursor: pointer">
                       {{ record.title }}
                     </div>
                     <div class="notice-tag">
                       <a-tag
                         :color="
-                        record.urgency === 2
-                          ? 'green'
-                          : record.urgency === 3
-                          ? 'red'
-                          : ''
-                      "
+                          record.urgency === 2
+                            ? 'green'
+                            : record.urgency === 3
+                            ? 'red'
+                            : ''
+                        "
                       >
                         {{
                           record.urgency === 2
@@ -80,7 +79,10 @@
                     <div v-if="record.isAnnex === 1" class="fujiancunzai">
                       <img :src="attachment"/>
                     </div>
-                    <div v-if="record.userRead === 1" class="userweidu"> new</div>
+                    <div v-if="!record.userRead" class="userweidu">
+                      new
+                    </div
+                    >
                   </div>
                 </template>
               </a-table-column>
@@ -91,7 +93,6 @@
                 title="发布时间"
               ></a-table-column>
             </div>
-
           </template>
         </a-table>
       </a-space>
@@ -114,9 +115,9 @@
 import {ref} from 'vue';
 import useLoading from '@/hooks/loading';
 import {defineEmits} from 'vue/dist/vue';
-import {addNoticeReadLog, getViewNoticeList, NoticeUserResp} from '@/api/notice';
+import {addNoticeReadLog, getViewNoticeList, NoticeUserResp,} from '@/api/notice';
 import attachment from '@/assets/images/attachment.png';
-import NoticeRead from "@/components/notice-read/index.vue";
+import NoticeRead from '@/components/notice-read/index.vue';
 
 const props = defineProps({
     noMore: {
@@ -192,7 +193,7 @@ const toNoticeContentView = async (record) => {
       // 外链
       window.open(record.content);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
     return;
   }
@@ -244,6 +245,10 @@ const toNoticeContentView = async (record) => {
     margin: 0 0 10px 2px;
   }
 
+  .notice-item {
+    cursor: pointer;
+  }
+
   .userweidu {
     padding: 0 4px 2px;
     display: inline-block;
@@ -252,10 +257,6 @@ const toNoticeContentView = async (record) => {
     min-width: 20px;
     line-height: 1;
     background-color: #93d36e;
-    margin: 0 0 10px 2px;
-  }
-
-  .notice-item {
-    cursor: pointer;
+    margin: 0 2px 10px 0;
   }
 </style>

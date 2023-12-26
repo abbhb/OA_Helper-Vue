@@ -44,9 +44,7 @@ initData();
       <div
         style="
           overflow-y: auto;
-          display: flex;
-          flex-flow: wrap;
-          overflow-scrolling: auto;
+
           overflow-x: auto;
           height: 100%;
         "
