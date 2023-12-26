@@ -96,6 +96,17 @@
         </a-table>
       </a-space>
     </a-card>
+    <a-modal
+      v-model:visible="statuEs.noticeRead"
+      :draggable="true"
+      :footer="false"
+      :fullscreen="false"
+      :title="statuEs.noticeReadTitle"
+      :unmount-on-close="true"
+      :width="1600"
+    >
+      <NoticeRead :notice-id="statuEs.noticeReadId"/>
+    </a-modal>
   </a-spin>
 </template>
 
@@ -103,9 +114,9 @@
 import {ref} from 'vue';
 import useLoading from '@/hooks/loading';
 import {defineEmits} from 'vue/dist/vue';
-import {getViewNoticeList, NoticeUserResp} from '@/api/notice';
+import {addNoticeReadLog, getViewNoticeList, NoticeUserResp} from '@/api/notice';
 import attachment from '@/assets/images/attachment.png';
-import {Message} from "@arco-design/web-vue";
+import NoticeRead from "@/components/notice-read/index.vue";
 
 const props = defineProps({
     noMore: {
@@ -118,6 +129,9 @@ const statuEs = ref({
   type: 0,
   searchStatus: false,
   name: '',
+  noticeRead: false,
+  noticeReadId: '',
+  noticeReadTitle: '',
 });
 
 const tableData = ref<NoticeUserResp[]>([]);
@@ -170,11 +184,24 @@ const typeChange = (contentType: number) => {
   getDataB();
   };
 
-const toNoticeContentView = () => {
+// 前往通知查看页
+const toNoticeContentView = async (record) => {
+  if (record.type === 2) {
+    try {
+      await addNoticeReadLog(record.id);
+      // 外链
+      window.open(record.content);
+    } catch (e) {
+      console.log(e)
+    }
+    return;
+  }
   // 前往通知查看页
-  Message.info("测试")
-
-}
+  statuEs.value.noticeReadId = record.id;
+  statuEs.value.noticeReadTitle = record.title;
+  // 开始加载
+  statuEs.value.noticeRead = true;
+};
 
   // fetchData('text');
 </script>

@@ -71,8 +71,11 @@
                         />
                       </div>
                     </div>
-                    <div>
+                    <div v-if="record.type===1">
                       {{ record.title }}{{ getIntroContent(record.content) }}
+                    </div>
+                    <div v-else style="color: #adadad">
+                      此通知会跳转第三方url，注意鉴别！
                     </div>
                   </div>
                 </template>
@@ -141,7 +144,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import useLoading from '@/hooks/loading';
-import {getViewNoticeList, NoticeUserReadResp, NoticeUserResp,} from '@/api/notice';
+import {addNoticeReadLog, getViewNoticeList, NoticeUserReadResp, NoticeUserResp,} from '@/api/notice';
 import attachment from '@/assets/images/attachment.png';
 import {TableData} from '@arco-design/web-vue';
 import TagEllipse from '@/components/tag-ellipse/index.vue';
@@ -207,7 +210,17 @@ const typeChange = (contentType: number) => {
   getDataB();
 };
 
-const toNoticeContentView = (record) => {
+const toNoticeContentView = async (record) => {
+  if (record.type === 2) {
+    try {
+      await addNoticeReadLog(record.id);
+      // 外链
+      window.open(record.content);
+    } catch (e) {
+      console.log(e)
+    }
+    return;
+  }
   // 前往通知查看页
   statuEs.value.noticeReadId = record.id;
   statuEs.value.noticeReadTitle = record.title;

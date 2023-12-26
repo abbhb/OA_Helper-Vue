@@ -84,7 +84,9 @@ export interface NoticeMangerListResp {
   id?: string;
   title?: string;
   status?: number;
+  type?: number;
   amount?: number;
+  content?: string;
   isAnnex?: number;
   createTime?: string;
   updateTime?: string;
@@ -168,4 +170,10 @@ export function getNoticeRead(
       password,
     },
   });
+}
+
+export function addNoticeReadLog(
+    noticeId: string,
+) {
+  return axios.get<void>(`/api/notice/log/${noticeId}`);
 }

@@ -40,12 +40,26 @@ initData();
 <template>
   <a-spin :loading="statuEs.status === 1" style="width: 100%">
     <div v-if="statuEs.status === 0" class="error"></div>
-    <div v-else-if="statuEs.status === 2">
-      <div v-html="statuEs.data.notice.content"></div>
+    <div v-else-if="statuEs.status === 2" style="height: 760px">
+      <div
+        style="
+          overflow-y: auto;
+          display: flex;
+          flex-flow: wrap;
+          overflow-scrolling: auto;
+          overflow-x: auto;
+          height: 100%;
+        "
+        v-html="statuEs.data.notice.content"
+      ></div>
       <div v-if="statuEs.data.noticeAnnexes?.length > 0">
-        <div style="font-size: 20px;font-weight: 800;">附件区</div>
-        <div style="display:flex;">
-          <div v-for="(item,key) in statuEs.data.noticeAnnexes" :key="key" class="fujian-item">
+        <div style="font-size: 20px; font-weight: 800">附件区</div>
+        <div style="display: flex">
+          <div
+            v-for="(item, key) in statuEs.data.noticeAnnexes"
+            :key="key"
+            class="fujian-item"
+          >
             <div>
               <icon-file :size="38"/>
             </div>

@@ -49,6 +49,16 @@ export interface LoginByEmailCodeReq {
     email: string;
 }
 
+export interface UserSelectResp {
+    id: string;
+    name: string;
+}
+
+
+export interface UserSelectListResp {
+    options: UserSelectResp[];
+}
+
 interface UserFrontConfigReq {
   req: string;
 }
@@ -129,4 +139,12 @@ export function getUserListManger(params: {
 
 export function getUserPassword() {
   return axios.get<number>('/api/user/user_password');
+}
+
+export function userSelectList(name: string) {
+    return axios.get<UserSelectListResp>('/api/user/user_select_list', {
+        params: {
+            name
+        }
+    });
 }

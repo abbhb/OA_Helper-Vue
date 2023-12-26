@@ -1,9 +1,8 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import version from '@/config/version.json';
+import {ref} from 'vue';
+import version from '@/config/version.json';
 
-
-  const data = version;
+const data = version;
 
 
   const selectVersion = ref(data[data.length - 1]);

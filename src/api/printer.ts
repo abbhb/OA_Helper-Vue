@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PageData } from '@/api/common';
+import {PageData} from '@/api/common';
 
 export interface Printer {
   contentHash: string;
@@ -46,21 +46,21 @@ interface PrintFileReq {
 }
 
 export interface PrintJobC {
-  id:string;
-  documentName:string;
-  startTime:string;
-  jobStatus:string;
-  pagesPrinted:number;
-  pageCount:number;
+  id: string;
+  documentName: string;
+  startTime: string;
+  jobStatus: string;
+  pagesPrinted: number;
+  pageCount: number;
 }
 
 export interface PrintDeviceInfoResp {
-  printName:string;
-  printDescription:string;
-  statusTypeMessage:string;
-  listNums:number;
-  statusType:number;
-  printJobs:PrintJobC[];
+  printName: string;
+  printDescription: string;
+  statusTypeMessage: string;
+  listNums: number;
+  statusType: number;
+  printJobs: PrintJobC[];
 }
 
 export interface PrintDeviceResp {
@@ -93,27 +93,41 @@ interface PrinterBaseResp<T> {
 export function querySelfPrinterList(params: {
   page_num: number;
   page_size: number;
-  onlyPrinted?:number;
-  name?:string;
-  startDate?:string;
-  endDate?:string
+  onlyPrinted?: number;
+  name?: string;
+  startDate?: string;
+  endDate?: string;
 }) {
-  return axios.get<PageData<Printer[]>>('/api/printer/getMyHistoryPrints', {
-    params,
-  });
+  return axios.post<PageData<Printer[]>>(
+      `/api/printer/getMyHistoryPrints/${params.page_num}/${params.page_size}`,
+      {
+        onlyPrinted: params.onlyPrinted,
+        name: params.name,
+        startDate: params.startDate,
+        endDate: params.endDate,
+      }
+  );
 }
 
 export function queryAllPrinterList(params: {
   page_num: number;
   page_size: number;
-  onlyPrinted?:number;
-  name?:string;
-  startDate?:string;
-  endDate?:string
+  onlyPrinted?: number;
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  onlyUser?: string[];
 }) {
-  return axios.get<PageData<Printer[]>>('/api/printer/getAllHistoryPrints', {
-    params,
-  });
+  return axios.post<PageData<Printer[]>>(
+      `/api/printer/getAllHistoryPrints/${params.page_num}/${params.page_size}`,
+      {
+        onlyPrinted: params.onlyPrinted,
+        name: params.name,
+        startDate: params.startDate,
+        endDate: params.endDate,
+        onlyUser: params.onlyUser,
+      }
+  );
 }
 
 export function getCountTop10VO(params: { type: number }) {
@@ -166,16 +180,16 @@ export function printDevicePolling() {
 /**
  * 设备轮询详情接口，获取打印机注详细状态
  */
-export function printDeviceInfoPolling(id:string) {
-  return axios.get<PrintDeviceInfoResp>(`/api/printer/print_device_info polling/${id}`);
+export function printDeviceInfoPolling(id: string) {
+  return axios.get<PrintDeviceInfoResp>(
+      `/api/printer/print_device_info polling/${id}`
+  );
 }
-
-
 
 /**
  * 取消打印任务
  */
-export function cancelPrint(id:string,deviceId:string) {
+export function cancelPrint(id: string, deviceId: string) {
   return axios.get<string>(`/api/printer/print_cancel/${id}/${deviceId}`);
 }
 

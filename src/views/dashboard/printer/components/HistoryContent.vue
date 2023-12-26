@@ -19,7 +19,33 @@
           @change="typeChange as any"
         />
       </div>
-
+      <div v-if="config.type === '全部'" class="left-margin">
+        <label>筛选用户</label>
+        <a-select
+          v-model:model-value="config.onlyReadUserList"
+          :allow-clear="true"
+          :filter-option="false"
+          :loading="config.onlyUserListLoading"
+          :style="{ width: '220px' }"
+          multiple
+          placeholder="请选择用户"
+          value-key="id"
+          @clear="typeChange as any"
+          @search="onlyUserReadHandleSearch"
+          @press-enter="typeChange as any"
+        >
+          <template #empty>
+            请输入用户的昵称进行搜索！默认不展示用户列表
+          </template>
+          <a-option
+            v-for="(item, key) in onlyUserReadOptions"
+            :key="key"
+            :value="item"
+          >{{ item.name }}
+          </a-option
+          >
+        </a-select>
+      </div>
 
       <div class="left-margin">
         <label>文件名</label>
@@ -36,7 +62,7 @@
       <div class="left-margin">
         日期筛选
         <a-range-picker
-          style="width: 360px; "
+          style="width: 320px"
           show-time
           :time-picker-props="{ defaultValue: ['00:00:00', '09:09:06'] }"
           format="YYYY-MM-DD HH:mm"
@@ -44,6 +70,7 @@
           @ok="onOk"
         />
       </div>
+      <a-button :type="'primary'" @click="clearTiaoJian">重置</a-button>
     </div>
 
     <a-table :columns="columns" :data="tableData" :pagination="pagination">
@@ -68,7 +95,9 @@
             <a-button class="button_item" @click="button(record.url)">{{
               $t('printer.one.HistoryRecord.download')
             }}</a-button>
-            <a-button class="button_item" @click="onePrint(record.url,record.name)"
+            <a-button
+              class="button_item"
+              @click="onePrint(record.url, record.name)"
               >一键打印</a-button
             >
             <a-button class="button_item" @click="buttonDelete(record.url)">{{
@@ -82,21 +111,25 @@
 </template>
 
 <script lang="ts" setup>
-  import { h, reactive, ref } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import { queryAllPrinterList, querySelfPrinterList } from '@/api/printer';
-  import { IconFaceSmileFill } from '@arco-design/web-vue/es/icon';
-  import { Message } from '@arco-design/web-vue';
-  import printEventHub from '@/utils/print/printEventBus';
+import {h, reactive, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {queryAllPrinterList, querySelfPrinterList} from '@/api/printer';
+import {IconFaceSmileFill} from '@arco-design/web-vue/es/icon';
+import {Message} from '@arco-design/web-vue';
+import printEventHub from '@/utils/print/printEventBus';
+import {userSelectList} from '@/api/user';
 
-  const { t } = useI18n();
+const { t } = useI18n();
   const config = ref({
     type: '个人',
     onlyPrinted: 1,
     name: '',
-    startTime:'',
-    endTime:'',
+    startTime: '',
+    endTime: '',
+    onlyReadUserList: [], // 不为空时就只筛选这些用户
+    onlyUserListLoading: false,
   });
+  const onlyUserReadOptions = ref([]);
 
   const columns = [
     {
@@ -142,19 +175,24 @@
           page_size: pageSize,
           onlyPrinted: config.value.onlyPrinted,
           name: config.value.name,
-          startDate:config.value.startTime,
-          endDate:config.value.endTime
+          startDate: config.value.startTime,
+          endDate: config.value.endTime,
         });
         tableData.value = data.records;
         tabelRDataTotal.value = data.total;
       } else {
+        const onlyUserTempList: string[] = [];
+        for (let i = 0; i < config.value.onlyReadUserList.length; i += 1) {
+          onlyUserTempList.push(config.value.onlyReadUserList[i].id);
+        }
         const { data } = await queryAllPrinterList({
           page_num: current,
           page_size: pageSize,
           onlyPrinted: config.value.onlyPrinted,
           name: config.value.name,
-          startDate:config.value.startTime,
-          endDate:config.value.endTime
+          startDate: config.value.startTime,
+          endDate: config.value.endTime,
+          onlyUser: onlyUserTempList,
         });
         tableData.value = data.records;
         tabelRDataTotal.value = data.total;
@@ -189,8 +227,8 @@
     // fetchDate1(contentType);
     window.open(url);
   };
-  const onePrint = (url: string,name?:string) => {
-    printEventHub.emit('onOneClickPrinting', { fileUrl: url,fileName:name});
+  const onePrint = (url: string, name?: string) => {
+    printEventHub.emit('onOneClickPrinting', {fileUrl: url, fileName: name});
   };
   const buttonDelete = (url: string) => {
     Message.info({
@@ -207,7 +245,7 @@
     // eslint-disable-next-line prefer-destructuring
     config.value.endTime = dateString[1];
     typeChange();
-  }
+  };
   const cleanTime = () => {
     // eslint-disable-next-line prefer-destructuring
     config.value.startTime = '';
@@ -215,8 +253,33 @@
     // eslint-disable-next-line prefer-destructuring
     config.value.endTime = '';
     typeChange();
-  }
+  };
 
+  const onlyUserReadHandleSearch = async (value) => {
+    if (value) {
+      config.value.onlyUserListLoading = true;
+      // 服务器端搜索
+      try {
+        const {data} = await userSelectList(value);
+        onlyUserReadOptions.value = data.options;
+      } catch (e) {
+        console.log(e);
+        onlyUserReadOptions.value = [];
+      }
+    } else {
+      onlyUserReadOptions.value = [];
+    }
+    config.value.onlyUserListLoading = false;
+  };
+  const clearTiaoJian = () => {
+    config.value.onlyReadUserList = [];
+    config.value.onlyUserListLoading = false;
+    config.value.name = '';
+    config.value.startTime = '';
+    config.value.endTime = '';
+    config.value.onlyPrinted = 1;
+    typeChange();
+  }
 </script>
 
 <style scoped>

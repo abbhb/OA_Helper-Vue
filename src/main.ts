@@ -2,7 +2,7 @@ import {createApp} from 'vue';
 import '@/utils/chat/websocket';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
-import '@arco-themes/vue-gi-demo/index.less';
+import '@arco-themes/vue-qc-snow-onlyself/index.less';
 // 官方主题 import '@arco-design/web-vue/dist/arco.css';
 import globalComponents from '@/components';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
@@ -13,7 +13,7 @@ import i18n from './locale';
 import directive from './directive';
 import './mock';
 import 'highlight.js/styles/atom-one-dark.css'; // 样式
-import './assets/style/global.less'
+import './assets/style/global.less';
 
 import App from './App.vue';
 // Styles are imported via arco-plugin. See config/plugin/arcoStyleImport.ts in the directory for details

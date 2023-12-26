@@ -54,6 +54,8 @@ const appStore = useAppStore();
       tag: '',
       urgency: 1,
       visibility: 1,
+      type: 1,
+      content: '',// 只有当url模式才用得上
     },
     deptIds: [],
   });
@@ -174,6 +176,10 @@ const clearNoticeForm = () => {
     const {data} = await addNotice(form);
     Message.success('发布成功');
     done(true);
+    if (form.notice.type === 2) {
+      await getDataB();
+      return;
+    }
     // 完成后直接跳转编辑通知页
     router.push({name: 'NoticeEdit', query: {noticeId: data.notice.id}});
   };
@@ -192,12 +198,16 @@ const editAGroup = (record: any) => {
   form.notice.id = record.id;
   form.notice.status = record.status;
   form.notice.tag = record.tag;
-  if (record.tag?.split(',')) {
-    formExt.tagList = record.tag.split(',');
+  if (record?.tag && record?.tag.length > 0 && record?.tag.split(',')) {
+    formExt.tagList = record?.tag.split(',');
   }
   form.deptIds = record.deptIds;
   form.notice.visibility = record.visibility;
   form.notice.urgency = record.urgency;
+  form.notice.type = record.type;
+  if (record.type === 2) {
+    form.notice.content = record.content;
+  }
   form.notice.title = record.title;
   statuEs.value.addModelStatus = false;
   statuEs.value.editModelStatus = true;
@@ -302,13 +312,18 @@ const editHandleBeforeOk = async () => {
                 </div>
                 <div class="row-info-detail">
                   <div> 标签</div>
-                  <a-tag
-                    v-for="(item, key) in record.tag.split(',')"
-                    :key="key"
-                    :color="getColor(key)"
-                    bordered
-                  >{{ item }}
-                  </a-tag>
+                  <div v-if="record?.tag&&record?.tag.length>0">
+                    <a-tag
+                      v-for="(item, key) in record?.tag.split(',')"
+                      :key="key"
+                      :color="getColor(key)"
+                      bordered
+                    >{{ item }}
+                    </a-tag>
+                  </div>
+                  <div v-else>
+                    ：无tag
+                  </div>
                 </div>
                 <div class="row-info-detail">
                   <div> 紧急状态</div>
@@ -378,7 +393,11 @@ const editHandleBeforeOk = async () => {
               >
                 <span>快速编辑</span>
               </a-button>
-              <a-button class="item" @click="EditNotice(record)">
+              <a-button
+                v-if="record.type === 1"
+                class="item"
+                @click="EditNotice(record)"
+              >
                 <span>编辑</span>
               </a-button>
               <a-popconfirm
@@ -421,7 +440,7 @@ const editHandleBeforeOk = async () => {
             </a-form-item>
           </a-col>
         </a-row>
-        <div style="display: flex;">
+        <div style="display: flex">
           <a-form-item field="tag" label="通知Tag" label-col-flex="80px">
             <a-input-tag
               v-model:model-value="formExt.tagList"
@@ -430,7 +449,6 @@ const editHandleBeforeOk = async () => {
               allow-clear
               placeholder="请输入通知的tag（回车创建tag）"
             />
-
           </a-form-item>
           <a-form-item
             field="type"
@@ -449,6 +467,18 @@ const editHandleBeforeOk = async () => {
             </a-select>
           </a-form-item>
         </div>
+        <a-form-item
+          v-if="form.notice.type===2"
+          field="content"
+          label="URL地址"
+          label-col-flex="80px"
+          tooltip="需要跳转的url"
+        >
+          <a-input
+            v-model="form.notice.content"
+            placeholder="请输入通知的URL地址"
+          ></a-input>
+        </a-form-item>
 
         <div style="display: flex; flex-direction: row-reverse">
           <a-form-item
@@ -493,9 +523,7 @@ const editHandleBeforeOk = async () => {
           </a-form-item>
         </div>
         <div v-if="form.notice.visibility === 2">
-          <div>
-            不包含子部门！请手动选择所需要的所有部门
-          </div>
+          <div> 不包含子部门！请手动选择所需要的所有部门</div>
           <a-button-group style="margin-bottom: 20px">
             <a-button type="primary" @click="toggleChecked">
               {{ form.deptIds?.length ? '反全选' : '全选' }}
@@ -529,7 +557,7 @@ const editHandleBeforeOk = async () => {
       :draggable="false"
       :fullscreen="appStore.modelFullscreen"
       :width="720"
-      title="添加通知"
+      title="编辑通知"
       unmount-on-close
       @before-ok="editHandleBeforeOk"
     >
@@ -549,11 +577,11 @@ const editHandleBeforeOk = async () => {
             </a-form-item>
           </a-col>
         </a-row>
-        <div style="display: flex;">
+        <div style="display: flex">
           <a-form-item field="tag" label="通知Tag" label-col-flex="80px">
             <a-input-tag
               v-model:model-value="formExt.tagList"
-              :default-value="form.notice.tag.split(',')"
+              :default-value="(form.notice?.tag&&form.notice?.tag.length>0)?form.notice?.tag.split(','):[]"
               :style="{ width: '320px' }"
               allow-clear
               placeholder="请输入通知的tag（回车创建tag）"
@@ -576,8 +604,18 @@ const editHandleBeforeOk = async () => {
             </a-select>
           </a-form-item>
         </div>
-
-
+        <a-form-item
+          v-if="form.notice.type===2"
+          field="content"
+          label="URL地址"
+          label-col-flex="80px"
+          tooltip="需要跳转的url"
+        >
+          <a-input
+            v-model="form.notice.content"
+            placeholder="请输入通知的URL地址"
+          ></a-input>
+        </a-form-item>
         <div style="display: flex; flex-direction: row-reverse">
           <a-form-item
             field="visibility"
@@ -635,9 +673,7 @@ const editHandleBeforeOk = async () => {
           </a-form-item>
         </div>
         <div v-if="form.notice.visibility === 2">
-          <div>
-            不包含子部门！请手动选择所需要的所有部门
-          </div>
+          <div> 不包含子部门！请手动选择所需要的所有部门</div>
           <a-button-group style="margin-bottom: 20px">
             <a-button type="primary" @click="toggleChecked">
               {{ form.deptIds?.length ? '反全选' : '全选' }}
