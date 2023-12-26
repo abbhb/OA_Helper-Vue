@@ -6,6 +6,7 @@ export interface Notice {
   title?: string;
   content?: string;
   status?: number;
+  type?: number;
   amount?: number;
   isAnnex?: number;
   createTime?: string;
@@ -28,9 +29,6 @@ export interface NoticeUserResp extends Notice {
   userRead?: boolean;
 }
 
-export interface NoticeUserReadResp extends Notice {
-  userRead?: boolean;
-}
 
 export interface NoticeAddReq {
   notice: Notice;
@@ -55,6 +53,15 @@ export interface NoticeAnnex {
   createTime?: string;
   createUser?: string;
 }
+
+/**
+ * 预览通知返回对象
+ */
+export interface NoticeUserReadResp {
+  notice?: Notice;
+  noticeAnnexes?: NoticeAnnex[];
+}
+
 
 export interface NoticeAddResp {
   notice: Notice;
@@ -149,4 +156,16 @@ export function getViewNoticeList(
 
 export function deleteNotice(noticeId: string) {
   return axios.delete<string>(`/api/notice/delete/${noticeId}`);
+}
+
+
+export function getNoticeRead(
+    noticeId: string,
+    password?: string,
+) {
+  return axios.get<NoticeUserReadResp>(`/api/notice/read/${noticeId}`, {
+    params: {
+      password,
+    },
+  });
 }

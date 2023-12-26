@@ -72,11 +72,8 @@
                       </div>
                     </div>
                     <div>
-                      {{
-                        record.title
-                      }}{{ getIntroContent(record.content) }}
-                    </div
-                    >
+                      {{ record.title }}{{ getIntroContent(record.content) }}
+                    </div>
                   </div>
                 </template>
               </a-table-column>
@@ -132,11 +129,11 @@
       :draggable="true"
       :footer="false"
       :fullscreen="false"
-      :title="statuEs.noticeReadLoading ? '加载中' : noticeReadData?.title"
+      :title="statuEs.noticeReadTitle"
       :unmount-on-close="true"
       :width="1600"
     >
-      <NoticeRead/>
+      <NoticeRead :notice-id="statuEs.noticeReadId"/>
     </a-modal>
   </a-spin>
 </template>
@@ -146,7 +143,7 @@ import {ref} from 'vue';
 import useLoading from '@/hooks/loading';
 import {getViewNoticeList, NoticeUserReadResp, NoticeUserResp,} from '@/api/notice';
 import attachment from '@/assets/images/attachment.png';
-import {Message, TableData} from '@arco-design/web-vue';
+import {TableData} from '@arco-design/web-vue';
 import TagEllipse from '@/components/tag-ellipse/index.vue';
 import NoticeRead from '@/components/notice-read/index.vue';
 
@@ -156,7 +153,7 @@ const statuEs = ref({
   name: '',
   noticeRead: false,
   noticeReadId: '',
-  noticeReadLoading: false,
+  noticeReadTitle: '',
 });
 const noticeReadData = ref<NoticeUserReadResp>(null);
 
@@ -212,12 +209,10 @@ const typeChange = (contentType: number) => {
 
 const toNoticeContentView = (record) => {
   // 前往通知查看页
-  Message.info('测试');
   statuEs.value.noticeReadId = record.id;
+  statuEs.value.noticeReadTitle = record.title;
   // 开始加载
-  statuEs.value.noticeReadLoading = true;
   statuEs.value.noticeRead = true;
-  // 获取最新的该通知信息
 };
 
 // eslint-disable-next-line consistent-return

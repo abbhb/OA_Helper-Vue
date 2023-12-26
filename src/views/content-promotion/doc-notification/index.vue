@@ -421,15 +421,35 @@ const editHandleBeforeOk = async () => {
             </a-form-item>
           </a-col>
         </a-row>
-        <a-form-item label="通知Tag" field="tag" label-col-flex="80px">
-          <a-input-tag
-            v-model:model-value="formExt.tagList"
-            :default-value="form.notice.tag.split(',')"
-            :style="{ width: '320px' }"
-            placeholder="请输入通知的tag（回车创建tag）"
-            allow-clear
-          />
-        </a-form-item>
+        <div style="display: flex;">
+          <a-form-item field="tag" label="通知Tag" label-col-flex="80px">
+            <a-input-tag
+              v-model:model-value="formExt.tagList"
+              :default-value="form.notice.tag.split(',')"
+              :style="{ width: '320px' }"
+              allow-clear
+              placeholder="请输入通知的tag（回车创建tag）"
+            />
+
+          </a-form-item>
+          <a-form-item
+            field="type"
+            label="通知类型"
+            label-col-flex="80px"
+            tooltip="Url模式就是跳转第三方链接模式"
+          >
+            <a-select
+              v-model:model-value="form.notice.type"
+              :scrollbar="true"
+              :style="{ width: '140px' }"
+              placeholder="请选择通知类型"
+            >
+              <a-option :value="1"> 内容模式</a-option>
+              <a-option :value="2"> Url模式</a-option>
+            </a-select>
+          </a-form-item>
+        </div>
+
         <div style="display: flex; flex-direction: row-reverse">
           <a-form-item
             label="可见性"
@@ -529,15 +549,35 @@ const editHandleBeforeOk = async () => {
             </a-form-item>
           </a-col>
         </a-row>
-        <a-form-item field="tag" label="通知Tag" label-col-flex="80px">
-          <a-input-tag
-            v-model:model-value="formExt.tagList"
-            :default-value="form.notice.tag.split(',')"
-            :style="{ width: '320px' }"
-            allow-clear
-            placeholder="请输入通知的tag（回车创建tag）"
-          />
-        </a-form-item>
+        <div style="display: flex;">
+          <a-form-item field="tag" label="通知Tag" label-col-flex="80px">
+            <a-input-tag
+              v-model:model-value="formExt.tagList"
+              :default-value="form.notice.tag.split(',')"
+              :style="{ width: '320px' }"
+              allow-clear
+              placeholder="请输入通知的tag（回车创建tag）"
+            />
+          </a-form-item>
+          <a-form-item
+            field="type"
+            label="通知类型"
+            label-col-flex="80px"
+            tooltip="Url模式就是跳转第三方链接模式"
+          >
+            <a-select
+              v-model:model-value="form.notice.type"
+              :scrollbar="true"
+              :style="{ width: '140px' }"
+              placeholder="请选择通知类型"
+            >
+              <a-option :value="1"> 内容模式</a-option>
+              <a-option :value="2"> Url模式</a-option>
+            </a-select>
+          </a-form-item>
+        </div>
+
+
         <div style="display: flex; flex-direction: row-reverse">
           <a-form-item
             field="visibility"
