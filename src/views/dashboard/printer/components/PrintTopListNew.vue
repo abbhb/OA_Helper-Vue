@@ -30,7 +30,7 @@ initData();
 </script>
 
 <template>
-  <div>
+  <div style="max-height: 450px;">
     <div class="title">
       <span>
         {{ $t('printer.one.printTopListNew.name') }}
@@ -88,7 +88,7 @@ initData();
       v-if="topData.length !== 0"
       style="display: flex; align-items: center;justify-content: center"
     >
-      <span>到底了~最多展示10条</span>
+      <span>到底了~最多展示{{ topData.length }}条</span>
     </div>
   </div>
 </template>
