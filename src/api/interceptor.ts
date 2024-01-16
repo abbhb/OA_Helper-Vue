@@ -1,11 +1,12 @@
+import type {AxiosRequestConfig, AxiosResponse} from 'axios';
 import axios from 'axios';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Message, Modal } from '@arco-design/web-vue';
-import { useUserStore } from '@/store';
-import { getToken } from '@/utils/auth';
-import { notifyMe } from '@/utils/notify';
+import {Message} from '@arco-design/web-vue';
+import {useUserStore} from '@/store';
+import {getToken} from '@/utils/auth';
+import {notifyMe} from '@/utils/notify';
 import router from '@/router';
 import {WHITE_LIST} from "@/router/constants";
+import {getAPIBase} from "@/utils/env";
 
 export interface HttpResponse<T = unknown> {
   msg: string;
@@ -13,8 +14,8 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
-if (import.meta.env.VITE_API_BASE_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+if (getAPIBase()) {
+    axios.defaults.baseURL = getAPIBase();
 }
 
 axios.interceptors.request.use(

@@ -49,6 +49,7 @@ import {getUploadUrl} from '@/api/chat';
 import {NoticeAnnex, NoticeViewResp, updateNotice, viewNotice,} from '@/api/notice';
 import {deptListTree} from '@/api/dept';
 import {NoticeAnnexItem} from '@/utils/notice/NoticeAnnexItem';
+import {getImageBase} from "@/utils/env";
 
 const videoHouzhui = '.avi,.mkv,.mp3, .mp4';
 const imageHouzhui = '.jpg, .jpeg, .png, .gif, .tif, .bmp';
@@ -383,9 +384,9 @@ onMounted(async () => {
               }
               // @ts-ignore
               if (res.code === 1) {
-                resolve(import.meta.env.VITE_Image_BASE_URL + res.data);
+                resolve(getImageBase() + res.data);
                 //  call the callback and populate the Title field with the file name
-                // success(import.meta.env.VITE_Image_BASE_URL + res.data);
+                // success(getImageBase() + res.data);
               }
             })
             .catch((error) => {
@@ -422,7 +423,7 @@ onMounted(async () => {
             // @ts-ignore
             if (res.code === 1) {
               console.log('成功2');
-              resolve(import.meta.env.VITE_Image_BASE_URL + res.data);
+              resolve(getImageBase() + res.data);
               //  call the callback and populate the Title field with the file name
 
               // success(import.meta.env.VITE_Image_BASE_URL + res.data);
@@ -555,7 +556,7 @@ const customRequest = (option) => {
       const annexItem = new NoticeAnnexItem(
         statusE.value.id,
         statusE.value.annexList.length + 1,
-        import.meta.env.VITE_Image_BASE_URL + res.data,
+        getImageBase() + res.data,
         fileItem.file.name,
         '?'
       );

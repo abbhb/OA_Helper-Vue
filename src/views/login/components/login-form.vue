@@ -186,19 +186,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { Message } from '@arco-design/web-vue';
-  import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
-  import { useI18n } from 'vue-i18n';
-  import { useUserStore } from '@/store';
-  import useLoading from '@/hooks/loading';
-  import type { LoginData } from '@/api/user';
-  import { loginByEmailCode } from '@/api/user';
-  import CaptchaC from '@/components/captcha/index.vue';
-  import { getEmailCode } from '@/api/email';
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {Message} from '@arco-design/web-vue';
+import {ValidatedError} from '@arco-design/web-vue/es/form/interface';
+import {useI18n} from 'vue-i18n';
+import {useUserStore} from '@/store';
+import useLoading from '@/hooks/loading';
+import type {LoginData} from '@/api/user';
+import {loginByEmailCode} from '@/api/user';
+import CaptchaC from '@/components/captcha/index.vue';
+import {getEmailCode} from '@/api/email';
+import {getAPIBase} from "@/utils/env";
 
-  const router = useRouter();
+const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
@@ -235,8 +236,8 @@
     });
     if (data.toSetPassword === 1) {
       let baseUrl = '';
-      if (import.meta.env.VITE_API_BASE_URL) {
-        baseUrl = import.meta.env.VITE_API_BASE_URL;
+      if (getAPIBase()) {
+        baseUrl = getAPIBase();
       }
       // 需要设置密码
       window.open(

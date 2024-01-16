@@ -8,6 +8,7 @@ import {getEmailCode} from '@/api/email';
 import ImagePreview from '@/components/image/ImagePreview.vue';
 import CaptchaC from '@/components/captcha/index.vue';
 import {useRouter} from "vue-router";
+import {getAPIBase} from "@/utils/env";
 
 const code = getQueryVariable('code');
   const type = getQueryVariable('type');
@@ -88,8 +89,8 @@ const code = getQueryVariable('code');
         status.value.sta = 2;
         if (data.toSetPassword === 1) {
           let baseUrl = '';
-          if (import.meta.env.VITE_API_BASE_URL) {
-            baseUrl = import.meta.env.VITE_API_BASE_URL;
+          if (getAPIBase()) {
+            baseUrl = getAPIBase();
           }
           // 需要设置密码
           window.open(
@@ -208,8 +209,8 @@ const code = getQueryVariable('code');
       status.value.sta = 2;
       if (data.toSetPassword === 1) {
         let baseUrl = '';
-        if (import.meta.env.VITE_API_BASE_URL) {
-          baseUrl = import.meta.env.VITE_API_BASE_URL;
+        if (getAPIBase()) {
+          baseUrl = getAPIBase();
         }
         // 需要设置密码
         window.open(

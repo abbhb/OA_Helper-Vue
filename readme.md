@@ -31,3 +31,7 @@ nginx
 ```
 
 #### 打印机页面空指针引用会导致死循环
+
+#### worker线程没有window上下文
+
+但是有self，很多属性方法和window一致，可以定义window=self来提高兼容性

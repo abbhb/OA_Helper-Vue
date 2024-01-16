@@ -1,7 +1,12 @@
 // 发消息给主进程
-import { getToken } from '@/utils/auth';
+import {getWSBase} from '@/utils/env';
+
+// 此处window在env.ts里需要，否则worker里没有window
+// eslint-disable-next-line no-global-assign,no-restricted-globals
+// window = self;
 
 const postMsg = ({ type, value }: { type: string; value?: object }) => {
+
   // eslint-disable-next-line no-restricted-globals
   self.postMessage(JSON.stringify({ type, value }));
 };
@@ -94,23 +99,18 @@ const onConnectOpen = () => {
 const onConnectMsg = (e: any) => postMsg({ type: 'message', value: e.data });
 
 // 初始化 ws 连接
-const initConnection = (token?:string) => {
-  console.log("new WebSocket")
+const initConnection = (token?: string) => {
+  console.log('new WebSocket');
 
   connection?.removeEventListener('message', onConnectMsg);
   connection?.removeEventListener('open', onConnectOpen);
   connection?.removeEventListener('close', onConnectClose);
   connection?.removeEventListener('error', onConnectError);
 
+  const hosts = getWSBase();
   // 建立链接
   // 本地配置到 .env 里面修改。生产配置在 .env.production 里面
-  connection = new WebSocket(
-    `${import.meta.env.VITE_WS_BASE_URL}${
-      token
-        ? `?token=${token}`
-        : ''
-    }`
-  );
+  connection = new WebSocket(`${hosts}${token ? `?token=${token}` : ''}`);
   // 收到消息
   connection.addEventListener('message', onConnectMsg);
   // 建立链接
@@ -120,7 +120,6 @@ const initConnection = (token?:string) => {
   // 连接错误
   connection.addEventListener('error', onConnectError);
 };
-
 
 // eslint-disable-next-line no-restricted-globals
 self.onmessage = (e: MessageEvent<string>) => {
