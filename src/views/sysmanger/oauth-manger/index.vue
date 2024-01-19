@@ -1,23 +1,17 @@
 <script lang="ts" setup>
-  import { computed, h, reactive, ref } from 'vue';
-  import { getColor } from '@/utils/color-index';
+import {computed, h, reactive, ref} from 'vue';
+import {getColor} from '@/utils/color-index';
 
-  import { setChildrenUndefined } from '@/utils/utils';
-  import { useAppStore } from '@/store';
-  import FunctionalIcons from '@/components/icon/FunctionalIcons/index.vue';
-  import { IconSearch } from '@arco-design/web-vue/es/icon';
-  import { Message } from '@arco-design/web-vue';
-  import {
-    addOauth,
-    deleteOauth,
-    listOauth,
-    SysOauth,
-    updateOauth,
-  } from '@/api/oauth';
-  import ImageUpload from '@/components/image/ImageUpload.vue';
-  import AvatarImage from '@/components/image/AvatarImage.vue';
+import {setChildrenUndefined} from '@/utils/utils';
+import {useAppStore} from '@/store';
+import {IconSearch} from '@arco-design/web-vue/es/icon';
+import {Message} from '@arco-design/web-vue';
+import {addOauth, deleteOauth, listOauth, SysOauth, updateOauth,} from '@/api/oauth';
+import ImageUpload from '@/components/image/ImageUpload.vue';
+import AvatarImage from '@/components/image/AvatarImage.vue';
+import {copyToClip} from "@/utils/chat/copy";
 
-  interface statuEI {
+interface statuEI {
     clickLoading: boolean;
     model?: boolean;
     modelTitle?: string;
@@ -38,6 +32,7 @@
     redirectUri: '',
     domainName: '',
     noSertRedirect: 1,
+    force_configuration_redirect: 0,
     grantType: '',
     createTime: '',
     updateTime: '',
@@ -189,6 +184,7 @@
       client_name: form.clientName,
       client_secret: form.clientSecret,
       redirect_uri: form.redirectUri,
+      force_configuration_redirect: form.force_configuration_redirect,
       domain_name: form.domainName,
       no_sert_redirect: form.noSertRedirect,
       grant_type: form.grantType,
@@ -210,6 +206,7 @@
       redirect_uri: form.redirectUri,
       domain_name: form.domainName,
       no_sert_redirect: form.noSertRedirect,
+      force_configuration_redirect: form.force_configuration_redirect,
       grant_type: form.grantType,
       status: form.status,
       client_image: form.clientImage,
@@ -246,6 +243,14 @@
     }
     Message.success('上传成功!');
   };
+
+  const onclickTOCopy = (data: any) => {
+    if (statuEs.value.modelType !== 'read') {
+      return;
+    }
+    copyToClip(data);
+    Message.success('已经复制到剪贴板');
+  }
 </script>
 
 <template>
@@ -303,7 +308,7 @@
               slotName: 'locale-filter',
               icon: () => h(IconSearch),
             }"
-            :width="150"
+            :width="110"
             :title="$t(`syscenter.oauth2-manger.oauth2.client_name`)"
           >
             <template #cell="{ record }">
@@ -311,7 +316,7 @@
             </template>
           </a-table-column>
           <a-table-column
-            :width="150"
+            :width="110"
             :title="$t(`syscenter.oauth2-manger.oauth2.client_image`)"
           >
             <template #cell="{ record }">
@@ -321,22 +326,22 @@
               />
             </template>
           </a-table-column>
-          <a-table-column
-            :title="$t(`syscenter.oauth2-manger.oauth2.redirect_uri`)"
-            :width="100"
-          >
-            <template #cell="{ record }">
-              {{ record.redirect_uri }}
-            </template>
-          </a-table-column>
-          <a-table-column
-            :sortable="{
-              sortDirections: ['ascend', 'descend'],
-            }"
-            :title="$t(`syscenter.oauth2-manger.oauth2.domain_name`)"
-            :width="120"
-            data-index="domain_name"
-          ></a-table-column>
+          <!--          <a-table-column-->
+          <!--            :title="$t(`syscenter.oauth2-manger.oauth2.redirect_uri`)"-->
+          <!--            :width="100"-->
+          <!--          >-->
+          <!--            <template #cell="{ record }">-->
+          <!--              {{ record.redirect_uri }}-->
+          <!--            </template>-->
+          <!--          </a-table-column>-->
+          <!--          <a-table-column-->
+          <!--            :sortable="{-->
+          <!--              sortDirections: ['ascend', 'descend'],-->
+          <!--            }"-->
+          <!--            :title="$t(`syscenter.oauth2-manger.oauth2.domain_name`)"-->
+          <!--            :width="120"-->
+          <!--            data-index="domain_name"-->
+          <!--          ></a-table-column>-->
           <a-table-column
             :title="$t(`syscenter.oauth2-manger.oauth2.no_sert_redirect`)"
             data-index="no_sert_redirect"
@@ -345,6 +350,18 @@
             <template #cell="{ record }">
               <a-tag :color="record.no_sert_redirect !== 0 ? 'green' : 'red'">
                 {{ record.no_sert_redirect ? '不允许' : '允许' }}</a-tag
+              >
+            </template>
+          </a-table-column>
+          <a-table-column
+            :width="110"
+            data-index="force_configuration_redirect"
+            title="强制使用配置回调"
+          >
+            <template #cell="{ record }">
+              <a-tag :color="record.force_configuration_redirect !== 1 ? 'green' : 'red'">
+                {{ record.force_configuration_redirect ? '静态回调' : '动态回调' }}
+              </a-tag
               >
             </template>
           </a-table-column>
@@ -411,16 +428,16 @@
       @close="handleCancel()"
       @before-ok="handelOk"
     >
-      <a-form :model="form" :disabled="statuEs.modelType === 'read'">
+      <a-form :model="form">
         <a-row :gutter="24">
-          <a-col :span="24">
+          <a-col :span="9">
             <a-form-item
               :label="$t('syscenter.oauth2-manger.oauth2.form.grantType')"
               :width="130"
               field="grantType"
               label-col-flex="80px"
             >
-              <a-radio-group v-model:model-value="form.grantType">
+              <a-radio-group v-model:model-value="form.grantType" :disabled="statuEs.modelType === 'read'">
                 <a-radio value="code"
                   >{{
                     $t('syscenter.oauth2-manger.oauth2.form.grantType.code')
@@ -429,95 +446,108 @@
               </a-radio-group>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="28">
-          <a-col :span="14">
+          <a-col :span="15">
             <a-form-item
-              :label="$t('syscenter.oauth2-manger.oauth2.form.clientId')"
-              :tooltip="$t('syscenter.oauth2-manger.oauth2.form.clientId.tip')"
-              field="locale"
-              label-col-flex="100px"
+              field="force_configuration_redirect"
+              label=""
+              label-col-flex="80px"
             >
-              <a-input
-                v-if="statuEs.modelType !== 'add'"
-                v-model="form.clientId"
-                :placeholder="
+              <a-radio-group v-model:model-value="form.force_configuration_redirect"
+                             :disabled="statuEs.modelType === 'read'" size="large" type="button">
+                <a-radio :value="0">使用动态回调</a-radio>
+                <a-radio :value="1">静态回调地址</a-radio>
+              </a-radio-group>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-form-item
+          :label="$t('syscenter.oauth2-manger.oauth2.form.clientId')"
+          :tooltip="$t('syscenter.oauth2-manger.oauth2.form.clientId.tip')"
+          field="locale"
+          label-col-flex="100px"
+        >
+          <a-input
+            v-if="statuEs.modelType !== 'add'"
+            v-model="form.clientId"
+            :placeholder="
                   $t('syscenter.oauth2-manger.oauth2.form.tip.clientId')
                 "
-              />
-              <a-tag v-else
-                >此项为系统自动生成，成功添加后查看更多即可获得!</a-tag
-              >
-            </a-form-item>
-          </a-col>
-          <a-col :span="10">
-            <a-form-item
-              :label="$t('syscenter.oauth2-manger.oauth2.form.clientName')"
-              field="clientName"
-              label-col-flex="80px"
-            >
-              <a-input
-                v-model="form.clientName"
-                :placeholder="
+            :readonly="statuEs.modelType === 'read'"
+            v-on:click="onclickTOCopy(form.clientId)"
+          />
+          <a-tag v-else
+          >此项为系统自动生成，成功添加后查看更多即可获得!
+          </a-tag
+          >
+        </a-form-item>
+        <a-form-item
+          :label="$t('syscenter.oauth2-manger.oauth2.form.clientName')"
+          field="clientName"
+          label-col-flex="80px"
+        >
+          <a-input
+            v-model="form.clientName"
+            :placeholder="
                   $t('syscenter.oauth2-manger.oauth2.form.tip.clientName')
                 "
-              />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="28">
-          <a-col :span="14">
-            <a-form-item
-              :label="$t('syscenter.oauth2-manger.oauth2.form.clientSecret')"
-              field="clientSecret"
-              label-col-flex="100px"
-            >
-              <a-input
-                v-if="statuEs.modelType !== 'add'"
-                v-model="form.clientSecret"
-                :placeholder="
+            :readonly="statuEs.modelType === 'read'"
+          />
+        </a-form-item>
+        <a-form-item
+          :label="$t('syscenter.oauth2-manger.oauth2.form.clientSecret')"
+          field="clientSecret"
+          label-col-flex="100px"
+        >
+          <a-input
+            v-if="statuEs.modelType !== 'add'"
+            v-model="form.clientSecret"
+            :placeholder="
                   $t('syscenter.oauth2-manger.oauth2.form.tip.clientSecret')
                 "
-              />
-              <a-tag v-else
-                >此项为系统自动生成，成功添加后查看更多即可获得!</a-tag
-              >
-            </a-form-item>
-          </a-col>
-          <a-col :span="10">
-            <a-form-item
-              :label="$t('syscenter.oauth2-manger.oauth2.form.redirect_uri')"
-              :width="130"
-              field="redirectUri"
-              label-col-flex="80px"
-            >
-              <a-input
-                v-model="form.redirectUri"
-                :placeholder="
+            :readonly="statuEs.modelType === 'read'"
+
+            v-on:click="onclickTOCopy(form.clientSecret)"
+          />
+          <a-tag v-else
+          >此项为系统自动生成，成功添加后查看更多即可获得!
+          </a-tag
+          >
+        </a-form-item>
+        <a-form-item
+          :label="$t('syscenter.oauth2-manger.oauth2.form.redirect_uri')"
+          :width="130"
+          field="redirectUri"
+          label-col-flex="80px"
+        >
+          <a-input
+            v-model="form.redirectUri"
+            :placeholder="
                   $t('syscenter.oauth2-manger.oauth2.form.tip.redirect_uri')
                 "
-              />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="28">
-          <a-col :span="14">
-            <a-form-item
-              :label="$t('syscenter.oauth2-manger.oauth2.form.domain_name')"
-              field="domainName"
-              label-col-flex="100px"
-            >
-              <a-input
-                v-model="form.domainName"
-                :placeholder="
+            :readonly="statuEs.modelType === 'read'"
+          />
+        </a-form-item>
+        <a-form-item
+          :label="$t('syscenter.oauth2-manger.oauth2.form.domain_name')"
+          field="domainName"
+          label-col-flex="100px"
+        >
+          <a-input
+            v-model="form.domainName"
+
+            :placeholder="
                   $t('syscenter.oauth2-manger.oauth2.form.tip.domain_name')
                 "
-              />
-            </a-form-item>
+            :readonly="statuEs.modelType === 'read'"
+          />
+        </a-form-item>
+        <a-row :gutter="20">
+          <a-col :span="6">
             <a-form-item
               :label="$t('syscenter.oauth2-manger.oauth2.form.client_image')"
               field="clientImage"
-              label-col-flex="100px"
+              :disabled="statuEs.modelType === 'read'"
+              label-col-flex="50px"
             >
               <ImageUpload
                 :draggable="true"
@@ -527,11 +557,13 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="10">
+          <a-col :span="8">
             <a-form-item
               :label="$t('syscenter.oauth2-manger.oauth2.form.noSertRedirect')"
               field="type"
-              label-col-flex="100px"
+              :disabled="statuEs.modelType === 'read'"
+              label-col-flex="50px"
+
             >
               <a-radio-group v-model:model-value="form.noSertRedirect">
                 <a-radio :value="1"
@@ -546,17 +578,22 @@
                 </a-radio>
               </a-radio-group>
             </a-form-item>
+
+          </a-col>
+          <a-col :span="8">
             <a-form-item
               :label="$t('syscenter.oauth2-manger.oauth2.form.status')"
               field="status"
-              label-col-flex="100px"
+              :disabled="statuEs.modelType === 'read'"
+              label-col-flex="60px"
+
             >
               <a-radio-group v-model:model-value="form.status">
                 <a-radio :value="1"
-                  >{{ $t('syscenter.oauth2-manger.oauth2.form.status.1') }}
+                >{{ $t('syscenter.oauth2-manger.oauth2.form.status.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                  >{{ $t('syscenter.oauth2-manger.oauth2.form.status.0') }}
+                >{{ $t('syscenter.oauth2-manger.oauth2.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>

@@ -10,7 +10,8 @@
     <LoginBanner />
     <div class="content">
       <div class="content-inner">
-        <CallbackFrom />
+        <!--        <CallbackFrom />-->
+        <third-callback/>
       </div>
       <div class="footer">
         <Footer />
@@ -20,9 +21,9 @@
 </template>
 
 <script lang="ts" setup>
-  import Footer from '@/components/footer/index.vue';
-  import CallbackFrom from "./components/callback-from.vue";
-  import LoginBanner from './components/banner.vue';
+import Footer from '@/components/footer/index.vue';
+import ThirdCallback from "@/views/callback/components/third-callback.vue";
+import LoginBanner from './components/banner.vue';
 </script>
 
 <style lang="less" scoped>

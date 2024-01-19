@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { UserState } from '@/store/modules/user/types';
-import {MenuManger} from "@/api/menu";
 
 export interface AgreeResp {
   redirectUri: string;
@@ -31,6 +29,7 @@ export interface SysOauth {
   client_secret?: string;
   client_image?: string;
   redirect_uri: string;
+    force_configuration_redirect?: number;
   domain_name: string;
   no_sert_redirect: number;
   grant_type: string;

@@ -75,7 +75,7 @@ const winDatas = ref({
   if (winDatas.value.which === '') {
     // 展示未知错误页面
     yemian.value = 0;
-  } else if (winDatas.value.which === 'auth') {
+  } else if (winDatas.value.which === 'auth' && winDatas.value.client_id && winDatas.value.response_type) {
     yemian.value = 1;
     // 获取授权对象的名字
     getClientNames();
@@ -317,8 +317,7 @@ const winDatas = ref({
               long
               @click="registerHandel"
             >注册账号
-            </a-button
-            >
+            </a-button>
           </div>
         </div>
         <div class="shouquan">

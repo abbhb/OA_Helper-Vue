@@ -1,4 +1,5 @@
 <template>
+  ！！！废弃
   <div class="login-form-wrapper">
     <div class="login-form-title">
       {{
@@ -39,9 +40,7 @@ const status = ref(true);
 const {code} = router.currentRoute.value.query;
 const login = async () => {
   try {
-    console.log(code);
     await userStore.loginByCode({code} as LoginDataByCode);
-
     const {redirect} = router.currentRoute.value.query;
     router.push({
       name: (redirect as string) || 'Workplace',
@@ -73,6 +72,9 @@ const login = async () => {
 if (code) {
   login();
 }
+
+
+
 </script>
 
 <style lang="less" scoped>

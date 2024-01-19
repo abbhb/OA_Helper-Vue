@@ -197,13 +197,49 @@ import type {LoginData} from '@/api/user';
 import {loginByEmailCode} from '@/api/user';
 import CaptchaC from '@/components/captcha/index.vue';
 import {getEmailCode} from '@/api/email';
-import {getAPIBase} from "@/utils/env";
+import {getAPIBase} from '@/utils/env';
 
 const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
+
+// ---------------------------------------------------------------------------确认页面用途👇
+// 页面用途：1为真的登录面板进工作台，也就是默认。0为oauth2向第三方授权
+const yemian = ref(1);
+const winDatas = ref({
+  response_type: '',
+  client_id: '',
+  which: '',
+  redirect_uri: '',
+  state: '',
+  scope: '',
+  msg: '未知异常',
+  client_name: '11',
+});
+const url = window.location.href; // 获取当前ur
+let csAerr = [];
+try {
+  csAerr = url.split('#')[0].split('?')[1].split('&'); // 参数字符串分割为数组
+  if (csAerr.length > 0) {
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < csAerr.length; i++) {
+      // eslint-disable-next-line prefer-destructuring
+      winDatas.value[csAerr[i].split('=')[0]] = csAerr[i].split('=')[1];
+    }
+  }
+} catch (e) {
+  yemian.value = 1;
+}
+
+if (winDatas.value.which === 'auth') {
+  // 只有这个才是给第三方进行oauth，但是还没有登录的状况
+  yemian.value = 0;
+}
+
+// 当yemian是0的时候，登录成功的处理逻辑是跳转到show路由，来进行oauth授权，当1的时候正常登录即可
+// --------------------------------------------------------------------------------------确认页面用途👆
 
   const userInfo = ref({
     username: '',
@@ -227,6 +263,25 @@ const router = useRouter();
     registerSuccess: false,
   });
 
+const loginSuccessHandel = () => {
+  // 登录成功的逻辑
+  if (yemian.value === 0) {
+    // oauth
+    router.push({
+      name: 'oauthShow'
+    });
+  } else {
+    // 正常逻辑
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    router.push({
+      name: (redirect as string) || 'Workplace',
+      query: {
+        ...othersQuery,
+      },
+    });
+  }
+
+}
   const emailLoginHandel = async () => {
     // 邮箱验证码一键登录,不存在用户就自动创建
     const { data } = await loginByEmailCode({
@@ -246,16 +301,9 @@ const router = useRouter();
         'height=880, width=670, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no'
       );
     }
-
-    // 正常逻辑
+    // 正常给网页组件登录
     await userStore.loginSuccess(data.token);
-    const { redirect, ...othersQuery } = router.currentRoute.value.query;
-    router.push({
-      name: (redirect as string) || 'Workplace',
-      query: {
-        ...othersQuery,
-      },
-    });
+    loginSuccessHandel();
   };
   const register = () => {
     // 跳转注册页
@@ -329,13 +377,7 @@ const router = useRouter();
   const loginByToken = async () => {
     try {
       await userStore.loginByToken();
-      const { redirect, ...othersQuery } = router.currentRoute.value.query;
-      router.push({
-        name: (redirect as string) || 'Workplace',
-        query: {
-          ...othersQuery,
-        },
-      });
+      loginSuccessHandel();
     } catch (err) {
       errorMessage.value = (err as Error).message;
     }
@@ -358,15 +400,8 @@ const router = useRouter();
     if (!errors) {
       setLoading(true);
       try {
-        console.log(values);
         await userStore.login(values as LoginData);
-        const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        router.push({
-          name: (redirect as string) || 'Workplace',
-          query: {
-            ...othersQuery,
-          },
-        });
+        loginSuccessHandel();
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -375,6 +410,31 @@ const router = useRouter();
     }
   };
   loginByToken();
+
+const thirdCallbackLoginSuccess = async (token: string) => {
+  await userStore.loginSuccess(token);
+  loginSuccessHandel();
+}
+
+// ----------------------------------监听是否有第三方登录callback的消息👇--------------------------
+
+// 此块应该再login相关的请求加载完毕的情况下，所以放最底下
+// 创建 BroadcastChannel 实例
+const channelCallback = new BroadcastChannel('third-oauth-callback-login');
+// 监听广播通道的消息
+channelCallback.onmessage = function (event) {
+  if (typeof event.data === "object") {
+    if (event.data.type === 1) {
+      // 1:发送的为token
+      // 关闭标签页
+      channelCallback.postMessage({type: 2})
+      // 继续进行登录逻辑
+      thirdCallbackLoginSuccess(event.data.token);
+    }
+  }
+};
+// ----------------------------------------------监听是否有第三方登录callback的消息👆
+
 </script>
 
 <style lang="less" scoped>

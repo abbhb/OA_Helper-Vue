@@ -1,19 +1,18 @@
 import {defineStore} from 'pinia';
 import {
-  getUserInfo,
-  login as userLogin,
-  loginbycode,
-  loginbytoken,
-  LoginData,
-  LoginDataByCode,
-  logout as userLogout,
+    getUserInfo,
+    login as userLogin,
+    loginbycode,
+    loginbytoken,
+    LoginData,
+    LoginDataByCode,
+    logout as userLogout,
 } from '@/api/user';
 import {clearToken, getToken, setToken} from '@/utils/auth';
 import {removeRouteListener} from '@/utils/route-listener';
 import {checkPermissionByServer} from '@/api/permission';
 import useMenuStore from '@/store/modules/menu';
 import {useAppStore} from '@/store';
-import {Message} from '@arco-design/web-vue';
 import {useWsLoginStore} from '@/store/modules/chat/ws';
 import {UserState} from './types';
 
@@ -83,7 +82,6 @@ const useUserStore = defineStore('user', {
       await useAppStore().initSettings();
       const wsLoginStore = useWsLoginStore();
       wsLoginStore.loginSuccess(getToken());
-      Message.success('登录成功');
     },
     // Login
     async login(loginForm: LoginData) {

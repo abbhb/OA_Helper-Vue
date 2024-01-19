@@ -7,8 +7,8 @@ import {useUserStore} from '@/store';
 import {getEmailCode} from '@/api/email';
 import ImagePreview from '@/components/image/ImagePreview.vue';
 import CaptchaC from '@/components/captcha/index.vue';
-import {useRouter} from "vue-router";
-import {getAPIBase} from "@/utils/env";
+import {useRouter} from 'vue-router';
+import {getAPIBase} from '@/utils/env';
 
 const code = getQueryVariable('code');
   const type = getQueryVariable('type');
@@ -36,24 +36,23 @@ const code = getQueryVariable('code');
     thirdType: '',
     thirdSocialUid: '',
   });
+const channelCallback = new BroadcastChannel('third-oauth-callback-login');
 
+channelCallback.onmessage = function (event) {
+  if (typeof event.data === 'object') {
+    if (event.data.type === 2) {
+      // type为2代表token已被收到，关闭当前标签页
+      window.close();
+    }
+  }
+};
+const loginSuccessHandel = (token: string) => {
+  channelCallback.postMessage({token, type: 1});
+};
   // 成功后清除多于参数
   const successClean = () => {
     // 获取当前 URL
     const currentUrl = window.location.href;
-    // 移除参数（这里示例移除名为 "param" 的参数）
-    const updatedUrl = currentUrl.replace(/(\?|&)type=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
-    const updatedUrl2 = updatedUrl.replace(/(\?|&)code=.*?(&|$)/, '$1').replace(/(&|\?)$/, '');
-
-    // 更新 URL（不刷新页面）
-    // eslint-disable-next-line no-restricted-globals
-    history.replaceState(null, null, updatedUrl2);
-  }
-
-  const oauth2ErrorHandel = () => {
-    // 获取当前 URL
-    const currentUrl = window.location.href;
-
     // 移除参数（这里示例移除名为 "param" 的参数）
     const updatedUrl = currentUrl
       .replace(/(\?|&)type=.*?(&|$)/, '$1')
@@ -61,8 +60,25 @@ const code = getQueryVariable('code');
     const updatedUrl2 = updatedUrl
       .replace(/(\?|&)code=.*?(&|$)/, '$1')
       .replace(/(&|\?)$/, '');
-    // 重新加载页面
-    window.location.href = updatedUrl2;
+
+    // 更新 URL（不刷新页面）
+    // eslint-disable-next-line no-restricted-globals
+    history.replaceState(null, null, updatedUrl2);
+  };
+
+const oauth2ErrorHandel = () => {
+  // 获取当前 URL
+  // const currentUrl = window.location.href;
+
+  // // 移除参数（这里示例移除名为 "param" 的参数）
+  // const updatedUrl = currentUrl
+  //   .replace(/(\?|&)type=.*?(&|$)/, '$1')
+  //   .replace(/(&|\?)$/, '');
+  // const updatedUrl2 = updatedUrl
+  //   .replace(/(\?|&)code=.*?(&|$)/, '$1')
+  //   .replace(/(&|\?)$/, '');
+
+  status.value.sta = 0;
   };
 
   if (code === '' || type === '') {
@@ -100,19 +116,21 @@ const code = getQueryVariable('code');
           );
         }
         // 正常逻辑
-        await userStore.loginSuccess(data.token);
-        successClean();
-        const {redirect, ...othersQuery} = router.currentRoute.value.query;
-        router.push({
-          name: (redirect as string) || 'Workplace',
-          query: {
-            ...othersQuery,
-          },
-        });
-        return;
+        loginSuccessHandel(data.token);
+        // await userStore.loginSuccess(data.token);
+        // successClean();
+
+        // const {redirect, ...othersQuery} = router.currentRoute.value.query;
+        // router.push({
+        //   name: (redirect as string) || 'Workplace',
+        //   query: {
+        //     ...othersQuery,
+        //   },
+        // });
+        // return;
         // 逻辑结束
       }
-      if (!data.newUser){
+      if (!data.newUser) {
         Message.error('系统异常!');
         oauth2ErrorHandel();
         return;
@@ -128,7 +146,12 @@ const code = getQueryVariable('code');
       status.value.errMsg = e;
     }
   };
-
+const oauth2ErrorButtonHandel = () => {
+  // 出现异常时的关闭窗口逻辑
+  window.close();
+  window.open('about:blank', '_self');
+  window.close();
+};
   const vailCancel = () => {
     status.value.emailCodeLoading = false;
     status.value.vailModel = false;
@@ -220,16 +243,17 @@ const code = getQueryVariable('code');
         );
       }
       // 正常逻辑
-      await userStore.loginSuccess(data.token);
-      successClean();
-      const {redirect, ...othersQuery} = router.currentRoute.value.query;
-      router.push({
-        name: (redirect as string) || 'Workplace',
-        query: {
-          ...othersQuery,
-        },
-      });
-      return;
+      loginSuccessHandel(data.token);
+      // await userStore.loginSuccess(data.token);
+      // successClean();
+      // const {redirect, ...othersQuery} = router.currentRoute.value.query;
+      // router.push({
+      //   name: (redirect as string) || 'Workplace',
+      //   query: {
+      //     ...othersQuery,
+      //   },
+      // });
+      // return;
     } catch (e) {
       status.value.sta = 0;
       status.value.errMsg = e;
@@ -249,7 +273,10 @@ const code = getQueryVariable('code');
       <template #subtitle> 原因</template>
 
       <template #extra>
-        <a-button type="primary" @click="oauth2ErrorHandel">返回登录</a-button>
+        <a-button type="primary" @click="oauth2ErrorButtonHandel"
+        >关闭窗口
+        </a-button
+        >
       </template>
       <a-typography style="background: var(--color-fill-2); padding: 24px">
         <a-typography-paragraph>尝试:</a-typography-paragraph>

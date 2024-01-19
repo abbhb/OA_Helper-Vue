@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import {thirdLogin} from '@/api/third-login';
-import {Message} from "@arco-design/web-vue";
+import {Message} from '@arco-design/web-vue';
 
 const otherLogin = async (type) => {
   const {data} = await thirdLogin(type);
-  if (data){
+  if (data) {
     Message.success('服务器收到了你的登录请求，加载中...');
-    window.location.href = data;
+    window.open(data, 'newwindow',
+      'height=600, width=800, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
   }
 };
 </script>
