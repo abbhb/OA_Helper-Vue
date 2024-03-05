@@ -1,7 +1,8 @@
 const color = [
   'orangered',
-  'gold',
+
   'green',
+  'red',
   'cyan',
   'blue',
   'arcoblue',

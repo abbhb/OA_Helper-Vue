@@ -170,5 +170,28 @@
         "content": "全新学习打卡即将上线。全新的收集表功能即将上线。吐槽中心即将上线。"
       }
     ]
+  },
+  {
+    "time": "2024-3-5",
+    "icon": "https://unpkg.byted-static.com/latest/byted/arco-config/assets/favicon.ico",
+    "version": "v3.2.0",
+    "info": [
+      {
+        "title": "图片OSS优化",
+        "content": "统一URL"
+      },
+      {
+        "title": "导航页上线",
+        "content": "快速找到业务入口"
+      },
+      {
+        "title": "通知上线",
+        "content": "通知功能完善"
+      },
+      {
+        "title": "敬请期待",
+        "content": "全新学习打卡即将上线。全新的收集表功能即将上线。全新的审批表即将上线."
+      }
+    ]
   }
 ]

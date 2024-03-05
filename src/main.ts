@@ -2,6 +2,8 @@ import {createApp} from 'vue';
 import '@/utils/chat/websocket';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
+import 'md-editor-v3/lib/style.css';
+
 // import '@arco-themes/vue-qc-snow-onlyself/index.less';
 // 官方主题
 import '@arco-design/web-vue/dist/arco.css';

@@ -24,7 +24,7 @@ const NAVDH: AppRouteRecordRaw = {
                 canGo: true,
                 ignore: true,
             },
-        },
+        }
     ],
 };
 

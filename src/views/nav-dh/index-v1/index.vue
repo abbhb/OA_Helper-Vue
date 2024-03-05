@@ -4,6 +4,8 @@ import {computed, ref} from 'vue';
 import AvatarImage from '@/components/image/AvatarImage.vue';
 import {useUserStore} from '@/store';
 import {navList, QuickNavigationResult} from '@/api/nav';
+import {Message} from '@arco-design/web-vue';
+import {MdPreview} from 'md-editor-v3';
 
 const userStore = useUserStore();
 
@@ -17,7 +19,6 @@ const markdownDialog = ref({
   dialogTitle: 'markdown',
   dialogVisible: false,
   dialogContent: '123123',
-  cardType: 0,
 });
 
 const getpage = (id) => {
@@ -40,42 +41,23 @@ const pathGoTo = (row, lo) => {
   if (lo === 1) {
     if (String(row.type) === '0') {
       if (String(row.content)) {
-        if (row.cardType === 1) {
-          getpage(row.id);
-          return;
-        }
-        console.log('row.type0');
-
         markdownDialog.value.dialogTitle = row.name;
         markdownDialog.value.dialogContent = row.content;
-        markdownDialog.value.cardType = row.cardType;
         markdownDialog.value.dialogVisible = true;
       } else {
         window.open(row.path, '_blank');
       }
     } else if (String(row.type) === '1') {
-      if (row.cardType === 1) {
-        getpage(row.id);
-        return;
-      }
-      console.log('row.type0');
       markdownDialog.value.dialogTitle = row.name;
       markdownDialog.value.dialogContent = row.content;
-      markdownDialog.value.cardType = row.cardType;
       markdownDialog.value.dialogVisible = true;
     }
   } else if (lo === 2) {
     if (String(row.type) === '0') {
       window.open(row.path, '_blank');
     } else if (String(row.type) === '1') {
-      if (row.cardType === 1) {
-        getpage(row.id);
-        return;
-      }
-      console.log(markdownDialog.value.cardType);
       markdownDialog.value.dialogTitle = row.name;
       markdownDialog.value.dialogContent = row.content;
-      markdownDialog.value.cardType = row.cardType;
       markdownDialog.value.dialogVisible = true;
     }
   }
@@ -95,18 +77,12 @@ const beforeClose = (flag) => {
 const anchorChange = (hash: string) => {
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < cards.value.length; i++) {
-
     if (`#${cards.value[i].id}` === hash) {
       activate.value = i;
       break;
     }
   }
-}
-
-const getScrollContainer = () => {
-
-}
-
+};
 </script>
 
 <template>
@@ -115,8 +91,7 @@ const getScrollContainer = () => {
       <div class="tableBar">
         <a-link target="_blank" @click="pathGoTo('houtai', 'goto')"
         >工作台
-        </a-link
-        >
+        </a-link>
 
         <a-dropdown trigger="click">
           <a-avatar
@@ -146,24 +121,9 @@ const getScrollContainer = () => {
                 </span>
               </a-space>
             </a-doption>
+
             <a-doption>
-              <a-space @click="gotoCASUserCenter()">
-                <icon-settings/>
-                <span>
-                  {{ $t('messageBox.casCenter') }}
-                </span>
-              </a-space>
-            </a-doption>
-            <a-doption>
-              <a-space @click="alert('此功能在2023年底前上线')">
-                <icon-export/>
-                <span>
-                  {{ $t('messageBox.switchUser') }}
-                </span>
-              </a-space>
-            </a-doption>
-            <a-doption>
-              <a-space @click="handleLogout">
+              <a-space @click="Message.info('此功能尚未实现')">
                 <icon-export/>
                 <span>
                   {{ $t('messageBox.logout') }}
@@ -180,13 +140,17 @@ const getScrollContainer = () => {
             <div class="portal-content__anchor">
               <a-scrollbar
                 class="scrollbar-for"
-                style="height: 550px; overflow-y: auto; overflow-x: hidden"
+                style="height: 800px; overflow-y: auto; overflow-x: hidden"
               >
                 <div class="a-scrollba__r">
                   <div class="a-scrollba__r__wrap">
                     <div class="a-scrollba__r__view" style="padding-top: 46px">
-                      <a-anchor :change-hash="false" line-less scroll-container="#sss-gundongrongqi"
-                                @change="anchorChange">
+                      <a-anchor
+                        :change-hash="false"
+                        line-less
+                        scroll-container="#sss-gundongrongqi"
+                        @change="anchorChange"
+                      >
                         <a-anchor-link
                           v-for="(card, key) in cards"
                           :key="key"
@@ -196,10 +160,8 @@ const getScrollContainer = () => {
                               : 'anchor__item'
                           "
                           :href="'#' + card.id"
-
                         >{{ card.name }}
-                        </a-anchor-link
-                        >
+                        </a-anchor-link>
                       </a-anchor>
                     </div>
                   </div>
@@ -222,7 +184,7 @@ const getScrollContainer = () => {
               <a-scrollbar
                 id="sss-gundongrongqi"
                 class="scrollbar-for"
-                style="height: 550px; overflow-y: auto; overflow-x: hidden"
+                style="height: 803px; overflow-y: auto; overflow-x: hidden"
               >
                 <div class="a-scrollba__r">
                   <div
@@ -297,33 +259,18 @@ const getScrollContainer = () => {
                           </ul>
                         </div>
 
-                        <MarkDownDialog
-                          v-if="markdownDialog.cardType === 0"
-                          v-model:is-show-dialog="markdownDialog.dialogVisible"
+                        <a-modal
+                          v-model:visible="markdownDialog.dialogVisible"
                           :click-mask-close="true"
                           :content="markdownDialog.dialogContent"
                           :mask="true"
                           :show-close-icon="true"
                           :title="markdownDialog.dialogTitle"
-                          @beforeClose="beforeClose"
                         >
-                        </MarkDownDialog>
-                        <a-modal
-                          v-if="markdownDialog.cardType === 1"
-                          ref="dialog"
-                          v-model:visible="markdownDialog.dialogVisible"
-                          :append-to-body="true"
-                          :close-on-click-modal="false"
-                          :close-on-press-escape="false"
-                          :show-close="true"
-                          :title="markdownDialog.dialogTitle"
-                          style="z-index: 2100"
-                          width="80%"
-                        >
-                          <HtmlShow
-                            v-if="markdownDialog.cardType === 1"
-                            :html-text="markdownDialog.dialogContent"
-                          />
+                          <MdPreview
+                            v-model="markdownDialog.dialogContent"
+                          >
+                          </MdPreview>
                         </a-modal>
                       </section>
                     </div>
@@ -352,6 +299,7 @@ const getScrollContainer = () => {
 </template>
 
 <style lang="less" scoped src="./style.less"></style>
+
 <style>
 .arco-anchor-line-less .arco-anchor-link-active > .arco-anchor-link {
   background-color: var(--color-bg-1);

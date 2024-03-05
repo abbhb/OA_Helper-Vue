@@ -40,6 +40,8 @@ export default {
   'menu.sysmanger.RoleManger': '角色管理',
   'menu.sysmanger.DeptManger': '部门管理',
   'menu.sysmanger.OauthManger': 'Oauth2管理',
+  'menu.sysmanger.NavFenLeiAdmin': '导航分类管理',
+  'menu.sysmanger.NavItemAdmin': '导航项管理',
   'menu.dashboard.printer': '打印中心',
   'menu.docnotification.DocNotification': '通知管理',
   'menu.docnotification.IndexImage': '图片通知',
