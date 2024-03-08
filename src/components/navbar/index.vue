@@ -9,6 +9,7 @@
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
+          class="title-eoa"
         >
           Easy_OA
         </a-typography-title>
@@ -343,6 +344,12 @@ const appStore = useAppStore();
     }
     .trigger-btn {
       margin-left: 14px;
+    }
+  }
+
+  @media screen and (max-width: 599px) {
+    .title-eoa {
+      display: none;
     }
   }
 </style>

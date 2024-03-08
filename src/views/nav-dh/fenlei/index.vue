@@ -133,12 +133,17 @@ const editHandel = (record) => {
   checkedKeys.value = record.haveKey;
   form.id = record.id;
   form.name = record.name;
-  const deptaa = [];
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < record.depts.length; i++) {
-    deptaa.push(record.depts[i].id);
+  if (record?.depts) {
+    const deptaa = [];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < record?.depts.length; i++) {
+      deptaa.push(record.depts[i].id);
+    }
+    form.depts = deptaa;
+  } else {
+    form.depts = [];
+
   }
-  form.depts = deptaa;
   form.visibility = record.visibility;
   statuEs.value.model = true;
 };
@@ -198,9 +203,7 @@ const handelOk = (done) => {
     add(done);
   }
 };
-const toggleChecked = () => {
-  checkedKeys.value = checkedKeys?.value.length ? [] : allCheckedKeys.value;
-};
+
 
 const onSelect = (newSelectedKeys, event) => {
   // console.log('select: ', newSelectedKeys, event);

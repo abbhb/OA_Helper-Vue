@@ -19,6 +19,7 @@ const markdownDialog = ref({
   dialogTitle: 'markdown',
   dialogVisible: false,
   dialogContent: '123123',
+  row: null,
 });
 
 const getpage = (id) => {
@@ -37,12 +38,12 @@ const pathGoTo = (row, lo) => {
     router.push({name: 'Workplace'});
     return;
   }
-  console.log(row);
   if (lo === 1) {
     if (String(row.type) === '0') {
       if (String(row.content)) {
         markdownDialog.value.dialogTitle = row.name;
         markdownDialog.value.dialogContent = row.content;
+        markdownDialog.value.row = row;
         markdownDialog.value.dialogVisible = true;
       } else {
         window.open(row.path, '_blank');
@@ -50,16 +51,11 @@ const pathGoTo = (row, lo) => {
     } else if (String(row.type) === '1') {
       markdownDialog.value.dialogTitle = row.name;
       markdownDialog.value.dialogContent = row.content;
+      markdownDialog.value.row = row;
       markdownDialog.value.dialogVisible = true;
     }
   } else if (lo === 2) {
-    if (String(row.type) === '0') {
-      window.open(row.path, '_blank');
-    } else if (String(row.type) === '1') {
-      markdownDialog.value.dialogTitle = row.name;
-      markdownDialog.value.dialogContent = row.content;
-      markdownDialog.value.dialogVisible = true;
-    }
+    window.open(row.path, '_blank');
   }
 };
 
@@ -264,6 +260,8 @@ const anchorChange = (hash: string) => {
                           :click-mask-close="true"
                           :content="markdownDialog.dialogContent"
                           :mask="true"
+                          okText="跳转"
+                          @ok="pathGoTo(markdownDialog.row,2)"
                           :show-close-icon="true"
                           :title="markdownDialog.dialogTitle"
                         >

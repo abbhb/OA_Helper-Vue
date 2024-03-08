@@ -29,6 +29,8 @@ export default {
     'menu.nav': '导航管理',
   'menu.version.index': '版本详情',
   'menu.Message': '消息',
+  'menu.bmp.form': '在线表单设计',
+  'menu.bmp': '审批流',
   'menu.chat': 'Chat',
     'menu.notice-list': '通知中心',
   'menu.server.dashboard': '仪表盘-服务端',
