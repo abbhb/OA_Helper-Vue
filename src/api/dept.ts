@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {Role} from '@/api/role';
+import {PageData} from "@/api/common";
 
 export interface DeptManger {
   id?: string;
@@ -22,6 +23,16 @@ export interface DeptManger {
 
 export function deptList() {
   return axios.post<DeptManger[]>('/api/dept/list');
+}
+
+export function deptListForBPM(params: {
+    pageNum: number,
+    pageSize: number,
+    name?: string
+}) {
+    return axios.get<PageData<DeptManger[]>>('/api/dept/listForBPM', {
+        params
+    });
 }
 
 export function deptListTree() {

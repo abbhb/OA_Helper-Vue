@@ -8,7 +8,7 @@
   import {useAppStore, useUserStore} from '@/store';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import { useGroupStore } from '@/store/modules/chat/group';
-  import eventBus from '@/utils/chat/eventBus';
+  import eventBus from '@/utils/eventBus';
 
   const props = defineProps<{
     // 消息体

@@ -5,7 +5,7 @@ import {useCachedStore} from '@/store/modules/chat/cached';
 import {CacheUserItem} from '@/types/chat';
 // eslint-disable-next-line import/extensions
 import VirtualList from '@/views/chat/chat-index/components/VirtualList/index.tsx';
-import eventBus from "@/utils/chat/eventBus";
+import eventBus from "@/utils/eventBus";
 import type {IMention, INode} from './types';
 import {NodeType} from './types';
 import {

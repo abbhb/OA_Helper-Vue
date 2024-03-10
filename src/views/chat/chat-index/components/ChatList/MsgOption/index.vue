@@ -4,7 +4,7 @@ import {MessageType} from '@/types/chat';
 import {useChatStore} from '@/store/modules/chat/chat';
 // eslint-disable-next-line import/no-named-as-default
 import useLikeToggle from '@/hooks/chat/useLikeToggle';
-import eventBus from "@/utils/chat/eventBus";
+import eventBus from "@/utils/eventBus";
 
 const props = defineProps<{ msg: MessageType }>();
 

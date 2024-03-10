@@ -20,7 +20,7 @@ import {useUserInfo} from '@/hooks/chat/useCached';
 import {useEmojiStore} from '@/store/modules/chat/emoji';
 import {useUserStore} from '@/store';
 import {useGlobalStore} from '@/store/modules/chat/global';
-import eventBus from '@/utils/chat/eventBus';
+import eventBus from '@/utils/eventBus';
 import setting from '@/config/setting';
 import renderReplyContent from '@/utils/chat/renderReplyContent';
 import {useGroupStore} from '@/store/modules/chat/group';

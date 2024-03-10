@@ -17,7 +17,7 @@
   import { Message } from '@arco-design/web-vue';
   import { urlToFile } from '@/utils/chat';
   import {inject} from "vue/dist/vue";
-  import eventBus from "@/utils/chat/eventBus";
+  import eventBus from "@/utils/eventBus";
 
   const props = defineProps<{
     // 消息体

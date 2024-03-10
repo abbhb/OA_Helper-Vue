@@ -11,8 +11,7 @@ const USERCENTER: AppRouteRecordRaw = {
         roles: ['*'],
         icon: 'icon-user',
         order: 0,
-        canGo:false
-
+        canGo: false,
     },
     children: [
         {
@@ -23,8 +22,29 @@ const USERCENTER: AppRouteRecordRaw = {
                 locale: 'menu.usercenter.usercenter',
                 requiresAuth: true,
                 roles: ['*'],
-                canGo:true
-
+                canGo: true,
+            },
+        },
+        {
+            path: 'startProcess',
+            name: 'StartProcess',
+            component: () => import('@/views/usercenter/process-my/index.vue'),
+            meta: {
+                locale: 'menu.usercenter.process-my',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
+            },
+        },
+        {
+            path: 'todo',
+            name: 'Todo',
+            component: () => import('@/views/usercenter/todo-my/index.vue'),
+            meta: {
+                locale: 'menu.usercenter.todo-my',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
             },
         },
     ],

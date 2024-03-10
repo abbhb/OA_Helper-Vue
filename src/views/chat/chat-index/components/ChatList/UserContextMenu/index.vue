@@ -5,7 +5,7 @@
     type MenuOptions,
   } from '@imengyu/vue3-context-menu';
   import { useGlobalStore } from '@/store/modules/chat/global';
-  import eventBus from '@/utils/chat/eventBus';
+  import eventBus from '@/utils/eventBus';
 
   const props = defineProps<{
     // 用户id

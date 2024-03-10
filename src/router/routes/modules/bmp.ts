@@ -12,11 +12,9 @@ const BMP: AppRouteRecordRaw = {
         roles: ['*'],
         icon: 'icon-dashboard',
         order: 0,
-        canGo: false
-
+        canGo: false,
     },
     children: [
-
         {
             path: 'form-i',
             name: 'FormI',
@@ -25,10 +23,21 @@ const BMP: AppRouteRecordRaw = {
                 locale: 'menu.bmp.form',
                 requiresAuth: true,
                 roles: ['*'],
-                canGo: true
+                canGo: true,
             },
         },
-    ]
+        {
+            path: 'bpmn',
+            name: 'BPMN',
+            component: () => import('@/views/bmp/bpmn/index.vue'),
+            meta: {
+                locale: 'menu.bmp.bpmn',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
+            },
+        },
+    ],
 };
 
 export default BMP;

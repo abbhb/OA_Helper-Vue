@@ -137,6 +137,15 @@ export function getUserListManger(params: {
   return axios.get<PageData<UserManger[]>>('/api/user/user_manger', { params });
 }
 
+export function listForBMPN(params: {
+    pageNum: number;
+    pageSize: number;
+    name?: string;
+    deptId?: string;
+}) {
+    return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', {params});
+}
+
 export function getUserPassword() {
   return axios.get<number>('/api/user/user_password');
 }
