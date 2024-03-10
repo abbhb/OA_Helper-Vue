@@ -14,13 +14,7 @@
           >{{ item.label }}
           </el-radio-button
           >
-          <el-divider>异常暂时禁用</el-divider>
-          <el-radio-button
-            label="候选组"
-            :disabled="true"
-          >候选组[禁用]
-          </el-radio-button
-          >
+
 
         </el-radio-group>
       </el-form-item>
@@ -58,17 +52,10 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import {
-  getBusinessObject,
-  type ModdleElement,
-} from 'bpmn-js/lib/util/ModelUtil';
+import {getBusinessObject, type ModdleElement,} from 'bpmn-js/lib/util/ModelUtil';
 import eventBus from '@/utils/eventBus';
-import {
-  getExPropValue,
-  updateExModdleProp,
-} from '@/components/BpmnJs/bo-utils/popsUtils';
+import {getExPropValue, updateExModdleProp,} from '@/components/BpmnJs/bo-utils/popsUtils';
 import {modelerStore} from '@/store';
-import SingleUser from './sub/SingleUser.vue';
 import MultipleUser from './sub/MultipleUser.vue';
 import MultipleDept from './sub/MultipleDept.vue';
 
@@ -120,10 +107,10 @@ const userType = ref<any>([
     label: '候选人',
     value: 'candidateUsers',
   },
-  // {
-  //   label: '候选组',
-  //   value: 'candidateGroups',
-  // },
+  {
+    label: '候选组',
+    value: 'candidateGroups',
+  },
 ]);
 
 // 单选用户 选择的数据
@@ -206,7 +193,7 @@ const multipleUserOk = (list: any[]) => {
 const multipleDeptOk = (list: any[]) => {
   multipleDeptList.value = list;
   const deptIds = multipleDeptList.value.map((item) => {
-    return item.deptId;
+    return item.id;
   });
   const deptNames = multipleDeptList.value.map((item) => {
     return item.deptName;
@@ -254,7 +241,7 @@ eventBus.on('elementInit', function () {
     const deptNames = UAForm.value.identityLinkNames.split(',');
     for (let i = 0; i < candidateGroups.length; i++) {
       multipleDeptList.value.push({
-        deptId: candidateGroups[i],
+        id: candidateGroups[i],
         deptName: deptNames[i],
       });
     }
