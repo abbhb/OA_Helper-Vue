@@ -27,11 +27,7 @@
   >
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
       <el-form-item label="用户名称">
-        <el-input
-          v-model="queryForm.name"
-          placeholder="用户名称"
-          clearable
-        />
+        <el-input v-model="queryForm.name" clearable placeholder="用户名称"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleQuery">查询</el-button>
@@ -74,8 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch, reactive} from 'vue';
-import {getUserListManger, listForBMPN} from "@/api/user";
+import {reactive, ref, watch} from 'vue';
+import {listForBMPN} from '@/api/user';
 
 const props = defineProps({
   list: {

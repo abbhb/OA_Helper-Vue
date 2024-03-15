@@ -37,6 +37,28 @@ const BMP: AppRouteRecordRaw = {
                 canGo: true,
             },
         },
+        {
+            path: 'bpmn-group',
+            name: 'BPMNGroup',
+            component: () => import('@/views/bmp/bpm-group/index.vue'),
+            meta: {
+                locale: 'menu.bmp.bpmn-group',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
+            },
+        },
+        {
+            path: 'bpmn-group-act',
+            name: 'BPMNGroupAct',
+            component: () => import('@/views/bmp/bpm-group-act/index.vue'),
+            meta: {
+                locale: 'menu.bmp.bpmn-group-act',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
+            },
+        },
     ],
 };
 

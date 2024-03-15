@@ -1,6 +1,6 @@
 // bpmn.js 设计器
-import {defineComponent, ref, toRefs, nextTick, watch} from 'vue';
 import type {PropType} from 'vue';
+import {defineComponent, nextTick, ref, toRefs, watch} from 'vue';
 
 import modulesAndModdle from '@/components/BpmnJs/components/Designer/modulesAndModdle';
 import initModeler from '@/components/BpmnJs/components/Designer/initModeler';

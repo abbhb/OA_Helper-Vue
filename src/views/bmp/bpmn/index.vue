@@ -36,7 +36,7 @@
       <el-table-column label="版本" align="center" prop="version" width="100"/>
       <el-table-column label="主表单" align="center" width="100">
         <template #default="scoped">
-          <MainForm :form-json="scoped.row.formJson"/>
+          <MainForm v-if="scoped.row.formJson" :form-json="scoped.row?.formJson ? scoped.row?.formJson:{}"/>
           <h5 v-if="!scoped.row.formJson">暂无信息</h5>
         </template>
       </el-table-column>
@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
+import {reactive, ref} from 'vue';
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {deleteProcessDefinition, processDefinitionList, updateProcessDefinitionState} from '@/api/bpmn';
 import DeployBpmn from './model/DeployBpmn.vue';
@@ -152,7 +152,7 @@ const getList = async () => {
     });
     loading.value = false;
     list.value = data.records;
-    total.value = data.total;
+    total.value = Number(data.total);
   } catch (e) {
     loading.value = false;
   }

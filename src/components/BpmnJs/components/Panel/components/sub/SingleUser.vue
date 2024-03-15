@@ -14,11 +14,7 @@
   <el-dialog v-model="open" title="选择人" width="1200px" append-to-body>
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
       <el-form-item label="用户名称">
-        <el-input
-          v-model="queryForm.name"
-          placeholder="用户名称"
-          clearable
-        />
+        <el-input v-model="queryForm.name" clearable placeholder="用户名称"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleQuery">查询</el-button>
@@ -36,8 +32,7 @@
         <template #default="scope">
           <el-button link type="primary" @click="handleCurrentChange(scope.row)"
           >选择
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,8 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch, reactive} from 'vue';
-import {listForBMPN} from "@/api/user";
+import {reactive, ref, watch} from 'vue';
+import {listForBMPN} from '@/api/user';
 
 const props = defineProps({
   user: {
@@ -123,7 +118,6 @@ const getList = async () => {
   list.value = data.records;
   total.value = data.total;
   loading.value = false;
-
 };
 
 /**

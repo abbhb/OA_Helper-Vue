@@ -1,11 +1,4 @@
-import {
-    defineComponent,
-    Component,
-    markRaw,
-    onMounted,
-    onBeforeUnmount,
-    ref,
-} from 'vue';
+import {Component, defineComponent, markRaw, onBeforeUnmount, onMounted, ref,} from 'vue';
 import debounce from 'lodash.debounce';
 import eventBus from '@/utils/eventBus';
 import {modelerStore} from '@/store';
@@ -13,18 +6,12 @@ import {modelerStore} from '@/store';
 import getBpmnIconType from '@/components/BpmnJs/bpmn-icons/getIconType';
 import bpmnIcons from '@/components/BpmnJs/bpmn-icons';
 
-import {
-    isCanbeConditional,
-    isExtendStartEvent,
-} from '@/components/BpmnJs/bo-utils/conditionUtil';
+import {isCanbeConditional, isExtendStartEvent,} from '@/components/BpmnJs/bo-utils/conditionUtil';
 import {customTranslate} from '@/components/BpmnJs/overwrite-modules/Translate';
 import {isAsynchronous} from '@/components/BpmnJs/bo-utils/asynchronousContinuationsUtil';
 import {isExecutable} from '@/components/BpmnJs/bo-utils/executionListenersUtil';
 import {isJobExecutable} from '@/components/BpmnJs/bo-utils/jobExecutionUtil';
-import {
-    isStartInitializable,
-    isUserAssignmentSupported,
-} from '@/components/BpmnJs/bo-utils/initiatorUtil';
+import {isStartInitializable, isUserAssignmentSupported,} from '@/components/BpmnJs/bo-utils/initiatorUtil';
 import Modeler from 'bpmn-js/lib/Modeler';
 import BpmnIcon from './components/sub/BpmnIcon.vue';
 
@@ -35,6 +22,7 @@ import ElementExecutionListeners from './components/ElementExecutionListeners.vu
 import ElementExtensionProperties from './components/ElementExtensionProperties.vue';
 import ElementAsyncContinuations from './components/ElementAsyncContinuations.vue';
 import ElementJobExecution from './components/ElementJobExecution.vue';
+import ElementService from './components/ElementService.vue';
 import ElementStartInitiator from './components/ElementStartInitiator.vue';
 import ElementForm from './components/ElementForm.vue';
 import UserAssignment from './components/UserAssignment.vue';
@@ -70,6 +58,7 @@ const Panel = defineComponent({
             isUserAssignmentSupported(element) &&
             renderComponents.push(UserAssignment);
             isUserAssignmentSupported(element) && renderComponents.push(ElementForm);
+            element.type === 'bpmn:ServiceTask' && renderComponents.push(ElementService);
             isExecutable(element) && renderComponents.push(ElementExecutionListeners);
         };
 

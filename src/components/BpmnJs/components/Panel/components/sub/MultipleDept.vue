@@ -37,11 +37,15 @@
       </el-form-item>
     </el-form>
 
+    <el-scrollbar max-height="450px">
     <el-table
       ref="tableRef"
       v-loading="loading"
       :data="list"
       @select="handleSelectionChange"
+      default-expand-all
+      row-key="id"
+
       @select-all="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"/>
@@ -52,14 +56,8 @@
       <el-table-column label="邮箱" align="center" prop="email"/>
       <el-table-column label="创建时间" align="center" prop="createTime"/>
     </el-table>
-    <el-pagination
-      v-model:page-size="queryForm.pageSize"
-      v-model:current-page="queryForm.pageNo"
-      background
-      layout="prev, pager, next"
-      :total="total"
-      @current-change="getList"
-    />
+
+    </el-scrollbar>
 
     <template #footer>
       <div class="dialog-footer">
@@ -70,8 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch, reactive} from 'vue';
-import {deptListForBPM} from "@/api/dept";
+import {reactive, ref, watch} from 'vue';
+import {deptListForBPM} from '@/api/dept';
 
 const props = defineProps({
   list: {
@@ -100,11 +98,9 @@ watch(
 // 查询参数
 const queryForm = reactive({
   deptName: '',
-  pageNo: 1,
-  pageSize: 10,
+
 });
-// 列表内容数量
-const total = ref(0);
+
 // 列表是否加载
 const loading = ref(true);
 // 列表返回值
@@ -127,13 +123,10 @@ const handleOpen = () => {
 const getList = async () => {
   loading.value = true;
   const {data} = await deptListForBPM({
-    pageNum: queryForm.pageNo,
-    pageSize: queryForm.pageSize,
-    name: queryForm.deptName,
+    name: queryForm.deptName
   });
   addselectDeptList();
-  list.value = data.records;
-  total.value = Number(data.total);
+  list.value = data;
   loading.value = false;
 
   reloadTableSelect();
@@ -196,7 +189,6 @@ const handleSelectionChange = (selectData: any[]) => {
  * 搜索按钮操作
  */
 function handleQuery() {
-  queryForm.pageNo = 1;
   getList();
 }
 

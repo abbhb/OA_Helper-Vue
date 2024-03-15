@@ -31,6 +31,8 @@ export default {
   'menu.Message': '消息',
   'menu.bmp.form': '在线表单设计',
     'menu.bmp.bpmn': '流程定义',
+    'menu.bmp.bpmn-group': '流程组',
+    'menu.bmp.bpmn-group-act': '流程关联组',
   'menu.bmp': '审批流',
   'menu.chat': 'Chat',
     'menu.notice-list': '通知中心',

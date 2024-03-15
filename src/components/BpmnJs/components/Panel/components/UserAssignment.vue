@@ -12,16 +12,13 @@
             :key="item.value"
             :label="item.value"
           >{{ item.label }}
-          </el-radio-button
-          >
-
-
+          </el-radio-button>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item v-if="UAForm.userType === 'assignee'" label="代理人">
         <!-- 单选用户 -->
-        <SingleUser :user="singleUser" @ok="singleUserOk"/>
+        <SingleUser :user="singleUserData" @ok="singleUserOk"/>
       </el-form-item>
 
       <el-form-item v-if="UAForm.userType === 'candidateUsers'" label="候选人">
@@ -57,6 +54,7 @@ import eventBus from '@/utils/eventBus';
 import {getExPropValue, updateExModdleProp,} from '@/components/BpmnJs/bo-utils/popsUtils';
 import {modelerStore} from '@/store';
 import MultipleUser from './sub/MultipleUser.vue';
+import SingleUser from './sub/SingleUser.vue';
 import MultipleDept from './sub/MultipleDept.vue';
 
 const modeler = modelerStore();
@@ -114,7 +112,7 @@ const userType = ref<any>([
 ]);
 
 // 单选用户 选择的数据
-const singleUser = ref<any>({});
+const singleUserData = ref<any>({});
 
 // 多选用户 选择的数据
 const multipleUserList = ref<any[]>([]);
@@ -134,7 +132,7 @@ const updateUserAssignProp = (key: UserAssigneeProp, value: string) => {
       updateExModdleProp(scopedElement, moddleElement, item.value, '');
     });
     // 重置变量
-    singleUser.value = {};
+    singleUserData.value = {};
     multipleUserList.value = [];
     multipleDeptList.value = [];
     updateUserAssignProp('identityLinkNames', '');
@@ -209,14 +207,14 @@ eventBus.on('elementInit', function () {
   getElementData();
 
   // 重置变量
-  singleUser.value = {};
+  singleUserData.value = {};
   multipleUserList.value = [];
   multipleDeptList.value = [];
 
   // 还原代理人选择项
   if (UAForm.value.userType === 'assignee' && UAForm.value.assignee !== '') {
-    singleUser.value.assignee = UAForm.value.assignee;
-    singleUser.value.name = UAForm.value.identityLinkNames;
+    singleUserData.value.assignee = UAForm.value.assignee;
+    singleUserData.value.name = UAForm.value.identityLinkNames;
   }
   // 还原候选人选择项
   if (

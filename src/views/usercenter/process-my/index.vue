@@ -3,23 +3,23 @@
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
       <el-form-item label="业务key">
         <el-input
-            v-model="queryForm.businessKey"
-            placeholder="businessKey(不是模糊查询)"
-            clearable
+          v-model="queryForm.businessKey"
+          clearable
+          placeholder="businessKey(不是模糊查询)"
         />
       </el-form-item>
       <el-form-item label="流程名称">
         <el-input
-            v-model="queryForm.definitionName"
-            placeholder="流程名称(不是模糊查询)"
-            clearable
+          v-model="queryForm.definitionName"
+          clearable
+          placeholder="流程名称(不是模糊查询)"
         />
       </el-form-item>
       <el-form-item label="流程key">
         <el-input
-            v-model="queryForm.definitionKey"
-            placeholder="流程key(不是模糊查询)"
-            clearable
+          v-model="queryForm.definitionKey"
+          clearable
+          placeholder="流程key(不是模糊查询)"
         />
       </el-form-item>
       <el-form-item>
@@ -31,8 +31,7 @@
       <el-col :span="1.5">
         <el-button type="primary" plain icon="Plus" @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
     </el-row>
 
@@ -47,40 +46,42 @@
       <el-table-column label="当前节点" align="center" prop="taskName"/>
       <el-table-column label="状态" align="center">
         <template #default="scope">
-          <el-tag type="success" v-if="scope.row.status === 1">进行中</el-tag>
+          <el-tag v-if="scope.row.status === 1" type="success">进行中</el-tag>
           <el-tag v-if="scope.row.status === 2">已完成</el-tag>
-          <el-tag type="danger" v-if="scope.row.status === 3">发起人撤销</el-tag>
+          <el-tag v-if="scope.row.status === 3" type="danger"
+          >发起人撤销
+          </el-tag
+          >
         </template>
       </el-table-column>
       <el-table-column width="200">
         <template #default="scope">
           <el-button
-              link
-              type="primary"
-              icon="Delete"
-              @click="handleDelete(scope.row.id)"
-          >删除
-          </el-button
-          >
+            v-if="scope.row.status === 1"
+            icon="Delete"
+            link
+            type="primary"
+            @click="handleDelete(scope.row.id)"
+          >撤回流程
+          </el-button>
           <el-button
-              link
-              type="primary"
-              icon="Pointer"
-              @click="handleHistoryRecord(scope.row.id)"
+            icon="Pointer"
+            link
+            type="primary"
+            @click="handleHistoryRecord(scope.row.id)"
           >审批记录
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-        v-model:page-size="queryForm.pageSize"
-        v-model:current-page="queryForm.pageNo"
-        background
-        layout="prev, pager, next"
-        :total="total"
-        @current-change="getList"
+      v-model:current-page="queryForm.pageNo"
+      v-model:page-size="queryForm.pageSize"
+      :total="total"
+      background
+      layout="prev, pager, next"
+      @current-change="getList"
     />
     <!-- 发起流程 -->
     <StartProcess ref="startProcessRef" @ok="getList"/>
@@ -91,10 +92,10 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
+import {reactive, ref} from 'vue';
 import HistoryRecord from '@/components/HistoryRecord/index.vue';
 import {ElMessage, ElMessageBox} from 'element-plus';
-import {deleteProcessStart, processStartList} from "@/api/bpmn";
+import {deleteProcessStart, processStartList} from '@/api/bpmn';
 import StartProcess from './model/StartProcess.vue';
 
 // 查询参数
