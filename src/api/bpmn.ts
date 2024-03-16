@@ -5,6 +5,7 @@ interface DefinitionListVo {
   id?: string;
   deploymentId?: string;
   name?: string;
+  icon?: string;
   key?: string;
   version?: number;
   formJson?: any;

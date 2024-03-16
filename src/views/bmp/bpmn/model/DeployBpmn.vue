@@ -15,7 +15,7 @@
       </div>
       <div class="main-content">
         <Designer :xml="xml" :settings="settings"/>
-        <Panel></Panel>
+        <Panel style="max-width: 40%"></Panel>
       </div>
     </div>
   </el-drawer>
@@ -30,9 +30,12 @@ import Designer from '@/components/BpmnJs/components/Designer';
 import Panel from '@/components/BpmnJs/components/Panel';
 import {ElMessage, ElMessageBox, ElLoading} from 'element-plus';
 import {checkd} from '@/components/BpmnJs/overwrite-modules/Lint/bpmnlint';
-import {deployProcess, getDefinitionInfo, getWidgetDataType} from '@/api/bpmn';
+import {
+  deployProcess,
+  getDefinitionInfo,
+  getWidgetDataType,
+} from '@/api/bpmn';
 import {modelerStore} from '@/store';
-
 
 const emit = defineEmits<{
   (event: 'ok'): void;
@@ -79,6 +82,9 @@ const open = async (deploymentId: string | undefined) => {
         tableInfo.type = 'ready';
         modeler.setTableInfo(tableInfo);
       }
+      if (data?.icon) {
+        modeler.setIcon(data?.icon);
+      }
       if (data?.nodeColumns) {
         modeler.setNodeColumns(data.get('nodeColumns'));
       }
@@ -111,6 +117,7 @@ const submit = async () => {
   const formJsonList = modeler.getFormJsonList;
   // 节点绑定字段信息
   const nodeColumns = modeler.getNodeColumns;
+  const modelIcon = modeler.getModelIcon;
   // 表信息
   const tableInfo = modeler.getTableInfo;
   const {xml} = await modeler.getModeler.saveXML({
@@ -122,6 +129,7 @@ const submit = async () => {
     formJsonList,
     nodeColumns,
     tableInfo,
+    modelIcon,
   });
   ElMessage.success('保存成功！');
   drawer.value = false;
@@ -139,8 +147,6 @@ const close = async () => {
 defineExpose({
   open,
 });
-
-
 </script>
 
 <style scoped lang="scss">
@@ -160,4 +166,3 @@ defineExpose({
   }
 }
 </style>
-

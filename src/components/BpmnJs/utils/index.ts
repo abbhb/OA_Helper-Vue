@@ -13,7 +13,7 @@ export const createNewDiagram = async function (newXml?: string, settings?: Edit
         const xmlString = newXml || EmptyXML(newId, newName);
         const {warnings} = await store.getModeler.importXML(xmlString);
         store.getCanvas.zoom("fit-viewport", {x: 0, y: 0});
-        console.log("bpmb warnings->", warnings);
+        // console.log("bpmb warnings->", warnings);
     } catch (e) {
         console.error(`[Process Designer Warn]: ${typeof e === "string" ? e : (e as Error)?.message}`);
     }

@@ -157,3 +157,11 @@ export function userSelectList(name: string) {
         }
     });
 }
+
+export function userSelectOnlyXUserList(deptId: string) {
+    return axios.get<UserSelectListResp>('/api/user/user_select_list_only_x_user', {
+        params: {
+            deptId
+        }
+    });
+}

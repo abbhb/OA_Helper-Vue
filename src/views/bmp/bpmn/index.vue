@@ -24,19 +24,30 @@
       <el-col :span="1.5">
         <el-button type="primary" plain icon="Plus" @click="handleAdd"
         >新增
-        </el-button
-        >
+        </el-button>
       </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="list">
       <el-table-column label="流程id" align="center" prop="id"/>
       <el-table-column label="流程名称" align="center" prop="name"/>
+      <el-table-column align="center" label="流程图标">
+        <template #default="scoped">
+          <SelectIcon
+            :icon-data="scoped.row?.icon ? scoped.row?.icon : 'add'"
+            :only-show="true"
+            style="width: 50px;height: 50px;"
+          />
+        </template>
+      </el-table-column>
       <el-table-column label="流程key" align="center" prop="key"/>
       <el-table-column label="版本" align="center" prop="version" width="100"/>
       <el-table-column label="主表单" align="center" width="100">
         <template #default="scoped">
-          <MainForm v-if="scoped.row.formJson" :form-json="scoped.row?.formJson ? scoped.row?.formJson:{}"/>
+          <MainForm
+            v-if="scoped.row.formJson"
+            :form-json="scoped.row?.formJson ? scoped.row?.formJson : {}"
+          />
           <h5 v-if="!scoped.row.formJson">暂无信息</h5>
         </template>
       </el-table-column>
@@ -55,8 +66,7 @@
             icon="Crop"
             @click="handleDesign(scope.row.deploymentId)"
           >设计
-          </el-button
-          >
+          </el-button>
           <el-button
             v-if="scope.row.suspended"
             link
@@ -64,8 +74,7 @@
             icon="VideoPlay"
             @click="updateState(scope.row.deploymentId)"
           >激活
-          </el-button
-          >
+          </el-button>
           <el-button
             v-else
             link
@@ -73,24 +82,21 @@
             icon="VideoPause"
             @click="updateState(scope.row.deploymentId)"
           >挂起
-          </el-button
-          >
+          </el-button>
           <el-button
             link
             type="primary"
             icon="Pointer"
             @click="handleDetails(scope.row.deploymentId)"
           >查看
-          </el-button
-          >
+          </el-button>
           <el-button
             link
             type="primary"
             icon="Delete"
             @click="handleDelete(scope.row.deploymentId)"
           >删除
-          </el-button
-          >
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -115,7 +121,12 @@
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
 import {ElMessage, ElMessageBox} from 'element-plus';
-import {deleteProcessDefinition, processDefinitionList, updateProcessDefinitionState} from '@/api/bpmn';
+import {
+  deleteProcessDefinition,
+  processDefinitionList,
+  updateProcessDefinitionState,
+} from '@/api/bpmn';
+import SelectIcon from '@/components/BpmnJs/components/Panel/components/sub/SelectIcon.vue';
 import DeployBpmn from './model/DeployBpmn.vue';
 import BpmnDetails from './model/BpmnDetails.vue';
 import MainForm from './model/MainForm.vue';
@@ -206,14 +217,14 @@ async function updateState(deploymentId: any) {
  */
 function handleDelete(deploymentId: any) {
   ElMessageBox.confirm(
-    '确认要删除当前项吗? 流程实例启动的也将被删除,谨慎删除',
-    '提示'
+    '确认要删除当前项吗? 流程实例启动的也将被删除,谨慎删除.不建议删除，不要的就挂起，否则会导致涉及该流程的记录被删除!!!',
+    '警告'
   ).then(() => {
     deleteProcessDefinition(deploymentId).then((res) => {
       // @ts-ignore
       ElMessage.success(res.msg);
       getList();
-    })
+    });
   });
 }
 

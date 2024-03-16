@@ -6,6 +6,7 @@ export interface DeptManger {
   parentId?: string;
   status?: number;
   leader?: string;
+  leaderId?: string;
   deptName?: string;
   orderNum?: number;
   phone?: string;

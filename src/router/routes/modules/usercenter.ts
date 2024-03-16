@@ -26,6 +26,17 @@ const USERCENTER: AppRouteRecordRaw = {
             },
         },
         {
+            path: 'startProcess-new-v1',
+            name: 'StartProcessNewV1',
+            component: () => import('@/views/bmp/bmp-start-user/index.vue'),
+            meta: {
+                locale: 'menu.usercenter.processCenter',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
+            },
+        },
+        {
             path: 'startProcess',
             name: 'StartProcess',
             component: () => import('@/views/usercenter/process-my/index.vue'),

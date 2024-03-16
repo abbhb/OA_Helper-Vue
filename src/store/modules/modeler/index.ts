@@ -94,6 +94,7 @@ export type ModelerStore = {
     tableInfo: TableInfo | undefined;
     widgetDataType: WidgetDataType | undefined;
     nodeColumns: NodelColumn[];
+    modelIcon: string;
 };
 
 const defaultState: ModelerStore = {
@@ -109,6 +110,7 @@ const defaultState: ModelerStore = {
     tableInfo: undefined,
     widgetDataType: undefined,
     nodeColumns: [],
+    modelIcon: 'add',
 };
 
 export default defineStore('modeler', {
@@ -117,6 +119,7 @@ export default defineStore('modeler', {
         getProcessEngine: (state) => toRaw(state.processEngine),
         getActive: (state) => toRaw(state.activeElement),
         getActiveId: (state) => state.activeElementId,
+        getModelIcon: (state) => state.modelIcon,
         getModeler: (state) => toRaw(state.modeler),
         getModdle: (state) => toRaw(state.moddle),
         getModeling: (state): Modeling => toRaw(state.modeling),
@@ -354,6 +357,10 @@ export default defineStore('modeler', {
          */
         setNodeColumns(nodelColumns: NodelColumn[]) {
             this.nodeColumns = nodelColumns;
+        },
+        setIcon(icon: string) {
+            this.modelIcon = icon;
+            console.log('aaa' + icon);
         },
         /**
          * 设置节点绑定的表字段

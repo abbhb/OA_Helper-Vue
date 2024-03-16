@@ -40,6 +40,7 @@ export default {
   'menu.server.workplace': '工作台-服务端',
   'menu.usercenter.usercenter': '个人中心',
     'menu.usercenter.process-my': '我发起的',
+    'menu.usercenter.processCenter': '审批中心',
     'menu.usercenter.todo-my': '我的待办',
   'menu.sysmanger.group': '用户分组',
   'menu.sysmanger.UserManger': '用户管理',

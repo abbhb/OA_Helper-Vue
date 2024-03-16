@@ -13,6 +13,7 @@
     updateDept,
   } from '@/api/dept';
   import { Role, roleTagList } from '@/api/role';
+  import {userSelectOnlyXUserList} from "@/api/user";
 
   interface statuEI {
     clickLoading: boolean;
@@ -30,7 +31,7 @@
   const form = reactive({
     id: '',
     parentId: '1',
-    leader: '',
+    leaderId: '',
     deptName: '',
     orderNum: 1,
     phone: '',
@@ -42,6 +43,7 @@
   const appStore = useAppStore();
   const tableData = ref<DeptManger[]>([]);
   const selectTree = ref([]);
+  const deptUserList = ref([]);
   const rolesStore = ref<Role[]>([]);
   const buildSelectTree = (tabel: any) => {
     selectTree.value = [];
@@ -65,6 +67,10 @@
   initData();
   initSelect();
 
+  const initDeptLeaderUser = async () => {
+    const {data} = await userSelectOnlyXUserList(form.id);
+    deptUserList.value = data.options;
+  }
   const stateChange = computed(() => (status: any) => {
     return status === 1 || status === '1' ? '正常' : '停用';
   });
@@ -72,7 +78,7 @@
     form.id = '';
     form.parentId = '1';
     form.status = 1;
-    form.leader = '';
+    form.leaderId = '';
     form.deptName = '';
     form.orderNum = 1;
     form.phone = '';
@@ -81,17 +87,15 @@
     form.roles = [];
   };
 
-  const editHandel = (record) => {
+  const editHandel = async (record) => {
     statuEs.value.modelTitle = '编辑';
     statuEs.value.modelType = 'edit';
     form.id = record.id;
     form.parentId = record.parentId;
     form.status = Number(record.status);
-    form.email = record.email;
-    form.phone = record.phone;
     form.deptName = record.deptName;
     form.orderNum = record.orderNum;
-    form.leader = record.leader;
+    form.leaderId = record.leaderId;
     const sadas = [];
     if (record.roles) {
       record.roles.forEach((item) => {
@@ -99,6 +103,7 @@
       });
     }
     form.roles = sadas;
+    await initDeptLeaderUser();
     statuEs.value.model = true;
   };
   const addHandel = (record) => {
@@ -129,11 +134,9 @@
     const forms = ref<DeptManger>({
       id: form.id,
       parentId: form.parentId,
-      leader: form.leader,
       deptName: form.deptName,
+      leaderId: form.leaderId,
       orderNum: form.orderNum,
-      phone: form.phone,
-      email: form.email,
       roles: dasf.value,
       status: Number(form.status),
     });
@@ -146,6 +149,7 @@
       done(false);
     }
   };
+
   const add = async (done) => {
     const dasf = ref<Role[]>([]);
     if (form.roles) {
@@ -155,11 +159,8 @@
     }
     const forms = ref<DeptManger>({
       parentId: form.parentId,
-      leader: form.leader,
       deptName: form.deptName,
       orderNum: form.orderNum,
-      phone: form.phone,
-      email: form.email,
       roles: dasf.value,
       status: Number(form.status),
     });
@@ -252,14 +253,6 @@
             </template>
           </a-table-column>
           <a-table-column
-            :title="$t(`syscenter.dept-manger.dept.leader`)"
-            :width="100"
-          >
-            <template #cell="{ record }">
-              {{ record.leader }}
-            </template>
-          </a-table-column>
-          <a-table-column
             :sortable="{
               sortDirections: ['ascend', 'descend'],
             }"
@@ -268,14 +261,25 @@
             data-index="orderNum"
           ></a-table-column>
           <a-table-column
+            :title="$t(`syscenter.dept-manger.dept.leader`)"
+            :width="100"
+          >
+            <template #cell="{ record }">
+              {{ record.leader }}
+            </template>
+          </a-table-column>
+
+          <a-table-column
             :title="$t(`syscenter.dept-manger.dept.phone`)"
             data-index="phone"
+            :width="120"
+
           ></a-table-column>
           <a-table-column
             :ellipsis="true"
             :title="$t(`syscenter.dept-manger.dept.email`)"
             :tooltip="{ position: 'top' }"
-            :width="160"
+            :width="170"
             data-index="email"
           ></a-table-column>
           <a-table-column
@@ -400,45 +404,20 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="28">
-          <a-col :span="14">
-            <a-form-item
-              :label="$t('syscenter.dept-manger.dept.form.leader')"
-              :tooltip="$t('syscenter.dept-manger.dept.form.leader.tip')"
-              field="leader"
-              label-col-flex="100px"
-            >
-              <a-input
-                v-model="form.leader"
-                :placeholder="$t('syscenter.dept-manger.dept.form.tip.leader')"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="10">
-            <a-form-item
-              :label="$t('syscenter.dept-manger.dept.form.phone')"
-              field="phone"
-              label-col-flex="80px"
-            >
-              <a-input
-                v-model="form.phone"
-                :placeholder="$t('syscenter.dept-manger.dept.form.tip.phone')"
-              />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="28">
-          <a-form-item
-            :label="$t('syscenter.dept-manger.dept.form.email')"
-            field="email"
-            label-col-flex="100px"
+
+        <a-form-item
+          :tooltip="$t('syscenter.dept-manger.dept.form.leader.tip')"
+          field="leaderId"
+          label="负责人选择"
+          label-col-flex="100px"
+        >
+          <a-select
+            v-model="form.leaderId"
+            :placeholder="$t('syscenter.dept-manger.dept.form.tip.leader')"
           >
-            <a-input
-              v-model="form.email"
-              :placeholder="$t('syscenter.dept-manger.dept.form.tip.email')"
-            />
-          </a-form-item>
-        </a-row>
+            <a-option v-for="item in deptUserList" :key="item.id" :value="item.id">{{ item.name }}</a-option>
+          </a-select>
+        </a-form-item>
 
         <a-row :gutter="28">
           <a-col :span="14">
