@@ -1,7 +1,7 @@
 <!-- 多选用户组件 -->
 <template>
   <div class="select-container">
-    <el-radio-group v-model="type">
+    <el-radio-group v-model="type" @change="changeTypeHandel">
       <el-radio value="any">指定用户</el-radio>
       <el-radio value="leader">负责人</el-radio>
     </el-radio-group>
@@ -16,12 +16,10 @@
     </el-button>
     <el-tag v-if="type === 'leader'"
     >注意：当该级负责人不存在时会自动寻找上级负责人
-    </el-tag
-    >
+    </el-tag>
     <el-tag v-if="type === 'leader'"
     >如果找不到一个可用的上级则发起失败
-    </el-tag
-    >
+    </el-tag>
     <el-select
       v-if="type === 'leader'"
       v-model="currentLeader"
@@ -33,8 +31,7 @@
         :label="config.nameS"
         :value="config.id"
       >{{ config.nameS }}
-      </el-option
-      >
+      </el-option>
     </el-select>
   </div>
   <el-dialog v-model="open" title="选择人" width="1200px" append-to-body>
@@ -150,7 +147,6 @@ const handleOpen = () => {
   open.value = true;
 };
 
-
 /**
  * 查询列表
  */
@@ -196,6 +192,15 @@ function handleCurrentLeaderChange(val: any) {
   }
   emit('ok', {id: currentRow.value.id, name: currentRow.value.name});
 }
+
+const changeTypeHandel = (val) => {
+  console.log(val)
+  if (val === 'any') {
+    console.log('暂不写');
+  } else if (val === 'leader') {
+    handleCurrentLeaderChange(currentLeader.value);
+  }
+};
 
 defineExpose({
   handleOpen,
