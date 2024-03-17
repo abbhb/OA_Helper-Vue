@@ -1,3 +1,34 @@
+# EasyOA前端项目
+
+## 快速启动
+
+```nodejs
+npm install
+npm run dev
+```
+
+## 项目截图
+
+### 首页
+
+![index.png](docs%2Findex.png)
+
+### 聊天
+
+![chat.png](docs%2Fchat.png)
+
+### 动态表单
+
+![dongtai.png](docs%2Fdongtai.png)
+
+### 单文件打印
+
+![danwenjian.png](docs%2Fdanwenjian.png)
+
+### 多文件打印
+
+![moreFilePrint.png](docs%2FmoreFilePrint.png)
+
 #### 防止爬虫抓取
 nginx
 将下面配置填入nginx配置文件中，可以参考 docker-compose/nginx/nginx.conf 文件中添加反爬虫的方法
