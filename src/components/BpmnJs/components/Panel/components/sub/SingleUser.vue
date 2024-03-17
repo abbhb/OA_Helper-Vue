@@ -1,15 +1,41 @@
 <!-- 多选用户组件 -->
 <template>
   <div class="select-container">
-    <div class="tag-input">
+    <el-radio-group v-model="type">
+      <el-radio value="any">指定用户</el-radio>
+      <el-radio value="leader">负责人</el-radio>
+    </el-radio-group>
+    <div v-if="type === 'any'" class="tag-input">
       <el-tag v-if="currentRow?.name">{{ currentRow?.name }}</el-tag>
     </div>
-    <el-button type="primary" @click="handleOpen">
+    <el-button v-if="type === 'any'" type="primary" @click="handleOpen">
       <el-icon>
         <Edit/>
       </el-icon>
       选择
     </el-button>
+    <el-tag v-if="type === 'leader'"
+    >注意：当该级负责人不存在时会自动寻找上级负责人
+    </el-tag
+    >
+    <el-tag v-if="type === 'leader'"
+    >如果找不到一个可用的上级则发起失败
+    </el-tag
+    >
+    <el-select
+      v-if="type === 'leader'"
+      v-model="currentLeader"
+      @change="handleCurrentLeaderChange"
+    >
+      <el-option
+        v-for="config in leaderConfig"
+        :key="config.id"
+        :label="config.nameS"
+        :value="config.id"
+      >{{ config.nameS }}
+      </el-option
+      >
+    </el-select>
   </div>
   <el-dialog v-model="open" title="选择人" width="1200px" append-to-body>
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
@@ -65,12 +91,32 @@ const props = defineProps({
     },
   },
 });
+const type = ref('any');
+
+const leaderConfig = [
+  {
+    nameS: '直接负责人(本部)',
+    id: '${assigneeLeader0}',
+    name: '${assigneeLeader0Name}',
+  },
+  {
+    nameS: '第二级负责人',
+    id: '${assigneeLeader1}',
+    name: '${assigneeLeader1Name}',
+  },
+  {
+    nameS: '第三级负责人',
+    id: '${assigneeLeader2}',
+    name: '${assigneeLeader2Name}',
+  },
+];
 
 // 表格实例
 const tableRef = ref();
 
 // 选择的行
 const currentRow = ref<any>();
+const currentLeader = ref<any>('${assigneeLeader0}');
 
 watch(
   () => props.user,
@@ -104,6 +150,7 @@ const handleOpen = () => {
   open.value = true;
 };
 
+
 /**
  * 查询列表
  */
@@ -116,7 +163,7 @@ const getList = async () => {
     name: queryForm.name,
   });
   list.value = data.records;
-  total.value = data.total;
+  total.value = Number(data.total);
   loading.value = false;
 };
 
@@ -138,6 +185,18 @@ function handleCurrentChange(val: any) {
   open.value = false;
 }
 
+function handleCurrentLeaderChange(val: any) {
+  currentLeader.value = val;
+  currentRow.value.id = val;
+  for (const leaderConfigElement of leaderConfig) {
+    if (leaderConfigElement.id === val) {
+      currentRow.value.name = leaderConfigElement.name;
+      break;
+    }
+  }
+  emit('ok', {id: currentRow.value.id, name: currentRow.value.name});
+}
+
 defineExpose({
   handleOpen,
 });
@@ -151,8 +210,8 @@ const emit = defineEmits<{
 .select-container {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
+  flex-direction: column;
 }
 
 .tag-input {

@@ -30,7 +30,6 @@
         <!-- 多选部门 -->
         <MultipleDept :list="multipleDeptList" @ok="multipleDeptOk"/>
       </el-form-item>
-
       <!-- 暂时用不到 -->
       <!--      <el-form-item label="到期日">-->
       <!--        <el-input v-model="UAForm.dueDate" @change="updateUserAssignProp('dueDate', $event)" />-->
