@@ -5,8 +5,8 @@ import {Message} from '@arco-design/web-vue';
 import {useAppStore} from '@/store';
 import {addIndexImage, deleteIndexImage, IndexImage, listIndexImage, updateIndexImage,} from '@/api/index-image';
 import {setChildrenUndefined} from '@/utils/utils';
-import ImagePreview from "@/components/image/ImagePreview.vue";
-import ImageUpload from "@/components/image/ImageUpload.vue";
+import ImagePreview from '@/components/image/ImagePreview.vue';
+import ImageUpload from '@/components/image/ImageUpload.vue';
 
 const appStore = useAppStore();
 
@@ -77,7 +77,7 @@ const update = async (done) => {
     sort: Number(form.sort),
     label: form.label,
     image: form.image,
-    extra: form.extra
+    extra: form.extra,
   });
   try {
     const {data} = await updateIndexImage(forms.value);
@@ -93,7 +93,7 @@ const add = async (done) => {
     sort: Number(form.sort),
     label: form.label,
     image: form.image,
-    extra: form.extra
+    extra: form.extra,
   });
   try {
     const {data} = await addIndexImage(forms.value);
@@ -128,7 +128,6 @@ const handleSuccess = (data) => {
   }
   Message.success('上传成功!');
 };
-
 </script>
 
 <template>
@@ -174,7 +173,11 @@ const handleSuccess = (data) => {
             :width="500"
           >
             <template #cell="{ record }">
-              <ImagePreview :key="record.image" :img="record.image" :width="100"></ImagePreview>
+              <ImagePreview
+                :key="record.image"
+                :img="record.image"
+                :width="100"
+              ></ImagePreview>
             </template>
           </a-table-column>
           <a-table-column
@@ -209,7 +212,6 @@ const handleSuccess = (data) => {
                 >{{ $t('syscenter.index-image.control.delete') }}
                 </a-button>
               </a-popconfirm>
-
             </template>
           </a-table-column>
         </template>
