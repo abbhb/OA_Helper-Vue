@@ -82,9 +82,21 @@ export function listGroupRule() {
   return axios.get<SigninGroupDto[]>('/api/signin_group/list');
 }
 
+export function deleteGroupRule(id: string) {
+  return axios.delete<string>('/api/signin_group/delete', {
+    params: {
+      id
+    }
+  });
+}
+
 /** 添加考勤组信息 */
 export function addGroupRule(data: SigninGroupDto) {
   return axios.post<string>('/api/signin_group/add', data);
+}
+
+export function updateGroupRule(data: SigninGroupDto) {
+  return axios.put<string>('/api/signin_group/update', data);
 }
 
 /** 删除班次信息 */

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {addGroupRule, listBcRule, signinDeviceList,} from '@/api/signin';
+import {listBcRule, signinDeviceList, updateGroupRule,} from '@/api/signin';
 import WeekSelector from '@/views/signin/group/components/weekSelect.vue';
 import AddUser from '@/views/signin/group/components/addUser.vue';
 import AddDevice from '@/views/signin/group/components/addDevice.vue';
@@ -21,6 +21,8 @@ const allDeviceList = ref([]);
 const groupRule = ref({
   signinGroup: {
     name: '',
+    id: '',
+    rev: '',
   },
   signinGroupRule: {
     rulesInfo: {
@@ -46,8 +48,6 @@ if (props.signin) {
   const asda3ewq = JSON.parse(JSON.stringify(signinGroupRuleCopy));
   groupRule.value.signinGroupRule = asda3ewq;
   // eslint-disable-next-line vue/no-setup-props-destructure
-  const onlyBasicCopy = props.signin?.onlyBasic;
-  groupRule.value.onlyBasic = onlyBasicCopy;
   for (
       let i = 0;
       i < props.signin?.signinGroupRule.rulesInfo.signinWays.length;
@@ -99,21 +99,24 @@ const shareChuli = (item, index) => {
     }
   }
   if (wukonggeS.endsWith(',')) {
-    groupRule.value.signinGroupRule.rulesInfo.kqsj[index].xq = wukonggeS.slice(
-        0,
-        wukonggeS.length - 1
-    );
+    groupRule.value.signinGroupRule.rulesInfo.kqsj[index].xq =
+        wukonggeS.slice(0, wukonggeS.length - 1);
   } else {
     groupRule.value.signinGroupRule.rulesInfo.kqsj[index].xq = wukonggeS;
   }
 
   // 去除其余选择该星期的
-  for (let i = 0; i < groupRule.value.signinGroupRule.rulesInfo.kqsj.length; i++) {
+  for (
+      let i = 0;
+      i < groupRule.value.signinGroupRule.rulesInfo.kqsj.length;
+      i++
+  ) {
     if (i === index) {
       // eslint-disable-next-line no-continue
       continue;
     }
-    const asfaa = groupRule.value.signinGroupRule.rulesInfo.kqsj[i].xq.split(',');
+    const asfaa =
+        groupRule.value.signinGroupRule.rulesInfo.kqsj[i].xq.split(',');
     const newsax = [];
     if (asfaa.some((item) => wukongge.includes(item))) {
       for (let j = 0; j < asfaa.length; j++) {
@@ -132,13 +135,17 @@ const selectUser = () => {
 const selectSigninWay = () => {
   selectSigninWayState.value = true;
 };
-const addSigninGroup = async () => {
+const updateSigninGroup = async () => {
   if (groupRule.value.signinGroupRule.rulesInfo.signinWays.length === 0) {
     Message.info('请保证最少绑定一个设备且至少绑定一种方式!');
     return;
   }
   if (groupRule.value.signinGroup.name === '') {
     Message.info('请提供考勤组名称');
+    return;
+  }
+  if (groupRule.value.signinGroup.id === '') {
+    Message.info('请提供考勤组id');
     return;
   }
   if (groupRule.value.signinGroupRule.rulesInfo.kqsj.length < 1) {
@@ -158,7 +165,7 @@ const addSigninGroup = async () => {
       return;
     }
   }
-  const data = await addGroupRule(groupRule.value);
+  const data = await updateGroupRule(groupRule.value);
   Message.success(data.msg);
   emit('success');
 };
@@ -270,8 +277,7 @@ const updateDeviceWay = (value, deviceId) => {
                   >已选择{{
                       groupRule.signinGroupRule.rulesInfo.userIds.length
                     }}位用户
-                  </a-tag
-                  >
+                  </a-tag>
                   <a-button @click="selectUser">选择用户</a-button>
                 </div>
               </a-form-item>
@@ -291,11 +297,15 @@ const updateDeviceWay = (value, deviceId) => {
                         })[0]
                       }}[方式:
                       <a-checkbox-group
-                          :default-value='groupRule.signinGroupRule.rulesInfo.signinWays.map((way)=>{
-                          if(way.deviceId===deviceId){
-                            return way.type;
-                          }
-                        })'
+                          :default-value="
+                          groupRule.signinGroupRule.rulesInfo.signinWays.map(
+                            (way) => {
+                              if (way.deviceId === deviceId) {
+                                return way.type;
+                              }
+                            }
+                          )
+                        "
                           @change="(value) => updateDeviceWay(value, deviceId)"
                       >
                         <a-checkbox
@@ -307,13 +317,10 @@ const updateDeviceWay = (value, deviceId) => {
                             :key="way"
                             :value="way"
                         >{{ way }}
-                        </a-checkbox
-                        >
-                      </a-checkbox-group
-                      >
+                        </a-checkbox>
+                      </a-checkbox-group>
                       ]
-                    </li
-                    >
+                    </li>
                   </ul>
                   <a-button @click="selectSigninWay">选择打卡方式</a-button>
                 </div>
@@ -339,7 +346,9 @@ const updateDeviceWay = (value, deviceId) => {
                         :index="key"
                         :value="
                         groupRule.signinGroupRule.rulesInfo.kqsj[key].xq
-                          ? groupRule.signinGroupRule.rulesInfo.kqsj[key].xq.split(',')
+                          ? groupRule.signinGroupRule.rulesInfo.kqsj[
+                              key
+                            ].xq.split(',')
                           : []
                       "
                         @input="shareChuli"
@@ -357,8 +366,7 @@ const updateDeviceWay = (value, deviceId) => {
                     >
                       <a-option v-for="bc in bcList" :key="bc.id" :value="bc.id"
                       >{{ bc.name }}(每天{{ bc.everyDay }}班)
-                      </a-option
-                      >
+                      </a-option>
                     </a-select>
                   </a-form-item>
                 </div>
@@ -368,7 +376,7 @@ const updateDeviceWay = (value, deviceId) => {
         </a-form>
       </div>
       <div class="button_group">
-        <a-button @click="addSigninGroup">添加</a-button>
+        <a-button @click="updateSigninGroup">更新</a-button>
       </div>
     </div>
     <div>

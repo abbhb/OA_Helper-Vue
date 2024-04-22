@@ -2,9 +2,10 @@
 import {h, reactive, ref} from 'vue';
 import {IconSearch} from '@arco-design/web-vue/es/icon';
 import {useAppStore} from '@/store';
-import {listGroupRule, SigninBc, SigninGroupDto,} from '@/api/signin';
-import AddGroup from "@/views/signin/group/components/addGroup.vue";
-import EditGroup from "@/views/signin/group/components/editGroup.vue";
+import {deleteGroupRule, listGroupRule, SigninBc, SigninGroupDto,} from '@/api/signin';
+import AddGroup from '@/views/signin/group/components/addGroup.vue';
+import EditGroup from '@/views/signin/group/components/editGroup.vue';
+import {Message} from '@arco-design/web-vue';
 
 const appStore = useAppStore();
 
@@ -61,11 +62,10 @@ const cleanForm = () => {
   form.extra = '';
 };
 const delHandel = async (record) => {
-  // const { data } = await deleteBcRule(record.id);
-  // Message.success(data);
-  initData();
+  const data = await deleteGroupRule(record.signinGroup.id);
+  Message.success(data.msg);
+  await initData();
 };
-
 
 const handleCancel = () => {
   cleanForm();
@@ -130,7 +130,6 @@ const updateSuccess = () => {
               {{ record.signinGroupRule }}
             </template>
           </a-table-column>
-
 
           <a-table-column title="操作">
             <template #cell="{ record }">
