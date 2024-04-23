@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {listBcRule, signinDeviceList, updateGroupRule,} from '@/api/signin';
+import {listBcRule, signinDeviceList, updateGroupRule} from '@/api/signin';
 import WeekSelector from '@/views/signin/group/components/weekSelect.vue';
 import AddUser from '@/views/signin/group/components/addUser.vue';
 import AddDevice from '@/views/signin/group/components/addDevice.vue';
@@ -237,40 +237,40 @@ const updateDeviceWay = (value, deviceId) => {
     <div class="box-card">
       <div>
         <a-form
-            ref="loginForm"
-            :model="groupRule"
-            autocomplete="off"
-            class="login-form"
-            layout="vertical"
+          ref="loginForm"
+          :model="groupRule"
+          autocomplete="off"
+          class="login-form"
+          layout="vertical"
         >
           <div style="display: flex">
             <div style="width: 300px">
               <a-form-item
-                  :rules="[{ required: true, message: '考勤组名称必填' }]"
-                  label="考勤组名称[不可重复]"
+                :rules="[{ required: true, message: '考勤组名称必填' }]"
+                label="考勤组名称[不可重复]"
               >
                 <a-input
-                    v-model="groupRule.signinGroup.name"
-                    autocomplete="off"
+                  v-model="groupRule.signinGroup.name"
+                  autocomplete="off"
                 >
                 </a-input>
               </a-form-item>
               <a-form-item
-                  :rules="[{ required: true, message: '考勤时间规则条数' }]"
-                  label="考勤时间规则条数"
+                :rules="[{ required: true, message: '考勤时间规则条数' }]"
+                label="考勤时间规则条数"
               >
                 <a-input-number
-                    v-model="kqsjNumbei"
-                    :max="3"
-                    :min="1"
-                    autocomplete="off"
-                    @change="everyDayChange"
+                  v-model="kqsjNumbei"
+                  :max="3"
+                  :min="1"
+                  autocomplete="off"
+                  @change="everyDayChange"
                 >
                 </a-input-number>
               </a-form-item>
               <a-form-item
-                  :rules="[{ required: true, message: '考勤用户' }]"
-                  label="考勤用户"
+                :rules="[{ required: true, message: '考勤用户' }]"
+                label="考勤用户"
               >
                 <div style="display: flex; flex-direction: column">
                   <a-tag :color="'green'"
@@ -282,8 +282,8 @@ const updateDeviceWay = (value, deviceId) => {
                 </div>
               </a-form-item>
               <a-form-item
-                  :rules="[{ required: true, message: '打卡方式' }]"
-                  label="打卡方式"
+                :rules="[{ required: true, message: '打卡方式' }]"
+                label="打卡方式"
               >
                 <div style="display: flex; flex-direction: column">
                   自定义一个组件，点击按钮打开添加，添加里面能看到所有设备，选定设备，下面多选方式解析出来，可以多选，确定添加，每次只能添加一个设备
@@ -297,7 +297,7 @@ const updateDeviceWay = (value, deviceId) => {
                         })[0]
                       }}[方式:
                       <a-checkbox-group
-                          :default-value="
+                        :default-value="
                           groupRule.signinGroupRule.rulesInfo.signinWays.map(
                             (way) => {
                               if (way.deviceId === deviceId) {
@@ -306,16 +306,16 @@ const updateDeviceWay = (value, deviceId) => {
                             }
                           )
                         "
-                          @change="(value) => updateDeviceWay(value, deviceId)"
+                        @change="(value) => updateDeviceWay(value, deviceId)"
                       >
                         <a-checkbox
-                            v-for="way in allDeviceList.map((ata) => {
+                          v-for="way in allDeviceList.map((ata) => {
                             if (ata.deviceId === deviceId) {
                               return ata.support.split(',');
                             }
                           })[0]"
-                            :key="way"
-                            :value="way"
+                          :key="way"
+                          :value="way"
                         >{{ way }}
                         </a-checkbox>
                       </a-checkbox-group>
@@ -331,36 +331,36 @@ const updateDeviceWay = (value, deviceId) => {
               <div> 考勤时间</div>
               <div style="display: flex">
                 <div
-                    v-for="(item, key) in groupRule.signinGroupRule.rulesInfo
+                  v-for="(item, key) in groupRule.signinGroupRule.rulesInfo
                     .kqsj"
-                    :key="key"
-                    class="time-card"
+                  :key="key"
+                  class="time-card"
                 >
                   <div> 规则{{ key + 1 }}</div>
                   <a-form-item
-                      :rules="[{ required: true, message: '请设置星期' }]"
-                      :validate-trigger="['change', 'blur']"
-                      label="星期"
+                    :rules="[{ required: true, message: '请设置星期' }]"
+                    :validate-trigger="['change', 'blur']"
+                    label="星期"
                   >
                     <week-selector
-                        :index="key"
-                        :value="
+                      :index="key"
+                      :value="
                         groupRule.signinGroupRule.rulesInfo.kqsj[key].xq
                           ? groupRule.signinGroupRule.rulesInfo.kqsj[
                               key
                             ].xq.split(',')
                           : []
                       "
-                        @input="shareChuli"
+                      @input="shareChuli"
                     />
                   </a-form-item>
                   <a-form-item
-                      :rules="[{ required: true, message: '' }]"
-                      :validate-trigger="['change', 'blur']"
-                      label="排班"
+                    :rules="[{ required: true, message: '' }]"
+                    :validate-trigger="['change', 'blur']"
+                    label="排班"
                   >
                     <a-select
-                        v-model="
+                      v-model="
                         groupRule.signinGroupRule.rulesInfo.kqsj[key].bcId
                       "
                     >
@@ -381,22 +381,22 @@ const updateDeviceWay = (value, deviceId) => {
     </div>
     <div>
       <a-modal
-          v-model:visible="selectUserState"
-          :esc-to-close="false"
-          :footer="false"
-          :mask-closable="false"
-          :width="1300"
-          title="选择用户"
+        v-model:visible="selectUserState"
+        :esc-to-close="false"
+        :footer="false"
+        :mask-closable="false"
+        :width="1300"
+        title="选择用户"
       >
         <add-user @commit-user="userSelectSuccess"/>
       </a-modal>
       <a-modal
-          v-model:visible="selectSigninWayState"
-          :esc-to-close="false"
-          :footer="false"
-          :mask-closable="false"
-          :width="1300"
-          title="添加打卡方式"
+        v-model:visible="selectSigninWayState"
+        :esc-to-close="false"
+        :footer="false"
+        :mask-closable="false"
+        :width="1300"
+        title="添加打卡方式"
       >
         <add-device :added="selectDevice" @commit-way="waySelectSuccess"/>
       </a-modal>

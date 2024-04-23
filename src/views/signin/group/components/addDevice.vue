@@ -18,7 +18,7 @@ initDevice();
 
 const addHandel = (record) => {
   emit('commitWay', record.deviceId);
-}
+};
 </script>
 
 <template>
@@ -31,28 +31,17 @@ const addHandel = (record) => {
       row-key="deviceId"
     >
       <template #columns>
-
-
-        <a-table-column
-          :width="200"
-          title="设备名"
-        >
+        <a-table-column :width="200" title="设备名">
           <template #cell="{ record }">
             {{ record.name }}
           </template>
         </a-table-column>
-        <a-table-column
-          :width="200"
-          title="在线"
-        >
+        <a-table-column :width="200" title="在线">
           <template #cell="{ record }">
             {{ record.online }}
           </template>
         </a-table-column>
-        <a-table-column
-          :width="200"
-          title="支持"
-        >
+        <a-table-column :width="200" title="支持">
           <template #cell="{ record }">
             {{ record.support }}
           </template>
@@ -60,7 +49,10 @@ const addHandel = (record) => {
 
         <a-table-column title="操作">
           <template #cell="{ record }">
-            <a-button :disabled="props.added.includes(record.deviceId)" @click="addHandel(record)">
+            <a-button
+              :disabled="props.added.includes(record.deviceId)"
+              @click="addHandel(record)"
+            >
               {{ props.added.includes(record.deviceId) ? '已添加' : '添加' }}
             </a-button>
           </template>

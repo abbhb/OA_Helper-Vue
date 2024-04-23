@@ -91,6 +91,16 @@ const updateSuccess = () => {
       >
         <template #columns>
           <a-space direction="vertical">
+            <ul>
+              <li>
+                注意每个用户最多同时只能处于一个考勤组下!!![需完善校验]
+              </li>
+              <li>
+                规则展示可以优化
+              </li>
+            </ul>
+
+
             <a-space direction="vertical">
               <a-button
                 :loading="statuEs.clickLoading"

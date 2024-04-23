@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-
-import GroupList from "@/views/signin/group/components/GroupList.vue";
+import GroupList from '@/views/signin/group/components/GroupList.vue';
 </script>
 
 <template>
@@ -9,6 +8,4 @@ import GroupList from "@/views/signin/group/components/GroupList.vue";
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

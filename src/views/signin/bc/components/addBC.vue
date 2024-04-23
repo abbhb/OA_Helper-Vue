@@ -144,14 +144,14 @@ const addBC = async () => {
                 >
                 </a-input-number>
               </a-form-item>
-
-              <a-form-item
-                v-if="item.count===bcForm.rules.length"
-                :rules="[{ required: true, message: '必选' }]"
-                label="是否次日下班"
-              >
-                <a-switch v-model="bcForm.rules[item.count-1].ciRi" :checked-value="1" :unchecked-value="0"/>
-              </a-form-item>
+              <!--暂不支持次日下班-->
+              <!--              <a-form-item-->
+              <!--                v-if="item.count===bcForm.rules.length"-->
+              <!--                :rules="[{ required: true, message: '必选' }]"-->
+              <!--                label="是否次日下班"-->
+              <!--              >-->
+              <!--                <a-switch v-model="bcForm.rules[item.count-1].ciRi" :checked-value="1" :unchecked-value="0"/>-->
+              <!--              </a-form-item>-->
               <a-form-item
                 :rules="[{ required: true, message: '一天几次上下班' }]"
                 :validate-trigger="['change', 'blur']"

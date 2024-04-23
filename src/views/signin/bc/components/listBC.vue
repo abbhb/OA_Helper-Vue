@@ -92,6 +92,9 @@ const updateSuccess = () => {
       >
         <template #columns>
           <a-space direction="vertical">
+            <ul>
+              <li>暂不支持跨日排班</li>
+            </ul>
             <a-space direction="vertical">
               <a-button
                 :loading="statuEs.clickLoading"
