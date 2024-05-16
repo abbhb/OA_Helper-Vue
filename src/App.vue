@@ -58,6 +58,4 @@ const appStore = useAppStore();
   .fade-leave-active {
     position: absolute;
   }
-
-
 </style>

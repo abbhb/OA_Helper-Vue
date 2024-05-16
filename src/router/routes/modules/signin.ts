@@ -37,6 +37,17 @@ const Signin: AppRouteRecordRaw = {
                 canGo: true,
             },
         },
+        {
+            path: 'signin-device',
+            name: 'SigninDeviceManger',
+            component: () => import('@/views/signin/device/index.vue'),
+            meta: {
+                locale: 'menu.signin.device',
+                requiresAuth: true,
+                roles: ['*'],
+                canGo: true,
+            },
+        },
     ],
 };
 

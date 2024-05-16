@@ -40,6 +40,7 @@ export default {
   'menu.server.workplace': '工作台-服务端',
     'menu.signin.bcgl': '班次管理',
     'menu.signin.group': '考勤组管理',
+    'menu.signin.device': '考勤设备',
     'menu.signin': '打卡服务',
   'menu.usercenter.usercenter': '个人中心',
     'menu.usercenter.process-my': '我发起的',

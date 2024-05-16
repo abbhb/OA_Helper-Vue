@@ -77,6 +77,26 @@ export function signinDeviceList() {
   return axios.get<SigninDeviceDto[]>('/api/signin_device/list');
 }
 
+export function signinCanBindDeviceList() {
+  return axios.get<SigninDeviceDto[]>('/api/signin_device/list-online');
+}
+
+export function addSigninDevice(data?: SigninDeviceDto) {
+  return axios.post<string>('/api/signin_device/add', data);
+}
+
+export function updateSigninDevice(data?: SigninDeviceDto) {
+  return axios.put<string>('/api/signin_device/update', data);
+}
+
+export function deleteSigninDevice(deviceId: string) {
+  return axios.delete<string>('/api/signin_device/delete', {
+    params: {
+      deviceId
+    }
+  });
+}
+
 /** 获取考勤组信息 */
 export function listGroupRule() {
   return axios.get<SigninGroupDto[]>('/api/signin_group/list');
