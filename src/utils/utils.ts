@@ -23,4 +23,11 @@ export function getQueryVariable(variable: string): string {
     return '';
 }
 
-export default {setChildrenUndefined, getQueryVariable};
+const nameMap = new Map<string, string>();
+
+nameMap.set('MoveUp', 'ArrowUp');
+nameMap.set('MoveDown', 'ArrowDown');
+nameMap.set('MoveLeft', 'ArrowLeft');
+nameMap.set('MoveRight', 'ArrowRight');
+
+export default {setChildrenUndefined, getQueryVariable, nameMap};

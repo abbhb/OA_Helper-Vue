@@ -1,18 +1,12 @@
 <script lang="ts" setup>
-  import { computed, h, reactive, ref } from 'vue';
-  import { getColor } from '@/utils/color-index';
-  import {
-    addrole,
-    deleterole,
-    roleList,
-    RoleManger,
-    updaterole,
-  } from '@/api/role';
-  import { useAppStore } from '@/store';
-  import { IconSearch } from '@arco-design/web-vue/es/icon';
-  import { Message } from '@arco-design/web-vue';
+import {computed, h, reactive, ref} from 'vue';
+import {getColor} from '@/utils/color-index';
+import {addrole, deleterole, roleList, RoleManger, updaterole,} from '@/api/role';
+import {useAppStore} from '@/store';
+import {IconSearch} from '@arco-design/web-vue/es/icon';
+import {Message} from '@arco-design/web-vue';
 
-  interface statuEI {
+interface statuEI {
     clickLoading: boolean;
     model?: boolean;
     modelTitle?: string;
@@ -214,6 +208,9 @@
   <a-card>
     <a-alert banner center
       >注意:用户侧的角色的更新只会在重新登录后！！！
+    </a-alert>
+    <a-alert banner center
+    >角色排序涉及到权限权重，比如都有管理权限，超级管理员（2）无权管理系统管理员（1）
     </a-alert>
     <a-space>
       <a-table

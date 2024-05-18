@@ -10,8 +10,18 @@ import '@arco-design/web-vue/dist/arco.css';
 import globalComponents from '@/components';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import ElementPlus from 'element-plus';
+// 会发现这样不行
+// if (!isT()) {
+//   const app = createApp(BrowserOld);
+//   app.mount('#app');
+// }
+// eslint-disable-next-line import/order
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import * as ElementPlusIcons from '@element-plus/icons-vue'
+import 'virtual:svg-icons-register'
 import formCreate from '@form-create/element-ui';
 import FcDesigner from '@form-create/designer';
+
 // eslint-disable-next-line import/order
 import useServerConfigStore from './store/modules/server-config';
 // eslint-disable-next-line import/order
@@ -35,14 +45,6 @@ import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css';
 import '@/api/interceptor';
 
 import 'element-plus/dist/index.css';
-
-// 会发现这样不行
-// if (!isT()) {
-//   const app = createApp(BrowserOld);
-//   app.mount('#app');
-// }
-// eslint-disable-next-line import/order
-import * as ElementPlusIcons from '@element-plus/icons-vue';
 
 // vfrom相关依赖引入---------------------------------------------
 import "@/components/FormDesigner/styles/index.scss";
@@ -77,6 +79,9 @@ app.use(ContainerWidgets);
 app.use(ContainerItems);
 loadExtension(app);
 
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
 app.use(ArcoVue, {});
 app.use(ArcoVueIcon);
 app.use(router);
