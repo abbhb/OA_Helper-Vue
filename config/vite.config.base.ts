@@ -13,13 +13,13 @@ export default defineConfig({
     vueJsx(),
     svgLoader({ svgoConfig: {} }),
     configArcoStyleImportPlugin(),
-      createSvgIconsPlugin({
-          iconDirs: [
-              resolve(process.cwd(), 'src/components/FormDesigner/svg'),
-              resolve(process.cwd(), 'src/components/BpmnJs/bpmn-icons'),
-          ],
-          symbolId: 'icon-[dir]-[name]',
-      }),
+    createSvgIconsPlugin({
+      iconDirs: [
+        resolve(process.cwd(), 'src/components/FormDesigner/svg'),
+        resolve(process.cwd(), 'src/components/BpmnJs/bpmn-icons'),
+      ],
+      symbolId: 'icon-[dir]-[name]',
+    }),
   ],
 
   resolve: {
@@ -40,12 +40,12 @@ export default defineConfig({
         find: 'vue',
         replacement: 'vue/dist/vue.esm-bundler.js', // compile template
       },
-        {
-            find: 'vue-i18n',
-            replacement: 'vue-i18n/dist/vue-i18n.cjs.js', // compile template
+      {
+        find: 'vue-i18n',
+        replacement: 'vue-i18n/dist/vue-i18n.cjs.js', // compile template
       },
     ],
-      extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
   },
   define: {
     'process.env': {},
@@ -60,30 +60,29 @@ export default defineConfig({
         },
         javascriptEnabled: true,
       },
-        scss: {
-            /* 自动引入全局scss文件 */
-            additionalData:
-                '@import "./src/components/FormDesigner/styles/global.scss";',
-        },
+      scss: {
+        /* 自动引入全局scss文件 */
+        additionalData:
+            '@import "./src/components/FormDesigner/styles/global.scss";',
+      },
     },
   },
-    build: {
-        chunkSizeWarningLimit: 1024,
-        commonjsOptions: {
-            include: /node_modules|lib/,
-        },
-        rollupOptions: {
-            output: {
-                manualChunks: {
-                    quill: ['quill'],
-                    lodash: ['lodash'],
-                    vlib: ['vue', 'vue-router', 'element-plus'],
-                },
-            },
-        },
+  build: {
+    chunkSizeWarningLimit: 1024,
+    commonjsOptions: {
+      include: /node_modules|lib/,
     },
-    optimizeDeps: {
-        include: ['@/../lib/vuedraggable/dist/vuedraggable.umd.js', 'quill'],
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          quill: ['quill'],
+          lodash: ['lodash'],
+        },
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ['@/../lib/vuedraggable/dist/vuedraggable.umd.js', 'quill'],
   },
   base: './',
 });

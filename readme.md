@@ -65,4 +65,6 @@ nginx
 
 #### worker线程没有window上下文
 
+#### 首次运行报错 public目录里的langs文件夹复制到[node_modules](node_modules)文件夹下的[tinymce](node_modules%2Ftinymce)中即可!
+
 但是有self，很多属性方法和window一致，可以定义window=self来提高兼容性

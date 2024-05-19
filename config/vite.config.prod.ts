@@ -19,6 +19,7 @@ export default mergeConfig(
                     manualChunks: {
                         arco: ['@arco-design/web-vue'],
                         chart: ['echarts', 'vue-echarts'],
+                        elementPlus: ['element-plus'],
                         vue: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'vue-i18n'],
                         xgplayer: ['xgplayer'],
                     },
