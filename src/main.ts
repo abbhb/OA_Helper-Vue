@@ -62,6 +62,7 @@ import {loadExtension} from "@/components/FormDesigner/extension/extension-loade
 import "@/components/BpmnJs/styles/index.scss";
 import "element-plus/theme-chalk/display.css";
 import "element-plus/theme-chalk/index.css";
+import 'virtual:svg-icons-register'
 
 const app = createApp(App);
 

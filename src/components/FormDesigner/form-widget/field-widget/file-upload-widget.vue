@@ -43,8 +43,8 @@
       <template #file="{ file }">
         <div class="upload-file-list">
           <span class="upload-file-name" :title="file.name">{{
-            file.name
-          }}</span>
+              file.name
+            }}</span>
           <a :href="file.url" download="" target="_blank">
             <span
               class="el-icon-download file-action"
