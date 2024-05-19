@@ -32,16 +32,13 @@
       :on-error="handleUploadError"
     >
       <template #tip>
-        <div v-if="!!field.options.uploadTip" class="el-upload__tip">{{
-          field.options.uploadTip
-          }}
+        <div v-if="!!field.options.uploadTip" class="el-upload__tip"
+        >{{ field.options.uploadTip }}
         </div>
       </template>
       <template #default>
         <svg-icon icon-class="el-plus"/>
-        <i
-          class="el-icon-plus avatar-uploader-icon"
-        ></i>
+        <i class="el-icon-plus avatar-uploader-icon"></i>
       </template>
       <template #file="{ file }">
         <div class="upload-file-list">
@@ -74,6 +71,7 @@ import i18n, {translate} from '@/components/FormDesigner/utils/i18n';
 import {deepClone, evalFn} from '@/components/FormDesigner/utils/util';
 import fieldMixin from '@/components/FormDesigner/form-widget/field-widget/fieldMixin';
 import SvgIcon from '@/components/FormDesigner/svg-icon/index.vue';
+import {getToken} from '@/utils/auth';
 import FormItemWrapper from './form-item-wrapper.vue';
 
 const selectFileText = "'" + translate('render.hint.selectFile') + "'";
@@ -117,7 +115,7 @@ export default {
       fieldModel: [],
       rules: [],
 
-      uploadHeaders: {},
+      uploadHeaders: {Authorization: `Bearer ${getToken()}`},
       uploadData: {
         key: '', //七牛云上传文件名
         //token: '',  //七牛云上传token
@@ -154,7 +152,7 @@ export default {
 
   created() {
     /* 注意：子组件mounted在父组件created之后、父组件mounted之前触发，故子组件mounted需要用到的prop
-       需要在父组件created中初始化！！ */
+     需要在父组件created中初始化！！ */
     this.initFieldModel();
     this.registerToRefList();
     this.initEventHandler();

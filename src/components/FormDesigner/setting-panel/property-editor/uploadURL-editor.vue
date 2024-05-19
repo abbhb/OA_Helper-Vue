@@ -3,7 +3,7 @@
     <el-form-item label-width="0">
       <el-divider class="custom-divider">{{ i18nt("designer.setting.uploadSetting") }}</el-divider>
     </el-form-item>
-    <el-form-item :label="i18nt('designer.setting.uploadURL')" v-if="false">
+    <el-form-item v-if="true" :label="i18nt('designer.setting.uploadURL')">
       <el-input type="text" v-model="
 /* eslint-disable-next-line vue/no-mutating-props */
 optionModel.uploadURL"></el-input>

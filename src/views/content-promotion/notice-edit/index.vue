@@ -49,7 +49,7 @@ import {getUploadUrl} from '@/api/chat';
 import {NoticeAnnex, NoticeViewResp, updateNotice, viewNotice,} from '@/api/notice';
 import {deptListTree} from '@/api/dept';
 import {NoticeAnnexItem} from '@/utils/notice/NoticeAnnexItem';
-import {getImageBase} from "@/utils/env";
+import {getImageBase} from '@/utils/env';
 
 const videoHouzhui = '.avi,.mkv,.mp3, .mp4';
 const imageHouzhui = '.jpg, .jpeg, .png, .gif, .tif, .bmp';

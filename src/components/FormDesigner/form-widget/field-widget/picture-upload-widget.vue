@@ -43,10 +43,8 @@
         />
         <!-- 上传成功状态 -->
         <label class="el-upload-list__item-status-label">
-          <i class="el-icon--upload-success" style="color: #fff"
-          >
-            <svg-icon class="" icon-class="el-check"
-            />
+          <i class="el-icon--upload-success" style="color: #fff">
+            <svg-icon class="" icon-class="el-check"/>
           </i>
         </label>
         <!-- 图片操作按钮 -->
@@ -68,9 +66,8 @@
         </span>
       </template>
       <template #tip>
-        <div v-if="!!field.options.uploadTip" class="el-upload__tip">{{
-          field.options.uploadTip
-          }}
+        <div v-if="!!field.options.uploadTip" class="el-upload__tip"
+        >{{ field.options.uploadTip }}
         </div>
       </template>
       <div class="uploader-icon">
@@ -82,10 +79,11 @@
 
 <script>
 import emitter from '@/components/FormDesigner/utils/emitter';
-import i18n, {translate} from '@/components/FormDesigner/utils/i18n';
+import i18n from '@/components/FormDesigner/utils/i18n';
 import {deepClone, evalFn} from '@/components/FormDesigner/utils/util';
 import fieldMixin from '@/components/FormDesigner/form-widget/field-widget/fieldMixin';
 import SvgIcon from '@/components/FormDesigner/svg-icon/index.vue';
+import {getToken} from '@/utils/auth';
 import FormItemWrapper from './form-item-wrapper.vue';
 
 export default {
@@ -127,7 +125,9 @@ export default {
       fieldModel: [],
       rules: [],
 
-      uploadHeaders: {},
+      uploadHeaders: {
+        Authorization: `Bearer ${getToken()}`,
+      },
       uploadData: {
         key: '', //七牛云上传文件名
         //token: '',  //七牛云上传token
@@ -167,7 +167,7 @@ export default {
 
   created() {
     /* 注意：子组件mounted在父组件created之后、父组件mounted之前触发，故子组件mounted需要用到的prop
-       需要在父组件created中初始化！！ */
+     需要在父组件created中初始化！！ */
     this.initFieldModel();
     this.registerToRefList();
     this.initEventHandler();
@@ -254,20 +254,26 @@ export default {
       if (!this.fieldModel) this.fieldModel = [];
       const oldValue = deepClone(this.fieldModel);
       if (!!customResult && !!customResult.name && !!customResult.url) {
+        console.log("CustomResult")
         this.fieldModel.push({
           name: customResult.name,
           url: customResult.url,
         });
+
+
       } else if (
         !!defaultResult &&
-        !!defaultResult.data.name &&
-        !!defaultResult.data.url
+        !!defaultResult.data
       ) {
+        console.log("defaultResult")
+        console.log(defaultResult.data)
         this.fieldModel.push({
           name: defaultResult.data.name,
           url: import.meta.env.VITE_APP_API + defaultResult.data.url,
         });
       } else {
+        console.log("else")
+        console.log(fileList)
         this.fieldModel = deepClone(fileList);
       }
 
@@ -279,6 +285,7 @@ export default {
       if (file.status === 'success') {
         let customResult = null;
         if (this.field.options.onUploadSuccess) {
+          // 当配置文件的onUploadSuccess为空时不走这个分支
           const customFn = new Function(
             'result',
             'file',
@@ -287,7 +294,7 @@ export default {
           );
           customResult = customFn.call(this, res, file, fileList);
         }
-
+        // 上传成功走这个分支
         this.updateFieldModelAndEmitDataChangeForUpload(
           fileList,
           customResult,
