@@ -3,6 +3,7 @@ export const debug = import.meta.env.MODE !== 'production';
 // todo:dns寄了会导致各种bug，需要优化为后端存储桶之后的路径比如，aistudio/a.jpg,就直接存jpg，前端去做拼接或者请求某个接口，转换成url
 /**
  * 修复dev模式下异常
+ * 不建议使用!!
  */
 export const getImageBase = () => {
   if (debug) {
