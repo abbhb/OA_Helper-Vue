@@ -19,6 +19,7 @@ import MentionItem from './item.vue';
 import PasteImageDialog from '../PasteImageDialog/index.vue';
 
 // 关闭透传 attrs 到组件根节点，传递到子节点  v-bind="$attrs"
+// eslint-disable-next-line no-undef
   defineOptions({ inheritAttrs: false });
 
   interface Props {

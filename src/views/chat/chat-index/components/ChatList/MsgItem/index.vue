@@ -45,6 +45,7 @@ const props = defineProps({
   });
 
   // 多根元素的时候，不加这个透传属性会报 warning
+// eslint-disable-next-line no-undef
   defineOptions({ inheritAttrs: false });
 
   const { message, fromUser } = toRefs(props.msg);

@@ -56,8 +56,9 @@
           >
             <svg-icon icon-class="el-zoom-in" />
           </span>
-          <!-- 删除 -->
+          <!-- 删除 禁用的时候不允许删除 -->
           <span
+            v-if="!field.options.disabled"
             class="el-upload-list__item-delete"
             @click="handlePictureRemove(file)"
           >
@@ -254,21 +255,19 @@
         if (!this.fieldModel) this.fieldModel = [];
         const oldValue = deepClone(this.fieldModel);
         if (!!customResult && !!customResult.name && !!customResult.url) {
-          console.log('CustomResult');
+          console.log('CustomResult，此分支未对接后端，怎么触发了，快排查');
           this.fieldModel.push({
             name: customResult.name,
             url: customResult.url,
           });
-        } else if (!!defaultResult && !!defaultResult.data) {
-          console.log('defaultResult');
-          console.log(defaultResult.data);
+        } else if (!!defaultResult &&
+          !!defaultResult.data.name &&
+          !!defaultResult.data.url) {
           this.fieldModel.push({
             name: defaultResult.data.name,
-            url: import.meta.env.VITE_APP_API + defaultResult.data.url,
+            url: defaultResult.data.url,
           });
         } else {
-          console.log('else');
-          console.log(fileList);
           this.fieldModel = deepClone(fileList);
         }
 

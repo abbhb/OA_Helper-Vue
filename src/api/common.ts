@@ -14,6 +14,10 @@ export interface SystemMessageConfig {
   userId: string;
   roomId: string;
 }
+export interface UploadFileFromV1Resp {
+  url:string;
+  name:string;
+}
 
 export function getPublicKey() {
   return axios.get<string>('/api/common/get_public_key');
