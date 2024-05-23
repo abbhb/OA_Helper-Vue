@@ -224,6 +224,8 @@ const onExpand = (newExpandedKeys, event) => {
       :loading="statuEs.clickLoading"
       :pagination="pagination"
       row-key="id"
+      :scrollbar="true"
+      :scroll="{y:600}"
     >
       <template #columns>
         <a-space direction="vertical">

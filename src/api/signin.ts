@@ -19,6 +19,12 @@ export interface SigninBc {
   rules?: BcRule[];
 }
 
+export interface SigninUserFaceDataReq {
+  data?: SigninUserFaceDataResp[];
+  syncModel?: string;
+  deviceId?: string;
+}
+
 export interface SigninGroup {
   id?: string;
   name?: string;
@@ -55,6 +61,18 @@ export interface SigninGroupDto {
   signinGroup?: SigninGroup;
   signinGroupRule?: SigninGroupRule;
   onlyBasic?: boolean;
+}
+
+export interface SigninUserFaceDataResp {
+  userId?: string;
+  studentId?: string;
+  name?: string;
+  username?: string;
+  deptName?: string;
+  deptId?: string;
+  localExist?: boolean;
+  deviceExist?: boolean;
+
 }
 
 export interface SigninDeviceDto {
@@ -102,6 +120,23 @@ export function listGroupRule() {
   return axios.get<SigninGroupDto[]>('/api/signin_group/list');
 }
 
+export function get_signin_face_data(deviceId:string) {
+  return axios.get<SigninUserFaceDataResp[]>('/api/signin_user_data/get_signin_face_data',{
+    params:{
+      deviceId
+    }
+  });
+}
+
+/** 同步人脸【上传方向】 */
+export function uploadSigninFaceData(data: SigninUserFaceDataReq) {
+  return axios.post<string>('/api/signin_user_data/upload_signin_face_data', data);
+}
+/** 同步人脸【下载方向】 */
+export function downloadSigninFaceData(data: SigninUserFaceDataReq) {
+  return axios.post<string>('/api/signin_user_data/download_signin_face_data', data);
+}
+
 export function deleteGroupRule(id: string) {
   return axios.delete<string>('/api/signin_group/delete', {
     params: {
@@ -132,6 +167,8 @@ export function deleteBcRule(id: string) {
 export function addBc(data: SigninBc) {
   return axios.post<string>('/api/signin_bc/add', data);
 }
+
+
 
 export function editBc(data: SigninBc) {
   return axios.put<string>('/api/signin_bc/update', data);

@@ -44,7 +44,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table ref="tableRef" v-loading="loading" :data="list">
+    <el-table ref="tableRef" v-loading="loading" :data="list" :height="500" :max-height="500">
       <el-table-column label="序号" type="index" width="100"/>
       <el-table-column label="账号名称" align="center" prop="name"/>
       <el-table-column label="部门" align="center" prop="deptName"/>

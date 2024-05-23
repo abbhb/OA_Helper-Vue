@@ -184,12 +184,15 @@
 </script>
 
 <template>
+<!--  todo:// 无法上下滚动-->
   <a-card>
     <a-alert banner center
       >注意:用户侧的部门的更新只会在重新登录后！！！
     </a-alert>
     <a-space>
       <a-table
+        :scrollbar="true"
+        :scroll="{y:600}"
         :bordered="false"
         :data="tableData"
         :expandable="{

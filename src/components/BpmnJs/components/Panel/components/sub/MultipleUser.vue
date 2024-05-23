@@ -25,7 +25,7 @@
     append-to-body
     :before-close="submit"
   >
-    <el-form :inline="true" :model="queryForm" class="demo-form-inline">
+    <el-form :inline="true" :model="queryForm" class="demo-form-inline" >
       <el-form-item label="用户名称">
         <el-input v-model="queryForm.name" clearable placeholder="用户名称"/>
       </el-form-item>
@@ -40,6 +40,8 @@
       :data="list"
       @select="handleSelectionChange"
       @select-all="handleSelectionChange"
+      :height="500"
+      :max-height="500"
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column label="序号" type="index" width="100"/>
@@ -59,6 +61,7 @@
       :page-sizes="[20, 40, 60, 80]"
       :total="total"
       @current-change="getList"
+      @size-change="getList"
     />
 
     <template #footer>

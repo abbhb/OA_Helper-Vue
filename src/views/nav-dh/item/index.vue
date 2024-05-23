@@ -216,6 +216,8 @@ const handleSuccess = (data) => {
       >
     </a-select>
     <a-table
+      :scrollbar="true"
+      :scroll="{y:600}"
       :bordered="false"
       :data="tableData"
       :loading="statuEs.clickLoading"

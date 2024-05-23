@@ -68,3 +68,9 @@ nginx
 #### 首次运行报错 public目录里的langs文件夹复制到[node_modules](node_modules)文件夹下的[tinymce](node_modules%2Ftinymce)中即可!
 
 但是有self，很多属性方法和window一致，可以定义window=self来提高兼容性
+
+#### 无法滚动的表格加上下面的东西再试试
+```
+ :scrollbar="true"
+        :scroll="{y:600}"
+```

@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table ref="tableRef" v-loading="loading" :data="list">
+    <el-table ref="tableRef" v-loading="loading" :data="list" :height="500" :max-height="500">
       <el-table-column label="序号" type="index" width="70"/>
       <el-table-column
         label="监听器名称"
@@ -56,6 +56,7 @@
       layout="prev, pager, next"
       :total="total"
       @current-change="getList"
+      @size-change="getList"
     />
 
     <template #footer>
