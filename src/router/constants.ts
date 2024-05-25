@@ -7,6 +7,7 @@ export const WHITE_LIST = [
   { name: 'oauthShow', children: [] },
   { name: 'forgotPassword', children: [] },
     {name: 'NoticeEdit', children: []}, // 通知编辑组件
+    {name: 'SigninDataRead', children: []}, // 考勤统计阅读组件
 ];
 
 export const NOT_FOUND = {

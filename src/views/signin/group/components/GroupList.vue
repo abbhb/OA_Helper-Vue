@@ -1,81 +1,99 @@
 <script lang="ts" setup>
-import {h, reactive, ref} from 'vue';
-import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {useAppStore} from '@/store';
-import {deleteGroupRule, listGroupRule, SigninBc, SigninGroupDto,} from '@/api/signin';
-import AddGroup from '@/views/signin/group/components/addGroup.vue';
-import EditGroup from '@/views/signin/group/components/editGroup.vue';
-import {Message} from '@arco-design/web-vue';
+  import { h, reactive, ref } from 'vue';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { useAppStore } from '@/store';
+  import {
+    deleteGroupRule,
+    listGroupRule,
+    SigninBc,
+    SigninGroupDto,
+  } from '@/api/signin';
+  import AddGroup from '@/views/signin/group/components/addGroup.vue';
+  import EditGroup from '@/views/signin/group/components/editGroup.vue';
+  import { Message } from '@arco-design/web-vue';
+  import router from '@/router';
 
-const appStore = useAppStore();
+  const appStore = useAppStore();
 
-interface statuEI {
-  clickLoading: boolean;
-  model?: boolean;
-  modelTitle?: string;
-  modelType?: string;
-  modelContent?: SigninBc;
-}
+  interface statuEI {
+    clickLoading: boolean;
+    model?: boolean;
+    modelTitle?: string;
+    modelType?: string;
+    modelContent?: SigninBc;
+  }
 
-const statuEs = ref<statuEI>({
-  clickLoading: false,
-  modelContent: null,
-  model: false,
-  modelTitle: '考勤组通知',
-  modelType: 'add',
-});
-const tableData = ref<SigninGroupDto[]>([]);
+  const statuEs = ref<statuEI>({
+    clickLoading: false,
+    modelContent: null,
+    model: false,
+    modelTitle: '考勤组通知',
+    modelType: 'add',
+  });
+  const tableData = ref<SigninGroupDto[]>([]);
 
-const form = reactive({
-  id: '',
-  label: '',
-  image: '',
-  sort: 1,
-  extra: '',
-});
+  const form = reactive({
+    id: '',
+    label: '',
+    image: '',
+    sort: 1,
+    extra: '',
+  });
 
-const initData = async () => {
-  statuEs.value.clickLoading = true;
-  const {data} = await listGroupRule();
-  tableData.value = data;
-  statuEs.value.clickLoading = false;
-};
-initData();
-const addHandel = (record) => {
-  statuEs.value.modelTitle = '添加考勤组';
-  statuEs.value.modelType = 'add';
-  statuEs.value.model = true;
-};
-
-const editHandel = (record) => {
-  statuEs.value.modelTitle = '编辑考勤组';
-  statuEs.value.modelType = 'edit';
-  statuEs.value.modelContent = record;
-  statuEs.value.model = true;
-};
-
-const cleanForm = () => {
-  form.id = '';
-  form.sort = 1;
-  form.label = '';
-  form.image = '';
-  form.extra = '';
-};
-const delHandel = async (record) => {
-  const data = await deleteGroupRule(record.signinGroup.id);
-  Message.success(data.msg);
-  await initData();
-};
-
-const handleCancel = () => {
-  cleanForm();
-};
-
-const updateSuccess = () => {
-  statuEs.value.model = false;
+  const initData = async () => {
+    statuEs.value.clickLoading = true;
+    const { data } = await listGroupRule();
+    tableData.value = data;
+    statuEs.value.clickLoading = false;
+  };
   initData();
-  cleanForm();
-};
+  const addHandel = (record) => {
+    statuEs.value.modelTitle = '添加考勤组';
+    statuEs.value.modelType = 'add';
+    statuEs.value.model = true;
+  };
+
+  const editHandel = (record) => {
+    statuEs.value.modelTitle = '编辑考勤组';
+    statuEs.value.modelType = 'edit';
+    statuEs.value.modelContent = record;
+    statuEs.value.model = true;
+  };
+
+  const readSigninData = (record) => {
+    console.log('查看考勤数据');
+    console.log(record);
+    router.push({
+      name: 'SigninDataRead',
+      query: {
+        groupId: record.signinGroup.id,
+      },
+
+    });
+  };
+
+  const cleanForm = () => {
+    form.id = '';
+    form.sort = 1;
+    form.label = '';
+    form.image = '';
+    form.extra = '';
+  };
+  const delHandel = async (record) => {
+    const data = await deleteGroupRule(record.signinGroup.id);
+    Message.success(data.msg);
+    await initData();
+  };
+
+  const handleCancel = () => {
+    cleanForm();
+  };
+
+  const updateSuccess = () => {
+    statuEs.value.model = false;
+    initData();
+    cleanForm();
+  };
 </script>
 
 <template>
@@ -92,14 +110,9 @@ const updateSuccess = () => {
         <template #columns>
           <a-space direction="vertical">
             <ul>
-              <li>
-                注意每个用户最多同时只能处于一个考勤组下!!![需完善校验]
-              </li>
-              <li>
-                规则展示可以优化
-              </li>
+              <li> 注意每个用户最多同时只能处于一个考勤组下!!![需完善校验] </li>
+              <li> 规则展示可以优化 </li>
             </ul>
-
 
             <a-space direction="vertical">
               <a-button
@@ -110,7 +123,7 @@ const updateSuccess = () => {
                 添加考勤组
               </a-button>
             </a-space>
-            <a-divider class="split-line" style="margin: 3px"/>
+            <a-divider class="split-line" style="margin: 3px" />
           </a-space>
 
           <a-table-column
@@ -143,12 +156,20 @@ const updateSuccess = () => {
 
           <a-table-column title="操作">
             <template #cell="{ record }">
-              <a-button @click="editHandel(record)">编辑</a-button>
+              <el-button
+                class="margin_left"
+                :type="'primary'"
+                @click="readSigninData(record)"
+                >查看统计数据</el-button
+              >
+              <a-button class="margin_left" @click="editHandel(record)"
+                >编辑</a-button
+              >
               <a-popconfirm
                 content="危险！将会删除该考勤组且不可恢复，确认删除?"
                 @ok="delHandel(record)"
               >
-                <a-button>删除</a-button>
+                <a-button class="margin_left">删除</a-button>
               </a-popconfirm>
             </template>
           </a-table-column>
@@ -166,7 +187,7 @@ const updateSuccess = () => {
       :width="1400"
       unmount-on-close
     >
-      <add-group v-if="statuEs.modelType === 'add'" @success="updateSuccess"/>
+      <add-group v-if="statuEs.modelType === 'add'" @success="updateSuccess" />
       <edit-group
         v-else
         :signin="statuEs.modelContent"
@@ -176,4 +197,8 @@ const updateSuccess = () => {
   </a-card>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .margin_left {
+    margin-left: 3px;
+  }
+</style>

@@ -1,12 +1,18 @@
 <script lang="ts" setup>
-import {computed, h, reactive, ref} from 'vue';
-import {getColor} from '@/utils/color-index';
-import {addrole, deleterole, roleList, RoleManger, updaterole,} from '@/api/role';
-import {useAppStore} from '@/store';
-import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {Message} from '@arco-design/web-vue';
+  import { computed, h, reactive, ref } from 'vue';
+  import { getColor } from '@/utils/color-index';
+  import {
+    addrole,
+    deleterole,
+    roleList,
+    RoleManger,
+    updaterole,
+  } from '@/api/role';
+  import { useAppStore } from '@/store';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { Message } from '@arco-design/web-vue';
 
-interface statuEI {
+  interface statuEI {
     clickLoading: boolean;
     model?: boolean;
     modelTitle?: string;
@@ -210,7 +216,7 @@ interface statuEI {
       >注意:用户侧的角色的更新只会在重新登录后！！！
     </a-alert>
     <a-alert banner center
-    >角色排序涉及到权限权重，比如都有管理权限，超级管理员（2）无权管理系统管理员（1）
+      >角色排序涉及到权限权重，比如都有管理权限，超级管理员（2）无权管理系统管理员（1）
     </a-alert>
     <a-space>
       <a-table
@@ -220,6 +226,8 @@ interface statuEI {
         :pagination="false"
         :size="'medium'"
         row-key="id"
+        :scrollbar="true"
+        :scroll="{ y: 600 }"
       >
         <template #columns>
           <a-space direction="vertical">
@@ -386,10 +394,10 @@ interface statuEI {
                 </a-button>
               </a-button-group>
               <a-tree
-                style="overflow-y: scroll;height: 30rem"
                 v-model:checked-keys="checkedKeys"
                 v-model:expanded-keys="expandedKeys"
                 v-model:selected-keys="selectedKeys"
+                style="overflow-y: scroll; height: 30rem"
                 :check-strictly="!form.fuziliandong"
                 :checkable="true"
                 :data="treeData"

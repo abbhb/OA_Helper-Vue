@@ -1,276 +1,282 @@
 <script lang="ts" setup>
-import {computed, h, reactive, ref} from 'vue';
-import {getColor} from '@/utils/color-index';
-import {addMenu, deleteMenu, menuList, MenuManger, updateMenu,} from '@/api/menu';
-import {setChildrenUndefined} from '@/utils/utils';
-import {useAppStore} from '@/store';
-import FunctionalIcons from '@/components/icon/FunctionalIcons/index.vue';
-import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {Message} from '@arco-design/web-vue';
+  import { computed, h, reactive, ref } from 'vue';
+  import { getColor } from '@/utils/color-index';
+  import {
+    addMenu,
+    deleteMenu,
+    menuList,
+    MenuManger,
+    updateMenu,
+  } from '@/api/menu';
+  import { setChildrenUndefined } from '@/utils/utils';
+  import { useAppStore } from '@/store';
+  import FunctionalIcons from '@/components/icon/FunctionalIcons/index.vue';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { Message } from '@arco-design/web-vue';
 
-interface statuEI {
-  clickLoading: boolean;
-  model?: boolean;
-  modelTitle?: string;
-  modelType?: string;
-}
+  interface statuEI {
+    clickLoading: boolean;
+    model?: boolean;
+    modelTitle?: string;
+    modelType?: string;
+  }
 
-const statuEs = ref<statuEI>({
-  clickLoading: false,
-  model: false,
-  modelTitle: '菜单',
-  modelType: 'add',
-});
-const form = reactive({
-  id: '',
-  parentId: '0',
-  type: 'M',
-  icon: '',
-  locale: '',
-  name: '',
-  path: '',
-  sort: 1,
-  isFrame: 0,
-  isCache: 0,
-  isShow: 1,
-  status: 1,
-  perms: '',
-});
+  const statuEs = ref<statuEI>({
+    clickLoading: false,
+    model: false,
+    modelTitle: '菜单',
+    modelType: 'add',
+  });
+  const form = reactive({
+    id: '',
+    parentId: '0',
+    type: 'M',
+    icon: '',
+    locale: '',
+    name: '',
+    path: '',
+    sort: 1,
+    isFrame: 0,
+    isCache: 0,
+    isShow: 1,
+    status: 1,
+    perms: '',
+  });
 
-const iconList = ref<string[]>([
-  'icon-apps',
-  'icon-check-circle',
-  'icon-clock-circle',
-  'icon-info',
-  'icon-question-circle',
-  'icon-heart-fill',
-]);
-const appStore = useAppStore();
-const tableData = ref<MenuManger[]>([]);
-const treeData = ref([{key: '0', title: '根节点'}]);
+  const iconList = ref<string[]>([
+    'icon-apps',
+    'icon-check-circle',
+    'icon-clock-circle',
+    'icon-info',
+    'icon-question-circle',
+    'icon-heart-fill',
+  ]);
+  const appStore = useAppStore();
+  const tableData = ref<MenuManger[]>([]);
+  const treeData = ref([{ key: '0', title: '根节点' }]);
 
-/**
- *  :fieldNames="{
- *       key: 'value',
- *       title: 'label',
- *       children: 'items'
- *     }"
- *     官方虽然有api来指定字段，但还是需要添加根节点，不如手写
- * @param table
- */
-const tableDataToTreeData = (table: any) => {
-  const newas = [];
-  console.log(table);
-  table.forEach((item) => {
-    if (item.parentId === '0') {
-      const thischild = [];
-      if (item.children) {
-        item.children.forEach((asd) => {
-          if (asd.parentId === item.id) {
-            if (asd.children) {
-              const thisssachild = [];
-              asd.children.forEach((asdd) => {
-                thisssachild.push({key: asdd.id, title: asdd.locale});
-              });
-              thischild.push({
-                key: asd.id,
-                title: asd.locale,
-                children: thisssachild,
-              });
-            } else {
-              thischild.push({key: asd.id, title: asd.locale});
+  /**
+   *  :fieldNames="{
+   *       key: 'value',
+   *       title: 'label',
+   *       children: 'items'
+   *     }"
+   *     官方虽然有api来指定字段，但还是需要添加根节点，不如手写
+   * @param table
+   */
+  const tableDataToTreeData = (table: any) => {
+    const newas = [];
+    console.log(table);
+    table.forEach((item) => {
+      if (item.parentId === '0') {
+        const thischild = [];
+        if (item.children) {
+          item.children.forEach((asd) => {
+            if (asd.parentId === item.id) {
+              if (asd.children) {
+                const thisssachild = [];
+                asd.children.forEach((asdd) => {
+                  thisssachild.push({ key: asdd.id, title: asdd.locale });
+                });
+                thischild.push({
+                  key: asd.id,
+                  title: asd.locale,
+                  children: thisssachild,
+                });
+              } else {
+                thischild.push({ key: asd.id, title: asd.locale });
+              }
             }
-          }
-        });
-        newas.push({key: item.id, title: item.locale, children: thischild});
-      } else {
-        newas.push({key: item.id, title: item.locale});
+          });
+          newas.push({ key: item.id, title: item.locale, children: thischild });
+        } else {
+          newas.push({ key: item.id, title: item.locale });
+        }
+      }
+    });
+    const tree = [{ key: '0', title: '根节点', children: newas }];
+    treeData.value = tree;
+  };
+  const initData = async () => {
+    statuEs.value.clickLoading = true;
+    const { data } = await menuList();
+    setChildrenUndefined(data);
+    tableData.value = data;
+    tableDataToTreeData(data);
+    statuEs.value.clickLoading = false;
+  };
+  initData();
+
+  const stateChange = computed(() => (status: any) => {
+    return status === 1 || status === '1' ? '正常' : '停用';
+  });
+  const cleanForm = () => {
+    form.type = 'M';
+    form.id = '';
+    form.parentId = '0';
+    form.icon = '';
+    form.locale = '';
+    form.name = '';
+    form.path = '';
+    form.sort = 1;
+    form.isFrame = 0;
+    form.isCache = 0;
+    form.isShow = 1;
+    form.status = 1;
+    form.perms = '';
+  };
+  const getTypeNext = (formobject) => {
+    if (formobject.type === 'M') {
+      return 'C';
+    }
+    if (formobject.type === 'C') {
+      return 'F';
+    }
+    if (formobject.id === 0 || formobject.id === '0') {
+      return 'M';
+    }
+    return 'M';
+  };
+  const editHandel = (record) => {
+    statuEs.value.modelTitle = '编辑菜单';
+    statuEs.value.modelType = 'edit';
+    form.type = record.type;
+    form.id = record.id;
+    form.parentId = record.parentId;
+    form.icon = record.icon;
+    form.locale = record.locale;
+    form.name = record.name;
+    form.path = record.path;
+    form.sort = record.sort;
+    form.isFrame = Number(record.isFrame);
+    form.isCache = Number(record.isCache);
+    form.isShow = Number(record.isShow);
+    form.status = Number(record.status);
+    form.perms = record.perms;
+    statuEs.value.model = true;
+  };
+  const addHandel = (record) => {
+    if (record) {
+      const nextType = getTypeNext(record);
+      form.type = nextType;
+    } else {
+      form.type = 'M';
+    }
+    statuEs.value.modelTitle = '添加菜单';
+    statuEs.value.modelType = 'add';
+    form.parentId = record.id;
+    statuEs.value.model = true;
+  };
+  const delHandel = async (record) => {
+    const { data } = await deleteMenu(record.id);
+    Message.success(data);
+    initData();
+  };
+  const handleCancel = () => {
+    cleanForm();
+  };
+  const update = async (done) => {
+    const forms = ref<MenuManger>({
+      id: form.id,
+      type: form.type,
+      parentId: form.parentId,
+      icon: form.icon,
+      locale: form.locale,
+      name: form.name,
+      path: form.path,
+      sort: form.sort,
+      isFrame: Number(form.isFrame),
+      isCache: Number(form.isCache),
+      isShow: Number(form.isShow),
+      status: Number(form.status),
+      perms: form.perms,
+    });
+    try {
+      const { data } = await updateMenu(forms.value);
+      Message.success(data);
+      done(true);
+      initData();
+    } catch (e) {
+      done(false);
+    }
+  };
+  const add = async (done) => {
+    const forms = ref<MenuManger>({
+      type: form.type,
+      parentId: form.parentId,
+      icon: form.icon,
+      locale: form.locale,
+      name: form.name,
+      path: form.path,
+      sort: form.sort,
+      isFrame: Number(form.isFrame),
+      isCache: Number(form.isCache),
+      isShow: Number(form.isShow),
+      status: Number(form.status),
+      perms: form.perms,
+    });
+    try {
+      const { data } = await addMenu(forms.value);
+      Message.success(data);
+      done(true);
+      initData();
+    } catch (e) {
+      done(false);
+    }
+  };
+  const handelOk = (done) => {
+    if (!form.type || form.type === '') {
+      Message.error('请选择type');
+      done(false);
+      return;
+    }
+    if (form.type === 'C') {
+      if (!form.parentId || form.parentId === '') {
+        Message.error('请选择父节点');
+        done(false);
+        return;
+      }
+      if (form.locale === '') {
+        Message.error('请填写locale字段');
+        done(false);
+        return;
       }
     }
-  });
-  const tree = [{key: '0', title: '根节点', children: newas}];
-  treeData.value = tree;
-};
-const initData = async () => {
-  statuEs.value.clickLoading = true;
-  const {data} = await menuList();
-  setChildrenUndefined(data);
-  tableData.value = data;
-  tableDataToTreeData(data);
-  statuEs.value.clickLoading = false;
-};
-initData();
-
-const stateChange = computed(() => (status: any) => {
-  return status === 1 || status === '1' ? '正常' : '停用';
-});
-const cleanForm = () => {
-  form.type = 'M';
-  form.id = '';
-  form.parentId = '0';
-  form.icon = '';
-  form.locale = '';
-  form.name = '';
-  form.path = '';
-  form.sort = 1;
-  form.isFrame = 0;
-  form.isCache = 0;
-  form.isShow = 1;
-  form.status = 1;
-  form.perms = '';
-};
-const getTypeNext = (formobject) => {
-  if (formobject.type === 'M') {
-    return 'C';
-  }
-  if (formobject.type === 'C') {
-    return 'F';
-  }
-  if (formobject.id === 0 || formobject.id === '0') {
-    return 'M';
-  }
-  return 'M';
-};
-const editHandel = (record) => {
-  statuEs.value.modelTitle = '编辑菜单';
-  statuEs.value.modelType = 'edit';
-  form.type = record.type;
-  form.id = record.id;
-  form.parentId = record.parentId;
-  form.icon = record.icon;
-  form.locale = record.locale;
-  form.name = record.name;
-  form.path = record.path;
-  form.sort = record.sort;
-  form.isFrame = Number(record.isFrame);
-  form.isCache = Number(record.isCache);
-  form.isShow = Number(record.isShow);
-  form.status = Number(record.status);
-  form.perms = record.perms;
-  statuEs.value.model = true;
-};
-const addHandel = (record) => {
-  if (record) {
-    const nextType = getTypeNext(record);
-    form.type = nextType;
-  } else {
-    form.type = 'M';
-  }
-  statuEs.value.modelTitle = '添加菜单';
-  statuEs.value.modelType = 'add';
-  form.parentId = record.id;
-  statuEs.value.model = true;
-};
-const delHandel = async (record) => {
-  const {data} = await deleteMenu(record.id);
-  Message.success(data);
-  initData();
-};
-const handleCancel = () => {
-  cleanForm();
-};
-const update = async (done) => {
-  const forms = ref<MenuManger>({
-    id: form.id,
-    type: form.type,
-    parentId: form.parentId,
-    icon: form.icon,
-    locale: form.locale,
-    name: form.name,
-    path: form.path,
-    sort: form.sort,
-    isFrame: Number(form.isFrame),
-    isCache: Number(form.isCache),
-    isShow: Number(form.isShow),
-    status: Number(form.status),
-    perms: form.perms,
-  });
-  try {
-    const {data} = await updateMenu(forms.value);
-    Message.success(data);
-    done(true);
-    initData();
-  } catch (e) {
-    done(false);
-  }
-};
-const add = async (done) => {
-  const forms = ref<MenuManger>({
-    type: form.type,
-    parentId: form.parentId,
-    icon: form.icon,
-    locale: form.locale,
-    name: form.name,
-    path: form.path,
-    sort: form.sort,
-    isFrame: Number(form.isFrame),
-    isCache: Number(form.isCache),
-    isShow: Number(form.isShow),
-    status: Number(form.status),
-    perms: form.perms,
-  });
-  try {
-    const {data} = await addMenu(forms.value);
-    Message.success(data);
-    done(true);
-    initData();
-  } catch (e) {
-    done(false);
-  }
-};
-const handelOk = (done) => {
-  if (!form.type || form.type === '') {
-    Message.error('请选择type');
-    done(false);
-    return;
-  }
-  if (form.type === 'C') {
-    if (!form.parentId || form.parentId === '') {
-      Message.error('请选择父节点');
-      done(false);
-      return;
+    if (form.type === 'M') {
+      if (Number(form.parentId) !== 0) {
+        Message.error('此时父节点只能为根节点');
+        done(false);
+        return;
+      }
+      if (form.locale === '') {
+        Message.error('请填写locale字段');
+        done(false);
+        return;
+      }
     }
-    if (form.locale === '') {
-      Message.error('请填写locale字段');
-      done(false);
-      return;
+    if (form.type === 'C') {
+      if (form.locale === '') {
+        Message.error('请填写locale字段');
+        done(false);
+        return;
+      }
     }
-  }
-  if (form.type === 'M') {
-    if (Number(form.parentId) !== 0) {
-      Message.error('此时父节点只能为根节点');
-      done(false);
-      return;
+    // 根据form加上statuEs判断
+    if (statuEs.value.modelType !== 'add') {
+      update(done);
+    } else {
+      add(done);
     }
-    if (form.locale === '') {
-      Message.error('请填写locale字段');
-      done(false);
-      return;
-    }
-  }
-  if (form.type === 'C') {
-    if (form.locale === '') {
-      Message.error('请填写locale字段');
-      done(false);
-      return;
-    }
-  }
-  // 根据form加上statuEs判断
-  if (statuEs.value.modelType !== 'add') {
-    update(done);
-  } else {
-    add(done);
-  }
-};
+  };
 </script>
 
 <template>
   <a-card>
     <a-alert banner center
-    >注意:用户侧的菜单的更新只会在重新登录后！！！
+      >注意:用户侧的菜单的更新只会在重新登录后！！！
     </a-alert>
     <a-alert :type="'warning'" banner center
-    >注意:添加完菜单别忘了给角色授权菜单，否则可能看不见菜单！
+      >注意:添加完菜单别忘了给角色授权菜单，否则可能看不见菜单！
     </a-alert>
     <a-space>
       <a-table
@@ -282,6 +288,8 @@ const handelOk = (done) => {
         :loading="statuEs.clickLoading"
         :pagination="false"
         :size="'medium'"
+        :scrollbar="true"
+        :scroll="{y:600}"
         row-key="id"
       >
         <template
@@ -316,7 +324,7 @@ const handelOk = (done) => {
                 {{ $t('syscenter.menu-manger.menu.control.add') }}
               </a-button>
             </a-space>
-            <a-divider class="split-line" style="margin: 3px"/>
+            <a-divider class="split-line" style="margin: 3px" />
           </a-space>
 
           <a-table-column
@@ -386,17 +394,17 @@ const handelOk = (done) => {
           <a-table-column :title="$t(`syscenter.menu-manger.menu.control`)">
             <template #cell="{ record }">
               <a-button @click="editHandel(record)"
-              >{{ $t('syscenter.menu-manger.menu.control.edit') }}
+                >{{ $t('syscenter.menu-manger.menu.control.edit') }}
               </a-button>
               <a-button @click="addHandel(record)"
-              >{{ $t('syscenter.menu-manger.menu.control.add.item') }}
+                >{{ $t('syscenter.menu-manger.menu.control.add.item') }}
               </a-button>
               <a-popconfirm
                 content="危险！将会级联删除子菜单，确认删除?"
                 @ok="delHandel(record)"
               >
                 <a-button
-                >{{ $t('syscenter.menu-manger.menu.control.delete') }}
+                  >{{ $t('syscenter.menu-manger.menu.control.delete') }}
                 </a-button>
               </a-popconfirm>
             </template>
@@ -450,13 +458,13 @@ const handelOk = (done) => {
             >
               <a-radio-group v-model:model-value="form.type">
                 <a-radio value="M"
-                >{{ $t('syscenter.menu-manger.menu.form.type.M') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.type.M') }}
                 </a-radio>
                 <a-radio value="C"
-                >{{ $t('syscenter.menu-manger.menu.form.type.C') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.type.C') }}
                 </a-radio>
                 <a-radio value="F"
-                >{{ $t('syscenter.menu-manger.menu.form.type.F') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.type.F') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -589,10 +597,10 @@ const handelOk = (done) => {
             >
               <a-radio-group v-model:model-value="form.isFrame">
                 <a-radio :value="1"
-                >{{ $t('syscenter.menu-manger.menu.form.isFrame.1') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.isFrame.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.menu-manger.menu.form.isFrame.0') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.isFrame.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -607,10 +615,10 @@ const handelOk = (done) => {
             >
               <a-radio-group v-model:model-value="form.isCache">
                 <a-radio :value="1"
-                >{{ $t('syscenter.menu-manger.menu.form.isCache.1') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.isCache.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.menu-manger.menu.form.isCache.0') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.isCache.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -627,10 +635,10 @@ const handelOk = (done) => {
             >
               <a-radio-group v-model:model-value="form.isShow">
                 <a-radio :value="1"
-                >{{ $t('syscenter.menu-manger.menu.form.isShow.1') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.isShow.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.menu-manger.menu.form.isShow.0') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.isShow.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
@@ -644,10 +652,10 @@ const handelOk = (done) => {
             >
               <a-radio-group v-model:model-value="form.status">
                 <a-radio :value="1"
-                >{{ $t('syscenter.menu-manger.menu.form.status.1') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.status.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.menu-manger.menu.form.status.0') }}
+                  >{{ $t('syscenter.menu-manger.menu.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>

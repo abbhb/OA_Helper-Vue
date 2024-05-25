@@ -266,6 +266,8 @@ interface statuEI {
         :pagination="false"
         :size="'medium'"
         row-key="id"
+        :scrollbar="true"
+        :scroll="{y:600}"
       >
         <template
           #locale-filter="{
