@@ -34,7 +34,7 @@ import i18n from './locale';
 import directive from './directive';
 import './mock';
 import 'highlight.js/styles/atom-one-dark.css'; // 样式
-import './assets/style/global.less';
+
 
 // eslint-disable-next-line import/order
 import App from './App.vue';
@@ -63,6 +63,7 @@ import "@/components/BpmnJs/styles/index.scss";
 import "element-plus/theme-chalk/display.css";
 import "element-plus/theme-chalk/index.css";
 import 'virtual:svg-icons-register'
+import './assets/style/global.less';
 
 const app = createApp(App);
 

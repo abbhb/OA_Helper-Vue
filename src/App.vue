@@ -1,19 +1,19 @@
 <template>
   <a-config-provider :locale="locale">
-    <router-view/>
+    <router-view />
     <global-setting />
   </a-config-provider>
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue';
-import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
-import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
-import GlobalSetting from '@/components/global-setting/index.vue';
-import useLocale from '@/hooks/locale';
-import {useAppStore} from '@/store';
+  import { computed } from 'vue';
+  import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
+  import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
+  import GlobalSetting from '@/components/global-setting/index.vue';
+  import useLocale from '@/hooks/locale';
+  import { useAppStore } from '@/store';
 
-const appStore = useAppStore();
+  const appStore = useAppStore();
   appStore.initSettings();
   const { currentLocale } = useLocale();
   const locale = computed(() => {
@@ -29,6 +29,14 @@ const appStore = useAppStore();
 </script>
 
 <style>
+  html,
+  body {
+    height: 100%;
+  }
+  #app {
+    width: 100%;
+    height: 100%;
+  }
   /* 在 App.vue 中定义全局的过渡效果 */
   .fade-enter-active,
   .fade-leave-active {

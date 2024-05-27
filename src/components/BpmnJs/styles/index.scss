@@ -16,9 +16,9 @@
 @import "camunda-penal";
 @import "contextmenu";
 
-body,
-html,
-#app,
+// 此处删除了body,
+//html,
+//#app,
 .designer-container {
   height: 100vh;
   width: 100vw;
