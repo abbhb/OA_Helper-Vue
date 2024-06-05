@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { computed, defineProps } from 'vue';
+  import CardSync from "@/views/signin/device/components/sync/CardSync.vue";
   import FaceSync from './FaceSync.vue';
 
   const props = defineProps({
@@ -23,6 +24,9 @@
     }
     if (props.support === 'face') {
       return FaceSync;
+    }
+    if (props.support === 'card') {
+      return CardSync;
     }
     return 'Error';
   });

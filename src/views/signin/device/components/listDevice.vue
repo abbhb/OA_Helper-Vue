@@ -93,6 +93,9 @@
     if (support === 'face') {
       return '人脸';
     }
+    if (support === 'card') {
+      return 'ID卡';
+    }
     return support;
   }
   const syncNameComputed = computed(() => (support: string) => {

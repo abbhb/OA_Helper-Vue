@@ -24,6 +24,11 @@ export interface SigninUserFaceDataReq {
   syncModel?: string;
   deviceId?: string;
 }
+export interface SigninUserCardDataReq {
+  data?: SigninUserCardDataResp[];
+  syncModel?: string;
+  deviceId?: string;
+}
 
 export interface SigninGroup {
   id?: string;
@@ -72,7 +77,16 @@ export interface SigninUserFaceDataResp {
   deptId?: string;
   localExist?: boolean;
   deviceExist?: boolean;
-
+}
+export interface SigninUserCardDataResp {
+  userId?: string;
+  studentId?: string;
+  name?: string;
+  username?: string;
+  deptName?: string;
+  deptId?: string;
+  localExist?: boolean;
+  deviceExist?: boolean;
 }
 
 export interface SigninDeviceDto {
@@ -110,8 +124,8 @@ export function updateSigninDevice(data?: SigninDeviceDto) {
 export function deleteSigninDevice(deviceId: string) {
   return axios.delete<string>('/api/signin_device/delete', {
     params: {
-      deviceId
-    }
+      deviceId,
+    },
   });
 }
 
@@ -120,28 +134,61 @@ export function listGroupRule() {
   return axios.get<SigninGroupDto[]>('/api/signin_group/list');
 }
 
-export function get_signin_face_data(deviceId:string) {
-  return axios.get<SigninUserFaceDataResp[]>('/api/signin_user_data/get_signin_face_data',{
-    params:{
-      deviceId
+export function get_signin_face_data(deviceId: string) {
+  return axios.get<SigninUserFaceDataResp[]>(
+    '/api/signin_user_data/get_signin_face_data',
+    {
+      params: {
+        deviceId,
+      },
     }
-  });
+  );
+}
+export function get_signin_card_data(deviceId: string) {
+  return axios.get<SigninUserCardDataResp[]>(
+    '/api/signin_user_data/get_signin_card_data',
+    {
+      params: {
+        deviceId,
+      },
+    }
+  );
 }
 
 /** 同步人脸【上传方向】 */
 export function uploadSigninFaceData(data: SigninUserFaceDataReq) {
-  return axios.post<string>('/api/signin_user_data/upload_signin_face_data', data);
+  return axios.post<string>(
+    '/api/signin_user_data/upload_signin_face_data',
+    data
+  );
+}
+/** 同步ID卡【上传方向】 */
+export function uploadSigninCardData(data: SigninUserCardDataReq) {
+  return axios.post<string>(
+    '/api/signin_user_data/upload_signin_card_data',
+    data
+  );
 }
 /** 同步人脸【下载方向】 */
 export function downloadSigninFaceData(data: SigninUserFaceDataReq) {
-  return axios.post<string>('/api/signin_user_data/download_signin_face_data', data);
+  return axios.post<string>(
+    '/api/signin_user_data/download_signin_face_data',
+    data
+  );
+}
+/** 同步ID卡【下载方向】 */
+export function downloadSigninCardData(data: SigninUserCardDataReq) {
+  return axios.post<string>(
+    '/api/signin_user_data/download_signin_card_data',
+    data
+  );
 }
 
 export function deleteGroupRule(id: string) {
   return axios.delete<string>('/api/signin_group/delete', {
     params: {
-      id
-    }
+      id,
+    },
   });
 }
 
@@ -158,8 +205,8 @@ export function updateGroupRule(data: SigninGroupDto) {
 export function deleteBcRule(id: string) {
   return axios.delete<string>('/api/signin_bc/delete', {
     params: {
-      id
-    }
+      id,
+    },
   });
 }
 
@@ -167,8 +214,6 @@ export function deleteBcRule(id: string) {
 export function addBc(data: SigninBc) {
   return axios.post<string>('/api/signin_bc/add', data);
 }
-
-
 
 export function editBc(data: SigninBc) {
   return axios.put<string>('/api/signin_bc/update', data);

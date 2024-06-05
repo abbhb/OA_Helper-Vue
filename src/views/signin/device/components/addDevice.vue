@@ -23,6 +23,7 @@ initData();
 const addDevice = async () => {
   const data = await addSigninDevice(deviceFrom);
   Message.success(data.data);
+  initData();
 };
 
 const setSelectDevice = () => {
@@ -33,6 +34,13 @@ const setSelectDevice = () => {
     deviceFrom.support = '';
   } else {
     selectDeviceSupport.value = selectDevice.value?.support.split(',');
+    const templist = [];
+    for (let i = 0; i < selectDeviceSupport.value.length; i+=1) {
+      if (selectDeviceSupport.value[i]){
+        templist.push(selectDeviceSupport.value[i])
+      }
+    }
+    selectDeviceSupport.value = templist;
     deviceFrom.support = selectDeviceSupport.value.join(',');
   }
 
@@ -71,7 +79,7 @@ const updateDeviceWay = (value: any) => {
                       v-for="(item, index) in selectDeviceList"
                       :key="index"
                       :value="item"
-                    >{{ item.name }}
+                    >{{ item.deviceId }}
                     </a-option
                     >
                     <template #empty>
@@ -99,10 +107,8 @@ const updateDeviceWay = (value: any) => {
               <div>
                 设备名称
                 <div>
-                  <a-tag>{{
-                      deviceFrom.name ? deviceFrom.name : '暂未选择'
-                    }}
-                  </a-tag>
+
+                  <a-input v-model:model-value="deviceFrom.name"></a-input>
                 </div>
               </div>
               <div>
