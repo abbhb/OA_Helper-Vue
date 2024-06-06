@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import { ref } from 'vue';
 import version from '@/config/version.json';
+import AvatarImage from "@/components/image/AvatarImage.vue";
 
 const data = version;
-
-
-  const selectVersion = ref(data[data.length - 1]);
+const selectVersion = ref(data[data.length - 1]);
 </script>
 
 <template>
@@ -30,9 +29,7 @@ const data = version;
             <div :style="{ marginBottom: '12px' }">
               {{ timeit.version }}
               <div :style="{ fontSize: '12px', color: '#4E5969' }">
-                <div v-for="title in timeit.info" :key="title">{{
-                  title.title
-                }}</div>
+                <div v-for="title in timeit.info" :key="title">{{ title.title }}</div>
               </div>
             </div>
           </a-row>
@@ -45,14 +42,13 @@ const data = version;
       <div class="info-info">
         <div
           v-for="iteminfo in selectVersion.info"
-          :key="iteminfo"
+          :key="iteminfo.title"
           class="info-item"
         >
-          <div class="info-title"
-            ><a-tag color="#BD8E3E" :size="'large'">{{
-              iteminfo.title
-            }}</a-tag></div
-          >
+          <div class="info-title">
+            <AvatarImage :avatar="iteminfo.icon" :name="iteminfo.title" alt="icon" class="title-icon" />
+            <strong>{{ iteminfo.title }}</strong>
+          </div>
           <div class="info-content" v-html="iteminfo.content"></div>
         </div>
       </div>
@@ -61,36 +57,51 @@ const data = version;
 </template>
 
 <style scoped lang="less">
-  .hover-click {
-  }
-  .hover-click:hover {
-    background-color: var(--color-secondary-hover);
-    cursor: pointer;
-  }
-  .info-body {
-    margin-top: 10px;
-    padding: 30px 30px 30px 30px;
-    border: 1px solid var(--color-border);
-    margin-left: 10rem;
-    width: 70%;
-  }
-  .info-head {
-    font-size: 30px;
-    border-bottom: 1px solid #6b6b6b;
-  }
-  .info-info {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-  }
-  .info-item {
-    margin-top: 30px;
-    border: 2px solid #f3b17d;
-    padding: 1rem 1rem 1rem 1rem;
-    border-radius: 3px;
-  }
-  .info-title {
-    display: flex;
-    flex-direction: row;
-  }
+.hover-click:hover {
+  background-color: var(--color-secondary-hover);
+  cursor: pointer;
+}
+.info-body {
+  margin-top: 10px;
+  padding: 30px;
+  border: 1px solid var(--color-border);
+  margin-left: 10rem;
+  width: 70%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.info-head {
+  font-size: 30px;
+  border-bottom: 1px solid #6b6b6b;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+.info-info {
+  display: flex;
+  flex-direction: column;
+}
+.info-item {
+  margin-top: 20px;
+  border: 1px solid #f3b17d;
+  padding: 1rem;
+  border-radius: 5px;
+  background-color: #fafafa;
+}
+.info-title {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.title-icon {
+  //width: 24px;
+  //height: 24px;
+  margin-right: 10px;
+}
+.info-content {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+}
 </style>

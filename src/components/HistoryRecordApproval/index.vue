@@ -9,38 +9,59 @@
       >
         <el-tab-pane label="审批记录" name="1">
           <div class="history-root">
-            <el-card class="box-card main-form" shadow="hover">
+            <div class="box-card main-form" style="overflow-y: auto">
+              <el-card class="main-form" shadow="hover">
+                <template #header>
+                  <div class="card-header">
+                    <span>主表单信息</span>
+                  </div>
+                </template>
+                <MainForm
+                  ref="mainForm"
+                  :form-json="mainFormInfo.formJson"
+                  :form-data="mainFormInfo.formData"
+                />
+              </el-card>
+              <el-card class="history-container" shadow="hover">
+                <template #header>
+                  <div class="card-header">
+                    <span>历史记录</span>
+                  </div>
+                </template>
+                <div class="hint-container">
+                  <div class="history">已审批</div>
+                  <div class="next">待审批</div>
+                </div>
+                <el-timeline>
+                  <el-timeline-item
+                    v-for="(item, index) in historyRecordList"
+                    :key="index"
+                    :color="item.status === 1 ? '#0bbd87' : '#e4e7ed'"
+                  >
+                    <HistoryNodeInfo :node-item="item" />
+                  </el-timeline-item>
+                </el-timeline>
+              </el-card>
+            </div>
+            <el-card class="box-card shenpi-container" shadow="hover">
               <template #header>
                 <div class="card-header">
-                  <span>主表单信息</span>
+                  <span>审批区</span>
                 </div>
               </template>
-              <MainForm
-                ref="mainForm"
-                :form-json="mainFormInfo.formJson"
-                :form-data="mainFormInfo.formData"
-              />
-            </el-card>
-
-            <el-card class="box-card history-container" shadow="hover">
-              <template #header>
-                <div class="card-header">
-                  <span>历史记录</span>
-                </div>
-              </template>
-              <div class="hint-container">
-                <div class="history">已审批</div>
-                <div class="next">待审批</div>
+              <div style="width: 450px">
+                <!-- 节点动态表单 -->
+                <VFormRender
+                  ref="preForm"
+                  :form-json="formJson"
+                  :preview-state="true"
+                />
+                <span class="dialog-footer">
+                  <el-button type="primary" @click="submit">审批</el-button>
+                  <el-button @click="drawer = false">取消</el-button>
+                </span>
               </div>
-              <el-timeline>
-                <el-timeline-item
-                  v-for="(item, index) in historyRecordList"
-                  :key="index"
-                  :color="item.status === 1 ? '#0bbd87' : '#e4e7ed'"
-                >
-                  <HistoryNodeInfo :node-item="item" />
-                </el-timeline-item>
-              </el-timeline>
+
             </el-card>
           </div>
         </el-tab-pane>
@@ -53,12 +74,15 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { nextTick, reactive, ref, toRef } from 'vue';
   import {
+    completeProcessTodo,
     getHighlightNodeInfo,
     getHistoryRecord,
     getMainFormInfo,
+    getNodeForm,
   } from '@/api/bpmn';
+  import { ElMessage, ElMessageBox } from 'element-plus';
   import VFormRender from '@/components/FormDesigner/form-render/index.vue';
   import HistoryNodeInfo from './components/HistoryNodeInfo.vue';
   import MainForm from './components/MainForm.vue';
@@ -80,6 +104,22 @@
   // tab 选择的值
   const tabsValue = ref('1');
 
+  // 提交表单数据
+  const form = toRef(
+    reactive({
+      processInstanceId: '',
+      variables: {},
+    })
+  );
+
+  // 动态表单实例
+  const preForm = ref();
+  // 动态表单结构数据
+  const formJson = ref<object>({});
+
+  // 当前节点id
+  let activityId = '';
+
   /**
    * 初始化
    * @param id 流程实例id
@@ -99,11 +139,29 @@
 
     loading.value = false;
   };
-  const open = (instance_id: string) => {
+  const open = async (
+    instance_id: string,
+    taskId: string,
+    taskDefinitionKey: string
+  ) => {
     instanceId.value = instance_id;
     tabsValue.value = '1';
-    drawer.value = true;
     historyRecord();
+    // 加载审批输一局
+    form.value.processInstanceId = instance_id;
+    activityId = taskDefinitionKey;
+    // 获取动态表单
+    const res = await getNodeForm(taskId);
+    if (res.code === 1 && res.data !== '') {
+      formJson.value = res.data;
+      drawer.value = true;
+      nextTick(() => {
+        if (Object.keys(res.data).length !== 0) {
+          preForm.value?.resetForm();
+          preForm.value?.setFormJson(res.data);
+        }
+      });
+    }
   };
 
   /**
@@ -132,6 +190,35 @@
         break;
     }
   };
+  /**
+   * 提交
+   */
+  async function submit() {
+    // 获取动态表单数据
+    const formData = await preForm.value.getFormData();
+
+    ElMessageBox.confirm('是否要提交?', '提示').then(async () => {
+      // 在流程节点局部变量设置值, 可以方便使用 `${}` 直接设置流程变量
+      const variables = JSON.parse(JSON.stringify(formData));
+
+      // 在流程节点局部变量设置表单的结构和值方便以后回显使用
+      variables[`${activityId}_formJson`] = formJson;
+      variables[`${activityId}_formData`] = JSON.parse(
+        JSON.stringify(formData)
+      );
+      form.value.variables = variables;
+      const res = await completeProcessTodo(form.value);
+      if (res.code === 1) {
+        ElMessage.success(res.msg);
+        open.value = false;
+        emit('ok');
+      }
+    });
+  }
+
+  const emit = defineEmits<{
+    (event: 'ok'): void;
+  }>();
 
   defineExpose({
     open,
