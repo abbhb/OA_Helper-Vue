@@ -45,7 +45,7 @@ const emit = defineEmits(['alertSome']);
   const type = ref('text');
   const { loading, setLoading } = useLoading();
   const labelList = ref<string[]>();
-const imageList = ref<IndexImage[]>([]);
+const imageList = ref<IndexImage>({});
 const fetchDate1 = async (label: string) => {
   try {
     setLoading(true);

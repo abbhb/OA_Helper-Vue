@@ -47,7 +47,7 @@ import '@/api/interceptor';
 import 'element-plus/dist/index.css';
 
 // vfrom相关依赖引入---------------------------------------------
-import "@/components/FormDesigner/styles/index.scss";
+// import "@/components/FormDesigner/styles/index.scss";
 // eslint-disable-next-line import/extensions
 import Draggable from "@/../lib/vuedraggable/dist/vuedraggable.umd.js";
 import {registerIcon} from "@/components/FormDesigner/utils/el-icons";
@@ -59,7 +59,7 @@ import {addDirective} from "@/components/FormDesigner/utils/directive";
 import {installI18n} from "@/components/FormDesigner/utils/i18n";
 import {loadExtension} from "@/components/FormDesigner/extension/extension-loader";
 // bpmn.js 相关-------------------------------------------------
-import "@/components/BpmnJs/styles/index.scss";
+import '@/components/BpmnJs/styles/index.scss';
 import "element-plus/theme-chalk/display.css";
 import "element-plus/theme-chalk/index.css";
 import 'virtual:svg-icons-register'

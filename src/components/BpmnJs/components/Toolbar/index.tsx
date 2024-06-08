@@ -8,7 +8,7 @@ const Toolbar = defineComponent({
     name: "ToolBar",
     setup() {
         return () => (
-            <div class="toolbar">
+            <div class="toolbar-bpmn">
                 <Imports class="room"></Imports>
                 <Previews class="room"></Previews>
                 <Scales class="room"></Scales>

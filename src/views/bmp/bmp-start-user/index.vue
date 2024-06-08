@@ -1,11 +1,18 @@
 <template>
   <div>
-    <div v-loading="loading" style="display: flex;flex-direction: column;padding: 30px 30px 30px 30px">
+    <div
+      v-loading="loading"
+      style="
+        display: flex;
+        flex-direction: column;
+        padding: 30px 30px 30px 30px;
+      "
+    >
       <div v-if="list.length == 0">
-        <el-empty/>
+        <el-empty />
       </div>
       <div v-for="group in list" :key="group.sort" class="group">
-        <div v-if="group?.definitionListVoList?.length>0" class="group-title">
+        <div v-if="group?.definitionListVoList?.length > 0" class="group-title">
           {{ group.deployGroupName }}
         </div>
         <div class="group-inner">
@@ -45,7 +52,7 @@
       <!--          </div>-->
       <!--        </template>-->
       <!--      </el-alert>-->
-      <br/>
+      <br />
       <!--      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">-->
       <!--        <el-form-item label="业务key" prop="businessKey">-->
       <!--          <el-input-->
@@ -76,7 +83,7 @@
           </div>
         </template>
         <!-- 节点动态表单 -->
-        <VFormRender ref="preForm" :preview-state="true"/>
+        <VFormRender ref="preForm" :preview-state="true" />
       </el-card>
 
       <template #footer>
@@ -86,157 +93,153 @@
         </div>
       </template>
     </el-drawer>
-    <SelectProcess ref="selectProcess" @ok="selectProcessOk"/>
+    <SelectProcess ref="selectProcess" @ok="selectProcessOk" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref, reactive, toRef, nextTick} from 'vue';
-import {ElMessage} from 'element-plus';
-import VFormRender from '@/components/FormDesigner/form-render/index.vue';
-import {listDeployGroupAct, startProcessStart} from '@/api/bpmn';
-import SelectIcon from '@/components/BpmnJs/components/Panel/components/sub/SelectIcon.vue';
+  import { ref, reactive, toRef, nextTick } from 'vue';
+  import { ElMessage } from 'element-plus';
+  import VFormRender from '@/components/FormDesigner/form-render/index.vue';
+  import { listDeployGroupAct, startProcessStart } from '@/api/bpmn';
+  import SelectIcon from '@/components/BpmnJs/components/Panel/components/sub/SelectIcon.vue';
 
-// 是否打开弹出框
-const open = ref(false);
+  // 是否打开弹出框
+  const open = ref(false);
 
-// 选择流程
-const selectProcess = ref();
+  // 选择流程
+  const selectProcess = ref();
 
-// 列表是否加载
-const loading = ref(true);
-// 列表返回值
-const list = ref<any[]>([]);
+  // 列表是否加载
+  const loading = ref(true);
+  // 列表返回值
+  const list = ref<any[]>([]);
 
-// 动态表单实例
-const preForm = ref();
+  // 动态表单实例
+  const preForm = ref();
 
-// 表单实例
-// const formRef = ref();
+  // 表单实例
+  // const formRef = ref();
 
-// 提交表单数据
-const form = toRef(
-  reactive({
-    businessKey: '',
-    formId: '',
-    formName: '',
-    formJson: {},
-    definitionId: '',
-    definitionName: '',
-  })
-);
-// 表单验证
-const rules = ref({
-  businessKey: [
-    {required: true, message: '业务key不能为空', trigger: 'blur'},
-  ],
-  definitionId: [
-    {required: true, message: '流程必须选择', trigger: 'blur'},
-  ],
-});
-
-
-// 初始化
-const init = () => {
-  open.value = true;
-  form.value = {
-    businessKey: '',
-    formId: '',
-    formName: '',
-    formJson: {},
-    definitionId: '',
-    definitionName: '',
-  };
-  nextTick(() => {
-    preForm.value?.setFormJson({});
-    // formRef.value?.resetFields();
-  });
-};
-
-/**
- * 查询列表
- */
-const getList = async () => {
-  loading.value = true;
-  const {data} = await listDeployGroupAct();
-  list.value = data;
-
-  loading.value = false;
-};
-getList();
-/**
- * 选择流程返回数据
- * @param data 表单数据
- */
-const selectProcessOk = (data: any) => {
-  form.value.definitionId = data.id;
-  form.value.definitionName = data.name;
-  form.value.formJson = data.formJson || {};
-  nextTick(() => {
-    preForm.value?.setFormJson(form.value.formJson);
-  });
-};
-
-/**
- * 提交按钮
- */
-async function submitForm() {
-
-  // 获取动态表单数据
-  const formData = (await preForm.value?.getFormData()) || {};
-
-
-  // 真实要提交的数据
-  const subForm = {
-    businessKey: form.value.businessKey,
-    definitionId: form.value.definitionId,
-    variables: {},
-  };
-  // 设置流程变量
-  subForm.variables = JSON.parse(JSON.stringify(formData));
-
-  // 由于回显使用
-  subForm.variables[`${form.value.businessKey}_formData`] = JSON.parse(
-    JSON.stringify(formData)
+  // 提交表单数据
+  const form = toRef(
+    reactive({
+      businessKey: '',
+      formId: '',
+      formName: '',
+      formJson: {},
+      definitionId: '',
+      definitionName: '',
+    })
   );
-  subForm.variables[`${form.value.businessKey}_formJson`] =
-    form.value.formJson;
-  const res = await startProcessStart(subForm);
-  ElMessage.success(res.msg);
-  open.value = false;
-}
+  // 表单验证
+  const rules = ref({
+    businessKey: [
+      { required: true, message: '业务key不能为空', trigger: 'blur' },
+    ],
+    definitionId: [
+      { required: true, message: '流程必须选择', trigger: 'blur' },
+    ],
+  });
 
-const startProcess = (item) => {
-  open.value = true;
-  selectProcessOk(item)
-}
+  // 初始化
+  const init = () => {
+    open.value = true;
+    form.value = {
+      businessKey: '',
+      formId: '',
+      formName: '',
+      formJson: {},
+      definitionId: '',
+      definitionName: '',
+    };
+    nextTick(() => {
+      preForm.value?.setFormJson({});
+      // formRef.value?.resetFields();
+    });
+  };
+
+  /**
+   * 查询列表
+   */
+  const getList = async () => {
+    loading.value = true;
+    const { data } = await listDeployGroupAct();
+    list.value = data;
+
+    loading.value = false;
+  };
+  getList();
+  /**
+   * 选择流程返回数据
+   * @param data 表单数据
+   */
+  const selectProcessOk = (data: any) => {
+    form.value.definitionId = data.id;
+    form.value.definitionName = data.name;
+    form.value.formJson = data.formJson || {};
+    nextTick(() => {
+      preForm.value?.setFormJson(form.value.formJson);
+    });
+  };
+
+  /**
+   * 提交按钮
+   */
+  async function submitForm() {
+    // 获取动态表单数据
+    const formData = (await preForm.value?.getFormData()) || {};
+
+    // 真实要提交的数据
+    const subForm = {
+      businessKey: form.value.businessKey,
+      definitionId: form.value.definitionId,
+      variables: {},
+    };
+    // 设置流程变量
+    subForm.variables = JSON.parse(JSON.stringify(formData));
+
+    // 由于回显使用
+    subForm.variables[`${form.value.businessKey}_formData`] = JSON.parse(
+      JSON.stringify(formData)
+    );
+    subForm.variables[`${form.value.businessKey}_formJson`] =
+      form.value.formJson;
+    const res = await startProcessStart(subForm);
+    ElMessage.success(res.msg);
+    open.value = false;
+  }
+
+  const startProcess = (item) => {
+    open.value = true;
+    selectProcessOk(item);
+  };
 </script>
 
 <style scoped>
-.icon-selector {
-  display: flex;
-  flex-wrap: wrap;
-}
+  .icon-selector {
+    display: flex;
+    flex-wrap: wrap;
+  }
 
-.icon-item {
-  cursor: pointer;
-  margin-right: 25px;
-  margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .icon-item {
+    cursor: pointer;
+    margin-right: 25px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-.icon-item i {
-  font-size: 24px;
-}
+  .icon-item i {
+    font-size: 24px;
+  }
 
-.group {
-  margin-bottom: 35px;
+  .group {
+    margin-bottom: 35px;
+  }
 
-}
-
-.group-title {
-  font-size: 24px;
-}
+  .group-title {
+    font-size: 24px;
+  }
 </style>

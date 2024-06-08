@@ -140,10 +140,10 @@ const Panel = defineComponent({
         });
 
         return () => (
-            <div ref={panel} class="panel">
-                <div class="panel-header">
+            <div ref={panel} class="panel-bpmn">
+                <div class="panel-bpmn-header">
                     <BpmnIcon name={bpmnIconName.value}></BpmnIcon>
-                    <div class="panel-title">
+                    <div class="panel-bpmn-title">
                         <p>{bpmnElementName.value}</p>
                         <p>{customTranslate(currentElementType.value || 'Process')}</p>
                     </div>

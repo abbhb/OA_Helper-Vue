@@ -9,6 +9,7 @@
   </div>
 </template>
 
+
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref} from "vue";
 import {getInitiatorValue, setInitiatorValue} from "@/components/BpmnJs/bo-utils/initiatorUtil";
@@ -28,6 +29,7 @@ export default defineComponent({
     };
     const setElementInitiator = (value: string | undefined) => {
       setInitiatorValue(getActive.value!, value);
+      
     };
 
     onMounted(() => {

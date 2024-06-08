@@ -1,8 +1,8 @@
 <template>
   <el-drawer v-model="drawer" size="100%" :with-header="false" destroy-on-close>
-    <div id="designer-container">
+    <div id="designer-container" class="designer-container">
       <!-- 操作按钮 -->
-      <div class="toolbar">
+      <div class="toolbar-bpmn">
         <el-button type="primary" @click="submit">保存</el-button>
         <Scales></Scales>
         <Commands></Commands>
@@ -13,7 +13,7 @@
           </icon-close>
         </div>
       </div>
-      <div class="main-content">
+      <div class="main-content-bpmn">
         <Designer :xml="xml" :settings="settings"/>
         <Panel style="max-width: 40%"></Panel>
       </div>
@@ -160,7 +160,7 @@ defineExpose({
   font-size: 20px;
   color: #0085f1;
   margin-left: auto;
-
+  margin-right: 1rem;
   i {
     cursor: pointer;
   }

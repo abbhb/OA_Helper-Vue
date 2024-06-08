@@ -1,4 +1,4 @@
-.panel {
+.panel-bpmn {
   //width: 520px; 会影响样式
   box-sizing: border-box;
   padding: 0 8px;
@@ -31,12 +31,12 @@
   }
 }
 
-.panel-header {
+.panel-bpmn-header {
   display: flex;
   justify-content: flex-start;
   padding: 10px 0;
 
-  .panel-title {
+  .panel-bpmn-title {
     margin-left: 10px;
 
     p {

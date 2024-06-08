@@ -1,11 +1,15 @@
 import axios from 'axios';
 
+export interface IndexImageData {
+  image?: string;
+  extra?: string;
+}
+
 export interface IndexImage {
   id?: string;
   label?: string;
-  image?: string;
+  data?: IndexImageData[];
   sort?: number;
-  extra?: string;
 }
 
 export function queryIndexImageLabel() {
@@ -13,7 +17,7 @@ export function queryIndexImageLabel() {
 }
 
 export function queryLabelIndexImage(params: { label: string }) {
-  return axios.get<IndexImage[]>('/api/index_image/label_all', {params});
+  return axios.get<IndexImage>('/api/index_image/label_all', {params});
 }
 
 export function listIndexImage() {

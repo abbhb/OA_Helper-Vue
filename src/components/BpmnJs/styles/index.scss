@@ -29,18 +29,18 @@
   flex-direction: column;
   position: relative;
 
-  &.designer-with-image > .main-content .designer {
+  &.designer-with-image > .main-content-bpmn .designer-bpmn {
     background-repeat: no-repeat !important;
     background-size: cover;
   }
 
-  .main-content {
+  .main-content-bpmn {
     width: 100%;
     flex: 1;
     overflow: hidden;
     display: flex;
 
-    .designer {
+    .designer-bpmn {
       flex: 1;
     }
   }

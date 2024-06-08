@@ -1,12 +1,12 @@
-import type {AxiosRequestConfig, AxiosResponse} from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
-import {Message} from '@arco-design/web-vue';
-import {useUserStore} from '@/store';
-import {getToken} from '@/utils/auth';
-import {notifyMe} from '@/utils/notify';
+import { Message } from '@arco-design/web-vue';
+import { useUserStore } from '@/store';
+import { getToken } from '@/utils/auth';
+import { notifyMe } from '@/utils/notify';
 import router from '@/router';
-import {WHITE_LIST} from "@/router/constants";
-import {getAPIBase} from "@/utils/env";
+import { WHITE_LIST } from '@/router/constants';
+import { getAPIBase } from '@/utils/env';
 
 export interface HttpResponse<T = unknown> {
   msg: string;
@@ -15,7 +15,7 @@ export interface HttpResponse<T = unknown> {
 }
 
 if (getAPIBase()) {
-    axios.defaults.baseURL = getAPIBase();
+  axios.defaults.baseURL = getAPIBase();
 }
 
 axios.interceptors.request.use(
@@ -49,12 +49,12 @@ axios.interceptors.response.use(
       const whiles = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const whitelistElement of WHITE_LIST) {
-        whiles.push(whitelistElement.name)
+        whiles.push(whitelistElement.name);
       }
       if (
         [900].includes(res.code) &&
         !response.config.url.includes('/api/user/login_by_token') &&
-        !(whiles.includes(router.currentRoute.value.name))
+        !whiles.includes(router.currentRoute.value.name)
       ) {
         Message.success({
           content: res.msg || '下线成功',

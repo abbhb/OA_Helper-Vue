@@ -36,7 +36,7 @@ const Designer = defineComponent({
             {deep: true, immediate: true}
         );
 
-        return () => <div ref={designer} class="designer"></div>;
+        return () => <div ref={designer} class="designer-bpmn"></div>;
     },
 });
 
