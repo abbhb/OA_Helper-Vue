@@ -4,7 +4,8 @@ import defaultSettings from '@/config/settings.json';
 import { getConfig } from '@/store/modules/app/persistence';
 // eslint-disable-next-line import/namespace
 import useRouterPlus from '@/hooks/router';
-import {getUserFrontConfig, setUserFrontConfig} from "@/api/user";
+import { getUserFrontConfig, setUserFrontConfig } from '@/api/user';
+import {isLogin} from "@/utils/auth";
 import { AppState, RecentlyRouter } from './types';
 
 const useAppStore = defineStore('app', {
@@ -31,19 +32,22 @@ const useAppStore = defineStore('app', {
     appRecentlyRouter(state: AppState): RecentlyRouter[] {
       return state.recentlyRouter as unknown as RecentlyRouter[];
     },
+    appquickRouter(state: AppState): RouteRecordNormalized[] {
+      return state.quickRouter as unknown as RouteRecordNormalized[];
+    },
   },
 
   actions: {
     // Update app settings
-    updateSettings(partial: Partial<AppState>,ignoreUpdate?:boolean) {
+    updateSettings(partial: Partial<AppState>, ignoreUpdate?: boolean) {
       this.$patch(partial);
-      if (!ignoreUpdate){
+      if (!ignoreUpdate) {
         this.updateConfigServer();
       }
     },
     async initSettings() {
       // 每次登录成功首次就同步一次配置
-      const {data} = await getUserFrontConfig();
+      const { data } = await getUserFrontConfig();
       this.$patch(JSON.parse(data));
     },
     // Change theme color
@@ -71,11 +75,29 @@ const useAppStore = defineStore('app', {
       }
       return canGoRecentlyList;
     },
+    getQuickRouter(): RouteRecordNormalized[] {
+      const routerPlus = useRouterPlus();
+      const quickList = this.appquickRouter;
+      const canGoRecentlyList = [];
+      for (let i = 0; i < quickList.length; i += 1) {
+        if (routerPlus.isCanGo(quickList[i])) {
+          canGoRecentlyList.push(quickList[i]);
+        }
+        if (canGoRecentlyList.length >= 9) {
+          break;
+        }
+      }
+      return canGoRecentlyList;
+    },
+    clearLocalRecentlyVisited() {
+      // 清除本地记录
+      this.$state.recentlyRouter = [];
+    },
     toggleDevice(device: string) {
-      this.updateSettings({ device },true);
+      this.updateSettings({ device }, true);
     },
     toggleMenu(value: boolean) {
-      this.updateSettings({ hideMenu: value },true);
+      this.updateSettings({ hideMenu: value }, true);
     },
     logAccess(route: RouteRecordNormalized) {
       let isNew = false;
@@ -95,13 +117,22 @@ const useAppStore = defineStore('app', {
       }
       this.updateConfigServer();
     },
+    updateQuickRoute(routes: RouteRecordNormalized[]) {
+      this.quickRouter = routes || [];
+
+      this.updateConfigServer();
+    },
     changePrintDevice(id: string) {
       this.updateSettings({ lastPrintDevice: id });
     },
     async updateConfigServer() {
+      if (!isLogin){
+        console.log("未登录，同步配置失败");
+        return;
+      }
       const text = JSON.stringify(this.$state, null, 2);
-      await setUserFrontConfig({req:text});
-    }
+      await setUserFrontConfig({ req: text });
+    },
   },
 });
 

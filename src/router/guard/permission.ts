@@ -37,7 +37,7 @@ export default function setupPermissionGuard(router: Router) {
       while (serverMenuConfig.length && !exist) {
         const element = serverMenuConfig.shift();
         if (element?.name === to.name) exist = true;
-
+        // 目前就2级路由！第三级为按钮权限
         if (element?.children) {
           serverMenuConfig.push(
             ...(element.children as unknown as RouteRecordNormalized[])

@@ -1,5 +1,5 @@
 <template>
-  <a-layout-footer class="footer">{{ $t('footer.company') }}</a-layout-footer>
+  <a-layout-footer class="footer">{{ $t('footer.company') }} |2024 | Power By AIStudio</a-layout-footer>
 </template>
 
 <script lang="ts" setup>

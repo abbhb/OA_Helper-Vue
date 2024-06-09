@@ -36,12 +36,12 @@
         <a-grid-item class="panel" :span="24">
           <Carousel style="height: 188px" />
         </a-grid-item>
-        <a-grid-item class="panel" :span="24">
-          <Announcement />
-        </a-grid-item>
-        <a-grid-item class="panel" :span="24">
-          <Docs />
-        </a-grid-item>
+<!--        <a-grid-item class="panel" :span="24">-->
+<!--          <Announcement />-->
+<!--        </a-grid-item>-->
+<!--        <a-grid-item class="panel" :span="24">-->
+<!--          <Docs />-->
+<!--        </a-grid-item>-->
       </a-grid>
     </div>
     <a-modal

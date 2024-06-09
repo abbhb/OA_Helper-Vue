@@ -17,8 +17,8 @@ const useMenuStore = defineStore('menu', {
       return { ...state };
     },
     appAsyncMenus(state: MenuState): RouteRecordNormalized[] {
-      // console.log('同步菜单');
-      // console.log(state.serverMenu);
+      console.log('同步菜单');
+      console.log(state.serverMenu);
       return state.serverMenu as unknown as RouteRecordNormalized[];
     },
   },

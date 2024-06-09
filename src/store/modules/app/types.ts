@@ -19,6 +19,7 @@ export interface AppState {
   tabBar: boolean;
   modelFullscreen: boolean;
   recentlyRouter: RecentlyRouter[];
+  quickRouter: RouteRecordNormalized[];
   [key: string]: unknown;
   lastPrintDevice: string; // id
   versionRead: string; // 版本号不对或者为空即没阅读最新版本说明

@@ -6,7 +6,7 @@
       </template>
       <template #extra>
         <a-link v-if="!props.noMore" @click="emit('alertSome')"
-        >{{ $t('workplace.viewMore') }}
+          >{{ $t('workplace.viewMore') }}
         </a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
@@ -29,39 +29,45 @@
 </template>
 
 <script lang="ts" setup>
-import {defineEmits, ref} from 'vue';
-import useLoading from '@/hooks/loading';
-import {IndexImage, queryIndexImageLabel, queryLabelIndexImage} from '@/api/index-image';
-import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
+  import { defineEmits, ref } from 'vue';
+  import useLoading from '@/hooks/loading';
+  import {
+    IndexImage,
+    queryIndexImageLabel,
+    queryLabelIndexImage,
+  } from '@/api/index-image';
+  import Carousel from '@/views/dashboard/workplace/components/carousel.vue';
 
-const props = defineProps({
-  noMore: {
-    type: Boolean,
-    default: false,
-  },
-});
+  const props = defineProps({
+    noMore: {
+      type: Boolean,
+      default: false,
+    },
+  });
 
-const emit = defineEmits(['alertSome']);
+  const emit = defineEmits(['alertSome']);
   const type = ref('text');
   const { loading, setLoading } = useLoading();
   const labelList = ref<string[]>();
-const imageList = ref<IndexImage>({});
-const fetchDate1 = async (label: string) => {
-  try {
-    setLoading(true);
-    const {data} = await queryLabelIndexImage({label});
-    imageList.value = data;
-  } catch (err) {
-    // you can report use errorHandler or other
-  } finally {
-    setLoading(false);
-  }
-};
+  const imageList = ref<IndexImage>({});
+  const fetchDate1 = async (label: string) => {
+    try {
+      setLoading(true);
+      const { data } = await queryLabelIndexImage({ label });
+      imageList.value = data;
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
   const fetchData = async () => {
     try {
       const { data } = await queryIndexImageLabel();
       labelList.value = data;
-      fetchDate1(data[0]);
+      if (labelList.value.length > 0) {
+        fetchDate1(data[0]);
+      }
     } catch (err) {
       // you can report use errorHandler or other
     }

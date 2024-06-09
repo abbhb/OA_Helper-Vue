@@ -4,6 +4,7 @@
     show-arrow="hover"
     auto-play
     style="width: 100%; height: 100%; border-radius: 4px; overflow: hidden"
+    v-if="imageSrc?.data?.length>0"
   >
     <a-carousel-item v-for="(indexImage, idx) in imageSrc?.data" :key="idx">
       <div class="parent-div">
@@ -24,6 +25,7 @@
       </div>
     </a-carousel-item>
   </a-carousel>
+  <a-empty v-else></a-empty>
 </template>
 
 <script lang="ts">

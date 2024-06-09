@@ -37,7 +37,7 @@
           <a-layout-content>
             <PageLayout />
           </a-layout-content>
-          <Footer v-if="footer" />
+          <FooterView v-if="footer" />
         </a-layout>
       </a-layout>
     </a-layout>
@@ -53,6 +53,7 @@
   import TabBar from '@/components/tab-bar/index.vue';
   import usePermission from '@/hooks/permission';
   import useResponsive from '@/hooks/responsive';
+  import FooterView from '@/components/footer/index.vue'
   import PageLayout from './page-layout.vue';
 
   const isInit = ref(false);

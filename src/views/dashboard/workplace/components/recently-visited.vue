@@ -5,6 +5,11 @@
     :header-style="{ paddingBottom: '0' }"
     :body-style="{ paddingTop: '26px' }"
   >
+    <template #extra>
+      <a-popconfirm @ok="clearRecentlyVisited" content="这个操作会删除存在服务器的历史记录,确认继续嘛?">
+        <a-link>清空</a-link>
+      </a-popconfirm>
+    </template>
     <div style="margin-bottom: -1rem">
       <a-row v-if="links.length>0" :gutter="8">
         <a-col v-for="link in links" :key="link.path" :span="8" class="wrapper" @click="router.push({name:link.name})">
@@ -21,7 +26,7 @@
         </a-col>
       </a-row>
       <a-typography-paragraph v-else class="text">
-        {{ $t('workplace.noUse') }}
+        <a-empty/>
       </a-typography-paragraph>
     </div>
   </a-card>
@@ -37,6 +42,12 @@
   const appStore = useAppStore();
   // console.log()
   const links = ref<RecentlyRouter[]>(appStore.getRecentlyRouter());
+
+  const clearRecentlyVisited = () => {
+    // 清空最近访问
+    appStore.clearLocalRecentlyVisited();
+    links.value = [];
+  }
 </script>
 
 <style lang="less" scoped>

@@ -10,6 +10,21 @@ export interface IndexImage {
   label?: string;
   data?: IndexImageData[];
   sort?: number;
+  visibility?:number;
+}
+
+export interface IndexImageResp {
+  id?: string;
+  label?: string;
+  data?: IndexImageData[];
+  sort?: number;
+  visibility?:number;
+  depts?:string[];
+}
+
+export interface IndexImageAddReq {
+  deptIds?:string[];
+  indexImage?:IndexImage;
 }
 
 export function queryIndexImageLabel() {
@@ -21,14 +36,14 @@ export function queryLabelIndexImage(params: { label: string }) {
 }
 
 export function listIndexImage() {
-  return axios.get<IndexImage[]>('/api/index_image/list');
+  return axios.get<IndexImageResp[]>('/api/index_image/list');
 }
 
-export function addIndexImage(data: IndexImage) {
+export function addIndexImage(data: IndexImageAddReq) {
   return axios.post<string>('/api/index_image/add', data);
 }
 
-export function updateIndexImage(data: IndexImage) {
+export function updateIndexImage(data: IndexImageAddReq) {
   return axios.put<string>('/api/index_image/update', data);
 }
 

@@ -13,6 +13,7 @@
   "device": "desktop",
   "tabBar": false,
   "recentlyRouter": [],
+  "quickRouter": [],
   "lastPrintDevice": "",
   "modelFullscreen": false,
   "versionRead": ""
