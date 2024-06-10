@@ -9,11 +9,26 @@
         {{ $t('workplace.popularContent') }}
       </template>
       <a-space :size="10" direction="vertical" fill>
-        <div style="display: flex">
-          <tag-ellipse :is-select="true" tag="全部部门"/>
+        <div style="display: flex; flex-wrap: wrap">
+          <a-tag>部门【包含子级部门】</a-tag>
+          <tag-ellipse
+            v-for="(dept, index) in deptData"
+            :key="index"
+            :is-select="
+              seletcDeptData === dept.id ||
+              shouldSelectDeptDataList.find((item) => {
+                if (String(item.id) === dept.id) {
+                  return item;
+                }
+              })
+            "
+            :tag="dept.deptName"
+            @click="selectDept(dept)"
+          >
+          </tag-ellipse>
         </div>
         <div style="display: flex">
-          <tag-ellipse :is-select="true" tag="全部Tag"/>
+          <tag-ellipse :is-select="true" tag="全部Tag" />
         </div>
         <a-radio-group
           v-model:model-value="statuEs.type"
@@ -58,7 +73,7 @@
                     >
                       <div v-if="!record.userRead" class="userweidu"> new</div>
                       <div v-if="record.isAnnex === 1" class="fujiancunzai">
-                        <img :src="attachment"/>
+                        <img :src="attachment" />
                       </div>
                       <div style="font-size: 16px; cursor: pointer">
                         {{ record.title }}
@@ -71,7 +86,7 @@
                         />
                       </div>
                     </div>
-                    <div v-if="record.type===1">
+                    <div v-if="record.type === 1">
                       {{ record.title }}{{ getIntroContent(record.content) }}
                     </div>
                     <div v-else style="color: #adadad">
@@ -109,8 +124,8 @@
                       record.urgency === 2
                         ? '不急'
                         : record.urgency === 3
-                          ? '紧急'
-                          : '一般'
+                        ? '紧急'
+                        : '一般'
                     }}
                   </a-tag>
                 </template>
@@ -136,180 +151,238 @@
       :unmount-on-close="true"
       :width="1600"
     >
-      <NoticeRead :notice-id="statuEs.noticeReadId"/>
+      <NoticeRead :notice-id="statuEs.noticeReadId" />
     </a-modal>
   </a-spin>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue';
-import useLoading from '@/hooks/loading';
-import {addNoticeReadLog, getViewNoticeList, NoticeUserReadResp, NoticeUserResp,} from '@/api/notice';
-import attachment from '@/assets/images/attachment.png';
-import {TableData} from '@arco-design/web-vue';
-import TagEllipse from '@/components/tag-ellipse/index.vue';
-import NoticeRead from '@/components/notice-read/index.vue';
+  import { ref } from 'vue';
+  import useLoading from '@/hooks/loading';
+  import {
+    addNoticeReadLog,
+    getViewNoticeList,
+    NoticeUserReadResp,
+    NoticeUserResp,
+  } from '@/api/notice';
+  import attachment from '@/assets/images/attachment.png';
+  import { TableData } from '@arco-design/web-vue';
+  import TagEllipse from '@/components/tag-ellipse/index.vue';
+  import NoticeRead from '@/components/notice-read/index.vue';
+  import { deptListTree } from '@/api/dept';
+  import _ from 'lodash';
 
-const statuEs = ref({
-  type: 0,
-  searchStatus: false,
-  name: '',
-  noticeRead: false,
-  noticeReadId: '',
-  noticeReadTitle: '',
-});
-const noticeReadData = ref<NoticeUserReadResp>(null);
+  const statuEs = ref({
+    type: 0,
+    searchStatus: false,
+    name: '',
+    noticeRead: false,
+    noticeReadId: '',
+    noticeReadTitle: '',
+  });
+  const noticeReadData = ref<NoticeUserReadResp>(null);
 
-const tableData = ref<NoticeUserResp[]>([]);
+  const tableData = ref<NoticeUserResp[]>([]);
+  const deptData = ref([]);
+  const seletcDeptData = ref('');
+  const shouldSelectDeptDataList = ref([]);
+  function flattenDepartments(departments) {
+    const flatList = [];
 
-const getData = async (pagination) => {
-  const {data} = await getViewNoticeList(
-    statuEs.value.type,
-    pagination.value.current,
-    pagination.value.pageSize
-  );
-  tableData.value = data.records;
-  pagination.value.total = data.total;
-};
-const pagination = ref({
-  current: 1,
-  defaultPageSize: 10,
-  total: 0,
-  pageSize: 5,
-  pageSizeOptions: [5, 10, 20, 50],
-  showPageSize: true,
-  showJumper: true,
-  onChange(page) {
-    pagination.value.current = page;
-    getData(pagination);
-  },
-  onPageSizeChange(pageSize) {
-    pagination.value.pageSize = pageSize;
-    getData(pagination);
-  },
-  showTotal: () => `共 ${0} 条`,
-});
-
-getData(pagination);
-
-const {loading, setLoading} = useLoading();
-
-const getDataB = async () => {
-  const {data} = await getViewNoticeList(
-    statuEs.value.type,
-    pagination.value.current,
-    pagination.value.pageSize
-  );
-  tableData.value = data.records;
-  pagination.value.total = data.total;
-};
-
-const typeChange = (contentType: number) => {
-  console.log(contentType);
-  pagination.value.current = 1;
-  getDataB();
-};
-
-const toNoticeContentView = async (record) => {
-  if (record.type === 2) {
-    try {
-      await addNoticeReadLog(record.id);
-      // 外链
-      window.open(record.content);
-    } catch (e) {
-      console.log(e)
+    function flatten(dept) {
+      flatList.push(dept); // 将当前部门添加到列表
+      if (dept.children && dept.children.length > 0) {
+        dept.children.forEach(flatten); // 递归处理子部门
+      }
     }
-    return;
+    departments.forEach(flatten); // 从顶层部门开始递归
+    return flatList;
   }
-  // 前往通知查看页
-  statuEs.value.noticeReadId = record.id;
-  statuEs.value.noticeReadTitle = record.title;
-  // 开始加载
-  statuEs.value.noticeRead = true;
-};
 
-// eslint-disable-next-line consistent-return
-const rowClass = (record: TableData, rowIndex: number) => {
-  if (record.userRead) {
-    return 'not-read';
-  }
-  return '';
-};
-// fetchData('text');
+  const selectDept = (dept,refresh=true) => {
+    seletcDeptData.value = dept.id;
+    const tempList = [];
+    tempList.push(dept);
+    const deptDatas = _.cloneDeep(deptData.value);
+    while (deptDatas.length) {
+      const items = deptDatas.shift();
+      if (
+        tempList.find((el) => {
+          if (el.id === items.parentId) {
+            return el;
+          }
+        })
+      ) {
+        tempList.push(items);
+      }
+    }
 
-const getIntroContent = (content) => {
-  let jieguo = content.replace(/&nbsp;/g, '').replace(/<.*?>/g, '');
-  if (jieguo.length > 30) {
-    jieguo = jieguo.substring(0, 30);
-  }
-  return jieguo;
-};
+    shouldSelectDeptDataList.value = tempList;
+    if (refresh){
+      // 重新请求数据
+      getDataB();
+    }
+  };
+
+
+  const initDeptData = async () => {
+    const { data } = await deptListTree();
+    deptData.value = flattenDepartments(data);
+    selectDept(deptData.value[0],false)
+
+  };
+  initDeptData();
+  const getData = async (pagination) => {
+    const { data } = await getViewNoticeList(
+      statuEs.value.type,
+      pagination.value.current,
+      pagination.value.pageSize,
+      seletcDeptData.value
+
+    );
+    tableData.value = data.records;
+    pagination.value.total = data.total;
+  };
+  const pagination = ref({
+    current: 1,
+    defaultPageSize: 10,
+    total: 0,
+    pageSize: 5,
+    pageSizeOptions: [5, 10, 20, 50],
+    showPageSize: true,
+    showJumper: true,
+    onChange(page) {
+      pagination.value.current = page;
+      getData(pagination);
+    },
+    onPageSizeChange(pageSize) {
+      pagination.value.pageSize = pageSize;
+      getData(pagination);
+    },
+    showTotal: () => `共 ${0} 条`,
+  });
+
+  getData(pagination);
+
+  const { loading, setLoading } = useLoading();
+
+  const getDataB = async () => {
+    const { data } = await getViewNoticeList(
+      statuEs.value.type,
+      pagination.value.current,
+      pagination.value.pageSize,
+      seletcDeptData.value
+    );
+    tableData.value = data.records;
+    pagination.value.total = data.total;
+  };
+
+  const typeChange = (contentType: number) => {
+    console.log(contentType);
+    pagination.value.current = 1;
+    getDataB();
+  };
+
+  const toNoticeContentView = async (record) => {
+    if (record.type === 2) {
+      try {
+        await addNoticeReadLog(record.id);
+        // 外链
+        window.open(record.content);
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+    // 前往通知查看页
+    statuEs.value.noticeReadId = record.id;
+    statuEs.value.noticeReadTitle = record.title;
+    // 开始加载
+    statuEs.value.noticeRead = true;
+  };
+
+  // eslint-disable-next-line consistent-return
+  const rowClass = (record: TableData, rowIndex: number) => {
+    if (record.userRead) {
+      return 'not-read';
+    }
+    return '';
+  };
+  // fetchData('text');
+
+  const getIntroContent = (content) => {
+    let jieguo = content.replace(/&nbsp;/g, '').replace(/<.*?>/g, '');
+    if (jieguo.length > 30) {
+      jieguo = jieguo.substring(0, 30);
+    }
+    return jieguo;
+  };
 </script>
 
 <style lang="less" scoped>
-.general-card {
-  min-height: 395px;
-}
-
-:deep(.arco-table-tr) {
-  height: 44px;
-
-  .arco-typography {
-    margin-bottom: 0;
+  .general-card {
+    min-height: 395px;
   }
-}
 
-.increases-cell {
-  display: flex;
-  align-items: center;
+  :deep(.arco-table-tr) {
+    height: 44px;
 
-  span {
-    margin-right: 4px;
+    .arco-typography {
+      margin-bottom: 0;
+    }
   }
-}
 
-.notice-tag {
-  padding: 0 4px 2px;
-  display: inline-block;
-  border-radius: 2px;
-  color: #fff;
-  min-width: 20px;
-  line-height: 1;
-  margin: 0 0 10px 2px;
-}
+  .increases-cell {
+    display: flex;
+    align-items: center;
 
-.fujiancunzai {
-  padding: 0 4px 2px;
-  display: inline-block;
-  border-radius: 2px;
-  color: #fff;
-  min-width: 20px;
-  line-height: 1;
-  margin: 0 0 10px 2px;
-}
+    span {
+      margin-right: 4px;
+    }
+  }
 
-.userweidu {
-  padding: 0 4px 2px;
-  display: inline-block;
-  border-radius: 2px;
-  color: #fff;
-  min-width: 20px;
-  line-height: 1;
-  background-color: #93d36e;
-  margin: 0 2px 10px 0;
-}
+  .notice-tag {
+    padding: 0 4px 2px;
+    display: inline-block;
+    border-radius: 2px;
+    color: #fff;
+    min-width: 20px;
+    line-height: 1;
+    margin: 0 0 10px 2px;
+  }
 
-.notice-item {
-  cursor: pointer;
-}
+  .fujiancunzai {
+    padding: 0 4px 2px;
+    display: inline-block;
+    border-radius: 2px;
+    color: #fff;
+    min-width: 20px;
+    line-height: 1;
+    margin: 0 0 10px 2px;
+  }
 
-/deep/ .not-read {
-  background-color: #e5e6eb;
-}
+  .userweidu {
+    padding: 0 4px 2px;
+    display: inline-block;
+    border-radius: 2px;
+    color: #fff;
+    min-width: 20px;
+    line-height: 1;
+    background-color: #93d36e;
+    margin: 0 2px 10px 0;
+  }
+
+  .notice-item {
+    cursor: pointer;
+  }
+
+  /deep/ .not-read {
+    background-color: #e5e6eb;
+  }
 </style>
 
 <style lang="css">
-.not-read {
-  background-color: #e5e6eb;
-}
+  .not-read {
+    background-color: #e5e6eb;
+  }
 </style>

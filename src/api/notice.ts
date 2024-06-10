@@ -145,7 +145,7 @@ export function getViewNoticeList(
     urgency: number,
     pageNum: number,
     pageSize: number,
-    deptId?: string
+    deptId?: string,
 ) {
   return axios.get<PageData<NoticeUserResp[]>>(`/api/notice/list/${urgency}`, {
     params: {

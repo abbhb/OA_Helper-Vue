@@ -34,28 +34,6 @@ const useAppStore = defineStore('app', {
     },
     appquickRouter(state: AppState): RouteRecordNormalized[] {
       return state.quickRouter as unknown as RouteRecordNormalized[];
-    },
-    appStateNoRrf(state:AppState):AppState{
-      return {
-        theme: state.theme,
-        colorWeak: state.colorWeak,
-        navbar: state.navbar,
-        menu: state.menu,
-        topMenu: state.topMenu,
-        hideMenu: state.hideMenu,
-        menuCollapse: state.menuCollapse,
-        footer: state.footer,
-        themeColor: state.themeColor,
-        menuWidth: state.menuWidth,
-        globalSettings: state.globalSettings,
-        device: state.device,
-        tabBar: state.tabBar,
-        modelFullscreen: state.modelFullscreen,
-        recentlyRouter: state.recentlyRouter,
-        quickRouter: state.quickRouter,
-        lastPrintDevice: state.lastPrintDevice, // id
-        versionRead: state.versionRead, // 版本号不对或者为空即没阅读最新版本说明
-      }
     }
   },
 
@@ -85,7 +63,7 @@ const useAppStore = defineStore('app', {
     getRecentlyRouter(): RecentlyRouter[] {
       const routerPlus = useRouterPlus();
       const recentlyList = this.appRecentlyRouter;
-      recentlyList.sort((a, b) => a.visits - b.visits);
+      recentlyList.sort((a, b) => b.visits - a.visits);
       const canGoRecentlyList = [];
       for (let i = 0; i < recentlyList.length; i += 1) {
         if (routerPlus.isCanGo(recentlyList[i])) {
@@ -148,14 +126,40 @@ const useAppStore = defineStore('app', {
       this.updateSettings({ lastPrintDevice: id });
     },
     updateConfigServer() {
+
       // 我觉得异步更新即可
       if (!isLogin){
         console.log("未登录，同步配置失败");
         return;
       }
-      const datas = this.appStateNoRrf;
-      const text = JSON.stringify(datas);
-      setUserFrontConfig({ req: text });
+      try {
+        const duixiang:AppState = {
+          colorWeak: this.colorWeak,
+          device: this.device,
+          footer: this.footer,
+          globalSettings: this.globalSettings,
+          hideMenu: this.hideMenu,
+          lastPrintDevice: this.lastPrintDevice,
+          menu: this.menu,
+          menuCollapse: this.menuCollapse,
+          menuWidth: this.menuWidth,
+          modelFullscreen: this.modelFullscreen,
+          navbar: this.navbar,
+          quickRouter: this.quickRouter,
+          recentlyRouter: this.recentlyRouter,
+          tabBar: this.tabBar,
+          theme: this.theme,
+          themeColor:  this.themeColor,
+          topMenu:  this.topMenu,
+          versionRead: this.versionRead
+        }
+        const text = JSON.stringify(duixiang);
+        setUserFrontConfig({ req: text });
+      }catch (e) {
+        console.log(e)
+        console.log("记录失败");
+      }
+
     },
   },
 });
