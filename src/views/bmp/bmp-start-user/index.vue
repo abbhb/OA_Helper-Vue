@@ -242,4 +242,67 @@
   .group-title {
     font-size: 24px;
   }
+
+
+
+  /* 空列表样式 */
+  .el-empty {
+    margin: 20px auto;
+  }
+
+  /* 分组标题样式 */
+  .group-title {
+    font-size: 1.25em; /* 增大字体大小 */
+    color: #333; /* 深色文字 */
+    padding: 10px 0;
+    border-bottom: 2px solid #ddd; /* 分隔线 */
+    margin-bottom: 15px;
+  }
+
+  /* 分组内容样式 */
+  .group-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* 调整间隔 */
+    padding-top: 10px;
+  }
+
+  /* 图标选择器样式 */
+  .icon-selector {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon-item {
+    width: calc(25% - 20px); /* 四列布局，减去间隔 */
+    padding: 15px;
+    background-color: #fff; /* 白色背景 */
+    border-radius: 8px; /* 圆角 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 平滑过渡 */
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .icon-item:hover {
+    transform: translateY(-5px); /* 鼠标悬浮时上移 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 阴影加深 */
+  }
+
+  /* 图标样式 */
+  .SelectIcon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 8px;
+  }
+
+  /* 图标名称样式 */
+  .icon-item > div {
+    font-size: 0.9em; /* 适当减小字体大小 */
+    color: #666; /* 较深的辅助文字颜色 */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 </style>
