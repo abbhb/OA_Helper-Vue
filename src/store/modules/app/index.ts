@@ -35,6 +35,28 @@ const useAppStore = defineStore('app', {
     appquickRouter(state: AppState): RouteRecordNormalized[] {
       return state.quickRouter as unknown as RouteRecordNormalized[];
     },
+    appStateNoRrf(state:AppState):AppState{
+      return {
+        theme: state.theme,
+        colorWeak: state.colorWeak,
+        navbar: state.navbar,
+        menu: state.menu,
+        topMenu: state.topMenu,
+        hideMenu: state.hideMenu,
+        menuCollapse: state.menuCollapse,
+        footer: state.footer,
+        themeColor: state.themeColor,
+        menuWidth: state.menuWidth,
+        globalSettings: state.globalSettings,
+        device: state.device,
+        tabBar: state.tabBar,
+        modelFullscreen: state.modelFullscreen,
+        recentlyRouter: state.recentlyRouter,
+        quickRouter: state.quickRouter,
+        lastPrintDevice: state.lastPrintDevice, // id
+        versionRead: state.versionRead, // 版本号不对或者为空即没阅读最新版本说明
+      }
+    }
   },
 
   actions: {
@@ -125,13 +147,15 @@ const useAppStore = defineStore('app', {
     changePrintDevice(id: string) {
       this.updateSettings({ lastPrintDevice: id });
     },
-    async updateConfigServer() {
+    updateConfigServer() {
+      // 我觉得异步更新即可
       if (!isLogin){
         console.log("未登录，同步配置失败");
         return;
       }
-      const text = JSON.stringify(this.$state, null, 2);
-      await setUserFrontConfig({ req: text });
+      const datas = this.appStateNoRrf;
+      const text = JSON.stringify(datas);
+      setUserFrontConfig({ req: text });
     },
   },
 });

@@ -86,7 +86,7 @@ const open = async (deploymentId: string | undefined) => {
         modeler.setIcon(data?.icon);
       }
       if (data?.nodeColumns) {
-        modeler.setNodeColumns(data.get('nodeColumns'));
+        modeler.setNodeColumns(data?.nodeColumns);
       }
       data?.formJsonList.forEach((formJson) => {
         modeler.setFormJson(formJson);

@@ -12,6 +12,9 @@
         <span v-if="detail.type === 'ready'">已有数据库表</span>
         <span v-if="detail.type === 'create'">创建数据库表</span>
       </el-descriptions-item>
+      <el-descriptions-item label="提示">
+        <el-tag  v-if="detail.type === 'ready'">此功能挺鸡肋，使用方式就是创建好一张表，然后绑定，在后续表单配置可以绑定某项到表的字段，主键始终都是流程id，就是换个地方存，正常不存在了流程变量表里嘛，目前没发现啥用途！</el-tag>
+      </el-descriptions-item>
       <el-descriptions-item label="表名">
         <span>{{ detail.tableName }}</span>
       </el-descriptions-item>

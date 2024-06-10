@@ -36,8 +36,8 @@ export default defineComponent({
         // Open external link
         if (regexUrl.test(item.path)) {
           if (item.meta.frame) {
-            openWindow(item.path);
             selectedKey.value = [item.name as string];
+            openWindow(item.path);
             return;
           }
           Message.error('越权！该菜单禁止外链');
@@ -45,13 +45,15 @@ export default defineComponent({
         // Eliminate external link side effects
         const {show, activeMenu} = item.meta as RouteMeta;
         if (route.name === item.name && show && !activeMenu) {
-          selectedKey.value = [item.name as string];
           return;
         }
+
         // Trigger router change
         router.push({
           name: item.name,
         });
+        selectedKey.value = [item.name as string];
+
       };
       const findMenuOpenKeys = (target: string) => {
         const result: string[] = [];
