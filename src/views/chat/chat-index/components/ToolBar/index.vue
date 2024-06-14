@@ -20,7 +20,7 @@
         </a-badge>
       </router-link>
       <!-- 联系人 -->
-      <router-link exact-active-class="tool-icon-active" to="/chat/contact">
+      <router-link exact-active-class="tool-icon-active" to="/chat/contacts">
         <a-badge
           :count="unReadMark.newFriendUnreadCount"
           :dot="unReadMark.newFriendUnreadCount === 0"

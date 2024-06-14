@@ -7,11 +7,14 @@ import {
   ChatUserItem,
   ContactItem,
   EmojiItem,
+  GroupDetailReq,
   ListResponse,
   MarkMsgReq,
   MessageReq,
   MessageType,
-  RequestFriendItem, SessionItem,
+  MsgReadUnReadCountType,
+  RequestFriendItem,
+  SessionItem,
 } from '@/types/chat';
 
 /** 获取群成员列表 */
@@ -53,10 +56,12 @@ export function getMsgList(params?: any) {
 
 /** 会话详情 */
 export function sessionDetail(params: { id: string }) {
-  return axios.get<SessionItem>(
-    '/api/chat/public/contact/detail',
-      { params }
-  );
+  return axios.get<SessionItem>('/api/chat/public/contact/detail', { params });
+}
+
+/** 群组详情 */
+export function groupDetail(params: { id: string }) {
+  return axios.get<GroupDetailReq>('/api/room/public/group', { params });
 }
 
 /** 发送消息 */
@@ -64,9 +69,53 @@ export function sendMsg(data?: MessageReq) {
   return axios.post<MessageType>('/api/chat/msg', data);
 }
 
+export function createGroup(params: { uidList: string[] }) {
+  return axios.post<{ id: string }>('/api/room/group', params);
+}
+export function inviteGroupMember(params: {
+  roomId: string;
+  uidList: string[];
+}) {
+  return axios.post<void>('/api/room/group/member', params);
+}
+
 /** 标记消息，点赞等 */
 export function markMsg(data?: MarkMsgReq) {
   return axios.put<void>('/api/chat/msg/mark', data);
+}
+
+export function addAdmin({
+  roomId,
+  uidList,
+}: {
+  roomId: string;
+  uidList: string[];
+}) {
+  return axios.put<boolean>('/api/room/group/admin', {
+    roomId,
+    uidList,
+  });
+}
+
+export function revokeAdmin({
+  roomId,
+  uidList,
+}: {
+  roomId: string;
+  uidList: string[];
+}) {
+  return axios.delete<boolean>('/api/room/group/admin', {
+    params: {
+      roomId,
+      uidList,
+    },
+  });
+}
+
+export function removeGroupMember(params: { roomId: string; uid: string }) {
+  return axios.delete<boolean>('/api/room/group/member', {
+    params
+  });
 }
 
 /** 撤回消息 */
@@ -79,8 +128,6 @@ export function getSessionList(params?: any) {
     params,
   });
 }
-
-
 
 interface uploadT {
   downloadUrl: string;
@@ -112,21 +159,39 @@ export function deleteEmoji(params: { id: string }) {
   });
 }
 
-
-
 // -------------- 好友相关 ---------------
 export function getContactList(params?: any) {
-  return axios.get<ListResponse<ContactItem>>('/api/user/friend/page', {
+  return axios.get<ListResponse<ContactItem>>('/api/chat-friend/page', {
     params,
   });
 }
 
 export function requestFriendList(params?: any) {
   return axios.get<ListResponse<RequestFriendItem>>(
-    '/api/user/friend/apply/page',
+    '/api/chat-friend/apply/page',
     {
       params,
     }
+  );
+}
+
+export function sessionDetailWithFriends(params: { uid: string }) {
+  return axios.get<SessionItem>('/api/chat/public/contact/detail/friend', {
+    params,
+  });
+}
+export function getMsgReadCount(msgIds: any) {
+  return axios.post<MsgReadUnReadCountType[]>('/api/chat/msg/read', {
+    msgIds: msgIds,
+  });
+}
+interface ChatMessageReadResp {
+  uid: string;
+}
+export function getMsgReadList(params: any) {
+  return axios.get<ListResponse<ChatMessageReadResp>>(
+    '/api/chat/msg/read/page',
+    params
   );
 }
 
@@ -135,12 +200,17 @@ export function sendAddFriendRequest(params: {
   targetUid: string;
   msg: string;
 }) {
-  return axios.post<EmojiItem[]>('/api/user/friend/apply', params);
+  return axios.post<EmojiItem[]>('/api/chat-friend/apply', params);
 }
 
 /** 同意好友申请 */
 export function applyFriendRequest(params: { applyId: string }) {
-  return axios.put<void>('/api/user/friend/apply', params);
+  return axios.put<void>('/api/chat-friend/apply', params);
+}
+
+/** 消息阅读上报 */
+export function markMsgRead(data: any) {
+  return axios.put<MsgReadUnReadCountType>('/api/chat/msg/read', data);
 }
 
 /** 删除好友 */

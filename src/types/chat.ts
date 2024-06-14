@@ -1,4 +1,10 @@
-import {ChatActEnum, ChatMarkEnum, ChatMsgEnum, ChatOnlineEnum, RoomTypeEnum,} from '@/types/enums/chat';
+import {
+  ChatActEnum,
+  ChatMarkEnum,
+  ChatMsgEnum,
+  ChatOnlineEnum,
+  RoomTypeEnum,
+} from '@/types/enums/chat';
 
 export type ChatUserItem = {
   /** 在线状态 */
@@ -130,6 +136,20 @@ export type MarkItemType = {
   /** 动作类型 1确认 2取消 */
   actType: ChatActEnum;
 };
+
+
+export type GroupDetailReq = {
+  /** 群头像 */
+  avatar: string
+  /** 群名称 */
+  groupName: string
+  /** 在线人数 */
+  onlineNum: number
+  /** 成员角色 1群主 2管理员 3普通成员 4踢出群聊 */
+  role: number
+  /** 房间id */
+  roomId: string
+}
 
 export type RevokedMsgType = {
   /** 消息ID */
@@ -268,7 +288,7 @@ export type MsgType = {
   sendTime: number;
   /** 消息互动信息 */
   messageMark: MessageMarkType;
-  roomId:string;
+  roomId: string;
 };
 
 /**

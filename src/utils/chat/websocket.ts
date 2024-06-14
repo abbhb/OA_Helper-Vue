@@ -112,9 +112,8 @@ class WS {
         }
         // 点赞、倒赞消息通知
         case WsResponseMessageType.WSMsgMarkItem: {
-          const data = params.data as { markList: MarkItemType[] };
-          console.log(data);
-          chatStore.updateMarkCount(data.markList);
+          const data = params.data as { markList: MarkItemType[] }
+          chatStore.updateMarkCount(data.markList)
           break;
         }
         // 消息撤回通知

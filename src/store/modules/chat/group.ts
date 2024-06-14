@@ -1,12 +1,14 @@
-import {reactive, ref} from 'vue';
-import {CacheUserReq, UserItem} from '@/types/chat';
+import { computed, reactive, ref } from 'vue';
+import { CacheUserReq, GroupDetailReq, UserItem } from '@/types/chat';
 import * as apis from '@/api/chat';
-import {ChatOnlineEnum} from '@/types/enums/chat';
-import {defineStore} from 'pinia';
-import {useCachedStore} from '@/store/modules/chat/cached';
-import {pageSize} from '@/store/modules/chat/chat';
-import {cloneDeep} from 'lodash';
-import {uniqueUserList} from '@/utils/chat/unique';
+import { ChatOnlineEnum, RoleEnum } from '@/types/enums/chat';
+import { defineStore } from 'pinia';
+import { useCachedStore } from '@/store/modules/chat/cached';
+import { pageSize, useChatStore } from '@/store/modules/chat/chat';
+import { cloneDeep } from 'lodash';
+import { uniqueUserList } from '@/utils/chat/unique';
+import { useGlobalStore } from '@/store/modules/chat/global';
+import { useUserStore } from '@/store';
 
 const sorAction = (pre: UserItem, next: UserItem) => {
   if (
@@ -38,11 +40,74 @@ const sorAction = (pre: UserItem, next: UserItem) => {
 
 export const useGroupStore = defineStore('group', () => {
   const cachedStore = useCachedStore();
+  const globalStore = useGlobalStore();
+  const userStore = useUserStore();
+  const chatStore = useChatStore();
   // 消息列表
   const userList = ref([]);
-  const userListOptions = reactive({ isLast: false, loading: true, cursor: '' })
+  const userListOptions = reactive({
+    isLast: false,
+    loading: true,
+    cursor: '',
+  });
 
-  const countInfo = reactive({ onlineNum: 0, totalNum: 0 });
+  const currentRoomId = computed(() => globalStore.currentSession.roomId);
+  /**
+   * 获取当前群主ID
+   */
+  const currentLordId = computed(() => {
+    const list = userList.value.filter(
+      (member) => member.roleId === RoleEnum.LORD
+    );
+    if (list.length) {
+      return list[0]?.id;
+    }
+    return -99;
+  });
+  /**
+   * 获取当前管理员ID列表
+   * //todo:要实现得改获取用户信息的接口，继承原来的类添加个chatRole角色返回得了
+   */
+  const adminUidList = computed(() => {
+    return userList.value
+      .filter((member) => member.roleId === RoleEnum.ADMIN)
+      .map((member) => member.uid);
+  });
+  /**
+   * 获取管理员基本信息列表
+   */
+  const adminList = computed(() => {
+    return cachedStore.filterUsersByUidList(adminUidList.value);
+  });
+  /**
+   * 获取管理员基本信息列表
+   */
+  const memberList = computed(() => {
+    const memberInfoList = cachedStore.filterUsersByUidList(
+      userList.value.map((item) => item.uid)
+    );
+    return memberInfoList.map((member) => {
+      if (adminUidList.value.includes(member.uid)) {
+        return {
+          ...member,
+          roleId: RoleEnum.ADMIN,
+        };
+      } else if (member.uid === currentLordId.value) {
+        return {
+          ...member,
+          roleId: RoleEnum.LORD,
+        };
+      }
+      return member;
+    });
+  });
+  const countInfo = ref<GroupDetailReq>({
+    avatar: '',
+    groupName: '',
+    onlineNum: 0,
+    role: 0,
+    roomId: currentRoomId.value,
+  });
 
   // 移动端控制显隐
   const showGroupList = ref(false);
@@ -50,31 +115,33 @@ export const useGroupStore = defineStore('group', () => {
   // 获取群成员
   const getGroupUserList = async (refresh = false) => {
     const { data } = await apis.getGroupList({
-      params: { pageSize, cursor: refresh ? undefined : userListOptions.cursor, },
+      params: {
+        pageSize,
+        cursor: refresh ? undefined : userListOptions.cursor,
+        roomId: currentRoomId.value,
+      },
     });
     if (!data) return;
     const tempNew = cloneDeep(
-      uniqueUserList([...data.list, ...userList.value])
+      uniqueUserList(refresh ? data.list : [...data.list, ...userList.value])
     );
     tempNew.sort(sorAction);
     userList.value = tempNew;
-    userListOptions.cursor = data.cursor
-    userListOptions.isLast = data.isLast
-    userListOptions.loading = false
-
+    userListOptions.cursor = data.cursor;
+    userListOptions.isLast = data.isLast;
+    userListOptions.loading = false;
 
     /** 收集需要请求用户详情的 uid */
-    const uidCollectYet: Set<string> = new Set() // 去重用
-    data.list?.forEach((user) => uidCollectYet.add(user.uid))
+    const uidCollectYet: Set<string> = new Set(); // 去重用
+    data.list?.forEach((user) => uidCollectYet.add(user.uid));
     // 获取用户信息缓存
-    cachedStore.getBatchUserInfo([...uidCollectYet])
+    await cachedStore.getBatchUserInfo([...uidCollectYet]);
   };
 
   // 获取群成员数量统计
   const getCountStatistic = async () => {
-    const { data } = await apis.getMemberStatistic();
-    countInfo.onlineNum = data.onlineNum;
-    countInfo.totalNum = data.totalNum;
+    const { data } = await apis.groupDetail({ id: currentRoomId.value });
+    countInfo.value = data;
   };
 
   // 默认执行一次
@@ -106,15 +173,71 @@ export const useGroupStore = defineStore('group', () => {
     userList.value = userList.value.filter((item) => item.uid !== uid);
   };
 
+  /**
+   * 添加管理员
+   * @param uidList
+   */
+  const addAdmin = async (uidList: string[]) => {
+    await apis.addAdmin({ roomId: currentRoomId.value, uidList });
+
+    // 更新群成员列表
+    userList.value.forEach((user) => {
+      if (uidList.includes(user.uid)) {
+        user.roleId = RoleEnum.ADMIN;
+      }
+    });
+  };
+
+  /**
+   * 撤销管理员
+   * @param uidList
+   */
+  const revokeAdmin = async (uidList: string[]) => {
+    await apis.revokeAdmin({ roomId: currentRoomId.value, uidList });
+
+    // 更新群成员列表
+    userList.value.forEach((user) => {
+      if (uidList.includes(user.uid)) {
+        user.roleId = RoleEnum.NORMAL;
+      }
+    });
+  };
+
+  const exitGroup = async () => {
+    // 退出群聊
+    // await apis.exitGroup({ roomId: currentRoomId.value }).send()
+
+    // 更新群成员列表
+    const index = userList.value.findIndex(
+      (user) => user.uid === userStore.userInfo.id
+    );
+    userList.value.splice(index, 1);
+
+    // 更新会话列表
+    chatStore.removeContact(currentRoomId.value);
+
+    // 切换为第一个会话
+    globalStore.currentSession.roomId = chatStore.sessionList[0].roomId;
+  };
+
   return {
     userList,
+    userListOptions,
     loadMore,
     getGroupUserList,
+    getCountStatistic,
+    currentLordId,
     countInfo,
     batchUpdateUserStatus,
     showGroupList,
     filterUser,
+    adminUidList,
+    adminList,
+    memberList,
+    addAdmin,
+    revokeAdmin,
+    exitGroup,
   };
 });
 
-export default {useGroupStore}
+export default { useGroupStore };

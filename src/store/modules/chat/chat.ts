@@ -1,20 +1,25 @@
-import {computed, reactive, ref, watch} from 'vue';
-import {defineStore} from 'pinia';
-import {useCachedStore} from '@/store/modules/chat/cached';
-import {useUserStore} from '@/store';
-import {MarkItemType, MessageType, RevokedMsgType, SessionItem,} from '@/types/chat';
+import { computed, reactive, ref, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { useCachedStore } from '@/store/modules/chat/cached';
+import { useUserStore } from '@/store';
+import {
+  MarkItemType,
+  MessageType,
+  RevokedMsgType,
+  SessionItem,
+} from '@/types/chat';
 import * as Api from '@/api/chat';
-import {sessionDetail} from '@/api/chat';
-import {computedTimeBlock} from '@/utils/chat/computedTime';
+import { markMsgRead, sessionDetail } from '@/api/chat';
+import { computedTimeBlock } from '@/utils/chat/computedTime';
 import shakeTitle from '@/utils/chat/shakeTitle';
-import {ChatMarkEnum, ChatMsgEnum, RoomTypeEnum} from '@/types/enums/chat';
-import {notifyMe} from '@/utils/notify';
-import {useGlobalStore} from '@/store/modules/chat/global';
-import {useGroupStore} from '@/store/modules/chat/group';
-import {useContactStore} from '@/store/modules/chat/contacts';
-import {cloneDeep} from 'lodash';
+import { ChatMarkEnum, ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
+import { notifyMe } from '@/utils/notify';
+import { useGlobalStore } from '@/store/modules/chat/global';
+import { useGroupStore } from '@/store/modules/chat/group';
+import { useContactStore } from '@/store/modules/chat/contacts';
+import { cloneDeep } from 'lodash';
 import router from '@/router';
-import {pushNotifyByMessage} from '@/utils/chat/systemMessageNotify';
+import { pushNotifyByMessage } from '@/utils/chat/systemMessageNotify';
 
 export const pageSize = 20;
 // 标识是否第一次请求
@@ -157,10 +162,9 @@ export const useChatStore = defineStore('chat', () => {
 
       // 群组的时候去请求
       if (currentRoomType.value === RoomTypeEnum.Group) {
-        groupStore.getGroupUserList(true);
-        // todo：群组此处注释
-        // groupStore.getCountStatistic()
-        // cachedStore.getGroupAtUserBaseInfo()
+        groupStore.getGroupUserList(true)
+        groupStore.getCountStatistic()
+        cachedStore.getGroupAtUserBaseInfo()
       }
     }
 
@@ -200,7 +204,8 @@ export const useChatStore = defineStore('chat', () => {
     computedList.forEach((msg) => {
       const replyItem = msg.message.body?.reply;
       if (replyItem?.id) {
-        const messageIds = currentReplyMap.value?.get(replyItem.id) || [];
+        const messageIds =
+          currentReplyMap.value?.get(String(replyItem.id)) || [];
         messageIds.push(msg.message.id);
         currentReplyMap.value?.set(replyItem.id, messageIds);
 
@@ -355,6 +360,27 @@ export const useChatStore = defineStore('chat', () => {
       return;
     }
 
+    // 聊天记录计数
+    if (currentRoomId.value !== msg.message.roomId) {
+      console.log("计数")
+      const item = sessionList.find(
+        (item) => item.roomId === msg.message.roomId
+      );
+      if (item) {
+        console.log("计数成功")
+        item.unreadCount += 1;
+      }
+      // 如果新消息的 roomId 和 当前显示的 room 的 Id 一致，就更新已读
+    } else {
+      // 且当前路由在 聊天 内
+      if (
+        router.currentRoute.value?.path &&
+        router.currentRoute.value?.path === '/chat/chat'
+      ) {
+        markMsgRead({ roomId: currentRoomId.value });
+      }
+    }
+
     // 如果当前路由不是聊天，就开始计数
     if (
       router.currentRoute.value?.path &&
@@ -410,7 +436,9 @@ export const useChatStore = defineStore('chat', () => {
     markList.forEach((mark: MarkItemType) => {
       const { msgId, markType, markCount } = mark;
 
-      const msgItem = currentMessageMap.value?.get(msgId);
+      const msgItem = currentMessageMap.value?.get(String(msgId));
+      console.log(currentMessageMap.value);
+      console.log(msgId);
       if (msgItem) {
         if (markType === ChatMarkEnum.LIKE) {
           msgItem.message.messageMark.likeCount = markCount;
@@ -423,7 +451,7 @@ export const useChatStore = defineStore('chat', () => {
   // 更新消息撤回状态
   const updateRecallStatus = (data: RevokedMsgType) => {
     const { msgId } = data;
-    const message = currentMessageMap.value?.get(msgId);
+    const message = currentMessageMap.value?.get(String(msgId));
     if (message) {
       message.message.type = ChatMsgEnum.RECALL;
       if (typeof data.recallUid === 'string') {
@@ -438,9 +466,9 @@ export const useChatStore = defineStore('chat', () => {
       }
     }
     // 更新与这条撤回消息有关的消息
-    const messageList = currentReplyMap.value?.get(msgId);
+    const messageList = currentReplyMap.value?.get(String(msgId));
     messageList?.forEach((id) => {
-      const msg = currentMessageMap.value?.get(id);
+      const msg = currentMessageMap.value?.get(String(id));
       if (msg) {
         msg.message.body.reply.body = `原消息已被撤回`;
       }
@@ -456,6 +484,27 @@ export const useChatStore = defineStore('chat', () => {
     pushMsg(newMessage);
   };
 
+  // 标记已读数为 0
+  const markSessionRead = (roomId: string) => {
+    const session = sessionList.find((item) => item.roomId === roomId);
+    const unreadCount = session?.unreadCount || 0;
+    if (session) {
+      session.unreadCount = 0;
+    }
+    return unreadCount;
+  };
+
+  // 根据消息id获取消息体
+  const getMessage = (messageId: string) => {
+    return currentMessageMap.value?.get(String(messageId));
+  };
+
+  // 删除会话
+  const removeContact = (roomId: string) => {
+    const index = sessionList.findIndex((session) => session.roomId === roomId);
+    sessionList.splice(index, 1);
+  };
+
   return {
     getMsgIndex,
     chatMessageList,
@@ -464,19 +513,27 @@ export const useChatStore = defineStore('chat', () => {
     clearNewMsgCount,
     updateMarkCount,
     updateRecallStatus,
-    currentSessionInfo,
-    isGroup,
     updateMsg,
-    getSessionList,
     chatListToBottomAction,
     newMsgCount,
-    currentNewMsgCount,
-    currentMessageOptions,
     messageMap,
-    sessionOptions,
-    sessionList,
+    currentMessageMap,
+    currentMessageOptions,
+    currentReplyMap,
+    currentNewMsgCount,
     loadMore,
     currentMsgReply,
     filterUser,
+    sessionList,
+    sessionOptions,
+    getSessionList,
+    updateSession,
+    updateSessionLastActiveTime,
+    markSessionRead,
+    getSession,
+    isGroup,
+    currentSessionInfo,
+    getMessage,
+    removeContact,
   };
 });

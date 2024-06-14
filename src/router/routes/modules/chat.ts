@@ -1,5 +1,5 @@
-import {DEFAULT_LAYOUT} from '../base';
-import {AppRouteRecordRaw} from '../types';
+import { DEFAULT_LAYOUT } from '../base';
+import { AppRouteRecordRaw } from '../types';
 
 // @ts-ignore
 const Chat: AppRouteRecordRaw = {
@@ -12,33 +12,44 @@ const Chat: AppRouteRecordRaw = {
     roles: ['*'],
     icon: 'icon-dashboard',
     order: 0,
-    canGo:false
-
+    canGo: false,
   },
-  children:[
+  children: [
     {
       path: 'chat',
       name: 'Chat-Index',
       component: () => import('@/views/chat/chat-index/index.vue'),
       meta: {
-          locale: 'menu.Message',
+        locale: 'menu.Message',
         requiresAuth: true,
         roles: ['*'],
-        canGo:true
+        canGo: true,
       },
     },
-      {
-          path: 'notice-list',
-          name: 'Notice-List',
-          component: () => import('@/views/content-promotion/notice-list/index.vue'),
-          meta: {
-              locale: 'menu.notice-list',
-              requiresAuth: true,
-              roles: ['*'],
-              canGo: true
+    {
+      path: 'contacts',
+      name: 'Chat-Contacts',
+      component: () => import('@/views/chat/contacts/index.vue'),
+      meta: {
+        locale: 'menu.Contacts',
+        requiresAuth: true,
+        roles: ['*'],
+        canGo: true,
       },
     },
-  ]
+    {
+      path: 'notice-list',
+      name: 'Notice-List',
+      component: () =>
+        import('@/views/content-promotion/notice-list/index.vue'),
+      meta: {
+        locale: 'menu.notice-list',
+        requiresAuth: true,
+        roles: ['*'],
+        canGo: true,
+      },
+    },
+  ],
 };
 
 export default Chat;

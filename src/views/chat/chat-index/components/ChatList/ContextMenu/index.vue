@@ -16,8 +16,8 @@
   import { copyToClip, handleCopyImg } from '@/utils/chat/copy';
   import { Message } from '@arco-design/web-vue';
   import { urlToFile } from '@/utils/chat';
-  import {inject} from "vue/dist/vue";
-  import eventBus from "@/utils/eventBus";
+  import { inject } from 'vue/dist/vue';
+  import eventBus from '@/utils/eventBus';
 
   const props = defineProps<{
     // 消息体
@@ -26,7 +26,6 @@
     options?: MenuOptions;
   }>();
 
-
   const emojiStore = useEmojiStore();
   const { uploadEmoji } = useEmojiUpload();
   const userInfo = useUserStore()?.userInfo;
@@ -34,6 +33,15 @@
 
   // FIXME 未登录到登录这些监听没有变化。需处理
   const isCurrentUser = computed(() => props.msg?.fromUser.uid === userInfo.id);
+  const isAdmin = computed(
+    () =>
+      userInfo?.roles.find((el) => {
+        if (String(el.id) === '10013' || String(el.id) === '1') {
+          return el;
+        }
+      }) !== null
+  );
+
   // 撤回
   const onRecall = async () => {
     const { id, roomId } = props.msg.message;
@@ -61,10 +69,12 @@
   const onReplyMsg = () => {
     if (!props.msg) return;
     chatStore.currentMsgReply = props.msg;
-    eventBus.emit('onSelectPerson', { uid:props.msg.fromUser.uid, ignoreCheck:true });
+    eventBus.emit('onSelectPerson', {
+      uid: props.msg.fromUser.uid,
+      ignoreCheck: true,
+    });
     eventBus.emit('focusMsgInput');
   };
-
 
   // 下载
   const download = () => {
@@ -116,10 +126,7 @@
       ...props.options,
     }"
   >
-    <ContextMenuItem
-      label="回复"
-      @click="onReplyMsg"
-    >
+    <ContextMenuItem label="回复" @click="onReplyMsg">
       <template #icon>
         <icon-reply :size="13" />
       </template>
@@ -151,7 +158,7 @@
       </template>
     </ContextMenuItem>
     <ContextMenuItem
-      v-if="isCurrentUser && !msg.loading"
+      v-if="(isCurrentUser || isAdmin) && !msg.loading"
       label="撤回消息"
       @click="onRecall"
     >

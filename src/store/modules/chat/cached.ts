@@ -5,7 +5,7 @@ import { CacheUserItem, CacheUserReq } from '@/types/chat';
 import * as Api from '@/api/chat';
 import { useGlobalStore } from '@/store/modules/chat/global';
 
-type BaseUserItem = Pick<CacheUserItem, 'uid' | 'avatar' | 'name'>;
+export type BaseUserItem = Pick<CacheUserItem, 'uid' | 'avatar' | 'name'>;
 
 export const useCachedStore = defineStore(
   'cached',
@@ -48,7 +48,6 @@ export const useCachedStore = defineStore(
         );
       if (!result.length) return;
 
-
       const { data } = await Api.getUserInfoBatch(result);
       data?.forEach((item) => {
         // 更新最后更新时间。
@@ -67,28 +66,53 @@ export const useCachedStore = defineStore(
       });
     };
 
-    /** 全量初始化用户基础信息 */
+    /** 房间内的所有群成员列表-@专用 */
     const initAllUserBaseInfo = async () => {
       if (localStorage.getItem('IS_INIT_USER_BASE') === null) {
-        await getAllUserBaseInfo();
+        // await getAllUserBaseInfo()
+        const { data } = await Api.getAllUserBaseInfo({
+          params: { roomId: currentRoomId.value },
+        });
+          // eslint-disable-next-line no-return-assign
+        data?.forEach((item) => (userCachedList[item.uid] = item));
         localStorage.setItem('IS_INIT_USER_BASE', 'true');
       }
+    };
+
+    const getGroupAtUserBaseInfo = async () => {
+      if (currentRoomId.value === '1') return;
+      const { data } = await Api.getAllUserBaseInfo({
+        params: { roomId: currentRoomId.value },
+      });
+      currentAtUsersList.value = data;
     };
 
     // 根据用户名关键字过滤用户，
     // FIXME 是否需要过滤自己
     const filterUsers = (searchKey: string) => {
-      return Object.values(userCachedList).filter((item) =>
+      return currentAtUsersList.value?.filter((item) =>
         item.name?.startsWith(searchKey)
+      );
+    };
+
+    /**
+     * 通过用户ID列表获取用户基本信息
+     * @param uidList
+     */
+    const filterUsersByUidList = (uidList: number[]) => {
+      return currentAtUsersList.value.filter((user) =>
+        uidList.includes(user.uid)
       );
     };
 
     return {
       userCachedList,
-      currentAtUsersList,
       getBatchUserInfo,
       initAllUserBaseInfo,
       filterUsers,
+      getGroupAtUserBaseInfo,
+      currentAtUsersList,
+      filterUsersByUidList,
     };
   },
   { persist: true }

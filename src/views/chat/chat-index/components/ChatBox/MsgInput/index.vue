@@ -1,25 +1,34 @@
 <script setup lang="ts">
-// 艾特功能参考自 https://github.com/MrHGJ/at-mentions
-import {reactive, ref, type StyleValue, toRefs, watch, watchEffect,} from 'vue';
-import {useCachedStore} from '@/store/modules/chat/cached';
-import {CacheUserItem} from '@/types/chat';
-// eslint-disable-next-line import/extensions
-import VirtualList from '@/views/chat/chat-index/components/VirtualList/index.tsx';
-import eventBus from "@/utils/eventBus";
-import type {IMention, INode} from './types';
-import {NodeType} from './types';
-import {
-  getEditorRange,
-  getSelectionCoords,
-  insertInputText,
-  transformMentionDataToNodeList,
-  transformNodeListToMentionData,
-} from './utils';
-import MentionItem from './item.vue';
-import PasteImageDialog from '../PasteImageDialog/index.vue';
+  // 艾特功能参考自 https://github.com/MrHGJ/at-mentions
+  import {
+    computed,
+    reactive,
+    ref,
+    type StyleValue,
+    toRefs,
+    watch,
+    watchEffect,
+  } from 'vue';
+  import { useCachedStore } from '@/store/modules/chat/cached';
+  import { CacheUserItem } from '@/types/chat';
+  // eslint-disable-next-line import/extensions
+  import VirtualList from '@/views/chat/chat-index/components/VirtualList/index.tsx';
+  import eventBus from '@/utils/eventBus';
+  import { useUserStore } from '@/store';
+  import type { IMention, INode } from './types';
+  import { NodeType } from './types';
+  import {
+    getEditorRange,
+    getSelectionCoords,
+    insertInputText,
+    transformMentionDataToNodeList,
+    transformNodeListToMentionData,
+  } from './utils';
+  import MentionItem from './item.vue';
+  import PasteImageDialog from '../PasteImageDialog/index.vue';
 
-// 关闭透传 attrs 到组件根节点，传递到子节点  v-bind="$attrs"
-// eslint-disable-next-line no-undef
+  // 关闭透传 attrs 到组件根节点，传递到子节点  v-bind="$attrs"
+  // eslint-disable-next-line no-undef
   defineOptions({ inheritAttrs: false });
 
   interface Props {
@@ -72,7 +81,16 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
   const editorRange = ref<{ range: Range; selection: Selection } | null>(null);
   // 记录input文本内容
   const inputStr = ref('');
+  const userInfo = useUserStore()?.userInfo;
 
+  const isAdmin = computed(
+    () =>
+      userInfo?.roles.find((el) => {
+        if (String(el.id) === '10013' || String(el.id) === '1') {
+          return el;
+        }
+      }) !== null
+  );
   inputStr.value = value.value;
 
   // 根据传入的数据初始化editor内容显示
@@ -131,9 +149,23 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
   watch(
     searchKey,
     () => {
-      personList.value = cachedStore.filterUsers(
-        searchKey.value
-      ) as CacheUserItem[];
+      const daasd = cachedStore.filterUsers(searchKey.value) as CacheUserItem[];
+      const sad = [] as CacheUserItem[];
+      if (isAdmin.value) {
+        sad.push({
+          uid: '0',
+          name: '全体成员',
+          lastModifyTime: 0,
+          itemIds: [],
+          wearingItemId: '',
+          locPlace: '',
+          avatar: '',
+          lastOptTime: '',
+        });
+      }
+
+      sad.push(...daasd);
+      personList.value = sad;
     }
     // { immediate: true },
   );
@@ -529,16 +561,29 @@ import PasteImageDialog from '../PasteImageDialog/index.vue';
     return false;
   };
 
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSelectPerson = (uid: number, ignore = false) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onSelectPerson = (uid: string, ignore = false) => {
     if (!uid) return;
-    eventBus.emit('focusMsgInput')
+    eventBus.emit('focusMsgInput');
     setTimeout(() => {
-      const userItem = cachedStore.userCachedList[uid]
+      if (uid === '0') {
+        const userItem: CacheUserItem = {
+          avatar: '',
+          itemIds: [],
+          lastModifyTime: 0,
+          lastOptTime: '',
+          locPlace: '',
+          wearingItemId: '',
+          uid: '0',
+          name: '全体成员',
+        };
+        userItem && selectPerson?.(userItem as CacheUserItem, ignore);
+        return;
+      }
+      const userItem = cachedStore.userCachedList[uid];
       // eslint-disable-next-line no-unused-expressions
-      userItem && selectPerson?.(userItem as CacheUserItem, ignore)
-    }, 10)
+      userItem && selectPerson?.(userItem as CacheUserItem, ignore);
+    }, 10);
   };
 
   // 暴露 ref 属性

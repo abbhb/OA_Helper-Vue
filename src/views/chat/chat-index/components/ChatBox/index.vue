@@ -1,11 +1,14 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
+  import { RoomTypeEnum } from '@/types/enums/chat';
+  import { useGlobalStore } from '@/store/modules/chat/global';
   import UserList from '../UserList/index.vue';
   import ChatList from '../ChatList/index.vue';
   import SendBar from './SendBar/index.vue';
 
   const isSelect = ref(false);
-
+  const globalStore = useGlobalStore();
+  const currentSession = computed(() => globalStore.currentSession);
 </script>
 
 <template>
@@ -13,14 +16,14 @@
     <div class="chat-wrapper">
       <template v-if="isSelect">
         <!--        此处可能出问题-->
-        <icon-reply color="var(--font-light)" :style="{ fontSize: '160px' }" />
+        <icon-reply :style="{ fontSize: '160px' }" />
       </template>
       <div v-else class="chat">
         <ChatList />
-        <SendBar  />
+        <SendBar />
       </div>
     </div>
-    <UserList />
+    <UserList v-show="currentSession.type === RoomTypeEnum.Group" />
   </div>
 </template>
 

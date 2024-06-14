@@ -1,4 +1,4 @@
-import {createApp} from 'vue';
+import { createApp } from 'vue';
 import '@/utils/chat/websocket';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
@@ -16,9 +16,9 @@ import ElementPlus from 'element-plus';
 //   app.mount('#app');
 // }
 // eslint-disable-next-line import/order
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import * as ElementPlusIcons from '@element-plus/icons-vue'
-import 'virtual:svg-icons-register'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
+import * as ElementPlusIcons from '@element-plus/icons-vue';
+import 'virtual:svg-icons-register';
 import formCreate from '@form-create/element-ui';
 import FcDesigner from '@form-create/designer';
 
@@ -35,7 +35,6 @@ import directive from './directive';
 import './mock';
 import 'highlight.js/styles/atom-one-dark.css'; // 样式
 
-
 // eslint-disable-next-line import/order
 import App from './App.vue';
 // Styles are imported via arco-plugin. See config/plugin/arcoStyleImport.ts in the directory for details
@@ -49,31 +48,31 @@ import 'element-plus/dist/index.css';
 // vfrom相关依赖引入---------------------------------------------
 // import "@/components/FormDesigner/styles/index.scss";
 // eslint-disable-next-line import/extensions
-import Draggable from "@/../lib/vuedraggable/dist/vuedraggable.umd.js";
-import {registerIcon} from "@/components/FormDesigner/utils/el-icons";
+import Draggable from '@/../lib/vuedraggable/dist/vuedraggable.umd.js';
+import { registerIcon } from '@/components/FormDesigner/utils/el-icons';
 
-import ContainerWidgets from "@/components/FormDesigner/form-widget/container-widget/index";
-import ContainerItems from "@/components/FormDesigner/form-render/container-item/index";
+import ContainerWidgets from '@/components/FormDesigner/form-widget/container-widget/index';
+import ContainerItems from '@/components/FormDesigner/form-render/container-item/index';
 
-import {addDirective} from "@/components/FormDesigner/utils/directive";
-import {installI18n} from "@/components/FormDesigner/utils/i18n";
-import {loadExtension} from "@/components/FormDesigner/extension/extension-loader";
+import { addDirective } from '@/components/FormDesigner/utils/directive';
+import { installI18n } from '@/components/FormDesigner/utils/i18n';
+import { loadExtension } from '@/components/FormDesigner/extension/extension-loader';
 // bpmn.js 相关-------------------------------------------------
 import '@/components/BpmnJs/styles/index.scss';
-import "element-plus/theme-chalk/display.css";
-import "element-plus/theme-chalk/index.css";
-import 'virtual:svg-icons-register'
+import 'element-plus/theme-chalk/display.css';
+import 'element-plus/theme-chalk/index.css';
+
 import './assets/style/global.less';
 
 const app = createApp(App);
 
 Object.keys(ElementPlusIcons).forEach((iconName) => {
   app.component(
-      iconName,
-      ElementPlusIcons[iconName as keyof typeof ElementPlusIcons]
+    iconName,
+    ElementPlusIcons[iconName as keyof typeof ElementPlusIcons]
   );
 });
-app.component("draggable", Draggable);
+app.component('Draggable', Draggable);
 registerIcon(app);
 addDirective(app);
 installI18n(app);
@@ -82,7 +81,7 @@ app.use(ContainerItems);
 loadExtension(app);
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
+  app.component(key, component);
 }
 app.use(ArcoVue, {});
 app.use(ArcoVueIcon);

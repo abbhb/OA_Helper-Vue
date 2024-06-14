@@ -105,7 +105,7 @@
       class="new-msgs-tips"
       @click="goToNewMessage"
     >
-      {{ chatStore.newMsgCount }} 条新消息
+      {{ currentNewMsgCount?.count }} 条新消息
       <icon-loading :size="10"></icon-loading>
     </span>
   </div>

@@ -9,6 +9,8 @@
   import { useGlobalStore } from '@/store/modules/chat/global';
   import { useGroupStore } from '@/store/modules/chat/group';
   import eventBus from '@/utils/eventBus';
+  import {RoleEnum} from "@/types/enums/chat";
+  import {removeGroupMember} from "@/api/chat";
 
   const props = defineProps<{
     // 消息体
@@ -19,12 +21,12 @@
 
   const appStore = useAppStore();
 
-  // const uid = toRef(props.uid)
+  const uid = toRef(props.uid)
   const userInfo = useUserStore()?.userInfo;
   const globalStore = useGlobalStore();
   const groupStore = useGroupStore();
-  const statistic = computed(() => groupStore.countInfo);
-  // const isMe = computed(() => userInfo?.id === uid.value)
+  const statistic = computed(() => groupStore.countInfo)
+  const isMe = computed(() => userInfo?.id === uid.value)
   const onAtUser = (uid: string, ignoreCheck: boolean) =>
     eventBus.emit('onSelectPerson', { uid, ignoreCheck });
 
@@ -36,13 +38,13 @@
     globalStore.addFriendModalInfo.show = true;
     globalStore.addFriendModalInfo.uid = props.uid;
   };
-  //
-  // // 移除群成员
-  // const onRemoveMember = async () => {
-  //   await removeGroupMember({ uid: props.uid, roomId: globalStore.currentSession.roomId }).send()
-  //   // 更新群成员列表
-  //   groupStore.getGroupUserList(true)
-  // }
+
+  // 移除群成员
+  const onRemoveMember = async () => {
+    await removeGroupMember({ uid: props.uid, roomId: globalStore.currentSession.roomId });
+    // 更新群成员列表
+    groupStore.getGroupUserList(true)
+  }
 </script>
 
 <template>
@@ -67,17 +69,16 @@
         <icon-user-add icon="tianjia" :size="13" />
       </template>
     </ContextMenuItem>
-    <!-- 群主和管理员才能踢人（踢的不是自己） -->
-    <!--    <ContextMenuItem-->
-    <!--      vLoginShow-->
-    <!--      v-if="[RoleEnum.LORD, RoleEnum.ADMIN].includes(statistic.role) && !isMe"-->
-    <!--      label="剔出群聊"-->
-    <!--      @click="onRemoveMember"-->
-    <!--    >-->
-    <!--      <template #icon>-->
-    <!--        <Icon icon="yichu" :size="13" />-->
-    <!--      </template>-->
-    <!--    </ContextMenuItem>-->
+        <ContextMenuItem
+          vLoginShow
+          v-if="[RoleEnum.LORD, RoleEnum.ADMIN].includes(statistic.role) && !isMe"
+          label="剔出群聊"
+          @click="onRemoveMember"
+        >
+          <template #icon>
+            <Icon icon="yichu" :size="13" />
+          </template>
+        </ContextMenuItem>
   </ContextMenu>
 </template>
 

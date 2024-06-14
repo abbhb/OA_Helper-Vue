@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { useChatStore } from '@/store/modules/chat/chat';
   import { ref } from 'vue';
+  import { useChatStore } from '@/store/modules/chat/chat';
+  import SettingBox from "@/views/chat/chat-index/components/ChatList/RoomName/components/SettingBox/SettingBox.vue";
 
   const chatStore = useChatStore();
   const isShowSetting = ref<boolean>(false);
@@ -17,26 +18,18 @@
       设置
     </span>
   </div>
+  <el-drawer v-model="isShowSetting" direction="rtl" append-to-body>
+    <template #header>
+      <h4 class="text-[#f5f5f5]">设置</h4>
+    </template>
+    <template #default>
+      <SettingBox />
+    </template>
+  </el-drawer>
 </template>
 
-<style scoped lang="less">
-.room-name {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 50px;
-  padding: 0 10px;
-  background: var(--background-mask);
-  border-radius: 8px 8px 0 0;
-
-  .setting {
-    font-size: 13px;
-    cursor: pointer;
-
-    &:hover {
-      color: var(--hover-primary);
-    }
+<style lang="scss" src="./styles.scss">
+  .el-drawer__header {
+    margin-bottom: 0 !important;
   }
-}
-
 </style>

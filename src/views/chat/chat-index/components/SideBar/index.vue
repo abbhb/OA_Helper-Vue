@@ -4,7 +4,7 @@
   import { useUserInfo } from '@/hooks/chat/useCached';
   import { formatTimestamp } from '@/utils/chat/computedTime';
   import AvatarImage from '@/components/image/AvatarImage.vue';
-  import {ChatMsgEnum, RoomTypeEnum} from '@/types/enums/chat';
+  import { ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
   import { IsAllUserEnum } from '@/types/chat';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import renderReplyContent from '@/utils/chat/renderReplyContent';
@@ -20,6 +20,7 @@
 
   // 选中的聊天对话
   const currentSession = computed(() => globalStore.currentSession);
+
   const sessionList = computed(() =>
     chatStore.sessionList.map((item) => {
       // 最后一条消息内容
@@ -41,7 +42,7 @@
       return {
         ...item,
         tag: item.hot_Flag === IsAllUserEnum.Yes ? '官方' : '',
-        lastMsg: LastUserMsg || item.text || '欢迎使用本Chat功能',
+        lastMsg: LastUserMsg || item.text || '欢迎使用EasyChat',
         lastMsgTime: formatTimestamp(item?.activeTime),
       };
     })
@@ -50,7 +51,7 @@
   const onSelectSelectSession = (roomId: string, roomType: RoomTypeEnum) => {
     globalStore.currentSession.roomId = roomId;
     globalStore.currentSession.type = roomType;
-    console.log("切换")
+    console.log('切换');
   };
 
   // 加载更多
@@ -64,10 +65,20 @@
     <div
       v-for="(item, index) in sessionList"
       :key="index"
-      :class="['chat-message-item ', { active: currentSession.roomId === item.roomId }]"
+      :class="[
+        'chat-message-item ',
+        { active: currentSession.roomId === item.roomId },
+      ]"
       @click="onSelectSelectSession(item.roomId, item.type)"
     >
-      <AvatarImage shape="circle" :size="38" :avatar="item.avatar" />
+      <el-badge
+        :value="item.unreadCount"
+        :max="999"
+        :hidden="item.unreadCount < 1"
+        class="item"
+      >
+        <AvatarImage shape="circle" :size="38" :avatar="item.avatar" />
+      </el-badge>
       <div class="message-info">
         <div style="white-space: nowrap">
           <span class="person">{{ item.name }}</span>

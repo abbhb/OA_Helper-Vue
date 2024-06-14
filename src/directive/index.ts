@@ -1,6 +1,7 @@
 import { App } from 'vue';
 import isFrends from '@/directive/isFrends';
 import highlight from '@/directive/highlight';
+import visible from "@/hooks/chat/visible";
 import roles from './roles';
 import permission from './permission';
 import isAuth from './isAuth';
@@ -12,5 +13,6 @@ export default {
     Vue.directive('isFrient', isFrends);
     Vue.directive('highlight', highlight);
     Vue.directive('permission', permission);
+    Vue.directive('visible', visible);
   },
 };
