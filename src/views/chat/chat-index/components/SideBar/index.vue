@@ -132,8 +132,8 @@
           margin-left: 4px;
           font-size: 12px;
           font-weight: bold;
-          color: var(--gold-1);
-          background-color: var(--color-bg-2);
+          color: #c59512;
+          background-color: #efe2bb;
           border-radius: 4px;
           transform: scale(0.8);
         }

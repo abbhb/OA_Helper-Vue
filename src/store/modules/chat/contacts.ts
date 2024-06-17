@@ -35,6 +35,8 @@ export const useContactStore = defineStore('contact', () => {
         isFresh || !contactsOptions.cursor ? undefined : contactsOptions.cursor,
     });
     contactsOptions.isLoading = false;
+    if (!data) return
+
     // eslint-disable-next-line no-unused-expressions
     isFresh
       ? contactsList.splice(0, contactsList.length, ...data.list)

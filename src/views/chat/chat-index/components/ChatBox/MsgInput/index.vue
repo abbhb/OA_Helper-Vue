@@ -63,7 +63,7 @@
 
   // eslint-disable-next-line vue/no-dupe-keys
   const { modelValue: value, mentions, maxLength, disabled } = toRefs(props);
-  const editorRef = ref<HTMLElement | null>();
+  const editorRef = ref<HTMLElement | null>(null);
   const scrollRef = ref();
   const cachedStore = useCachedStore();
 
@@ -557,7 +557,31 @@
     } else if (e.clipboardData && e.clipboardData.getData) {
       pastedText = e.clipboardData.getData('text/plain');
     }
-    document.execCommand('insertHTML', false, pastedText);
+    if (editorRef.value != null) {
+      const editor = editorRef.value;
+      if (editor && document.createRange && window.getSelection) {
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+
+          const textNode = document.createTextNode(String(pastedText));
+          range.insertNode(textNode);
+
+          // Move the cursor to the end of the inserted text
+          range.setStartAfter(textNode);
+          range.setEndAfter(textNode);
+
+          sel.removeAllRanges();
+          sel.addRange(range);
+
+          // Update the initialValue to keep the reactive data in sync
+          onInputText();
+        }
+      }
+    } else {
+      document.execCommand('insertHTML', false, String(pastedText));
+    }
     return false;
   };
 

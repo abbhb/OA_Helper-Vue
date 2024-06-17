@@ -105,10 +105,10 @@ export function revokeAdmin({
   uidList: string[];
 }) {
   return axios.delete<boolean>('/api/room/group/admin', {
-    params: {
+    data:{
       roomId,
       uidList,
-    },
+    }
   });
 }
 
@@ -156,6 +156,14 @@ export function getEmoji(params: { uid: string }) {
 export function deleteEmoji(params: { id: string }) {
   return axios.delete<EmojiItem[]>('/api/user/emoji/delete', {
     params,
+  });
+}
+
+export function exitGroup({ roomId }: { roomId: string }) {
+  return axios.delete<boolean>('/api/room/group/member/exit', {
+    params:{
+      roomId
+    }
   });
 }
 
@@ -215,7 +223,7 @@ export function markMsgRead(data: any) {
 
 /** 删除好友 */
 export function deleteFriend(params: { targetUid: string }) {
-  return axios.delete('/api/user/emoji/delete', {
-    params,
+  return axios.delete('/api/chat-friend', {
+    data:params,
   });
 }

@@ -64,10 +64,16 @@ axios.interceptors.response.use(
         router.push({ name: 'login' });
         return res;
       }
-      Message.error({
-        content: res.msg || 'Error',
-        duration: 5 * 1000,
-      });
+      if (
+          !response.config.url.startsWith('/api/room') &&
+          !response.config.url.startsWith('/api/chat')
+      ) {
+        Message.error({
+          content: res.msg || 'Error',
+          duration: 2 * 1000,
+        });
+      }
+
 
       return Promise.reject(new Error(res.msg || 'Error'));
     }
@@ -77,7 +83,7 @@ axios.interceptors.response.use(
     notifyMe('异常', error);
     Message.error({
       content: error.msg || 'Request Error',
-      duration: 5 * 1000,
+      duration:2 * 1000,
     });
     return Promise.reject(error);
   }

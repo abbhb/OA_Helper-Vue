@@ -1,4 +1,5 @@
 
 const empty = ''
 const chatEmojiSize = 30;
-export default { empty, chatEmojiSize };
+const chatgptUserInfo:{uid:string,name:string} = {uid:'10010',name:'chatgpt'}
+export default { empty, chatEmojiSize,chatgptUserInfo};

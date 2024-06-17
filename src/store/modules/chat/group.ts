@@ -60,7 +60,7 @@ export const useGroupStore = defineStore('group', () => {
       (member) => member.roleId === RoleEnum.LORD
     );
     if (list.length) {
-      return list[0]?.id;
+      return list[0]?.uid;
     }
     return -99;
   });
@@ -126,6 +126,8 @@ export const useGroupStore = defineStore('group', () => {
       uniqueUserList(refresh ? data.list : [...data.list, ...userList.value])
     );
     tempNew.sort(sorAction);
+    console.log('更新群成员');
+    console.log(tempNew);
     userList.value = tempNew;
     userListOptions.cursor = data.cursor;
     userListOptions.isLast = data.isLast;
@@ -205,16 +207,19 @@ export const useGroupStore = defineStore('group', () => {
 
   const exitGroup = async () => {
     // 退出群聊
-    // await apis.exitGroup({ roomId: currentRoomId.value }).send()
+    await apis.exitGroup({ roomId: currentRoomId.value });
+    try {
+      // 更新群成员列表
+      const index = userList.value.findIndex(
+        (user) => user.uid === userStore.userInfo.id
+      );
+      userList.value.splice(index, 1);
 
-    // 更新群成员列表
-    const index = userList.value.findIndex(
-      (user) => user.uid === userStore.userInfo.id
-    );
-    userList.value.splice(index, 1);
-
-    // 更新会话列表
-    chatStore.removeContact(currentRoomId.value);
+      // 更新会话列表
+      chatStore.removeContact(currentRoomId.value);
+    } catch (e) {
+      console.log(e);
+    }
 
     // 切换为第一个会话
     globalStore.currentSession.roomId = chatStore.sessionList[0].roomId;

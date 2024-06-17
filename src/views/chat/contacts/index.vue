@@ -21,7 +21,7 @@
   <main class="home chat">
     <div class="wrapper">
       <ToolBar />
-      <SideBar />
+      <SideBar v-show="false"/>
       <ContactList />
     </div>
     <CreateGroupModal/>

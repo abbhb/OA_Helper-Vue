@@ -9,6 +9,7 @@
   const isSelect = ref(false);
   const globalStore = useGlobalStore();
   const currentSession = computed(() => globalStore.currentSession);
+
 </script>
 
 <template>

@@ -6,12 +6,15 @@
   import { useGroupStore } from '@/store/modules/chat/group';
   import { judgeClient } from '@/utils/chat/detectDevice';
   import { createGroup, inviteGroupMember } from '@/api/chat';
+  import {useChatStore} from "@/store/modules/chat/chat";
   import SelectUser from './SelectUser.vue';
 
   const client = judgeClient();
 
   const globalStore = useGlobalStore();
   const groupStore = useGroupStore();
+  const chatStore = useChatStore();
+
   const selectUserRef = ref<string[]>([]);
 
   const loading = ref(false);
@@ -36,7 +39,9 @@
     } else {
       const { data } = await createGroup({ uidList: selectUserRef.value });
       ElMessage.success('群聊创建成功~');
-      globalStore.currentSession.roomId = data.id;
+      await chatStore.getSessionList(true);
+
+      globalStore.currentSession.roomId = String(data.id);
       globalStore.currentSession.type = RoomTypeEnum.Group;
     }
 

@@ -253,7 +253,7 @@ export const useChatStore = defineStore('chat', () => {
     sortAndUniqueSessionList();
 
     sessionList[0].unreadCount = 0;
-    if (!isFirstInit) {
+    if (!isFirstInit||isFresh) {
       isFirstInit = true;
       globalStore.currentSession.roomId = data.list[0].roomId;
       globalStore.currentSession.type = data.list[0].type;

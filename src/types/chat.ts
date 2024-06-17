@@ -91,6 +91,8 @@ export type UserItem = {
   lastOptTime: string;
   /** 用户名称 */
   name: string;
+  /** 角色ID */
+  roleId?: number
   /** uid */
   uid: string;
 };

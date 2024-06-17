@@ -73,7 +73,7 @@ export const useCachedStore = defineStore(
         const { data } = await Api.getAllUserBaseInfo({
           params: { roomId: currentRoomId.value },
         });
-          // eslint-disable-next-line no-return-assign
+        // eslint-disable-next-line no-return-assign
         data?.forEach((item) => (userCachedList[item.uid] = item));
         localStorage.setItem('IS_INIT_USER_BASE', 'true');
       }

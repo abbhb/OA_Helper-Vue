@@ -7,6 +7,7 @@
   import { useUserStore } from '@/store';
   //@ts-ignore
   import {MAX_ADMIN_COUNT} from "@/utils/chat/constant/group";
+  import AvatarImage from "@/components/image/AvatarImage.vue";
 
   const groupStore = useGroupStore();
   const userStore = useUserStore();
@@ -24,7 +25,8 @@
   });
 
   const isDisableSetAdmin = computed(() => {
-
+    console.log(groupStore.currentLordId)
+    console.log(userStore.userInfo.id)
     return (
       (!groupStore.adminUidList.includes(userStore.userInfo.id as string) &&
         groupStore.currentLordId !== (userStore.userInfo.id as string)) ||
@@ -87,11 +89,7 @@
         >
           <template #reference>
             <el-badge value="-">
-              <el-avatar :src="admin.avatar" size="small">
-                <el-icon :size="10">
-                  <Avatar />
-                </el-icon>
-              </el-avatar>
+              <AvatarImage :avatar="admin.avatar" :name="admin.name" />
             </el-badge>
           </template>
         </el-popconfirm>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { PropType } from 'vue';
-  import { ref } from 'vue';
+  import {computed, ref, toRef} from 'vue';
 
   import { UserItem } from '@/types/chat';
   import { useUserInfo } from '@/hooks/chat/useCached';
@@ -8,13 +8,11 @@
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import ContextMenu from '@/views/chat/chat-index/components/UserList/ContextMenu/index.vue';
   import { ChatOnlineEnum } from '@/types/enums/chat';
+  import {GROUP_ROLE_MAP} from "@/types/enums/group";
 
-  const props = defineProps({
-    user: {
-      type: Object as PropType<UserItem>,
-      required: true,
-    },
-  });
+
+  const props = defineProps<{ user: UserItem }>()
+  const propUser = toRef(props.user)
   const userInfo = useUserInfo(props.user?.uid);
   const isShowMenu = ref(false); // 是否显示菜单
   // 弹出定位
@@ -33,6 +31,12 @@
     menuOptions.value.y = y;
     isShowMenu.value = true;
   };
+  const computedRole = computed(() => {
+    if (props.user.roleId) {
+      return GROUP_ROLE_MAP[props.user.roleId]
+    }
+    return ''
+  })
 </script>
 
 <template>
@@ -47,9 +51,12 @@
       show-status
       :online="user.activeStatus === ChatOnlineEnum.ONLINE"
     />
-    <span style="margin-left: 5px">
-      {{ userInfo.name }}
-    </span>
+    <div class="user-name">
+      <div class="text">{{ userInfo.name }}</div>
+      <div v-if="computedRole" class="badge flex-center" :class="computedRole.class">
+        {{ computedRole.text }}
+      </div>
+    </div>
 
     <ContextMenu
       v-model:show="isShowMenu"
@@ -60,24 +67,56 @@
 </template>
 
 <style lang="less" scoped>
-  .user-list {
-    &-item {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      padding: 5px 2px;
-      cursor: default;
-      border-radius: 4px;
+.user-list {
+  &-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 5px 2px;
+    cursor: default;
+    border-radius: 4px;
 
-      // content-visibility: auto;
+    // content-visibility: auto;
 
-      &:hover {
-        background-color: var(--color-mask-bg);
-      }
+    &:hover,
+    &:focus {
+      background-color: var(--background-mask);
+    }
 
-      .avatar {
-        margin-right: 8px;
-      }
+    .avatar {
+      margin-right: 8px;
     }
   }
+
+  .user-name {
+    display: flex;
+
+    .text {
+      max-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .badge {
+      padding: 2px 4px;
+      margin-left: 5px;
+      font-size: 10px;
+      border-radius: 3px;
+    }
+
+    .lord {
+      color: #777;
+      background-color: #f2c55c;
+      border: 1px solid #fff;
+    }
+
+    .admin {
+      color: #fff;
+      background-color: #aa6d4b;
+      border: 1px solid #fff;
+    }
+  }
+}
+
 </style>
