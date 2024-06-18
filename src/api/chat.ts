@@ -123,6 +123,17 @@ export function recallMsg(data: { msgId: string; roomId: string }) {
   return axios.put<void>('/api/chat/msg/recall', data);
 }
 
+/**
+ * 更新群组的名称
+ * @param data
+ */
+export function putRoomName(data: { roomId: string; name: string }) {
+  return axios.put<void>('/api/room/group/name', data);
+}
+export function putRoomAvatar(data: { roomId: string; avatar: string }) {
+  return axios.put<void>('/api/room/group/avatar', data);
+}
+
 export function getSessionList(params?: any) {
   return axios.get<ListResponse<SessionItem>>('/api/chat/public/contact/page', {
     params,

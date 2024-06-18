@@ -77,7 +77,13 @@
         :hidden="item.unreadCount < 1"
         class="item"
       >
-        <AvatarImage shape="circle" :size="38" :avatar="item.avatar" />
+        <AvatarImage
+          :key="item.avatar"
+          shape="circle"
+          :size="38"
+          :avatar="item.avatar"
+          :name="item.name"
+        />
       </el-badge>
       <div class="message-info">
         <div style="white-space: nowrap">

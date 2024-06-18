@@ -10,7 +10,7 @@
       </template>
       <template #extra>
         <a-link v-if="!props.noMore" @click="emit('alertSome')"
-        >{{ $t('workplace.viewMore') }}
+          >{{ $t('workplace.viewMore') }}
         </a-link>
       </template>
       <a-space direction="vertical" :size="10" fill>
@@ -35,13 +35,13 @@
           :data="tableData"
           :pagination="pagination"
           :show-header="false"
+          row-class="row-class"
           @row-click="toNoticeContentView"
         >
           <template #columns>
-            <div>
+            <div style="max-height: 30px">
               <a-table-column
                 :sortable="{ sortDirections: ['ascend', 'descend'] }"
-                :width="430"
                 data-index="title"
                 title="通知标题"
               >
@@ -71,27 +71,32 @@
                           record.urgency === 2
                             ? '不急'
                             : record.urgency === 3
-                              ? '紧急'
-                              : '一般'
+                            ? '紧急'
+                            : '一般'
                         }}
                       </a-tag>
                     </div>
                     <div v-if="record.isAnnex === 1" class="fujiancunzai">
-                      <img :src="attachment"/>
+                      <img :src="attachment" />
                     </div>
-                    <div v-if="!record.userRead" class="userweidu">
-                      new
-                    </div
-                    >
+                    <div v-if="!record.userRead" class="userweidu"> new </div>
                   </div>
                 </template>
               </a-table-column>
 
               <a-table-column
+                :width="200"
                 :sortable="{ sortDirections: ['ascend', 'descend'] }"
                 data-index="releaseTime"
                 title="发布时间"
-              ></a-table-column>
+              >
+                <template #cell="{ record }">
+                  <div style="text-align: right;">
+                    {{record.releaseTime}}
+                  </div>
+
+                </template>
+              </a-table-column>
             </div>
           </template>
         </a-table>
@@ -106,103 +111,107 @@
       :unmount-on-close="true"
       :width="1600"
     >
-      <NoticeRead :notice-id="statuEs.noticeReadId"/>
+      <NoticeRead :notice-id="statuEs.noticeReadId" />
     </a-modal>
   </a-spin>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue';
-import useLoading from '@/hooks/loading';
-import {defineEmits} from 'vue/dist/vue';
-import {addNoticeReadLog, getViewNoticeList, NoticeUserResp,} from '@/api/notice';
-import attachment from '@/assets/images/attachment.png';
-import NoticeRead from '@/components/notice-read/index.vue';
+  import { ref } from 'vue';
+  import useLoading from '@/hooks/loading';
+  import { defineEmits } from 'vue/dist/vue';
+  import {
+    addNoticeReadLog,
+    getViewNoticeList,
+    NoticeUserResp,
+  } from '@/api/notice';
+  import attachment from '@/assets/images/attachment.png';
+  import NoticeRead from '@/components/notice-read/index.vue';
 
-const props = defineProps({
+  const props = defineProps({
     noMore: {
       type: Boolean,
       default: false,
     },
   });
   const emit = defineEmits(['alertSome']);
-const statuEs = ref({
-  type: 0,
-  searchStatus: false,
-  name: '',
-  noticeRead: false,
-  noticeReadId: '',
-  noticeReadTitle: '',
-});
+  const statuEs = ref({
+    type: 0,
+    searchStatus: false,
+    name: '',
+    noticeRead: false,
+    noticeReadId: '',
+    noticeReadTitle: '',
+  });
 
-const tableData = ref<NoticeUserResp[]>([]);
+  const tableData = ref<NoticeUserResp[]>([]);
 
-const getData = async (pagination) => {
-  const {data} = await getViewNoticeList(
-    statuEs.value.type,
-    pagination.value.current,
-    pagination.value.pageSize
-  );
-  tableData.value = data.records;
-  pagination.value.total = data.total;
-};
-const pagination = ref({
-  current: 1,
-  defaultPageSize: 10,
-  total: 0,
-  pageSize: 5,
-  pageSizeOptions: [5, 10, 20, 50],
-  showPageSize: true,
-  showJumper: true,
-  onChange(page) {
-    pagination.value.current = page;
-    getData(pagination);
-  },
-  onPageSizeChange(pageSize) {
-    pagination.value.pageSize = pageSize;
-    getData(pagination);
-  },
-  showTotal: () => `共 ${0} 条`,
-});
+  const getData = async (pagination) => {
+    const { data } = await getViewNoticeList(
+      statuEs.value.type,
+      pagination.value.current,
+      pagination.value.pageSize
+    );
+    tableData.value = data.records;
+    pagination.value.total = data.total;
+  };
+  const pagination = ref({
+    current: 1,
+    defaultPageSize: 10,
+    total: 0,
+    pageSize: 5,
+    pageSizeOptions: [5, 10, 20, 50],
+    showPageSize: true,
+    showJumper: true,
+    onChange(page) {
+      pagination.value.current = page;
+      getData(pagination);
+    },
+    onPageSizeChange(pageSize) {
+      pagination.value.pageSize = pageSize;
+      getData(pagination);
+    },
+    showTotal: () => `共 ${0} 条`,
+  });
 
-getData(pagination);
+  getData(pagination);
 
   const { loading, setLoading } = useLoading();
 
-const getDataB = async () => {
-  const {data} = await getViewNoticeList(
-    statuEs.value.type,
-    pagination.value.current,
-    pagination.value.pageSize
-  );
-  tableData.value = data.records;
-  pagination.value.total = data.total;
-};
-
-const typeChange = (contentType: number) => {
-    console.log(contentType);
-  pagination.value.current = 1;
-  getDataB();
+  const getDataB = async () => {
+    const { data } = await getViewNoticeList(
+      statuEs.value.type,
+      pagination.value.current,
+      pagination.value.pageSize
+    );
+    tableData.value = data.records;
+    pagination.value.total = data.total;
   };
 
-// 前往通知查看页
-const toNoticeContentView = async (record) => {
-  if (record.type === 2) {
-    try {
-      await addNoticeReadLog(record.id);
-      // 外链
-      window.open(record.content);
-    } catch (e) {
-      console.log(e);
-    }
-    return;
-  }
+  const typeChange = (contentType: number) => {
+    console.log(contentType);
+    pagination.value.current = 1;
+    getDataB();
+  };
+
   // 前往通知查看页
-  statuEs.value.noticeReadId = record.id;
-  statuEs.value.noticeReadTitle = record.title;
-  // 开始加载
-  statuEs.value.noticeRead = true;
-};
+  const toNoticeContentView = async (record) => {
+    if (record.type === 2) {
+      try {
+        await addNoticeReadLog(record.id);
+        // 外链
+        window.open(record.content);
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+    // 前往通知查看页
+    statuEs.value.noticeReadId = record.id;
+    statuEs.value.noticeReadTitle = record.title;
+    // 开始加载
+    statuEs.value.noticeRead = true;
+  };
 
   // fetchData('text');
 </script>
@@ -258,5 +267,9 @@ const toNoticeContentView = async (record) => {
     line-height: 1;
     background-color: #93d36e;
     margin: 0 2px 10px 0;
+  }
+  .row-class {
+    max-height: 20px;
+    height: 10px;
   }
 </style>

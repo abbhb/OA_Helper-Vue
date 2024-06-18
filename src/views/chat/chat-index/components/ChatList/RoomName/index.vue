@@ -1,24 +1,44 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
   import { useChatStore } from '@/store/modules/chat/chat';
   import SettingBox from '@/views/chat/chat-index/components/ChatList/RoomName/components/SettingBox/SettingBox.vue';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import setting from '@/config/setting';
   import ChatGptHelp from '@/components/ChatGptHelp/index.vue';
+  import { useUserStore } from '@/store';
+  import { useGroupStore } from '@/store/modules/chat/group';
 
   const chatStore = useChatStore();
   const isShowSetting = ref<boolean>(false);
   const isShowHelp = ref<boolean>(false);
+  const userInfo = useUserStore()?.userInfo;
+  const globalStore = useGlobalStore();
+  const groupStore = useGroupStore();
+
+  const isAdmin = computed(
+    () =>
+      userInfo?.roles.find((el) => {
+        if (String(el.id) === '10013' || String(el.id) === '1') {
+          return el;
+        }
+      }) !== undefined
+  );
+
+  const isShowSettingQ = computed(() => {
+    return (
+      chatStore.isGroup &&
+      ((chatStore.currentSessionInfo?.hot_Flag && isAdmin) ||
+        (!chatStore.currentSessionInfo?.hot_Flag &&
+          (groupStore.adminUidList.includes(userInfo.id as string) ||
+            groupStore.currentLordId === (userInfo.id as string))))
+    );
+  });
 </script>
 
 <template>
   <div class="room-name">
     <span class="name">{{ chatStore.currentSessionInfo?.name }}</span>
-    <span
-      v-if="chatStore.isGroup && !chatStore.currentSessionInfo?.hot_Flag"
-      class="setting"
-      @click="isShowSetting = true"
-    >
+    <span v-if="isShowSettingQ" class="setting" @click="isShowSetting = true">
       设置
     </span>
     <span

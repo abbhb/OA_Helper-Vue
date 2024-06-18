@@ -2,8 +2,8 @@
   import { computed } from 'vue';
   import {
     ContextMenu,
-    ContextMenuSeparator,
     ContextMenuItem,
+    ContextMenuSeparator,
     type MenuOptions,
   } from '@imengyu/vue3-context-menu';
   import { MessageType } from '@/types/chat';
@@ -12,12 +12,12 @@
   import { useUserStore } from '@/store';
   import { useChatStore } from '@/store/modules/chat/chat';
   import * as apis from '@/api/chat';
-  import { ChatMsgEnum } from '@/types/enums/chat';
+  import { ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
   import { copyToClip, handleCopyImg } from '@/utils/chat/copy';
   import { Message } from '@arco-design/web-vue';
   import { urlToFile } from '@/utils/chat';
-  import { inject } from 'vue/dist/vue';
   import eventBus from '@/utils/eventBus';
+  import { useGlobalStore } from '@/store/modules/chat/global';
 
   const props = defineProps<{
     // 消息体
@@ -30,6 +30,7 @@
   const { uploadEmoji } = useEmojiUpload();
   const userInfo = useUserStore()?.userInfo;
   const chatStore = useChatStore();
+  const globalStore = useGlobalStore();
 
   // FIXME 未登录到登录这些监听没有变化。需处理
   const isCurrentUser = computed(() => props.msg?.fromUser.uid === userInfo.id);
@@ -39,7 +40,15 @@
         if (String(el.id) === '10013' || String(el.id) === '1') {
           return el;
         }
-      }) !== null
+      })!==undefined
+  );
+
+  const showRecall = computed(
+    () =>
+      (isAdmin.value &&
+        globalStore.currentSession.type === RoomTypeEnum.Group) ||
+      (isCurrentUser.value &&
+        Number(Date.now()) - Number(props.msg.message.sendTime) <= 120000)
   );
 
   // 撤回
@@ -158,7 +167,7 @@
       </template>
     </ContextMenuItem>
     <ContextMenuItem
-      v-if="(isCurrentUser || isAdmin) && !msg.loading"
+      v-if="showRecall && !msg.loading"
       label="撤回消息"
       @click="onRecall"
     >

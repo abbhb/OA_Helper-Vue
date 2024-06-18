@@ -65,8 +65,7 @@ axios.interceptors.response.use(
         return res;
       }
       if (
-          !response.config.url.startsWith('/api/room') &&
-          !response.config.url.startsWith('/api/chat')
+          !response.config.url.startsWith('/api/room')
       ) {
         Message.error({
           content: res.msg || 'Error',

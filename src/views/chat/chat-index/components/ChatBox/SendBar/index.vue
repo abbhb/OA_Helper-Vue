@@ -1,41 +1,32 @@
 <script setup lang="ts" name="SendBar">
-  import {
-    computed,
-    onBeforeUnmount,
-    onMounted,
-    provide,
-    reactive,
-    ref,
-    watch,
-  } from 'vue';
-  import { emojis } from '@/views/chat/chat-index/components/ChatBox/constant';
-  import { insertInputText } from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
-  import throttle from 'lodash/throttle';
+import {computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch,} from 'vue';
+import {emojis} from '@/views/chat/chat-index/components/ChatBox/constant';
+import {insertInputText} from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
+import throttle from 'lodash/throttle';
 
-  import { judgeClient } from '@/utils/chat/detectDevice';
-  import { useChatStore } from '@/store/modules/chat/chat';
-  import { IMention } from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
-  import {ChatMsgEnum, RoleEnum} from '@/types/enums/chat';
-  import { Input, Message } from '@arco-design/web-vue';
-  import { sendMsg } from '@/api/chat';
-  import { generateBody } from '@/utils/chat';
-  import { useMockMessage } from '@/hooks/chat/useMockMessage';
-  import { useRecording } from '@/hooks/chat/useRecording';
-  import { useEmojiUpload } from '@/hooks/chat/useEmojiUpload';
-  import { useUpload } from '@/hooks/chat/useUpload';
-  import { useFileDialog } from '@vueuse/core';
-  import { useUserInfo } from '@/hooks/chat/useCached';
-  import { useEmojiStore } from '@/store/modules/chat/emoji';
-  import { useUserStore } from '@/store';
-  import { useGlobalStore } from '@/store/modules/chat/global';
-  import eventBus from '@/utils/eventBus';
-  import setting from '@/config/setting';
-  import renderReplyContent from '@/utils/chat/renderReplyContent';
-  import { useGroupStore } from '@/store/modules/chat/group';
-  import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
-  import useServerConfigStore from '@/store/modules/server-config';
+import {judgeClient} from '@/utils/chat/detectDevice';
+import {useChatStore} from '@/store/modules/chat/chat';
+import {IMention} from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
+import {ChatMsgEnum, RoleEnum, RoomTypeEnum} from '@/types/enums/chat';
+import {Message} from '@arco-design/web-vue';
+import {sendMsg} from '@/api/chat';
+import {generateBody} from '@/utils/chat';
+import {useMockMessage} from '@/hooks/chat/useMockMessage';
+import {useRecording} from '@/hooks/chat/useRecording';
+import {useEmojiUpload} from '@/hooks/chat/useEmojiUpload';
+import {useUpload} from '@/hooks/chat/useUpload';
+import {useFileDialog} from '@vueuse/core';
+import {useUserInfo} from '@/hooks/chat/useCached';
+import {useEmojiStore} from '@/store/modules/chat/emoji';
+import {useUserStore} from '@/store';
+import {useGlobalStore} from '@/store/modules/chat/global';
+import eventBus from '@/utils/eventBus';
+import setting from '@/config/setting';
+import renderReplyContent from '@/utils/chat/renderReplyContent';
+import {useGroupStore} from '@/store/modules/chat/group';
+import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
 
-  const client = judgeClient();
+const client = judgeClient();
 
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
@@ -99,7 +90,8 @@
         chatStore.updateMsg(tempMessageId.value, data);
       }
     } catch (e) {
-      Message.error(e.message);
+      // Message.error(e.message);
+      console.log(e)
     } finally {
       inputMsg.value = ''; // 清空输入列表
       // eslint-disable-next-line no-use-before-define
@@ -130,7 +122,8 @@
   const groupStore = useGroupStore()
 
   // 是否被提出群聊
-  const isRemoved = computed(() => groupStore.countInfo.role === RoleEnum.REMOVED)
+  const isRemoved = computed(() => globalStore.currentSession.type === RoomTypeEnum.Group && groupStore.countInfo.role === RoleEnum.REMOVED)
+
 
   const isSign = computed(() => userStore.isSign);
 
