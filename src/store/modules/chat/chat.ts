@@ -162,9 +162,9 @@ export const useChatStore = defineStore('chat', () => {
 
       // 群组的时候去请求
       if (currentRoomType.value === RoomTypeEnum.Group) {
-        groupStore.getGroupUserList(true)
-        groupStore.getCountStatistic()
-        cachedStore.getGroupAtUserBaseInfo()
+        groupStore.getGroupUserList(true);
+        groupStore.getCountStatistic();
+        cachedStore.getGroupAtUserBaseInfo();
       }
     }
 
@@ -253,7 +253,7 @@ export const useChatStore = defineStore('chat', () => {
     sortAndUniqueSessionList();
 
     sessionList[0].unreadCount = 0;
-    if (!isFirstInit||isFresh) {
+    if (!isFirstInit || isFresh) {
       isFirstInit = true;
       globalStore.currentSession.roomId = data.list[0].roomId;
       globalStore.currentSession.type = data.list[0].type;
@@ -303,7 +303,7 @@ export const useChatStore = defineStore('chat', () => {
     return sessionList.find((item) => item.roomId === roomId) as SessionItem;
   };
 
-  const pushMsg = (msg: MessageType) => {
+  const pushMsg = async (msg: MessageType) => {
     const current = messageMap.get(msg.message.roomId);
     current?.set(msg.message.id, msg);
     // 获取用户信息缓存
@@ -314,6 +314,11 @@ export const useChatStore = defineStore('chat', () => {
     const cacheUser = cachedStore.userCachedList[msg.fromUser.uid];
     cachedStore.getBatchUserInfo([msg.fromUser.uid]);
     // 发完消息就要刷新会话列表，
+    // 如果sessionList当前不包含会话需要刷新
+    const session = sessionList.find(
+      (item) => item.roomId === msg.message.roomId
+    );
+    session || (await getSessionList(true));
     // 如果当前会话已经置顶了，可以不用刷新
     if (
       globalStore.currentSession &&
@@ -362,12 +367,12 @@ export const useChatStore = defineStore('chat', () => {
 
     // 聊天记录计数
     if (currentRoomId.value !== msg.message.roomId) {
-      console.log("计数")
+      console.log('计数');
       const item = sessionList.find(
         (item) => item.roomId === msg.message.roomId
       );
       if (item) {
-        console.log("计数成功")
+        console.log('计数成功');
         item.unreadCount += 1;
       }
       // 如果新消息的 roomId 和 当前显示的 room 的 Id 一致，就更新已读
