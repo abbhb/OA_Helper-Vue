@@ -1,20 +1,35 @@
 <script setup lang="ts">
-import {computed, inject, nextTick, onMounted, type PropType, ref, type Ref, toRefs,} from 'vue';
+  import {
+    computed,
+    inject,
+    nextTick,
+    onMounted,
+    type PropType,
+    reactive,
+    ref,
+    type Ref,
+    toRefs,
+    watch,
+  } from 'vue';
 
-import {MessageType, MsgType} from '@/types/chat';
-import {useUserStore} from '@/store';
-import {pageSize, useChatStore} from '@/store/modules/chat/chat';
-import {useUserInfo} from '@/hooks/chat/useCached';
-import {ChatMsgEnum} from '@/types/enums/chat';
-import {useLikeToggle} from '@/hooks/chat/useLikeToggle';
-import {formatTimestamp} from '@/utils/chat/computedTime';
-import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
-import AvatarImage from '@/components/image/AvatarImage.vue';
-import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
-import UserContextMenu from '@/views/chat/chat-index/components/ChatList/UserContextMenu/index.vue';
-import MsgOption from '../MsgOption/index.vue';
+  import { MessageType, MsgType } from '@/types/chat';
+  import { useUserStore } from '@/store';
+  import { pageSize, useChatStore } from '@/store/modules/chat/chat';
+  import { useUserInfo } from '@/hooks/chat/useCached';
+  import { ChatMsgEnum } from '@/types/enums/chat';
+  import { useLikeToggle } from '@/hooks/chat/useLikeToggle';
+  import { formatTimestamp } from '@/utils/chat/computedTime';
+  import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
+  import AvatarImage from '@/components/image/AvatarImage.vue';
+  import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
+  import UserContextMenu from '@/views/chat/chat-index/components/ChatList/UserContextMenu/index.vue';
+  import { useElementVisibility } from '@vueuse/core';
+  import eventBus from '@/utils/eventBus';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import setting from "@/config/setting";
+  import MsgOption from '../MsgOption/index.vue';
 
-const props = defineProps({
+  const props = defineProps({
     // 消息体
     msg: {
       type: Object as PropType<MessageType>,
@@ -45,13 +60,22 @@ const props = defineProps({
   });
 
   // 多根元素的时候，不加这个透传属性会报 warning
-// eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-undef
   defineOptions({ inheritAttrs: false });
 
-  const { message, fromUser } = toRefs(props.msg);
+  // 只能对一级 props 进行 toRefs 结构，否则会丢失响应
+  const message = computed(() => props.msg.message)
+  const fromUser = computed(() => props.msg.fromUser)
+  const isVisible = ref(false);
+
+  const handleVisibilityChange = (visible) => {
+    isVisible.value = visible;
+  };
+
 
   const userStore = useUserStore();
   const chatStore = useChatStore();
+  const globalStore = useGlobalStore();
   const userInfo = useUserInfo(fromUser.value.uid);
   const isCurrentUser = computed(
     () => props.msg?.fromUser.uid === userStore?.userInfo.id
@@ -69,6 +93,10 @@ const props = defineProps({
   const renderMsgRef = ref<HTMLElement | null>(null);
   const boxRef = ref<HTMLElement | null>(null);
   const tooltipPlacement = ref();
+  const readCount = reactive<{ read: number; unread: number | null }>({
+    read: 0,
+    unread: null,
+  });
   const virtualListRef = inject<Ref>('virtualListRef');
   const isShowMenu = ref(false); // 是否显示菜单
   const isShowUserMenu = ref(false); // 是否显示用户名及头像右键菜单
@@ -131,13 +159,12 @@ const props = defineProps({
     isShowMenu.value = true;
   };
 
-  /** 头像右键菜单 */
+  /** 右键菜单 */
   const handleUserRightClick = (e: MouseEvent) => {
     // perf: 未登录时，禁用右键菜单功能
     if (!userStore.isSign || isCurrentUser.value) {
       return;
     }
-
     // TODO：看它源码里提供了一个transformMenuPosition函数可以控制在容器范围内弹窗 我试验了一下报错
     // https://github.com/imengyu/vue3-context-menu/blob/f91a4140b4a425fa2770449a8be3570836cdfc23/examples/views/ChangeContainer.vue#LL242C5-L242C5
     const { x, y } = e;
@@ -146,21 +173,64 @@ const props = defineProps({
     isShowUserMenu.value = true;
   };
 
+  const msgVisibleEl = ref(null);
+
   onMounted(() => {
     nextTick(() => {
       if (renderMsgRef.value && boxRef.value) {
-        const renderMsgWidth = renderMsgRef.value.clientWidth;
-        const boxWidth = boxRef.value.clientWidth;
+        const renderMsgWidth = renderMsgRef.value.clientWidth
+        const boxWidth = boxRef.value.clientWidth
         if (renderMsgWidth + 150 <= boxWidth) {
-          tooltipPlacement.value = 'right-start';
+          tooltipPlacement.value = 'right-start'
         } else if (props.msg.message.body.reply) {
-          tooltipPlacement.value = 'top-end';
+          tooltipPlacement.value = 'top-end'
         } else {
-          tooltipPlacement.value = 'bottom-end';
+          tooltipPlacement.value = 'bottom-end'
         }
+      }
+      const targetIsVisible = useElementVisibility(msgVisibleEl);
+      const msg = props.msg.message;
+      // 自己的消息, 且不是撤回/系统消息，才监听未读数计算
+      if (
+        isCurrentUser.value &&
+        msgVisibleEl &&
+        ![ChatMsgEnum.RECALL, ChatMsgEnum.SYSTEM].includes(msg.type)
+      ) {
+        // 做元素进入退出视口监听，在视口内的自己的消息就做
+        // ~~5分钟内每10s中查询一次已读数~~
+        watch(isVisible, (visible) => {
+          if (visible) {
+            console.log("消息进入视口")
+            eventBus.emit('onAddReadCountTask', {
+              msgId: props.msg.message.id,
+            });
+          } else {
+            console.log("消息离开视口")
+
+            eventBus.emit('onRemoveReadCountTask', {
+              msgId: props.msg.message.id,
+            });
+          }
+        });
       }
     });
   });
+
+  // 已读数
+  eventBus.on('onGetReadCount', (res) => {
+    const currentMsgCount = res.get(props.msg.message.id)
+    if (currentMsgCount) {
+      readCount.read = currentMsgCount.readCount
+      readCount.unread = currentMsgCount.unReadCount
+    }
+  })
+
+  const currentReadList = (msgId: string) => {
+    // 全部已读禁止打开弹窗。
+    if (readCount.unread === 0) return;
+    globalStore.currentReadUnreadList.msgId = msgId;
+    globalStore.currentReadUnreadList.show = true;
+  };
 </script>
 
 <template>
@@ -168,92 +238,120 @@ const props = defineProps({
     msg.timeBlock
   }}</span>
   <span v-if="isRecall" class="send-time-block">{{ message.body }}</span>
-  <transition name="remove">
-    <div v-if="!isRecall" :class="chatCls">
-      <AvatarImage
-        :avatar="userInfo.avatar"
-        @contextmenu.prevent.stop="handleUserRightClick($event)"
-      />
-      <div ref="boxRef" class="chat-item-box">
-        <div class="chat-item-user-info">
-          <span
-            class="user-name"
-            @click="onAtUser?.(userInfo.uid!, true)"
-            @contextmenu.prevent.stop="handleUserRightClick($event)"
-          >
-            {{ userInfo.name }}
-          </span>
-          <span class="user-ip">({{ userInfo.locPlace || '未知' }})</span>
-          <span v-if="isShowTime" class="send-time">
-            {{ formatTimestamp(msg.message.sendTime) }}
-          </span>
-        </div>
-        <a-tooltip
-          effect="light"
-          popper-class="option-tooltip"
-          :trigger="tooltipTrigger"
-          :placement="tooltipPlacement || 'bottom-end'"
-          :offset="2"
-          :show-arrow="false"
-          :teleported="false"
-        >
-          <template #content>
-            <MsgOption :msg="msg" />
-          </template>
-          <div
-            ref="renderMsgRef"
-            :class="['chat-item-content', { uploading: msg?.loading }]"
-            @contextmenu.prevent.stop="handleRightClick($event)"
-          >
-            <icon-loading v-if="msg?.loading" :size="20" spin />
-            <RenderMessage :key="message" :message="message" />
-          </div>
-        </a-tooltip>
+  <div ref="msgVisibleEl" v-visible="handleVisibilityChange"
+  >
+    <transition name="remove">
+      <div v-if="!isRecall" :class="chatCls">
+        <!-- 用户头像 -->
+        <AvatarImage
+          :avatar="userInfo.avatar"
+          :name="userInfo.name"
+          @contextmenu.prevent.stop="handleUserRightClick($event)"
+        />
+        <div ref="boxRef" class="chat-item-box">
+          <div class="chat-item-user-info">
 
-        <div
-          v-if="message.body?.reply"
-          class="chat-item-reply"
-          :class="{ pointer: message.body.reply.canCallback }"
-          @click="scrollToMsg(message)"
-        >
-          <icon-to-top v-if="message.body.reply.canCallback" :size="12" />
-          <span class="ellipsis">
-            {{ message.body.reply.username }}: {{ message.body.reply.body }}
-          </span>
-        </div>
-        <div v-if="likeCount + dislikeCount > 0" class="extra">
-          <transition name="fade">
+            <!-- 用户名 -->
             <span
-              v-if="likeCount > 0"
-              v-is-auth="true"
-              :class="['extra-item like', { active: isLike }]"
-              @click="onLike"
+              class="user-name"
+              @contextmenu.prevent.stop="handleUserRightClick($event)"
             >
-              <icon-thumb-up-fill />
-              <transition name="count-up" mode="out-in">
-                <span :key="likeCount" class="count">{{ likeCount }}</span>
-              </transition>
+              {{ userInfo.name }}
             </span>
-          </transition>
-          <transition name="fade">
-            <span
-              v-if="dislikeCount > 0"
-              v-is-auth="true"
-              :class="['extra-item dlike', { active: isDisLike }]"
-              @click="onDisLike"
+            <!-- 消息归属地 -->
+            <span class="user-ip">({{ userInfo.locPlace || '未知' }})</span>
+            <!-- 消息发送时间 -->
+            <span v-if="isShowTime" class="send-time">
+              {{ formatTimestamp(msg.message.sendTime) }}
+            </span>
+          </div>
+          <el-tooltip
+            effect="light"
+            popper-class="option-tooltip"
+            :trigger="tooltipTrigger"
+            :placement="tooltipPlacement || 'bottom-end'"
+            :offset="2"
+            :show-arrow="false"
+            :teleported="false"
+          >
+            <!-- 消息的操作，点赞回复那些 -->
+            <template #content>
+              <MsgOption :msg="msg" />
+            </template>
+            <div
+              ref="renderMsgRef"
+              :class="['chat-item-content', { uploading: msg?.loading }]"
+              @contextmenu.prevent.stop="handleRightClick($event)"
             >
-              <icon-thumb-down-fill :size="17" />
-              <transition name="count-up" mode="out-in">
-                <span :key="dislikeCount" class="count">{{
-                  dislikeCount
-                }}</span>
-              </transition>
+              <!-- 这里是未读数计算 -->
+              <div
+                v-if="isCurrentUser"
+                class="chat-item-read-count"
+                :class="{
+                  'is-gray': readCount.unread === 0,
+                }"
+                @click="currentReadList(msg.message.id)"
+              >
+                <span
+                  v-if="readCount.unread !== 0"
+                  class="chat-item-read-count-text"
+                >
+                  {{ readCount.read }}
+                </span>
+                <el-icon v-else><IconCheckCircle /></el-icon>
+              </div>
+              <!-- 消息加载中 -->
+              <Icon v-if="msg?.loading" icon="loading" :size="20" spin />
+              <!-- 渲染消息内容体 -->
+              {{fromUser.username}}
+              <RenderMessage :message="message" :ext-type="fromUser.uid===setting.chatgptUserInfo.uid?'chatgpt':''"/>
+            </div>
+          </el-tooltip>
+          <!-- 消息回复部分 -->
+          <div
+            v-if="message.body?.reply"
+            class="chat-item-reply"
+            :class="{ pointer: message.body.reply.canCallback }"
+            @click="scrollToMsg(message)"
+          >
+            <icon-to-top v-if="message.body.reply.canCallback" :size="12" />
+            <span class="ellipsis">
+              {{ message.body.reply.username }}: {{ message.body.reply.body }}
             </span>
-          </transition>
+          </div>
+          <!-- 点赞数量和倒赞数量及动画 -->
+          <div v-if="likeCount + dislikeCount > 0" class="extra">
+            <transition name="fade">
+              <span
+                v-if="likeCount > 0"
+                v-login="onLike"
+                :class="['extra-item like', { active: isLike }]"
+              >
+                <icon-thumb-up-fill />
+                <transition name="count-up" mode="out-in">
+                  <span :key="likeCount" class="count">{{ likeCount }}</span>
+                </transition>
+              </span>
+            </transition>
+            <transition name="fade">
+              <span
+                v-if="dislikeCount > 0"
+                v-login="onDisLike"
+                :class="['extra-item dlike', { active: isDisLike }]"
+              >
+                <icon-thumb-down-fill :size="17" />
+                <transition name="count-up" mode="out-in">
+                  <span :key="dislikeCount" class="count">{{
+                    dislikeCount
+                  }}</span>
+                </transition>
+              </span>
+            </transition>
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
   <ContextMenu v-model:show="isShowMenu" :options="menuOptions" :msg="msg" />
   <UserContextMenu
     v-model:show="isShowUserMenu"
@@ -792,5 +890,15 @@ const props = defineProps({
     height: 14px; // 防抖动的核心，与send-time-block真实高度一致
     opacity: 0;
     transform: scale(0);
+  }
+  .chat-item-read-count-text {
+    display: inline-block;
+    padding: 1px 4px;
+    font-size: 10px;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid currentcolor;
+    border-radius: 8px;
+    transform: scale(0.8);
   }
 </style>

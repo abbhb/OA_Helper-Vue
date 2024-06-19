@@ -18,7 +18,7 @@
 
 <template>
   <div class="item-info">
-    <AvatarImage class="avatar" :avatar="currentUser.avatar" :name="currentUser.name" :size="40" />
+    <AvatarImage class="avatar" :avatar="currentUser.avatar" :key="currentUser.avatar"  :name="currentUser.name" :size="40" />
     <div class="item-info-right">
       <span class="item-info-name">
         {{ currentUser.name }}

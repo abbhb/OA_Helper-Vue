@@ -89,7 +89,7 @@
         >
           <template #reference>
             <el-badge value="-">
-              <AvatarImage :avatar="admin.avatar" :name="admin.name" />
+              <AvatarImage :avatar="admin.avatar" :name="admin.name" :key="admin.avatar"  />
             </el-badge>
           </template>
         </el-popconfirm>

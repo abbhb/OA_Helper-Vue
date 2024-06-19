@@ -54,7 +54,7 @@ initData();
       style="display: flex; align-items: center"
     >
       <a-tooltip :content="item.name" mini position="top">
-        <AvatarImage :avatar="item.avatar" :name="item.name"/>
+        <AvatarImage :avatar="item.avatar" :key="item.avatar"  :name="item.name"/>
       </a-tooltip>
       <div
         :class="

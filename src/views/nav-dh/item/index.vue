@@ -253,7 +253,7 @@ const handleSuccess = (data) => {
         </a-table-column>
         <a-table-column :width="100" title="图标">
           <template #cell="{ record }">
-            <AvatarImage :avatar="record.image" :name="record.name"/>
+            <AvatarImage :avatar="record.image" :key="record.image" :name="record.name"/>
           </template>
         </a-table-column>
 

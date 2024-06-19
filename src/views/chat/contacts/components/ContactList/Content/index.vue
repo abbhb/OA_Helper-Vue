@@ -52,7 +52,7 @@
   <div class="contact-content">
     <div v-if="selectedContactUid" class="contact-main">
       <div class="contact-info-wrapper">
-        <AvatarImage class="avatar" :avatar="currentUser.avatar" :name="currentUser.name" :size="70" />
+        <AvatarImage class="avatar" :key="currentUser.avatar" :avatar="currentUser.avatar" :name="currentUser.name" :size="70" />
         <div class="contact-info">
           <span class="contact-info-name">{{ currentUser.name }}</span>
           <span class="contact-info-uid"> uid: {{ currentUser.uid }}</span>
