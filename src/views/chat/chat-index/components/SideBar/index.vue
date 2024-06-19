@@ -5,21 +5,46 @@
   import { formatTimestamp } from '@/utils/chat/computedTime';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
-  import { IsAllUserEnum } from '@/types/chat';
+  import {IsAllUserEnum, SessionItem} from '@/types/chat';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import renderReplyContent from '@/utils/chat/renderReplyContent';
+  import { isLogin } from '@/utils/auth';
+  import ContextMenu from './ContextMenu/index.vue';
 
   // 选中的聊天对话
   const chatStore = useChatStore();
+  const userStore = useChatStore();
   const globalStore = useGlobalStore();
-
+  const isShowMenu = ref(false); // 是否显示菜单
   onBeforeMount(() => {
     // 请求回话列表
     chatStore.getSessionList();
   });
 
+  const rightSession = ref<SessionItem>(null);
   // 选中的聊天对话
   const currentSession = computed(() => globalStore.currentSession);
+  // 弹出定位
+  const menuOptions = ref({
+    x: 0,
+    y: 0,
+  });
+  // FIXME 未登录到登录这些监听没有变化。需处理
+  const isCurrentUser = computed(() => isLogin());
+  /** 右键菜单 */
+  const handleRightClick = (e: MouseEvent,item:SessionItem) => {
+    // perf: 未登录时，禁用右键菜单功能
+    if (!isCurrentUser.value) {
+      return;
+    }
+    rightSession.value = item;
+    // TODO：看它源码里提供了一个transformMenuPosition函数可以控制在容器范围内弹窗 我试验了一下报错
+    // https://github.com/imengyu/vue3-context-menu/blob/f91a4140b4a425fa2770449a8be3570836cdfc23/examples/views/ChangeContainer.vue#LL242C5-L242C5
+    const { x, y } = e;
+    menuOptions.value.x = x;
+    menuOptions.value.y = y;
+    isShowMenu.value = true;
+  };
 
   const sessionList = computed(() =>
     chatStore.sessionList.map((item) => {
@@ -70,6 +95,7 @@
         { active: currentSession.roomId === item.roomId },
       ]"
       @click="onSelectSelectSession(item.roomId, item.type)"
+      @contextmenu.prevent.stop="handleRightClick($event,item)"
     >
       <el-badge
         :value="item.unreadCount"
@@ -95,7 +121,13 @@
         }}</div>
       </div>
       <span class="message-time">{{ item.lastMsgTime }}</span>
+
     </div>
+    <ContextMenu
+      v-model:show="isShowMenu"
+      :options="menuOptions"
+      :session="rightSession"
+    />
   </div>
 </template>
 

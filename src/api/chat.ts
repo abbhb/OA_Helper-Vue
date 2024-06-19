@@ -169,6 +169,12 @@ export function deleteEmoji(params: { id: string }) {
     params,
   });
 }
+/** 删除会话 */
+export function deleteContact(params: { roomId: string }) {
+  return axios.delete<EmojiItem[]>('/api/chat/public/contact', {
+    params,
+  });
+}
 
 export function exitGroup({ roomId }: { roomId: string }) {
   return axios.delete<boolean>('/api/room/group/member/exit', {

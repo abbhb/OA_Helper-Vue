@@ -36,6 +36,7 @@ export const initListener = () => {
 export const clearListener = () => {
   eventBus.off('onAddReadCountTask', onAddReadCountTask);
   eventBus.off('onRemoveReadCountTask', onRemoveReadCountTask);
+  clearQueue();
   timer && clearInterval(timer);
 };
 

@@ -6,16 +6,18 @@
   import ChatList from '../ChatList/index.vue';
   import SendBar from './SendBar/index.vue';
 
-  const isSelect = ref(false);
+
   const globalStore = useGlobalStore();
   const currentSession = computed(() => globalStore.currentSession);
-
+  const isSelect = computed(()=>{
+    return currentSession.value.roomId&&currentSession.value.roomId!==''
+  });
 </script>
 
 <template>
   <div class="chat-box">
     <div class="chat-wrapper">
-      <template v-if="isSelect">
+      <template v-if="!isSelect">
         <!--        此处可能出问题-->
         <icon-reply :style="{ fontSize: '160px' }" />
       </template>

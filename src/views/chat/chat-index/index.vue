@@ -160,6 +160,7 @@
     window.removeEventListener('keydown', handleKeyDown);
     removeListeners();
     clearListener();
+
   });
 </script>
 
