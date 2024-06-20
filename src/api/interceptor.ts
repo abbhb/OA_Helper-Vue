@@ -61,7 +61,15 @@ axios.interceptors.response.use(
           duration: 5 * 1000,
         });
         useUserStore().logoutCallBack();
-        router.push({ name: 'login' });
+        console.log("当前路由")
+        console.log(router.currentRoute.value.name)
+        router.push({
+          name: 'login',
+          query: {
+            ...router.currentRoute.value.query,
+            redirect: router.currentRoute.value.name as string,
+          },
+        });
         return res;
       }
       if (

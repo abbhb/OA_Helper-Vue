@@ -28,6 +28,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/client_oauth',
+      name: 'ClientOauth',
+      component: () => import('@/views/client_oauth/index.vue'),
+      meta: {
+        requiresAuth: true,
+        canGo: true,
+        ignore: true,
+      },
+    },
+    {
       path: '/register',
       name: 'register',
       component: () => import('@/views/register/index.vue'),

@@ -2,6 +2,7 @@
 export const WHITE_LIST = [
   { name: 'notFound', children: [] },
   { name: 'login', children: [] },
+  { name: 'ClientOauth', children: [] },
   { name: 'register', children: [] },
   { name: 'callback', children: [] },
   { name: 'oauthShow', children: [] },
