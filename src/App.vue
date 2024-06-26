@@ -12,9 +12,10 @@
   import GlobalSetting from '@/components/global-setting/index.vue';
   import useLocale from '@/hooks/locale';
   import { useAppStore } from '@/store';
+  import router from "@/router";
 
-  const appStore = useAppStore();
-  appStore.initSettings();
+  // const appStore = useAppStore();
+  // appStore.initSettings();
   const { currentLocale } = useLocale();
   const locale = computed(() => {
     switch (currentLocale.value) {
