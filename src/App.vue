@@ -14,8 +14,8 @@
   import { useAppStore } from '@/store';
   import router from "@/router";
 
-  // const appStore = useAppStore();
-  // appStore.initSettings();
+  const appStore = useAppStore();
+  appStore.initSettings();
   const { currentLocale } = useLocale();
   const locale = computed(() => {
     switch (currentLocale.value) {

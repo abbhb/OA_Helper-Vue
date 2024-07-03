@@ -7,6 +7,8 @@ export interface RoleManger {
   roleKey?: string;
   roleSort?: number;
   status?: number;
+  dataScope?: number;
+  deptIds?: string[];
   createUser?: string;
   createTime?: string;
   updateUser?: string;
@@ -22,6 +24,13 @@ export interface Role {
   roleSort?: number;
 }
 
+export interface DataScopeResp {
+  type?: number;
+  name?: string;
+  desc?: string;
+
+}
+
 export interface RoleRoot {
   mangers?: RoleManger[];
   menuMangerList?: MenuManger[];
@@ -33,6 +42,9 @@ export function roleList() {
 
 export function roleTagList() {
   return axios.get<Role[]>('/api/role/list-tag');
+}
+export function listDataScopes() {
+  return axios.get<DataScopeResp[]>('/api/role/data-scopes');
 }
 
 export function updaterole(data: RoleManger) {
