@@ -44,6 +44,7 @@ export default {
   'menu.signin-ext.data-read': '考勤统计',
   'menu.signin-ext': '考勤功能',
   'menu.signin.device': '考勤设备',
+  'menu.signin.userData': '生物数据',
   'menu.signin': '打卡服务',
   'menu.usercenter.usercenter': '个人中心',
   'menu.usercenter.process-my': '我发起的',

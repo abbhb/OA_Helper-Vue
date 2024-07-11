@@ -1,6 +1,7 @@
 <template>
   <a-space direction="vertical">
     <a-upload
+      :disabled="readonly"
       :custom-request="customRequest"
       :draggable="draggable"
       :file-list="file ? [file] : []"
@@ -62,7 +63,25 @@ export default {
 
     // 自定义事件
     // on-success: 上传成功后触发并返回response
-    props: ['url', 'draggable', 'image'],
+    props: {
+      url:{
+        type:String,
+        default:''
+      },
+      draggable:{
+        type:Boolean,
+        default: false
+      },
+      image:{
+        type:String,
+        default:''
+      },
+      readonly:{
+        type:Boolean,
+        default: false
+      },
+
+    },
     data() {
       return {
         file: null,

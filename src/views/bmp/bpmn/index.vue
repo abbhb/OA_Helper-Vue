@@ -26,6 +26,12 @@
         >新增
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-tag
+        >
+          tip:个人中心的ext信息审核只会生效Process_system_1的最新版本，如果挂起会导致无法提交审核!运维需要注意
+        </el-tag>
+      </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="list">

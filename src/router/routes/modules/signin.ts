@@ -48,6 +48,17 @@ const Signin: AppRouteRecordRaw = {
         canGo: true,
       },
     },
+    {
+      path: 'signin-user-data',
+      name: 'SigninUserDataManger',
+      component: () => import('@/views/signin/signin-user-data/index.vue'),
+      meta: {
+        locale: 'menu.signin.userData',
+        requiresAuth: true,
+        roles: ['*'],
+        canGo: true,
+      },
+    },
   ],
 };
 

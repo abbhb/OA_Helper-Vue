@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {UserInfo, UserManger} from "@/api/user";
+import {PageData} from "@/api/common";
 
 export interface BcRule {
   count?: number;
@@ -18,7 +20,12 @@ export interface SigninBc {
   bak?: number;
   rules?: BcRule[];
 }
-
+export interface SigninDataResp extends UserInfo {
+  existFace?: boolean;
+  updateTime?: string;
+  existCard?: boolean;
+  cardId?: string;
+}
 export interface SigninUserFaceDataReq {
   data?: SigninUserFaceDataResp[];
   syncModel?: string;
@@ -155,6 +162,17 @@ export function get_signin_card_data(deviceId: string) {
   );
 }
 
+export function getDataMangerList(params: {
+  pageNum: number;
+  pageSize: number;
+  name?: string;
+  deptId?: string;
+  cascade: number;
+}) {
+  return axios.get<PageData<SigninDataResp[]>>('/api/signin_user_data/data_manger', { params });
+}
+
+
 /** 同步人脸【上传方向】 */
 export function uploadSigninFaceData(data: SigninUserFaceDataReq) {
   return axios.post<string>(
@@ -195,6 +213,20 @@ export function deleteGroupRule(id: string) {
 /** 添加考勤组信息 */
 export function addGroupRule(data: SigninGroupDto) {
   return axios.post<string>('/api/signin_group/add', data);
+}
+
+export function exportSigninUserData() {
+  return axios.post<string>('/api/signin_user_data/export');
+}
+export function importSigninUserData(file,updateSupport:boolean) {
+  return axios.post<string>('/api/signin_user_data/importData',file,{
+    params:{
+      updateSupport
+    }
+  });
+}
+export function getImportTemplate() {
+  return axios.get<string>('/api/signin_user_data/importTemplate');
 }
 
 export function updateGroupRule(data: SigninGroupDto) {

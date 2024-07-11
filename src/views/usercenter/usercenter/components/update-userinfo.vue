@@ -82,21 +82,21 @@
       </a-form>
     </a-space>
   </div>
+  <userinfobaseext />
 </template>
 
 <script>
-  import { reactive, ref, watch } from 'vue';
+  import { reactive, ref, watch, h } from 'vue';
   import { useUserStore } from '@/store';
   import ImageUpload from '@/components/image/ImageUpload.vue';
   import { Message, Modal } from '@arco-design/web-vue';
   import { updataUserInfo } from '@/api/user';
-  import {confirmToServer, isConfirm} from '@/api/common';
-  import { h } from 'vue';
-  import {FIRST_SUCCESS_UPDATE_USER_INFO} from "@/utils/my-string";
-
+  import { confirmToServer, isConfirm } from '@/api/common';
+  import userinfobaseext from '@/components/userinfo-base-ext/index.vue'
+  import { FIRST_SUCCESS_UPDATE_USER_INFO } from '@/utils/my-string';
 
   export default {
-    components: { ImageUpload },
+    components: { ImageUpload,userinfobaseext },
     setup() {
       const form = reactive({
         username: '',
@@ -145,7 +145,6 @@
         Message.success('上传成功!');
       };
 
-
       watch(
         form,
         (value) => {
@@ -162,11 +161,7 @@
         setup() {
           return () =>
             h('div', { class: 'info-modal-content' }, [
-              h(
-                'h1',
-                { style: 'margin-bottom: 10px;' },
-                '欢迎你使用本平台！'
-              ),
+              h('h1', { style: 'margin-bottom: 10px;' }, '欢迎你使用本平台！'),
               h(
                 'h2',
                 { style: 'margin-bottom: 10px;' },
@@ -182,8 +177,7 @@
       };
       const okButtonHandel = async () => {
         await confirmToServer(FIRST_SUCCESS_UPDATE_USER_INFO);
-
-      }
+      };
       const successUserUpdataSelfInfo = async () => {
         // 先判断该用户是不是建议过了！
         const { data } = await isConfirm(FIRST_SUCCESS_UPDATE_USER_INFO);
@@ -192,7 +186,7 @@
           Modal.info({
             title: '新人提示',
             content: () => h(ModalContent),
-            onOk:okButtonHandel
+            onOk: okButtonHandel,
           });
         }
       };

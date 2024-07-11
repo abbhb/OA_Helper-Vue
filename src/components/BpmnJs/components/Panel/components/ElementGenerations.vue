@@ -5,10 +5,10 @@
       <el-form-item label="ID">
         <el-input
           v-model="elementId"
-          disabled
           maxlength="32"
           @change="updateElementId"
         />
+        <el-tag>不建议修改此项</el-tag>
       </el-form-item>
       <el-form-item label="流程名称">
         <el-input

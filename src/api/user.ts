@@ -1,7 +1,7 @@
 import axios from 'axios';
-import {UserState} from '@/store/modules/user/types';
-import {PageData} from '@/api/common';
-import {Role} from '@/api/role';
+import { UserState } from '@/store/modules/user/types';
+import { PageData } from '@/api/common';
+import { Role } from '@/api/role';
 
 export interface LoginData {
   username: string;
@@ -29,6 +29,33 @@ export interface UserInfo {
   deptId?: string;
   deptName?: string;
 }
+export interface UserInfoBaseExtStateResp {
+    state:boolean; // 修改状态1 在等待审核中 0就是可以修改
+    currentInfo?: UserInfoBaseExt
+    newInfo?: UserInfoBaseExt // 如果在修改中，这里展示新的数据
+}
+
+export interface UserInfoBaseExt {
+  zsxm?: string;
+  csd1?: string;
+  csd2?: string;
+  csd3?: string;
+  zzmm?: string;
+  jg1?: string;
+  jg2?: string;
+  jg3?: string;
+  syd1?: string;
+  syd2?: string;
+  sex?: string;
+  mz?: string;
+  csrq?: string;
+  studentId?: string;
+  phone?: string;
+  idPhoto?: string;
+  detailAddress?: string;
+  sfzLx?: string;
+  sfzId?: string;
+}
 
 export interface UserManger extends UserInfo {
   createTime?: string;
@@ -39,24 +66,23 @@ export interface UserManger extends UserInfo {
 }
 export interface LoginRes {
   token: string;
-    toSetPassword?: number;
-    oneTimeSetPasswordCode?: string;
+  toSetPassword?: number;
+  oneTimeSetPasswordCode?: string;
 }
 
 export interface LoginByEmailCodeReq {
-    week: boolean;
-    emailCode: string;
-    email: string;
+  week: boolean;
+  emailCode: string;
+  email: string;
 }
 
 export interface UserSelectResp {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }
 
-
 export interface UserSelectListResp {
-    options: UserSelectResp[];
+  options: UserSelectResp[];
 }
 
 interface UserFrontConfigReq {
@@ -71,7 +97,7 @@ export function loginbycode(data: LoginDataByCode) {
 }
 
 export function loginByEmailCode(data: LoginByEmailCodeReq) {
-    return axios.post<LoginRes>('/api/user/login_by_email_code', data);
+  return axios.post<LoginRes>('/api/user/login_by_email_code', data);
 }
 export function loginbytoken() {
   return axios.post<LoginRes>('/api/user/login_by_token');
@@ -104,8 +130,16 @@ export function getUserInfo() {
   return axios.post<UserState>('/api/user/info');
 }
 
+export function updataUserInfoBaseExt(data:UserInfoBaseExt) {
+  return axios.post<string>('/api/user/userinfo_ext_my_apply_for',data);
+}
+
 export function getUserCount() {
   return axios.get<number>('/api/user/user_count');
+}
+
+export function userinfoExtMy() {
+  return axios.get<UserInfoBaseExtStateResp>('/api/user/userinfo_ext_my');
 }
 
 export function getUserFrontConfig() {
@@ -138,12 +172,12 @@ export function getUserListManger(params: {
 }
 
 export function listForBMPN(params: {
-    pageNum: number;
-    pageSize: number;
-    name?: string;
-    deptId?: string;
+  pageNum: number;
+  pageSize: number;
+  name?: string;
+  deptId?: string;
 }) {
-    return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', {params});
+  return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', { params });
 }
 
 export function getUserPassword() {
@@ -151,17 +185,20 @@ export function getUserPassword() {
 }
 
 export function userSelectList(name: string) {
-    return axios.get<UserSelectListResp>('/api/user/user_select_list', {
-        params: {
-            name
-        }
-    });
+  return axios.get<UserSelectListResp>('/api/user/user_select_list', {
+    params: {
+      name,
+    },
+  });
 }
 
 export function userSelectOnlyXUserList(deptId: string) {
-    return axios.get<UserSelectListResp>('/api/user/user_select_list_only_x_user', {
-        params: {
-            deptId
-        }
-    });
+  return axios.get<UserSelectListResp>(
+    '/api/user/user_select_list_only_x_user',
+    {
+      params: {
+        deptId,
+      },
+    }
+  );
 }
