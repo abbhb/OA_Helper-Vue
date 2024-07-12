@@ -130,7 +130,7 @@
     approvalRef.value.handleOpen(
       row.processInstanceId,
       row.taskId,
-      row.taskDefinitionKey
+      row.taskDefinitionKey,
     );
   }
 
@@ -142,7 +142,9 @@
     historyRecordApprovalRef.value.open(
       row.processInstanceId,
       row.taskId,
-      row.taskDefinitionKey
+      row.taskDefinitionKey,
+      row.definitionKey
+
     );
   }
 

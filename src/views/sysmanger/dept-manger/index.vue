@@ -38,6 +38,7 @@
     email: '',
     status: 1,
     roles: [],
+    leaderRoles: [],
   });
 
   const appStore = useAppStore();
@@ -85,6 +86,7 @@
     form.email = '';
     form.status = 1;
     form.roles = [];
+    form.leaderRoles = [];
   };
 
   const editHandel = async (record) => {
@@ -97,12 +99,19 @@
     form.orderNum = record.orderNum;
     form.leaderId = record.leaderId;
     const sadas = [];
+    const sadas2 = [];
     if (record.roles) {
       record.roles.forEach((item) => {
         sadas.push(item.id);
       });
     }
+    if (record.leaderRoles) {
+      record.leaderRoles.forEach((item) => {
+        sadas2.push(item.id);
+      });
+    }
     form.roles = sadas;
+    form.leaderRoles = sadas2;
     await initDeptLeaderUser();
     statuEs.value.model = true;
   };
@@ -126,9 +135,15 @@
   };
   const update = async (done) => {
     const dasf = ref<Role[]>([]);
+    const dasf2 = ref<Role[]>([]);
     if (form.roles) {
       form.roles.forEach((item) => {
         dasf.value.push({ id: item });
+      });
+    }
+    if (form.leaderRoles) {
+      form.leaderRoles.forEach((item) => {
+        dasf2.value.push({ id: item });
       });
     }
     const forms = ref<DeptManger>({
@@ -138,6 +153,7 @@
       leaderId: form.leaderId,
       orderNum: form.orderNum,
       roles: dasf.value,
+      leaderRoles: dasf2.value,
       status: Number(form.status),
     });
     try {
@@ -152,9 +168,15 @@
 
   const add = async (done) => {
     const dasf = ref<Role[]>([]);
+    const dasf2 = ref<Role[]>([]);
     if (form.roles) {
       form.roles.forEach((item) => {
         dasf.value.push({ id: item });
+      });
+    }
+    if (form.leaderRoles) {
+      form.leaderRoles.forEach((item) => {
+        dasf2.value.push({ id: item });
       });
     }
     const forms = ref<DeptManger>({
@@ -162,6 +184,7 @@
       deptName: form.deptName,
       orderNum: form.orderNum,
       roles: dasf.value,
+      leaderRoles: dasf2.value,
       status: Number(form.status),
     });
     try {
@@ -302,6 +325,22 @@
             </template>
           </a-table-column>
           <a-table-column
+            title="部门负责人角色"
+            :tooltip="{ position: 'top' }"
+            :width="200"
+          >
+            <template #cell="{ record }">
+              <a-tag
+                v-for="(role, index) of record.leaderRoles"
+                :key="index"
+                :color="getColor(role.roleSort)"
+                bordered
+                style="margin-left: 3px"
+                >{{ role.roleName }}
+              </a-tag>
+            </template>
+          </a-table-column>
+          <a-table-column
             :title="$t(`syscenter.dept-manger.dept.status`)"
             :width="130"
           >
@@ -421,29 +460,30 @@
             <a-option v-for="item in deptUserList" :key="item.id" :value="item.id">{{ item.name }}</a-option>
           </a-select>
         </a-form-item>
-
-        <a-row :gutter="28">
-          <a-col :span="14">
-            <a-select
-              v-model:model-value="form.roles"
-              :default-value="[]"
-              :scrollbar="true"
-              :style="{ width: '360px' }"
-              multiple
-              placeholder="Please select role"
+        <a-form-item
+          label="部门角色选择"
+        >
+          <a-select
+            v-model:model-value="form.roles"
+            :default-value="[]"
+            :scrollbar="true"
+            :style="{ width: '360px' }"
+            multiple
+            placeholder="Please select role"
+          >
+            <a-option
+              v-for="role in rolesStore"
+              :key="role.id"
+              :tag-props="{ color: getColor(role.roleSort) }"
+              :value="role.id"
             >
-              <a-option
-                v-for="role in rolesStore"
-                :key="role.id"
-                :tag-props="{ color: getColor(role.roleSort) }"
-                :value="role.id"
-              >
-                {{ role.roleName }}
-              </a-option>
-            </a-select>
-            <a-tag color="green">下级部门也会继承此角色</a-tag>
-          </a-col>
-          <a-col :span="10">
+              {{ role.roleName }}
+            </a-option>
+          </a-select>
+          <a-tag color="green">下级部门也会继承此角色</a-tag>
+        </a-form-item>
+
+
             <a-form-item
               :label="$t('syscenter.dept-manger.dept.form.status')"
               :tooltip="$t('syscenter.dept-manger.dept.form.status.help')"
@@ -452,15 +492,37 @@
             >
               <a-radio-group v-model:model-value="form.status">
                 <a-radio :value="1"
-                  >{{ $t('syscenter.dept-manger.dept.form.status.1') }}
+                >{{ $t('syscenter.dept-manger.dept.form.status.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                  >{{ $t('syscenter.dept-manger.dept.form.status.0') }}
+                >{{ $t('syscenter.dept-manger.dept.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
-          </a-col>
-        </a-row>
+
+
+        <a-form-item
+          label="部门负责人角色选择"
+        >
+          <a-select
+            v-model:model-value="form.leaderRoles"
+            :default-value="[]"
+            :scrollbar="true"
+            :style="{ width: '360px' }"
+            multiple
+            placeholder="Please select role"
+          >
+            <a-option
+              v-for="role in rolesStore"
+              :key="role.id"
+              :tag-props="{ color: getColor(role.roleSort) }"
+              :value="role.id"
+            >
+              {{ role.roleName }}
+            </a-option>
+          </a-select>
+        </a-form-item>
+
       </a-form>
     </a-modal>
   </a-card>

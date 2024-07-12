@@ -16,7 +16,10 @@
                     <span>主表单信息</span>
                   </div>
                 </template>
-                <MainForm
+                <!--      支持额外拓展的一些组件,当definitionKey===Process_system_1使用userinfo-base-ext组件展示-->
+
+                <userinfobaseext v-if="mydefinitionKey === 'Process_system_1'" :privie=true :taskId="instanceId"/>
+                <MainForm v-else
                   ref="mainForm"
                   :form-json="mainFormInfo.formJson"
                   :form-data="mainFormInfo.formData"
@@ -84,9 +87,11 @@
   } from '@/api/bpmn';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import VFormRender from '@/components/FormDesigner/form-render/index.vue';
+  import userinfobaseext from '@/components/userinfo-base-ext/index.vue'
   import HistoryNodeInfo from './components/HistoryNodeInfo.vue';
   import MainForm from './components/MainForm.vue';
   import HighlightNode from './components/HighlightNode.vue';
+
 
   // 是否打开弹出框
   const drawer = ref(false);
@@ -119,6 +124,9 @@
 
   // 当前节点id
   let activityId = '';
+  let mydefinitionKey = '';
+
+
 
   /**
    * 初始化
@@ -142,10 +150,13 @@
   const open = async (
     instance_id: string,
     taskId: string,
-    taskDefinitionKey: string
+    taskDefinitionKey: string,
+  definitionKey: string
+
   ) => {
     instanceId.value = instance_id;
     tabsValue.value = '1';
+    mydefinitionKey = definitionKey;
     historyRecord();
     // 加载审批输一局
     form.value.processInstanceId = instance_id;

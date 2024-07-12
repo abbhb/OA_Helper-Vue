@@ -1,8 +1,9 @@
 <template>
   <div>
     <el-dialog v-model="open" title="审批" width="1200px">
+
       <!-- 节点动态表单 -->
-      <VFormRender ref="preForm" :form-json="formJson" :preview-state="true"/>
+      <VFormRender  ref="preForm" :form-json="formJson" :preview-state="true"/>
 
       <template #footer>
         <span class="dialog-footer">
@@ -47,10 +48,11 @@ let activityId = '';
 const handleOpen = async (
   instanceId: string,
   taskId: string,
-  taskDefinitionKey: string
+  taskDefinitionKey: string,
 ) => {
   form.value.processInstanceId = instanceId;
   activityId = taskDefinitionKey;
+
   // 获取动态表单
   const res = await getNodeForm(taskId)
   if (res.code === 1 && res.data !== '') {

@@ -18,6 +18,7 @@ export interface DeptManger {
   updateUserName?: string;
   updateTime?: string;
   roles?: Role[];
+  leaderRoles?: Role[];
   children?: DeptManger[];
 }
 

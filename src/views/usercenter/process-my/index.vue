@@ -29,7 +29,7 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd"
+        <el-button type="primary" plain icon="Plus" @click="handleAdd" disabled
         >新增
         </el-button>
       </el-col>
@@ -68,7 +68,7 @@
             icon="Pointer"
             link
             type="primary"
-            @click="handleHistoryRecord(scope.row.id)"
+            @click="handleHistoryRecord(scope.row.id, scope.row.definitionKey)"
           >审批记录
           </el-button>
         </template>
@@ -155,8 +155,8 @@ function handleAdd() {
  * 审批记录
  * @param instanceId 流程实例id
  */
-function handleHistoryRecord(instanceId: string) {
-  historyRecordRef.value.open(instanceId);
+function handleHistoryRecord(instanceId: string,definitionKey:string) {
+  historyRecordRef.value.open(instanceId,definitionKey);
 }
 
 /**

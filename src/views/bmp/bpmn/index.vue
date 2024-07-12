@@ -31,6 +31,10 @@
         >
           tip:个人中心的ext信息审核只会生效Process_system_1的最新版本，如果挂起会导致无法提交审核!运维需要注意
         </el-tag>
+        <el-tag
+        >
+          tip:系统流程的命名格式为Process_system_x,只允许x为一样的再去写vue组件，通过key来判断调用组件，所以不能随意修改
+        </el-tag>
       </el-col>
     </el-row>
 

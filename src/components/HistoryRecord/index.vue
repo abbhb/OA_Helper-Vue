@@ -9,13 +9,14 @@
       >
         <el-tab-pane label="审批记录" name="1">
           <div class="history-root">
-            <el-card class="box-card main-form" shadow="hover">
+            <el-card class="box-card main-form" shadow="hover" style="height: 600px;overflow-y: auto">
               <template #header>
                 <div class="card-header">
                   <span>主表单信息</span>
                 </div>
               </template>
-              <MainForm
+              <userinfobaseext :key="instanceId" v-if="mydefinitionKey === 'Process_system_1'" :privie=true :taskId="instanceId"/>
+              <MainForm v-else
                 ref="mainForm"
                 :form-json="mainFormInfo.formJson"
                 :form-data="mainFormInfo.formData"
@@ -60,6 +61,7 @@
     getMainFormInfo,
   } from '@/api/bpmn';
   import VFormRender from '@/components/FormDesigner/form-render/index.vue';
+  import userinfobaseext from '@/components/userinfo-base-ext/index.vue'
   import HistoryNodeInfo from './components/HistoryNodeInfo.vue';
   import MainForm from './components/MainForm.vue';
   import HighlightNode from './components/HighlightNode.vue';
@@ -79,6 +81,7 @@
   const loading = ref(false);
   // tab 选择的值
   const tabsValue = ref('1');
+  let mydefinitionKey = '';
 
   /**
    * 初始化
@@ -99,9 +102,10 @@
 
     loading.value = false;
   };
-  const open = (instance_id: string) => {
+  const open = (instance_id: string,definitionKey?:string) => {
     instanceId.value = instance_id;
     tabsValue.value = '1';
+    mydefinitionKey = definitionKey;
     drawer.value = true;
     historyRecord();
   };

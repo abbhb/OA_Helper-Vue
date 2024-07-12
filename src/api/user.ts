@@ -142,6 +142,14 @@ export function userinfoExtMy() {
   return axios.get<UserInfoBaseExtStateResp>('/api/user/userinfo_ext_my');
 }
 
+export function approvalUserinfoExtData(taskId:string) {
+  return axios.get<UserInfoBaseExt>('/api/user/approval_userinfo_ext_data/'+taskId);
+}
+
+export function userinfoExtMyWthdraw() {
+  return axios.post<string>('/api/user/userinfo_ext_my_withdraw');
+}
+
 export function getUserFrontConfig() {
   return axios.get<string>('/api/user_front_config/get_user_front_config');
 }

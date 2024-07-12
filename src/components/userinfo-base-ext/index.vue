@@ -3,18 +3,34 @@
   import {computed, reactive, ref} from 'vue';
   import { useUserStore } from '@/store';
   import {
-    updataUserInfo,
+    approvalUserinfoExtData,
     updataUserInfoBaseExt,
     UserInfoBaseExt,
     UserInfoBaseExtStateResp,
-    userinfoExtMy
+    userinfoExtMy, userinfoExtMyWthdraw
   } from '@/api/user';
   import { Message } from '@arco-design/web-vue';
   import { pcaTextArr, pcTextArr } from 'element-china-area-data';
 
+  const props = defineProps({
+    privie: {
+      type: Boolean,
+      default: false,
+    },
+    taskId: {
+      type: String,
+      default: '',
+    },
+  });
+
   const csdselectedOptions = ref();
   const jgselectedOptions = ref();
   const sydselectedOptions = ref();
+  const csdselectedOptionsR = ref();
+  const jgselectedOptionsR = ref();
+  const sydselectedOptionsR = ref();
+  const yanshizhuangtai = ref(1);// 1个人未审核可以编辑，2个人审核中预览，3审核组件
+  const yanshizhuangtaiTaskId = ref('');
   const zzmmoptions = ['群众', '共青团员', '预备党员', '中共党员'];
   const mzoptions = [
     '汉族',
@@ -74,9 +90,6 @@
   const sfzlxOptions = ['身份证', '护照', '军官证', '其他']; // Example options for 身份证件类型
   const userinfo_base_ext_state = ref<UserInfoBaseExtStateResp>();
   const loading = ref(false);
-  const onlyRead = computed(()=>{
-    return !userinfo_base_ext_state.value.state
-  })
   const form = reactive<UserInfoBaseExt>({
     zsxm: '',
     csd1: '',
@@ -98,6 +111,11 @@
     sfzLx: '', // 身份证件类型
     sfzId: '', // 身份证号
   });
+  if (props.privie){
+    yanshizhuangtai.value = 3;
+    // eslint-disable-next-line vue/no-setup-props-destructure
+    yanshizhuangtaiTaskId.value = props.taskId;
+  }
 
   const rules = {
     sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
@@ -134,6 +152,67 @@
       Message.error(e);
     }
   };
+  const initSelect = ()=>{
+    const sydS = [];
+    sydS.push(form.syd1)
+    sydS.push(form.syd2)
+    sydselectedOptions.value = sydS;
+
+    const csdS = [];
+    csdS.push(form.csd1)
+    csdS.push(form.csd2)
+    csdS.push(form.csd3)
+    csdselectedOptions.value = csdS;
+
+    const jg = [];
+    jg.push(form.jg1)
+    jg.push(form.jg2)
+    jg.push(form.jg3)
+    jgselectedOptions.value = jg;
+
+    if (yanshizhuangtai.value===2){
+      const sydS = [];
+      sydS.push(userinfo_base_ext_state.value.newInfo.syd1)
+      sydS.push(userinfo_base_ext_state.value.newInfo.syd2)
+      sydselectedOptionsR.value = sydS;
+
+      const csdS = [];
+      csdS.push(userinfo_base_ext_state.value.newInfo.csd1)
+      csdS.push(userinfo_base_ext_state.value.newInfo.csd2)
+      csdS.push(userinfo_base_ext_state.value.newInfo.csd3)
+      csdselectedOptionsR.value = csdS;
+
+      const jg = [];
+      jg.push(userinfo_base_ext_state.value.newInfo.jg1)
+      jg.push(userinfo_base_ext_state.value.newInfo.jg2)
+      jg.push(userinfo_base_ext_state.value.newInfo.jg3)
+      jgselectedOptionsR.value = jg;
+    }
+
+
+  }
+  const cleanForm = () => {
+    form.phone = '';
+    form.studentId = '';
+    form.detailAddress = '';
+    form.sfzLx = '';
+    form.csrq = '';
+    form.csd1 = '';
+    form.csd2 = '';
+    form.csd3 = '';
+    form.zzmm = '';
+    form.jg1 = '';
+    form.jg2 = '';
+    form.jg3 = '';
+    form.syd1 = '';
+    form.syd2 = '';
+    form.sex = '';
+    form.mz = '';
+    form.sfzId = '';
+    form.idPhoto = '';
+    form.zsxm = '';
+
+  }
 
   const csdChange = (newVal) => {
     // eslint-disable-next-line prefer-destructuring
@@ -160,16 +239,28 @@
 
   const cancelEdit = async () => {
     // 取消修改
-
+    const data = await userinfoExtMyWthdraw();
+    Message.success(data.msg);
     await initData();
   }
   const initData = async () => {
     loading.value = true;
-    const {data} = await userinfoExtMy()
-    userinfo_base_ext_state.value = data;
-    if (!userinfo_base_ext_state.value.state){
-      // 正在审核
-      // eslint-disable-next-line no-useless-concat
+    cleanForm();
+    if (yanshizhuangtai.value!==3){
+      const {data} = await userinfoExtMy()
+
+      userinfo_base_ext_state.value = data;
+      if (!userinfo_base_ext_state.value.state){
+        yanshizhuangtai.value = 1;
+
+        // 正在审核
+        // eslint-disable-next-line no-useless-concat
+
+      }
+      else {
+        yanshizhuangtai.value = 2;
+
+      }
       form.zsxm = userinfo_base_ext_state.value.currentInfo?.zzmm || ''
       form.csd1 = userinfo_base_ext_state.value.currentInfo?.csd1 || '';
       form.csd2 = userinfo_base_ext_state.value.currentInfo?.csd2 || '';
@@ -191,7 +282,34 @@
       form.detailAddress = userinfo_base_ext_state.value.currentInfo?.detailAddress || '';
       form.sfzLx = userinfo_base_ext_state.value.currentInfo?.sfzLx || '';
       form.sfzId = userinfo_base_ext_state.value.currentInfo?.sfzId || '';
+    }else {
+      yanshizhuangtai.value = 3;
+      const {data} = await approvalUserinfoExtData(yanshizhuangtaiTaskId.value);
+      form.zsxm = data?.zsxm || ''
+      form.csd1 = data?.csd1 || '';
+      form.csd2 = data?.csd2 || '';
+      form.csd3 = data?.csd3 || '';
+      // eslint-disable-next-line no-useless-concat
+      form.zzmm = data?.zzmm || ''
+      form.jg1 = data?.jg1 || '';
+      form.jg2 = data?.jg2 || '';
+      form.jg3 = data?.jg3 || '';
+      form.syd1 = data?.syd1 || '';
+      form.syd2 = data?.syd2 || '';
+      form.sex = data?.sex || '';
+      form.mz = data?.mz || '';
+      form.csrq = data?.csrq || '';
+      form.studentId = data?.studentId || '';
+      // eslint-disable-next-line no-useless-concat
+      form.phone = data?.phone || ''
+      form.idPhoto = data?.idPhoto || '';
+      form.detailAddress = data?.detailAddress || '';
+      form.sfzLx = data?.sfzLx || '';
+      form.sfzId = data?.sfzId || '';
     }
+    initSelect();
+
+
     loading.value = false;
   }
   initData();
@@ -212,15 +330,15 @@
     <a-space direction="vertical" size="large" :style="{ width: '600px' }">
       <span class="title">
         个人基础信息
-        <span style="color: red" v-if="!onlyRead">[审核中]</span>
-        <span v-else>[修改需要审核]</span>
-        <span style="color: dodgerblue;font-size: 12px;cursor: pointer" v-if="!onlyRead" @click="cancelEdit">撤回修改</span>
+        <span style="color: red" v-if="yanshizhuangtai===2">[审核中]</span>
+        <span v-else-if="yanshizhuangtai===1">[修改需要审核]</span>
+        <span style="color: dodgerblue;font-size: 12px;cursor: pointer" v-if="yanshizhuangtai===2" @click="cancelEdit">撤回修改</span>
       </span>
       <div style="display: flex">
-        <div style="padding: 10px 10px 10px 10px;margin-right: 3rem" :style="onlyRead?'width:700px;':'width:350px;'">
-          <el-tag size="large" v-if="!onlyRead">当前</el-tag>
+        <div style="padding: 10px 10px 10px 10px;margin-right: 3rem" :style="yanshizhuangtai===1||yanshizhuangtai===3?'width:700px;':'width:350px;'">
+          <el-tag size="large" v-if="yanshizhuangtai===2">当前</el-tag>
 
-          <a-form :disabled="!onlyRead" ref="formRef" :rules="rules" :model="onlyRead?userinfo_base_ext_state.currentInfo:form" :style="{ width:onlyRead?'700px': '300px' }" @submit="handleSubmit">
+          <a-form :disabled="yanshizhuangtai!==1" ref="formRef" :rules="rules" :model="yanshizhuangtai===2?userinfo_base_ext_state.currentInfo:form" :style="{ width:yanshizhuangtai!==2?'700px': '300px' }" @submit="handleSubmit">
             <a-form-item field="zsxm" label="真实姓名">
               <a-input
                 v-model="form.zsxm"
@@ -267,7 +385,7 @@
             </a-form-item>
             <a-form-item label="籍贯" field="jg">
               <el-cascader
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 v-model="jgselectedOptions"
                 size="large"
                 placeholder="请选择籍贯"
@@ -278,7 +396,7 @@
             </a-form-item>
             <a-form-item label="出生地" field="csd">
               <el-cascader
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
 
                 v-model="csdselectedOptions"
                 placeholder="请选择出生地"
@@ -290,14 +408,14 @@
             </a-form-item>
             <a-form-item label="详细地址" field="detailAddress">
               <el-input             v-model:model-value="form.detailAddress"
-                                    :disabled="!onlyRead" :type="'textarea'">
+                                    :disabled="yanshizhuangtai!==1" :type="'textarea'">
               </el-input>
             </a-form-item>
             <a-form-item label="生源地" field="syd">
               <el-cascader
                 v-model="sydselectedOptions"
                 placeholder="请选择生源地"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 size="large"
                 :options="pcTextArr"
                 @change="sydChange"
@@ -308,7 +426,7 @@
               <el-select
                 v-model="form.zzmm"
                 placeholder="请选择政治面貌"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 size="large"
                 filterable
                 style="width: 240px"
@@ -325,7 +443,7 @@
               <el-select
                 v-model="form.mz"
                 placeholder="请选择民族"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 size="large"
                 filterable
                 style="width: 240px"
@@ -343,7 +461,7 @@
                 v-model="form.sfzLx"
                 placeholder="请选择证件类型"
                 size="large"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 filterable
                 style="width: 240px"
               >
@@ -366,7 +484,7 @@
             </a-form-item>
             <a-form-item field="idPhoto" label="证件照">
               <ImageUpload
-                :readonly="!onlyRead"
+                :readonly="yanshizhuangtai!==1"
                 :draggable="true"
                 :image="form.idPhoto"
                 url="./api/common/uploadimage"
@@ -375,7 +493,7 @@
             </a-form-item>
             <a-form-item field="csrq" label="出生日期">
               <el-date-picker
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 v-model="form.csrq"
                 type="date"
                 placeholder="选择出生日期"
@@ -391,9 +509,9 @@
           </a-form>
 
         </div>
-        <div style="width: 350px;" v-if="!onlyRead">
+        <div style="width: 350px;" v-if="yanshizhuangtai===2">
           <el-tag size="large">修改成功后</el-tag>
-          <a-form :disabled="!onlyRead" ref="formRef" :rules="rules" :model="userinfo_base_ext_state.newInfo" :style="{ width: '300px' }">
+          <a-form :disabled="yanshizhuangtai!==1" ref="formRef" :rules="rules" :model="userinfo_base_ext_state.newInfo" :style="{ width: '300px' }">
             <a-form-item field="zsxm" label="真实姓名" >
               <a-input
                 v-model="userinfo_base_ext_state.newInfo.zsxm"
@@ -440,8 +558,8 @@
             </a-form-item>
             <a-form-item label="籍贯" field="jg">
               <el-cascader
-                :disabled="!onlyRead"
-                v-model="jgselectedOptions"
+                :disabled="yanshizhuangtai!==1"
+                v-model="jgselectedOptionsR"
                 size="large"
                 placeholder="请选择籍贯"
                 :options="pcaTextArr"
@@ -451,9 +569,9 @@
             </a-form-item>
             <a-form-item label="出生地" field="csd">
               <el-cascader
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
 
-                v-model="csdselectedOptions"
+                v-model="csdselectedOptionsR"
                 placeholder="请选择出生地"
                 size="large"
                 :options="pcaTextArr"
@@ -463,14 +581,15 @@
             </a-form-item>
             <a-form-item label="详细地址" field="detailAddress">
               <el-input             v-model:model-value="userinfo_base_ext_state.newInfo.detailAddress"
-                                    :disabled="!onlyRead" :type="'textarea'">
+                                    :disabled="yanshizhuangtai!==1"
+                                    :type="'textarea'">
               </el-input>
             </a-form-item>
             <a-form-item label="生源地" field="syd">
               <el-cascader
-                v-model="sydselectedOptions"
+                v-model="sydselectedOptionsR"
                 placeholder="请选择生源地"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 size="large"
                 :options="pcTextArr"
                 @change="sydChange"
@@ -481,7 +600,7 @@
               <el-select
                 v-model="userinfo_base_ext_state.newInfo.zzmm"
                 placeholder="请选择政治面貌"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 size="large"
                 filterable
                 style="width: 240px"
@@ -498,7 +617,7 @@
               <el-select
                 v-model="userinfo_base_ext_state.newInfo.mz"
                 placeholder="请选择民族"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 size="large"
                 filterable
                 style="width: 240px"
@@ -516,7 +635,7 @@
                 v-model="userinfo_base_ext_state.newInfo.sfzLx"
                 placeholder="请选择证件类型"
                 size="large"
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 filterable
                 style="width: 240px"
               >
@@ -539,8 +658,9 @@
             </a-form-item>
             <a-form-item field="idPhoto" label="证件照">
               <ImageUpload
-                :readonly="!onlyRead"
+                :readonly="yanshizhuangtai!==1"
                 :draggable="true"
+                :key="userinfo_base_ext_state.newInfo.idPhoto"
                 :image="userinfo_base_ext_state.newInfo.idPhoto"
                 url="./api/common/uploadimage"
                 @on-success="handleSuccess"
@@ -548,7 +668,7 @@
             </a-form-item>
             <a-form-item field="csrq" label="出生日期">
               <el-date-picker
-                :disabled="!onlyRead"
+                :disabled="yanshizhuangtai!==1"
                 v-model="userinfo_base_ext_state.newInfo.csrq"
                 type="date"
                 placeholder="选择出生日期"
