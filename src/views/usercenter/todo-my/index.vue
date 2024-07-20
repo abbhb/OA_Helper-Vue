@@ -1,4 +1,17 @@
 <template>
+  <a-card
+    class="general-card"
+    :header-style="{ paddingBottom: '0' }"
+    :body-style="{ padding: '17px 20px 21px 20px' }"
+  >
+    <template #title>
+      我的待办
+    </template>
+    <template #extra>
+      <a-link v-if="!props.noMore" @click="emit('alertSome')"
+      >{{ $t('workplace.viewMore') }}
+      </a-link>
+    </template>
   <div>
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
       <el-form-item label="流程名称">
@@ -67,14 +80,24 @@
     <!-- 审批记录 -->
     <HistoryRecordApproval ref="historyRecordApprovalRef" @ok="getList" />
   </div>
+  </a-card>
+
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive } from 'vue';
+import {ref, reactive, defineEmits} from 'vue';
   import HistoryRecordApproval from '@/components/HistoryRecordApproval/index.vue';
   import { processTodoList } from '@/api/bpmn';
   import Approval from './model/Approval.vue';
 
+
+const props = defineProps({
+  noMore: {
+    type: Boolean,
+    default: false,
+  },
+});
+const emit = defineEmits(['alertSome']);
   // 查询参数
   const queryForm = reactive({
     definitionName: '',

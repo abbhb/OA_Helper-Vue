@@ -17,10 +17,19 @@
         >
           <PopularContent @alert-some="router.push({ name: 'Notice-List' })"/>
         </a-grid-item>
+
+
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
           <IndexImage @alert-some="StatusTh.indexImageModelStatus = true" />
+        </a-grid-item>
+
+
+        <a-grid-item
+          :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
+        >
+          <todoMy @alert-some="router.push({ name: 'Todo' })"/>
         </a-grid-item>
       </a-grid>
     </div>
@@ -74,6 +83,7 @@ import {driver} from 'driver.js';
 import {confirmToServer, isConfirm} from '@/api/common';
 import router from '@/router';
 import {FIRST_PAGE_HELPER, FIRST_SUCCESS_UPDATE_USER_INFO,} from '@/utils/my-string';
+import todoMy from '@/views/usercenter/todo-my/index.vue';
 import Banner from './components/banner.vue';
 import DataPanel from './components/data-panel.vue';
 import PopularContent from './components/popular-content.vue';
