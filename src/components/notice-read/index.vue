@@ -1,40 +1,43 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
-import {getNoticeRead} from '@/api/notice';
+  import { ref } from 'vue';
+  import { getNoticeRead } from '@/api/notice';
 
-const props = defineProps({
-  noticeId: {
-    type: String,
-    default: '',
-  },
-  isPre: {
-    type: Boolean,
-    default: false, // 默认不是预发布
-  },
-});
-// const emit = defineEmits(['alertSome']);
+  const props = defineProps({
+    noticeId: {
+      type: String,
+      default: '',
+    },
+    isPre: {
+      type: Boolean,
+      default: false, // 默认不是预发布
+    },
+  });
+  // const emit = defineEmits(['alertSome']);
 
-const statuEs = ref({
-  error: '',
-  status: 1, // 默认为1，就是还没请求的状态，为0就是有异常，2就是正常返回了数据正常预览
-  data: null,
-});
+  const statuEs = ref({
+    error: '',
+    status: 1, // 默认为1，就是还没请求的状态，为0就是有异常，2就是正常返回了数据正常预览
+    data: null,
+  });
 
-const initData = async () => {
-  if (props.isPre) {
-    // 预发布的不能直接获取，会显示密码输入窗
-    return;
-  }
-  const res = await getNoticeRead(props.noticeId);
-  if (res.code === 1) {
-    statuEs.value.status = 2;
-    statuEs.value.data = res.data;
-  } else {
-    statuEs.value.status = 0;
-    statuEs.value.error = res.msg;
-  }
-};
-initData();
+  const initData = async () => {
+    if (props.isPre) {
+      // 预发布的不能直接获取，会显示密码输入窗
+      return;
+    }
+    const res = await getNoticeRead(props.noticeId);
+    if (res.code === 1) {
+      statuEs.value.status = 2;
+      statuEs.value.data = res.data;
+    } else {
+      statuEs.value.status = 0;
+      statuEs.value.error = res.msg;
+    }
+  };
+  initData();
+  const download = (downloadUrl: string) => {
+    window.open(downloadUrl);
+  };
 </script>
 
 <template>
@@ -59,14 +62,16 @@ initData();
             class="fujian-item"
           >
             <div>
-              <icon-file :size="38"/>
+              <icon-file :size="38" />
             </div>
             <div>
               <div>
                 {{ item.fileName }}
               </div>
               <div>
-                <a-button type="text">下载</a-button>
+                <a-button type="text" @click="download(item.fileUrl)"
+                  >下载</a-button
+                >
               </div>
             </div>
           </div>
@@ -77,9 +82,9 @@ initData();
 </template>
 
 <style lang="less" scoped>
-.fujian-item {
-  display: flex;
-  flex-direction: row;
-  margin-left: 5px;
-}
+  .fujian-item {
+    display: flex;
+    flex-direction: row;
+    margin-left: 5px;
+  }
 </style>
