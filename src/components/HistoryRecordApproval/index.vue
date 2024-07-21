@@ -221,8 +221,9 @@
       const res = await completeProcessTodo(form.value);
       if (res.code === 1) {
         ElMessage.success(res.msg);
-        open.value = false;
         emit('ok');
+        drawer.value = false;
+
       }
     });
   }

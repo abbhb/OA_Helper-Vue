@@ -94,33 +94,33 @@
       </li>
 
       <!--     // todo:消息模块单独做，需要添加到此处的消息直接添加至表即可，每次点开此处都请求 -->
-      <!--      <li>-->
-      <!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
-      <!--          <div class="message-box-trigger">-->
-      <!--            <a-badge :count="9" dot>-->
-      <!--              <a-button-->
-      <!--                class="nav-btn"-->
-      <!--                type="outline"-->
-      <!--                :shape="'circle'"-->
-      <!--                @click="setPopoverVisible"-->
-      <!--              >-->
-      <!--                <icon-notification />-->
-      <!--              </a-button>-->
-      <!--            </a-badge>-->
-      <!--          </div>-->
-      <!--        </a-tooltip>-->
-      <!--        <a-popover-->
-      <!--          trigger="click"-->
-      <!--          :arrow-style="{ display: 'none' }"-->
-      <!--          :content-style="{ padding: 0, minWidth: '400px' }"-->
-      <!--          content-class="message-popover"-->
-      <!--        >-->
-      <!--          <div ref="refBtn" class="ref-btn"></div>-->
-      <!--          <template #content>-->
-      <!--            <MessageBox />-->
-      <!--          </template>-->
-      <!--        </a-popover>-->
-      <!--      </li>-->
+      <li>
+        <a-tooltip :content="$t('settings.navbar.alerts')">
+          <div class="message-box-trigger">
+            <a-badge :count="NoRead" :dot="true">
+              <a-button
+                class="nav-btn"
+                type="outline"
+                :shape="'circle'"
+                @click="setPopoverVisible"
+              >
+                <icon-notification />
+              </a-button>
+            </a-badge>
+          </div>
+        </a-tooltip>
+        <a-popover
+          trigger="click"
+          :arrow-style="{ display: 'none' }"
+          :content-style="{ padding: 0, minWidth: '400px' }"
+          content-class="message-popover"
+        >
+          <div ref="refBtn" class="ref-btn"></div>
+          <template #content>
+            <MessageBox />
+          </template>
+        </a-popover>
+      </li>
       <li>
         <a-tooltip
           :content="
@@ -216,28 +216,34 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from 'vue';
-import {Message} from '@arco-design/web-vue';
-import {useDark, useFullscreen, useToggle} from '@vueuse/core';
-import {useAppStore, useUserStore} from '@/store';
-import {LOCALE_OPTIONS} from '@/locale';
-import useLocale from '@/hooks/locale';
-import useUser from '@/hooks/user';
-import Menu from '@/components/menu/index.vue';
-import router from '@/router';
-import version from '@/config/version.json';
+  import { computed, inject, ref } from 'vue';
+  import { Message } from '@arco-design/web-vue';
+  import { useDark, useFullscreen, useToggle } from '@vueuse/core';
+  import { useAppStore, useUserStore } from '@/store';
+  import { LOCALE_OPTIONS } from '@/locale';
+  import useLocale from '@/hooks/locale';
+  import useUser from '@/hooks/user';
+  import Menu from '@/components/menu/index.vue';
+  import router from '@/router';
+  import MessageBox from '@/components/message-box/index.vue';
+  import version from '@/config/version.json';
+  import {useSystemMessageStore} from "@/store/modules/app/systemMessage";
 
-const appStore = useAppStore();
+  const appStore = useAppStore();
   const userStore = useUserStore();
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
   const locales = [...LOCALE_OPTIONS];
+  const systemMessageStore = useSystemMessageStore();
   const avatar = computed(() => {
     return userStore.avatar;
   });
   const theme = computed(() => {
     return appStore.theme;
+  });
+  const NoRead = computed(() => {
+    return systemMessageStore.noReadCount.noread;
   });
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
   const currentVersion = version[version.length - 1].version;

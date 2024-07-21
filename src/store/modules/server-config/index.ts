@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getPublicKey, getSystemMessage } from '@/api/common';
+import { getPublicKey, getSystemMessageConfig } from '@/api/common';
 import { ServerConfigState } from '@/store/modules/server-config/types';
 
 const useServerConfigStore = defineStore('server-config', {
@@ -32,7 +32,7 @@ const useServerConfigStore = defineStore('server-config', {
       return res.data;
     },
     async updateSystemMessageConfig() {
-      const { data } = await getSystemMessage();
+      const { data } = await getSystemMessageConfig();
       this.systemMessage.roomId = data.roomId;
       this.systemMessage.userId = data.userId;
     },

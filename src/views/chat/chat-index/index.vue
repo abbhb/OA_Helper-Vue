@@ -14,14 +14,17 @@
   import { useChatStore } from '@/store/modules/chat/chat';
   import { useUserStore } from '@/store';
   import { ElMessageBox } from 'element-plus';
-  import {sendMsg} from "@/api/chat";
-  import CreateGroupModal from '@/components/CreateGroupModal/index.vue'
+  import { sendMsg } from '@/api/chat';
+  import CreateGroupModal from '@/components/CreateGroupModal/index.vue';
+  import router from '@/router';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import { RoomTypeEnum } from '@/types/enums/chat';
+  import useServerConfigStore from '@/store/modules/server-config';
   import SideBar from './components/SideBar/index.vue';
   import ToolBar from './components/ToolBar/index.vue';
   import ChatBox from './components/ChatBox/index.vue';
   import VideoPlayer from './components/VideoPlayer/index.vue';
   import PostCard from './components/PostCard/PostCard.vue';
-
 
   type TContainerDListener = {
     messageId: number | null;
@@ -30,7 +33,8 @@
     dragLeave: (e: DragEvent) => any;
     drop: (e: DragEvent) => any;
   };
-
+  const globalStore = useGlobalStore();
+  const serverConfigStore = useServerConfigStore();
   const imageStore = useImgPreviewStore();
   const videoStore = useVideoPreviewStore();
   const userStore = useUserStore();
@@ -42,6 +46,7 @@
       videoStore.close();
     }
   };
+  const { toSystem } = router.currentRoute.value.query;
 
   watch(
     () => videoStore.isPlaying,
@@ -58,7 +63,7 @@
     () => userStore.isSign,
     (newValue) => {
       if (newValue) {
-        console.log("开始更新已读数")
+        console.log('开始更新已读数');
         initListener();
         readCountQueue();
       }
@@ -102,19 +107,17 @@
             dangerouslyUseHTMLString: true,
           }).then(async () => {
             // 发送消息
-            const {data} = await sendMsg({
+            const { data } = await sendMsg({
               roomId: String(target.dataset.roomId),
               msgType: message.message.type,
               body: message.message.body,
-            })
+            });
             chatStore.pushMsg(data);
             // // 发完消息就要刷新会话列表，
             // //  FIXME 如果当前会话已经置顶了，可以不用刷新
             chatStore.updateSessionLastActiveTime(
               String(target.dataset.roomId)
             );
-
-
           });
         }
       }
@@ -154,13 +157,17 @@
 
   onMounted(() => {
     initListeners();
+    if (toSystem && toSystem === 'to') {
+      globalStore.currentSession.roomId = serverConfigStore.systemMessage.roomId;
+      globalStore.currentSession.type = RoomTypeEnum.Group;
+      console.log('路由跳转切换');
+    }
   });
 
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown);
     removeListeners();
     clearListener();
-
   });
 </script>
 
@@ -182,7 +189,7 @@
       <VideoPlayer :url="videoStore.previewUrl" style="pointer-events: auto" />
     </div>
     <AddFriendModal />
-    <CreateGroupModal/>
+    <CreateGroupModal />
     <MsgReadModal />
   </main>
 </template>

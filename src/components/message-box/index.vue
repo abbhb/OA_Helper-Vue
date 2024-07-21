@@ -1,18 +1,24 @@
 <template>
   <a-spin style="display: block" :loading="loading">
     <a-tabs v-model:activeKey="messageType" type="rounded" destroy-on-hide>
-      <a-tab-pane v-for="item in tabList" :key="item.key">
+      <a-tab-pane key="message">
         <template #title>
-          <span> {{ item.title }}{{ formatUnreadLength(item.key) }} </span>
+          <span> 系统通知{{ SystemUnreadCount }} </span>
         </template>
         <a-result v-if="!renderList.length" status="404">
           <template #subtitle> {{ $t('messageBox.noContent') }} </template>
         </a-result>
-        <List
-          :render-list="renderList"
-          :unread-count="unreadCount"
-          @item-click="handleItemClick"
-        />
+        <a-spin :loading="loading">
+          <List
+            :render-list="renderList"
+            :unread-count="unreadCount"
+            @item-click="handleItemClick"
+            @remove="handleRemove"
+            @all-read="handleAllRead"
+            @read-more="readMore"
+
+          />
+        </a-spin>
       </a-tab-pane>
       <template #extra>
         <a-button type="text" @click="emptyList">
@@ -33,6 +39,14 @@
     MessageListType,
   } from '@/api/message';
   import useLoading from '@/hooks/loading';
+  import { useSystemMessageStore } from '@/store/modules/app/systemMessage';
+  import {
+    readPost,
+    readPostBatch,
+    SystemMessageResp,
+  } from '@/api/system-message';
+  import { Message } from '@arco-design/web-vue';
+  import router from "@/router";
   import List from './list.vue';
 
   interface TabItem {
@@ -40,7 +54,6 @@
     title: string;
     avatar?: string;
   }
-  const { loading, setLoading } = useLoading(true);
   const messageType = ref('message');
   const { t } = useI18n();
   const messageData = reactive<{
@@ -51,22 +64,10 @@
     messageList: [],
   });
   toRefs(messageData);
-  const tabList: TabItem[] = [
-    {
-      key: 'message',
-      title: t('messageBox.tab.title.message'),
-    },
-    {
-      key: 'notice',
-      title: t('messageBox.tab.title.notice'),
-    },
-    {
-      key: 'todo',
-      title: t('messageBox.tab.title.todo'),
-    },
-  ];
+
+  const systemMessageStore = useSystemMessageStore();
+
   async function fetchSourceData() {
-    setLoading(true);
     try {
       // const { data } = await queryMessageList();
       messageData.messageList = [
@@ -76,7 +77,8 @@
           title: '11',
           subTitle: 'http://baidu.com',
           avatar: '',
-          content: '消息模块单独做，需要添加到此处的消息直接添加至表即可，每次点开此处都请求。',
+          content:
+            '消息模块单独做，需要添加到此处的消息直接添加至表即可，每次点开此处都请求。',
           time: '123',
           status: 0,
           messageType: 1,
@@ -84,38 +86,66 @@
       ];
     } catch (err) {
       // you can report use errorHandler or other
-    } finally {
-      setLoading(false);
     }
   }
-  async function readMessage(data: MessageListType) {
-    const ids = data.map((item) => item.id);
-    await setMessageStatus({ ids });
-    fetchSourceData();
-  }
+
   const renderList = computed(() => {
-    return messageData.messageList.filter(
-      (item) => messageType.value === item.type
-    );
+    return systemMessageStore.systemMessageList;
   });
   const unreadCount = computed(() => {
-    return renderList.value.filter((item) => !item.status).length;
+    return systemMessageStore.noReadCount.noread;
   });
-  const getUnreadList = (type: string) => {
-    const list = messageData.messageList.filter(
-      (item) => item.type === type && !item.status
-    );
-    return list;
+  const SystemUnreadCount = computed(() => {
+    return unreadCount;
+  });
+  const loading = computed(() => {
+    return systemMessageStore.isLoading;
+  });
+
+  const handleItemClick = async (items: SystemMessageResp) => {
+    if (renderList.value.length && !items.read) {
+      // 标记并打开
+      await readPost(items.id, 1);
+      await systemMessageStore.getSystemMessageList();
+    }
   };
-  const formatUnreadLength = (type: string) => {
-    const list = getUnreadList(type);
-    return list.length ? `(${list.length})` : ``;
+  const handleRemove = async (id: string) => {
+    if (renderList.value.length) {
+      // 标记并打开
+      await readPost(id, 2);
+      await systemMessageStore.getSystemMessageList();
+    }
   };
-  const handleItemClick = (items: MessageListType) => {
-    if (renderList.value.length) readMessage([...items]);
+  const readMore = () => {
+    router.push({name:'Chat-Index',query:{
+        toSystem:'to'
+      }})
+  }
+  const handleAllRead = async () => {
+    const ids = [];
+    const temp = systemMessageStore.systemMessageList;
+    for (let i = 0; i < temp.length; i += 1) {
+      ids.push(temp[i].id);
+    }
+    const res = await readPostBatch(ids, 2);
+    // @ts-ignore
+    if (res.code === 1) {
+      // @ts-ignore
+      Message.success(res.msg);
+    }
   };
-  const emptyList = () => {
-    messageData.messageList = [];
+  const emptyList = async () => {
+    const ids = [];
+    const temp = systemMessageStore.systemMessageList;
+    for (let i = 0; i < temp.length; i += 1) {
+      ids.push(temp[i].id);
+    }
+    const res = await readPostBatch(ids, 2);
+    // @ts-ignore
+    if (res.code === 1) {
+      // @ts-ignore
+      Message.success(res.msg);
+    }
   };
   fetchSourceData();
 </script>

@@ -298,11 +298,11 @@ export type MsgType = {
  */
 export type MessageType = {
   /** 发送者信息 */
-  fromUser: MsgUserType;
+  fromUser?: MsgUserType;
   /** 消息主体 */
-  message: MsgType;
+  message?: MsgType;
   /** 发送时间 */
-  sendTime: string;
+  sendTime?: string;
   /** 时间段（可选） */
   timeBlock?: string;
   /** 是否加载中 */

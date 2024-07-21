@@ -13,6 +13,9 @@
   import useLocale from '@/hooks/locale';
   import { useAppStore } from '@/store';
   import router from "@/router";
+  import {useSystemMessageStore} from "@/store/modules/app/systemMessage";
+
+  const systemMessageStore = useSystemMessageStore();
 
   const appStore = useAppStore();
   appStore.initSettings();

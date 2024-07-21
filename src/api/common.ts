@@ -23,7 +23,7 @@ export function getPublicKey() {
   return axios.get<string>('/api/common/get_public_key');
 }
 
-export function getSystemMessage() {
+export function getSystemMessageConfig() {
   return axios.get<SystemMessageConfig>('/api/common/get_system_message');
 }
 

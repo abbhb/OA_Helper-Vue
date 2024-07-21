@@ -219,6 +219,7 @@
 <style scoped lang="less">
   .general-card {
     min-height: 395px;
+    height: 453px;
   }
   :deep(.arco-table-tr) {
     height: 44px;
