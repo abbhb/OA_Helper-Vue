@@ -17,6 +17,13 @@ export interface Password {
   newPassword: string;
 }
 
+export interface ResetReq {
+  userId: string;
+}
+export interface ResetResp {
+  newPassword: string;
+}
+
 export interface UserInfo {
   username?: string;
   id?: string;
@@ -29,6 +36,7 @@ export interface UserInfo {
   deptId?: string;
   deptName?: string;
 }
+
 export interface UserInfoBaseExtStateResp {
     state:boolean; // 修改状态1 在等待审核中 0就是可以修改
     currentInfo?: UserInfoBaseExt
@@ -92,6 +100,11 @@ interface UserFrontConfigReq {
 export function login(data: LoginData) {
   return axios.post<LoginRes>('/api/user/login', data);
 }
+export function resetPassword(data: ResetReq) {
+  return axios.post<ResetResp>('/api/user/reset_password', data);
+}
+
+
 export function loginbycode(data: LoginDataByCode) {
   return axios.post<LoginRes>('/api/user/loginbycode', data);
 }
@@ -175,6 +188,7 @@ export function getUserListManger(params: {
   name?: string;
   deptId?: string;
   cascade: number;
+  mustHaveStudentId: number;
 }) {
   return axios.get<PageData<UserManger[]>>('/api/user/user_manger', { params });
 }

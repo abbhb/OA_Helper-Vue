@@ -3,11 +3,17 @@
   import { computed, ref } from 'vue';
   import { useAppStore } from '@/store';
   import { GroupUserFront } from '@/api/group';
-  import {getUserListManger, updataUserByAdmin, updataUserStatusByAdmin, UserManger} from '@/api/user';
+  import {
+    getUserListManger,
+    resetPassword,
+    updataUserByAdmin,
+    updataUserStatusByAdmin,
+    UserManger,
+  } from '@/api/user';
   import { Message } from '@arco-design/web-vue';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { getColor } from '@/utils/color-index';
-  import {deptListTree, DeptManger} from '@/api/dept';
+  import { deptListTree, DeptManger } from '@/api/dept';
   import { Role, roleTagList } from '@/api/role';
   import ImageUpload from '@/components/image/ImageUpload.vue';
 
@@ -17,6 +23,8 @@
   interface statuEI {
     name?: string;
     searchStatus?: boolean;
+    mustHaveStudentId?: number;
+    loading: boolean;
     clickLoading: boolean;
     modelstatus: boolean;
     modelType: string;
@@ -25,19 +33,27 @@
     deptId?: string;
     formModel: boolean;
     refreshKey: number;
-    jilian:boolean;
+    jilian: boolean;
   }
+  const mimachongzhi = ref({
+    userName: '',
+    newPassword: '',
+    mimachongzhimodelstatus: false,
+    mimachongzhiLoading: false,
+  });
 
   const statuEs = ref<statuEI>({
     name: '',
+    mustHaveStudentId: 0,
     clickLoading: false,
+    loading: false,
     modelstatus: false,
     modelType: 'add',
     modelTitle: 'syscenter.user.manger.add.button',
     deptId: '1',
     formModel: false,
     refreshKey: 1,
-    jilian:true,
+    jilian: true,
   });
 
   const form = ref<UserManger>({
@@ -65,7 +81,7 @@
     rolesStore.value = data;
   };
   initSelect();
-  const findDepartmentsWithNonEmptyChildren = (departments:DeptManger[]) => {
+  const findDepartmentsWithNonEmptyChildren = (departments: DeptManger[]) => {
     const result: string[] = [];
 
     // eslint-disable-next-line no-restricted-syntax
@@ -73,28 +89,30 @@
       if (department.children.length > 0) {
         result.push(department.id);
       }
-      if (department.children&&department.children.length>0){
+      if (department.children && department.children.length > 0) {
         // 递归查找子部门
-        result.push(...findDepartmentsWithNonEmptyChildren(department.children));
+        result.push(
+          ...findDepartmentsWithNonEmptyChildren(department.children)
+        );
       }
-
     }
 
     return result;
-  }
+  };
   const initDeptTree = async () => {
     const { data } = await deptListTree();
     deptTreeData.value = data;
     needExpend.value = findDepartmentsWithNonEmptyChildren(data);
-
   };
   initDeptTree();
   const getData = async (pagination) => {
+    statuEs.value.loading = true;
     const { data } = await getUserListManger({
       pageNum: pagination.value.current,
       pageSize: pagination.value.pageSize,
       name: statuEs.value.name,
       cascade: statuEs.value.jilian ? 1 : 0,
+      mustHaveStudentId: statuEs.value.mustHaveStudentId,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
@@ -102,6 +120,7 @@
     });
     tableData.value = data.records;
     pagination.value.total = data.total;
+    statuEs.value.loading = false;
   };
   const pagination = ref({
     current: 1,
@@ -124,6 +143,7 @@
   getData(pagination);
 
   const getDataB = async () => {
+    statuEs.value.loading = true;
     statuEs.value.refreshKey += 1;
     pagination.value.current = 1;
     statuEs.value.searchStatus = true;
@@ -131,7 +151,8 @@
       pageNum: pagination.value.current,
       pageSize: pagination.value.pageSize,
       name: statuEs.value.name,
-      cascade:statuEs.value.jilian?1:0,
+      cascade: statuEs.value.jilian ? 1 : 0,
+      mustHaveStudentId: statuEs.value.mustHaveStudentId,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
@@ -140,6 +161,21 @@
     statuEs.value.searchStatus = false;
     tableData.value = data.records;
     pagination.value.total = Number(data.total);
+    statuEs.value.loading = false;
+  };
+  const chongzhimima = async (userInfo) => {
+    mimachongzhi.value.mimachongzhiLoading = true;
+    mimachongzhi.value.userName = userInfo.name;
+    // 重置密码接口，先打开提示窗口，显示密码重置中
+    mimachongzhi.value.mimachongzhimodelstatus = true;
+    try {
+      const { data } = await resetPassword({ userId: userInfo.id });
+      mimachongzhi.value.newPassword = data.newPassword;
+      mimachongzhi.value.mimachongzhiLoading = false;
+    } catch (e) {
+      mimachongzhi.value.mimachongzhiLoading = false;
+      mimachongzhi.value.newPassword = '重置失败';
+    }
   };
   const editAGroup = (record) => {
     statuEs.value.modelData = record;
@@ -175,8 +211,8 @@
   const IBan = async (record) => {
     if (record.status === 1) {
       // 封禁
-      const {data} = await updataUserStatusByAdmin(record.id, '0');
-      Message.success(data);
+      const data = await updataUserStatusByAdmin(record.id, '0');
+      Message.success(data.data);
       refreshData();
       return;
     }
@@ -197,7 +233,6 @@
     });
     return roleKeyList;
   });
-
 
   const handelEditOK = async (done) => {
     const rolesIdList = [];
@@ -264,18 +299,28 @@
   const changeJiLiHandel = () => {
     pagination.value.current = 1;
     getDataB();
-
-  }
+  };
 </script>
 
 <template>
   <div class="container">
     <div class="left-side">
-      <div style="padding: 2px 2px 2px 2px;margin-bottom: 3px;display: flex;align-items: center;">
+      <div
+        style="
+          padding: 2px 2px 2px 2px;
+          margin-bottom: 3px;
+          display: flex;
+          align-items: center;
+        "
+      >
         <span>包含下级部门用户</span>
-        <a-switch v-model:model-value="statuEs.jilian" style="margin-left: auto" type="round" @change="changeJiLiHandel"/>
+        <a-switch
+          v-model:model-value="statuEs.jilian"
+          style="margin-left: auto"
+          type="round"
+          @change="changeJiLiHandel"
+        />
       </div>
-
 
       <a-tree
         v-model:selected-keys="statuEs.deptId"
@@ -295,28 +340,45 @@
     </div>
     <div class="right-side">
       <a-card direction="vertical">
-        <a-table :data="tableData" :pagination="pagination">
+        <a-table
+          :data="tableData"
+          :pagination="pagination"
+          :loading="statuEs.loading"
+        >
           <template #columns>
             <a-space direction="vertical">
-              <a-input-search
-                v-model:model-value="statuEs.name"
-                :allow-clear="true"
-                :loading="statuEs.searchStatus"
-                :placeholder="$t('syscenter.user.manger.search.tip')"
-                :style="{ width: '320px' }"
-                search-button
-                style="margin-bottom: 1rem"
-                @clear="getDataB()"
-                @search="getDataB()"
-                @press-enter="getDataB()"
-              >
-                <template #button-icon>
-                  <icon-search />
-                </template>
-                <template #button-default>
-                  {{ $t('syscenter.user.manger.search') }}
-                </template>
-              </a-input-search>
+              <a-space direction="horizontal">
+                <a-input-search
+                  v-model:model-value="statuEs.name"
+                  :allow-clear="true"
+                  :loading="statuEs.searchStatus"
+                  :placeholder="$t('syscenter.user.manger.search.tip')"
+                  :style="{ width: '320px' }"
+                  search-button
+                  style="margin-bottom: 1rem"
+                  @clear="getDataB()"
+                  @search="getDataB()"
+                  @press-enter="getDataB()"
+                >
+                  <template #button-icon>
+                    <icon-search />
+                  </template>
+                  <template #button-default>
+                    {{ $t('syscenter.user.manger.search') }}
+                  </template>
+                </a-input-search>
+                <div>
+                  <span>是否必须包含学号</span>
+                  <a-switch
+                    v-model:model-value="statuEs.mustHaveStudentId"
+                    type="round"
+                    :unchecked-value="0"
+                    :checked-value="1"
+                    @change="refreshData"
+                  />
+                </div>
+              </a-space>
+
               <a-space direction="vertical">
                 <a-button
                   :loading="statuEs.clickLoading"
@@ -345,7 +407,12 @@
               :title="$t(`syscenter.user.manger.username`)"
               data-index="username"
             ></a-table-column>
-
+            <a-table-column
+              :sortable="{ sortDirections: ['ascend', 'descend'] }"
+              :title="$t(`syscenter.user.manger.studentId`)"
+              data-index="studentId"
+              :width="135"
+            ></a-table-column>
             <a-table-column
               :sortable="{ sortDirections: ['ascend', 'descend'] }"
               :title="$t(`syscenter.user.manger.avatar`)"
@@ -403,23 +470,34 @@
             </a-table-column>
             <a-table-column
               :title="$t(`syscenter.user.manger.control`)"
-              :width="220"
+              :width="100"
             >
               <template #cell="{ record }">
-                <a-button @click="editAGroup(record)"
-                  >{{ $t('syscenter.user.manger.control.edit') }}
+                <a-button v-permission="'sys:user:update'"  @click="editAGroup(record)"
+                >{{ $t('syscenter.user.manger.control.edit') }}
                 </a-button>
                 <a-button
+                  v-permission="'sys:user:update'"
                   :status="record.status === 1 ? 'danger' : 'success'"
                   @click="IBan(record)"
                 >
                   <span v-if="record.status === 1">{{
-                    $t('syscenter.user.manger.control.banned')
-                  }}</span>
+                      $t('syscenter.user.manger.control.banned')
+                    }}</span>
                   <span v-else>{{
-                    $t('syscenter.user.manger.control.Nobanned')
-                  }}</span>
+                      $t('syscenter.user.manger.control.Nobanned')
+                    }}</span>
                 </a-button>
+
+                <a-popconfirm
+                  content="你确认要将该用户密码重置？这会导致该用户原来的密码失效!"
+                  ok-text="确认重置"
+                  cancel-text="取消"
+                  @ok="chongzhimima(record)"
+                >
+                  <a-button v-permission="'sys:user:reset'"
+                  >重置密码</a-button>
+                </a-popconfirm>
               </template>
             </a-table-column>
           </template>
@@ -621,6 +699,23 @@
             </a-checkbox>
           </a-form-item>
         </a-form>
+      </a-modal>
+      <a-modal
+        v-model:visible="mimachongzhi.mimachongzhimodelstatus"
+        :draggable="false"
+        :title="$t(statuEs.modelTitle)"
+        :width="720"
+        unmount-on-close
+        :esc-to-close="false"
+        :mask-closable="false"
+      >
+        <div v-if="mimachongzhi.mimachongzhiLoading">
+          密码重置中，请勿关闭窗口，以免错过了重置后的密码!
+        </div>
+        <div v-else>
+          <div>用户：{{ mimachongzhi.userName }}</div>
+          <div>的新密码为:{{ mimachongzhi.newPassword }}</div>
+        </div>
       </a-modal>
     </div>
   </div>
