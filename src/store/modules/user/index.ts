@@ -15,6 +15,7 @@ import useMenuStore from '@/store/modules/menu';
 import {useAppStore} from '@/store';
 import {useWsLoginStore} from '@/store/modules/chat/ws';
 import {UserState} from './types';
+import {useSystemMessageStore} from "@/store/modules/app/systemMessage";
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
@@ -80,6 +81,8 @@ const useUserStore = defineStore('user', {
     async loginSuccess(token: string) {
       setToken(token);
       await useAppStore().initSettings();
+      const systemMessageStore = useSystemMessageStore();
+
       const wsLoginStore = useWsLoginStore();
       wsLoginStore.loginSuccess(getToken());
     },
