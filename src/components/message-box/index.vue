@@ -67,27 +67,7 @@
 
   const systemMessageStore = useSystemMessageStore();
 
-  async function fetchSourceData() {
-    try {
-      // const { data } = await queryMessageList();
-      messageData.messageList = [
-        {
-          id: 1,
-          type: 'message',
-          title: '11',
-          subTitle: 'http://baidu.com',
-          avatar: '',
-          content:
-            '消息模块单独做，需要添加到此处的消息直接添加至表即可，每次点开此处都请求。',
-          time: '123',
-          status: 0,
-          messageType: 1,
-        },
-      ];
-    } catch (err) {
-      // you can report use errorHandler or other
-    }
-  }
+  systemMessageStore.getSystemMessageList();
 
   const renderList = computed(() => {
     return systemMessageStore.systemMessageList;
@@ -147,7 +127,6 @@
       Message.success(res.msg);
     }
   };
-  fetchSourceData();
 </script>
 
 <style scoped lang="less">
