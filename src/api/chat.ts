@@ -84,6 +84,14 @@ export function markMsg(data?: MarkMsgReq) {
   return axios.put<void>('/api/chat/msg/mark', data);
 }
 
+/**
+ * 删除消息记录
+ * @param data
+ */
+export function removeMsg(data?: RemoveMsgReq) {
+  return axios.post<void>('/api/chat/msg/remove', data);
+}
+
 export function addAdmin({
   roomId,
   uidList,

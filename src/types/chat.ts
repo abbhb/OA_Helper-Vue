@@ -126,6 +126,13 @@ export type MarkMsgReq = {
   msgId: string;
 };
 
+export type RemoveMsgReq = {
+  // 标记类型 1删除
+  state: number;
+  // 消息 ID
+  msgId: string;
+};
+
 export type MarkItemType = {
   /** 操作用户 */
   uid: string;

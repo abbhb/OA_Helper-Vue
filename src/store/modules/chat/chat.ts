@@ -9,7 +9,7 @@ import {
   SessionItem,
 } from '@/types/chat';
 import * as Api from '@/api/chat';
-import { markMsgRead, sessionDetail } from '@/api/chat';
+import { markMsgRead, removeMsg, sessionDetail } from '@/api/chat';
 import { computedTimeBlock } from '@/utils/chat/computedTime';
 import shakeTitle from '@/utils/chat/shakeTitle';
 import { ChatMarkEnum, ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
@@ -480,8 +480,16 @@ export const useChatStore = defineStore('chat', () => {
     });
   };
   // 删除消息
-  const deleteMsg = (msgId: string) => {
-    currentMessageMap.value?.delete(msgId);
+  const deleteMsg = async (msgId: string) => {
+    try {
+      await removeMsg({
+        msgId,
+        state: 1,
+      });
+      currentMessageMap.value?.delete(msgId);
+    } catch (e) {
+      console.error(e);
+    }
   };
   // 更新消息
   const updateMsg = (msgId: string, newMessage: MessageType) => {

@@ -14,8 +14,8 @@ import {checkPermissionByServer} from '@/api/permission';
 import useMenuStore from '@/store/modules/menu';
 import {useAppStore} from '@/store';
 import {useWsLoginStore} from '@/store/modules/chat/ws';
-import {UserState} from './types';
 import {useSystemMessageStore} from "@/store/modules/app/systemMessage";
+import {UserState} from './types';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({

@@ -123,7 +123,9 @@
     }
   };
 
-  const onDelete = () => chatStore.deleteMsg(props.msg.message.id);
+  const onDelete = () => {
+    chatStore.deleteMsg(props.msg.message.id);
+  };
 </script>
 
 <template>
