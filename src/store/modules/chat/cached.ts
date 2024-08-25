@@ -11,7 +11,7 @@ export const useCachedStore = defineStore(
   'cached',
   () => {
     const globalStore = useGlobalStore();
-    const userCachedList = reactive<Record<number, Partial<CacheUserItem>>>({});
+    const userCachedList = reactive<Record<string, Partial<CacheUserItem>>>({});
 
     const currentRoomId = computed(() => globalStore.currentSession.roomId);
 

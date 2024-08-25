@@ -12,9 +12,7 @@ export const useContactStore = defineStore('contact', () => {
   const requestFriendsList = reactive<RequestFriendItem[]>([]);
 
   const contactsOptions = reactive({
-    isLast: false,
     isLoading: false,
-    cursor: '',
   });
   const requestFriendsOptions = reactive({
     isLast: false,
@@ -24,25 +22,18 @@ export const useContactStore = defineStore('contact', () => {
 
   const getContactList = async (isFresh = false) => {
     if (!isFresh) {
-      if (contactsOptions.isLast || contactsOptions.isLoading) return;
+      if (contactsOptions.isLoading) return;
     }
     contactsOptions.isLoading = true;
     // eslint-disable-next-line import/namespace
-    const { data } = await ChatApi.getContactList({
-      // TODO 先写 100，稍后优化
-      pageSize: 100,
-      cursor:
-        isFresh || !contactsOptions.cursor ? undefined : contactsOptions.cursor,
-    });
+    const { data } = await ChatApi.getContactList();
     contactsOptions.isLoading = false;
     if (!data) return
 
     // eslint-disable-next-line no-unused-expressions
     isFresh
-      ? contactsList.splice(0, contactsList.length, ...data.list)
-      : contactsList.push(...data.list);
-    contactsOptions.cursor = data.cursor;
-    contactsOptions.isLast = data.isLast;
+      ? contactsList.splice(0, contactsList.length, ...data)
+      : contactsList.push(...data);
     contactsOptions.isLoading = false;
   };
 

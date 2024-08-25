@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { reactive, ref, watch } from 'vue';
 import { RoomTypeEnum } from '@/types/enums/chat';
-import { ContactItem, RequestFriendItem } from '@/types/chat';
+import {ContactItem, ContactItemW, RequestFriendItem} from '@/types/chat';
 import { clearQueue, readCountQueue } from '@/utils/chat/readCountQueue';
 import { markMsgRead } from '@/api/chat';
 import { useChatStore } from '@/store/modules/chat/chat';
@@ -22,12 +22,13 @@ export const useGlobalStore = defineStore('global', () => {
     show: false,
     msgId: null,
   });
+  // todo:fix允许当前为空会话，此处会导致bug,某些情况导致roomId为undefined应该兼容，显示为空
   const currentSession = reactive<{ roomId: string; type: RoomTypeEnum }>({
-    roomId: '1',
+    roomId: '',
     type: RoomTypeEnum.Group,
   });
   /** 点击联系人选中的联系人项 */
-  const currentSelectedContact = ref<ContactItem | RequestFriendItem>();
+  const currentSelectedContact = ref<ContactItemW | RequestFriendItem>();
   const addFriendModalInfo = reactive<{ show: boolean; uid?: string }>({
     show: false,
     uid: undefined,

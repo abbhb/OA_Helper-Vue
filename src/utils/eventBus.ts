@@ -1,7 +1,7 @@
 // 创建一个 eventHub.js 文件
 import type {Emitter} from 'mitt';
 import mitt from 'mitt';
-import {MsgReadUnReadCountType} from '@/types/chat';
+import {ContactItemW, MsgReadUnReadCountType} from '@/types/chat';
 import Modeler from "bpmn-js/lib/Modeler";
 
 type Events = {
@@ -14,6 +14,7 @@ type Events = {
     modelerInit: { modeler: Modeler }
     elementUpdate: void;
     elementInit: void;
+    changeContactSelect:{item:ContactItemW}
 };
 
 const eventHub: Emitter<Events> = mitt<Events>();

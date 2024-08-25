@@ -12,7 +12,7 @@ import {
   MarkMsgReq,
   MessageReq,
   MessageType,
-  MsgReadUnReadCountType,
+  MsgReadUnReadCountType, RemoveMsgReq,
   RequestFriendItem,
   SessionItem,
 } from '@/types/chat';
@@ -193,9 +193,9 @@ export function exitGroup({ roomId }: { roomId: string }) {
 }
 
 // -------------- 好友相关 ---------------
-export function getContactList(params?: any) {
-  return axios.get<ListResponse<ContactItem>>('/api/chat-friend/page', {
-    params,
+export function getContactList() {
+  return axios.get<ContactItem[]>('/api/chat-friend/v2/page', {
+
   });
 }
 

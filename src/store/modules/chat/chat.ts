@@ -57,6 +57,9 @@ export const useChatStore = defineStore('chat', () => {
 
   const currentMessageMap = computed({
     get: () => {
+      if (!currentRoomId.value){
+        return new Map();
+      }
       const current = messageMap.get(currentRoomId.value as string);
       if (current === undefined) {
         messageMap.set(currentRoomId.value, new Map());
@@ -64,6 +67,7 @@ export const useChatStore = defineStore('chat', () => {
       return messageMap.get(currentRoomId.value as string);
     },
     set: (val) => {
+
       messageMap.set(currentRoomId.value, val as Map<string, MessageType>);
     },
   });

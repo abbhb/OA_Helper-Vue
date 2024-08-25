@@ -34,9 +34,14 @@
   color: var(--font-light);
 
   &-name {
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 500;
-    color: var(--color-white);
+    color: var(--el-text-color);
+  }
+  &-nameb {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--el-text-color);
   }
 
   &-uid {

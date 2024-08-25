@@ -357,13 +357,35 @@ export type RequestFriendItem = {
   /** 会话 ID */
   roomId: string;
 };
-/** 联系人的列表项 */
+
+
+export type ChatMemberWResp = {
+  id: string;
+  remarkName:string;
+  name:string;
+  avatar:string;
+  type:number;
+  ext: Map<string, any>;
+}
+
+/** 联系人的列表项 -> V2 */
 export type ContactItem = {
-  /** 在线状态 1在线 2离线 */
-  activeStatus: ChatOnlineEnum;
-  /** 最后一次上下线时间 */
-  lastOptTime: string;
-  uid: string;
+  index: number;
+  /** 块名称，例如群聊 A, B */
+  key: string;
+  type: number;
+  info: ChatMemberWResp[];
+};
+export type ContactItemW = {
+  index: number;
+  /** 块名称，例如群聊 A, B */
+  key: string;
+  type: number;
+  id: string;
+  remarkName:string;
+  name:string;
+  avatar:string;
+  ext: Map<string, any>;
 };
 
 /** 是否全员展示的会话 0否 1是 */

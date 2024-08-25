@@ -6,6 +6,10 @@
   } from '@imengyu/vue3-context-menu';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import eventBus from '@/utils/eventBus';
+  import {sessionDetailWithFriends} from "@/api/chat";
+  import {RoomTypeEnum} from "@/types/enums/chat";
+  import Router from "@/router";
+  import {useChatStore} from "@/store/modules/chat/chat";
 
   const props = defineProps<{
     // 用户id
@@ -14,6 +18,7 @@
     options?: MenuOptions;
   }>();
   const globalStore = useGlobalStore();
+  const chatStore = useChatStore();
 
   // 添加好友
   const onAddFriend = async () => {
@@ -23,6 +28,15 @@
 
   const onAtUser = (uid: string, ignoreCheck: boolean) =>
     eventBus.emit('onSelectPerson', { uid, ignoreCheck });
+
+  const onStartSession = async () => {
+    const { uid }  = props;
+    const { data } = await sessionDetailWithFriends({ uid });
+    globalStore.currentSession.roomId = data.roomId;
+    globalStore.currentSession.type = RoomTypeEnum.Single;
+    chatStore.updateSessionLastActiveTime(data.roomId, data);
+    Router.push('/chat/chat');
+  };
 </script>
 
 <template>
@@ -40,20 +54,21 @@
     >
       <template #icon> <span class="icon">@</span> </template>
     </ContextMenuItem>
-    <ContextMenuItem
-      v-is-frient="uid"
-      label="添加好友"
-      @click="onAddFriend"
-    >
+<!--    <ContextMenuItem-->
+<!--      v-is-frient="uid"-->
+<!--      label="添加好友"-->
+<!--      @click="onAddFriend"-->
+<!--    > -->
+
+<!--      <template #icon>-->
+<!--        <Icon icon="tianjia" :size="13" />-->
+<!--      </template>-->
+<!--    </ContextMenuItem>-->
+     <ContextMenuItem v-login-show label="发送消息" @click="onStartSession">
       <template #icon>
         <Icon icon="tianjia" :size="13" />
       </template>
     </ContextMenuItem>
-    <!-- <ContextMenuItem vLoginShow label="发送消息" @click="onAddFriend">
-      <template #icon>
-        <Icon icon="tianjia" :size="13" />
-      </template>
-    </ContextMenuItem> -->
   </ContextMenu>
 </template>
 

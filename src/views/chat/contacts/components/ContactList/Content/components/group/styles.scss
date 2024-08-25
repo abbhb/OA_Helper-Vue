@@ -1,0 +1,54 @@
+.contact-content {
+  flex: 1;
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+}
+
+.contact-main {
+  width: 400px;
+  margin: 30px auto;
+}
+
+.contact-info-wrapper {
+  display: flex;
+  column-gap: 10px;
+}
+
+.contact-request-msg {
+  font-size: 12px;
+  color: var(--font-light);
+}
+
+.contact-info-more {
+  height: 20px;
+
+  &-dropdown {
+    margin-left: auto;
+  }
+}
+
+.contact-info {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 创建6列，每列等宽 */
+  grid-gap: 10px; /* 网格间距 */
+  justify-content: center; /* 水平居中 */
+  align-items: start; /* 垂直方向默认为顶部对齐，如果需要垂直居中，可使用align-items: center; */
+  font-size: 12px;
+  color: var(--color-fill-1);
+
+  &-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-fill-1);
+  }
+
+  &-uid {
+    margin-top: auto;
+  }
+
+  &-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -64,6 +64,12 @@ import 'element-plus/theme-chalk/index.css';
 
 import './assets/style/global.less';
 
+
+
+
+
+
+
 const app = createApp(App);
 
 Object.keys(ElementPlusIcons).forEach((iconName) => {
@@ -78,7 +84,6 @@ addDirective(app);
 installI18n(app);
 app.use(ContainerWidgets);
 app.use(ContainerItems);
-loadExtension(app);
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);

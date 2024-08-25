@@ -26,7 +26,7 @@
         <SendBar />
       </div>
     </div>
-    <UserList v-show="currentSession.type === RoomTypeEnum.Group" />
+    <UserList v-if="isSelect" v-show="currentSession.type === RoomTypeEnum.Group" />
   </div>
 </template>
 

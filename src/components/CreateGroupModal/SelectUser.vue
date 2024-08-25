@@ -29,16 +29,23 @@
   //   })),
   // )
   const contactsList = computed(() => contactStore.contactsList);
+  const contactsListOnlyUser = computed(()=>{
+    return contactsList.value
+      .filter(item => item.type === 3) // 首先过滤出type为3的项
+      .reduce((accumulator, item) => accumulator.concat(item.info), []); // 然后合并它们的info数组
+  })
+  console.log("选择")
+  console.log(contactsListOnlyUser.value)
   const selectedUid = computed(
     () => globalStore.createGroupModalInfo.selectedUid
   );
   watch(
-    contactsList,
+    contactsListOnlyUser,
     (val) => {
       data.value = val.map((item) => ({
-        label: item.uid,
-        key: item.uid,
-        initial: item.uid,
+        label: item?.remarkName ? item.remarkName:item.name,
+        key: item.id,
+        initial: item.id,
         disabled: false,
       }));
     },
@@ -64,8 +71,8 @@
   const renderFunc: renderContent = (h, option) => {
     const user = useUserInfo(option.key);
     return h('div', { style: 'display:flex;align-items:center;gap:6px' }, [
-      h(Avatar, { avatar: user.value.avatar, name: user.value.name ,size: 20, class: 'avatar' }),
-      h('div', { class: 'tem-info-name' }, user.value.name),
+      h(Avatar, { avatar: user.value.avatar, name: option.label ,size: 20, class: 'avatar' }),
+      h('div', { class: 'tem-info-name' }, option.label),
     ]);
   };
   // const handleChange = (
@@ -81,17 +88,22 @@
 <template>
   <el-transfer
     v-model="selected"
-    style="display: inline-block; text-align: left"
+    style="display: inline-block; text-align: left;"
     :render-content="renderFunc"
     :titles="['Source', 'Target']"
     :format="{
       noChecked: '${total}',
       hasChecked: '${checked}/${total}',
     }"
+
     :data="data"
     @change="handleChange"
   >
   </el-transfer>
 </template>
-
+<style lang="scss" scoped>
+.el-transfer-panel__item {
+  height: 60px;
+}
+</style>
 <style lang="scss" src="./styles.scss" scoped />

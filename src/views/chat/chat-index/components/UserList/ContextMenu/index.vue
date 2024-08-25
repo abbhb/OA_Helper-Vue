@@ -9,8 +9,10 @@
   import { useGlobalStore } from '@/store/modules/chat/global';
   import { useGroupStore } from '@/store/modules/chat/group';
   import eventBus from '@/utils/eventBus';
-  import {RoleEnum} from "@/types/enums/chat";
-  import {removeGroupMember} from "@/api/chat";
+  import {RoleEnum, RoomTypeEnum} from "@/types/enums/chat";
+  import {removeGroupMember, sessionDetail, sessionDetailWithFriends} from "@/api/chat";
+  import Router from "@/router";
+  import {useChatStore} from "@/store/modules/chat/chat";
 
   const props = defineProps<{
     // 消息体
@@ -23,6 +25,7 @@
 
   const uid = toRef(props.uid)
   const userInfo = useUserStore()?.userInfo;
+  const chatStore = useChatStore();
   const globalStore = useGlobalStore();
   const groupStore = useGroupStore();
   const statistic = computed(() => groupStore.countInfo)
@@ -45,6 +48,16 @@
     // 更新群成员列表
     groupStore.getGroupUserList(true)
   }
+
+  const onStartSession = async () => {
+    const { uid }  = props;
+    const { data } = await sessionDetailWithFriends({ uid });
+    globalStore.currentSession.roomId = data.roomId;
+    globalStore.currentSession.type = RoomTypeEnum.Single;
+    chatStore.updateSessionLastActiveTime(data.roomId, data);
+    Router.push('/chat/chat');
+  };
+
 </script>
 
 <template>
@@ -60,10 +73,18 @@
     <!--        <Icon icon="lahei" :size="13" />-->
     <!--      </template>-->
     <!--    </ContextMenuItem>-->
+<!--    <ContextMenuItem-->
+<!--      v-is-frient="uid"-->
+<!--      label="添加好友"-->
+<!--      @click="onAddFriend"-->
+<!--    >-->
+<!--      <template #icon>-->
+<!--        <icon-user-add icon="tianjia" :size="13" />-->
+<!--      </template>-->
+<!--    </ContextMenuItem>-->
     <ContextMenuItem
-      v-is-frient="uid"
-      label="添加好友"
-      @click="onAddFriend"
+      label="发消息"
+      @click="onStartSession"
     >
       <template #icon>
         <icon-user-add icon="tianjia" :size="13" />
