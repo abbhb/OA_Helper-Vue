@@ -1,9 +1,11 @@
 <script lang="ts" setup>
   import { useI18n } from 'vue-i18n';
-  import { computed, ref } from 'vue';
+  import { computed, reactive, ref } from 'vue';
   import { useAppStore } from '@/store';
   import { GroupUserFront } from '@/api/group';
   import {
+    exportUserData,
+    getImportUserTemplate,
     getUserListManger,
     resetPassword,
     updataUserByAdmin,
@@ -16,6 +18,8 @@
   import { deptListTree, DeptManger } from '@/api/dept';
   import { Role, roleTagList } from '@/api/role';
   import ImageUpload from '@/components/image/ImageUpload.vue';
+  import { exportSigninUserData, getImportTemplate } from '@/api/signin';
+  import { getToken } from '@/utils/auth';
 
   const { t } = useI18n();
   const appStore = useAppStore();
@@ -27,6 +31,7 @@
     loading: boolean;
     clickLoading: boolean;
     modelstatus: boolean;
+    modelImportUserstatus: boolean;
     modelType: string;
     modelTitle: string;
     modelData?: GroupUserFront;
@@ -48,12 +53,25 @@
     clickLoading: false,
     loading: false,
     modelstatus: false,
+    modelImportUserstatus: false,
     modelType: 'add',
     modelTitle: 'syscenter.user.manger.add.button',
     deptId: '1',
     formModel: false,
     refreshKey: 1,
     jilian: true,
+  });
+
+  /*** 用户导入参数 */
+  const upload = reactive({
+    // 是否禁用上传
+    isUploading: false,
+    // 是否更新已经存在的用户数据
+    updateSupport: 0,
+    // 设置上传的请求头部
+    headers: { Authorization: 'Bearer ' + getToken() },
+    // 上传的地址
+    url: import.meta.env.VITE_API_BASE_URL + '/api/user/importData',
   });
 
   const form = ref<UserManger>({
@@ -75,6 +93,7 @@
   const deptTreeData = ref([]);
   const needExpend = ref([]);
   const rolesStore = ref<Role[]>([]);
+  const uploadRef = ref(null); // 上传的ref
 
   const initSelect = async () => {
     const { data } = await roleTagList();
@@ -300,6 +319,39 @@
     pagination.value.current = 1;
     getDataB();
   };
+  // 导入导出相关
+  const exportData = async () => {
+    const { data } = await exportUserData();
+    window.open(data);
+  };
+  const importTemplate = async () => {
+    const { data } = await getImportUserTemplate();
+    window.open(data);
+  };
+  const openImport = () => {
+    statuEs.value.modelImportUserstatus = true;
+  };
+  /**文件上传中处理 */
+  const handleFileUploadProgress = (event, file, fileList) => {
+    upload.isUploading = true;
+  };
+
+  /** 文件上传成功处理 */
+  const handleFileSuccess = (response, file, fileList) => {
+    statuEs.value.modelImportUserstatus = false;
+    upload.isUploading = false;
+    console.log(response);
+    if (response.data && response.data !== '') {
+      window.open(response.data);
+      alert('部分导入失败，已下载失败数据！');
+    } else {
+      Message.info('导入结果:' + response.msg);
+    }
+    refreshData();
+  };
+  const submitFileForm = () => {
+    uploadRef.value!.submit();
+  };
 </script>
 
 <template>
@@ -378,16 +430,33 @@
                   />
                 </div>
               </a-space>
+              <a-divider class="split-line" style="margin: 3px" />
+            </a-space>
 
-              <a-space direction="vertical">
-                <a-button
-                  :loading="statuEs.clickLoading"
-                  type="primary"
-                  @click="Message.info('暂时仅支持通过oauth2认证登录!')"
-                >
-                  {{ $t('syscenter.user.manger.add') }}
-                </a-button>
-              </a-space>
+            <a-space direction="horizontal">
+              <a-button
+                :loading="statuEs.clickLoading"
+                type="primary"
+                @click="Message.info('暂时仅支持通过oauth2认证登录!')"
+              >
+                {{ $t('syscenter.user.manger.add') }}
+              </a-button>
+              <a-button
+                v-permission="'sys:user:export'"
+                :loading="statuEs.clickLoading"
+                type="primary"
+                @click="exportData"
+              >
+                导出Excel
+              </a-button>
+              <a-button
+                v-permission="'sys:user:import'"
+                type="primary"
+                @click="openImport"
+              >
+                从Excel导入
+              </a-button>
+
               <a-divider class="split-line" style="margin: 3px" />
             </a-space>
 
@@ -473,8 +542,10 @@
               :width="100"
             >
               <template #cell="{ record }">
-                <a-button v-permission="'sys:user:update'"  @click="editAGroup(record)"
-                >{{ $t('syscenter.user.manger.control.edit') }}
+                <a-button
+                  v-permission="'sys:user:update'"
+                  @click="editAGroup(record)"
+                  >{{ $t('syscenter.user.manger.control.edit') }}
                 </a-button>
                 <a-button
                   v-permission="'sys:user:update'"
@@ -482,11 +553,11 @@
                   @click="IBan(record)"
                 >
                   <span v-if="record.status === 1">{{
-                      $t('syscenter.user.manger.control.banned')
-                    }}</span>
+                    $t('syscenter.user.manger.control.banned')
+                  }}</span>
                   <span v-else>{{
-                      $t('syscenter.user.manger.control.Nobanned')
-                    }}</span>
+                    $t('syscenter.user.manger.control.Nobanned')
+                  }}</span>
                 </a-button>
 
                 <a-popconfirm
@@ -495,8 +566,7 @@
                   cancel-text="取消"
                   @ok="chongzhimima(record)"
                 >
-                  <a-button v-permission="'sys:user:reset'"
-                  >重置密码</a-button>
+                  <a-button v-permission="'sys:user:reset'">重置密码</a-button>
                 </a-popconfirm>
               </template>
             </a-table-column>
@@ -715,6 +785,59 @@
         <div v-else>
           <div>用户：{{ mimachongzhi.userName }}</div>
           <div>的新密码为:{{ mimachongzhi.newPassword }}</div>
+        </div>
+      </a-modal>
+      <a-modal
+        v-model:visible="statuEs.modelImportUserstatus"
+        :draggable="false"
+        title="从Excel导入"
+        :esc-to-close="false"
+        :mask-closable="false"
+        :closable="false"
+        unmount-on-close
+        @cancel="statuEs.modelImportUserstatus = false"
+        @ok="submitFileForm"
+      >
+        <div>
+          <el-upload
+            ref="uploadRef"
+            class="upload-demo"
+            drag
+            :action="upload.url + '?updateSupport=' + upload.updateSupport"
+            :headers="upload.headers"
+            :auto-upload="false"
+            :on-progress="handleFileUploadProgress"
+            :on-success="handleFileSuccess"
+            :disabled="upload.isUploading"
+            :limit="1"
+            accept=".xlsx, .xls"
+          >
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text">
+              将文件拖到此处， <em>或点击上传</em>
+            </div>
+            <template #tip>
+              <div
+                class="el-upload__tip"
+                style="
+                  align-items: center;
+                  display: flex;
+                  flex-direction: column;
+                "
+              >
+                <el-checkbox v-model:model-value="upload.updateSupport"
+                  >是否更新已经存在的用户数据</el-checkbox
+                >
+                <span>
+                  仅允许导入xls、xlsx格式的文件.<span
+                    style="color: #1890ff; cursor: pointer"
+                    @click="importTemplate"
+                    >下载模板</span
+                  >
+                </span>
+              </div>
+            </template>
+          </el-upload>
         </div>
       </a-modal>
     </div>

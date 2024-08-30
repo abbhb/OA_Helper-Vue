@@ -119,6 +119,15 @@ export function updataUserInfo(data: UserInfo) {
   return axios.put<string>('/api/user/update', data);
 }
 
+export function exportUserData() {
+  return axios.post<string>('/api/user/export');
+}
+
+export function getImportUserTemplate() {
+  return axios.get<string>('/api/user/importTemplate');
+}
+
+
 export function updataUserByAdmin(data: UserManger) {
   return axios.put<string>('/api/user/updateByAdmin', data);
 }

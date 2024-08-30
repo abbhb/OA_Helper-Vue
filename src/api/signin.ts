@@ -218,6 +218,12 @@ export function addGroupRule(data: SigninGroupDto) {
 export function exportSigninUserData() {
   return axios.post<string>('/api/signin_user_data/export');
 }
+
+/**
+ * 此方法使用了el-upload所以空缺
+ * @param file
+ * @param updateSupport
+ */
 export function importSigninUserData(file,updateSupport:boolean) {
   return axios.post<string>('/api/signin_user_data/importData',file,{
     params:{
