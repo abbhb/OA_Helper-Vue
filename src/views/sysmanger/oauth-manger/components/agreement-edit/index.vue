@@ -81,8 +81,8 @@
     // 更新的公共方法
     const res = await agreementUpdate(
       {
-        privacyShieldAgreement: statusE.value.content,
-        serviceAgreement: statusE.value.content,
+        privacy_shield_agreement: statusE.value.content,
+        service_agreement: statusE.value.content,
         id: props.cid,
       },
       props.ctype

@@ -81,8 +81,8 @@ export function updateOauth(data: SysOauth) {
 export function agreementUpdate(
   data: {
     id: string;
-    serviceAgreement?: string;
-    privacyShieldAgreement?: string;
+    service_agreement?: string;
+    privacy_shield_agreement?: string;
   },
   type: number
 ) {
