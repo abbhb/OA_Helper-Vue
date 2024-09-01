@@ -1,22 +1,36 @@
 <script lang="ts" setup>
-import {computed, h, reactive, ref} from 'vue';
-import {getColor} from '@/utils/color-index';
+  import { computed, h, reactive, ref } from 'vue';
+  import { getColor } from '@/utils/color-index';
 
-import {setChildrenUndefined} from '@/utils/utils';
-import {useAppStore} from '@/store';
-import {IconSearch} from '@arco-design/web-vue/es/icon';
-import {Message} from '@arco-design/web-vue';
-import {addOauth, deleteOauth, listOauth, SysOauth, updateOauth,} from '@/api/oauth';
-import ImageUpload from '@/components/image/ImageUpload.vue';
-import AvatarImage from '@/components/image/AvatarImage.vue';
-import {copyToClip} from "@/utils/chat/copy";
+  import { setChildrenUndefined } from '@/utils/utils';
+  import { useAppStore } from '@/store';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { Message } from '@arco-design/web-vue';
+  import {
+    addOauth,
+    deleteOauth,
+    listOauth,
+    SysOauth,
+    updateOauth,
+  } from '@/api/oauth';
+  import ImageUpload from '@/components/image/ImageUpload.vue';
+  import AvatarImage from '@/components/image/AvatarImage.vue';
+  import { copyToClip } from '@/utils/chat/copy';
+  import AggreementEdit from './components/agreement-edit/index.vue';
 
-interface statuEI {
+  interface statuEI {
     clickLoading: boolean;
     model?: boolean;
     modelTitle?: string;
     modelType?: string;
   }
+
+  const agreeStatus = ref({
+    status: false,
+    cid: '',
+    ctype: '',
+    title: '',
+  });
 
   const statuEs = ref<statuEI>({
     clickLoading: false,
@@ -250,7 +264,27 @@ interface statuEI {
     }
     copyToClip(data);
     Message.success('已经复制到剪贴板');
-  }
+  };
+
+  const editagreementHandel = (record, type) => {
+    agreeStatus.value.status = false;
+    if (type && record.id) {
+      agreeStatus.value.cid = record.id;
+      agreeStatus.value.ctype = type;
+      switch (type) {
+        case 1:
+          agreeStatus.value.title = '编辑服务协议';
+          break;
+        case 2:
+          agreeStatus.value.title = '编辑隐私保护协议';
+          break;
+        default:
+          agreeStatus.value.title = '异常';
+          break;
+      }
+      agreeStatus.value.status = true;
+    }
+  };
 </script>
 
 <template>
@@ -267,7 +301,7 @@ interface statuEI {
         :size="'medium'"
         row-key="id"
         :scrollbar="true"
-        :scroll="{y:600}"
+        :scroll="{ y: 600 }"
       >
         <template
           #locale-filter="{
@@ -361,10 +395,15 @@ interface statuEI {
             title="强制使用配置回调"
           >
             <template #cell="{ record }">
-              <a-tag :color="record.force_configuration_redirect !== 1 ? 'green' : 'red'">
-                {{ record.force_configuration_redirect ? '静态回调' : '动态回调' }}
-              </a-tag
+              <a-tag
+                :color="
+                  record.force_configuration_redirect !== 1 ? 'green' : 'red'
+                "
               >
+                {{
+                  record.force_configuration_redirect ? '静态回调' : '动态回调'
+                }}
+              </a-tag>
             </template>
           </a-table-column>
           <a-table-column
@@ -413,6 +452,16 @@ interface statuEI {
                   >{{ $t('syscenter.oauth2-manger.oauth2.control.delete') }}
                 </a-button>
               </a-popconfirm>
+              <a-button
+                class="button-item"
+                @click="editagreementHandel(record, 1)"
+                >编辑服务协议
+              </a-button>
+              <a-button
+                class="button-item"
+                @click="editagreementHandel(record, 2)"
+                >编辑隐私保护协议
+              </a-button>
             </template>
           </a-table-column>
         </template>
@@ -439,7 +488,10 @@ interface statuEI {
               field="grantType"
               label-col-flex="80px"
             >
-              <a-radio-group v-model:model-value="form.grantType" :disabled="statuEs.modelType === 'read'">
+              <a-radio-group
+                v-model:model-value="form.grantType"
+                :disabled="statuEs.modelType === 'read'"
+              >
                 <a-radio value="code"
                   >{{
                     $t('syscenter.oauth2-manger.oauth2.form.grantType.code')
@@ -454,8 +506,12 @@ interface statuEI {
               label=""
               label-col-flex="80px"
             >
-              <a-radio-group v-model:model-value="form.force_configuration_redirect"
-                             :disabled="statuEs.modelType === 'read'" size="large" type="button">
+              <a-radio-group
+                v-model:model-value="form.force_configuration_redirect"
+                :disabled="statuEs.modelType === 'read'"
+                size="large"
+                type="button"
+              >
                 <a-radio :value="0">使用动态回调</a-radio>
                 <a-radio :value="1">静态回调地址</a-radio>
               </a-radio-group>
@@ -472,15 +528,12 @@ interface statuEI {
             v-if="statuEs.modelType !== 'add'"
             v-model="form.clientId"
             :placeholder="
-                  $t('syscenter.oauth2-manger.oauth2.form.tip.clientId')
-                "
+              $t('syscenter.oauth2-manger.oauth2.form.tip.clientId')
+            "
             :readonly="statuEs.modelType === 'read'"
-            v-on:click="onclickTOCopy(form.clientId)"
+            @click="onclickTOCopy(form.clientId)"
           />
-          <a-tag v-else
-          >此项为系统自动生成，成功添加后查看更多即可获得!
-          </a-tag
-          >
+          <a-tag v-else>此项为系统自动生成，成功添加后查看更多即可获得! </a-tag>
         </a-form-item>
         <a-form-item
           :label="$t('syscenter.oauth2-manger.oauth2.form.clientName')"
@@ -490,8 +543,8 @@ interface statuEI {
           <a-input
             v-model="form.clientName"
             :placeholder="
-                  $t('syscenter.oauth2-manger.oauth2.form.tip.clientName')
-                "
+              $t('syscenter.oauth2-manger.oauth2.form.tip.clientName')
+            "
             :readonly="statuEs.modelType === 'read'"
           />
         </a-form-item>
@@ -504,16 +557,12 @@ interface statuEI {
             v-if="statuEs.modelType !== 'add'"
             v-model="form.clientSecret"
             :placeholder="
-                  $t('syscenter.oauth2-manger.oauth2.form.tip.clientSecret')
-                "
+              $t('syscenter.oauth2-manger.oauth2.form.tip.clientSecret')
+            "
             :readonly="statuEs.modelType === 'read'"
-
-            v-on:click="onclickTOCopy(form.clientSecret)"
+            @click="onclickTOCopy(form.clientSecret)"
           />
-          <a-tag v-else
-          >此项为系统自动生成，成功添加后查看更多即可获得!
-          </a-tag
-          >
+          <a-tag v-else>此项为系统自动生成，成功添加后查看更多即可获得! </a-tag>
         </a-form-item>
         <a-form-item
           :label="$t('syscenter.oauth2-manger.oauth2.form.redirect_uri')"
@@ -524,8 +573,8 @@ interface statuEI {
           <a-input
             v-model="form.redirectUri"
             :placeholder="
-                  $t('syscenter.oauth2-manger.oauth2.form.tip.redirect_uri')
-                "
+              $t('syscenter.oauth2-manger.oauth2.form.tip.redirect_uri')
+            "
             :readonly="statuEs.modelType === 'read'"
           />
         </a-form-item>
@@ -536,10 +585,9 @@ interface statuEI {
         >
           <a-input
             v-model="form.domainName"
-
             :placeholder="
-                  $t('syscenter.oauth2-manger.oauth2.form.tip.domain_name')
-                "
+              $t('syscenter.oauth2-manger.oauth2.form.tip.domain_name')
+            "
             :readonly="statuEs.modelType === 'read'"
           />
         </a-form-item>
@@ -565,7 +613,6 @@ interface statuEI {
               field="type"
               :disabled="statuEs.modelType === 'read'"
               label-col-flex="50px"
-
             >
               <a-radio-group v-model:model-value="form.noSertRedirect">
                 <a-radio :value="1"
@@ -580,7 +627,6 @@ interface statuEI {
                 </a-radio>
               </a-radio-group>
             </a-form-item>
-
           </a-col>
           <a-col :span="8">
             <a-form-item
@@ -588,20 +634,33 @@ interface statuEI {
               field="status"
               :disabled="statuEs.modelType === 'read'"
               label-col-flex="60px"
-
             >
               <a-radio-group v-model:model-value="form.status">
                 <a-radio :value="1"
-                >{{ $t('syscenter.oauth2-manger.oauth2.form.status.1') }}
+                  >{{ $t('syscenter.oauth2-manger.oauth2.form.status.1') }}
                 </a-radio>
                 <a-radio :value="0"
-                >{{ $t('syscenter.oauth2-manger.oauth2.form.status.0') }}
+                  >{{ $t('syscenter.oauth2-manger.oauth2.form.status.0') }}
                 </a-radio>
               </a-radio-group>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
+    </a-modal>
+    <a-modal
+      v-model:visible="agreeStatus.status"
+      :draggable="false"
+      :title="agreeStatus.title"
+      :width="700"
+      unmount-on-close
+    >
+      <AggreementEdit
+        v-if="agreeStatus.status"
+        :key="agreeStatus.cid"
+        :cid="agreeStatus.cid"
+        :ctype="agreeStatus.ctype"
+      />
     </a-modal>
   </a-card>
 </template>
