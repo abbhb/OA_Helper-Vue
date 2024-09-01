@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { onMounted, onUnmounted, ref } from 'vue/dist/vue';
   import tinymce from 'tinymce/tinymce'; //  tinymce核心文件
   import 'tinymce/models/dom'; //   引入dom模块。从 Tinymce6，开始必须有此模块导入
   import 'tinymce/themes/silver'; //  默认主题
@@ -46,6 +45,7 @@
   import { getUploadUrl } from '@/api/chat';
   import { getAllImageUrl } from '@/api/common';
   import { agreementGet, agreementUpdate } from '@/api/oauth';
+  import {onMounted, onUnmounted, ref} from "vue";
 
   const props = defineProps(['cid', 'ctype']);
   const videoHouzhui = '.avi,.mkv,.mp3, .mp4';
@@ -111,7 +111,7 @@
 
   // 先获取基本信息
   const init = async () => {
-    const { data } = await agreementGet(props.cid, props.ctype);
+    const { data } = await agreementGet("id",props.cid, props.ctype);
     statusE.value.content = data;
     document.getElementById('tinydemo').innerHTML = statusE.value.content;
   };

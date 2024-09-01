@@ -80,7 +80,7 @@
     winDatas.value.client_name = data;
   };
   const getagreement = async (type: number) => {
-    const { data } = await agreementGet(winDatas.value.client_id, type);
+    const { data } = await agreementGet("cid",winDatas.value.client_id, type);
     agreementDialog.value.data = data;
     if (type === 1) {
       agreementDialog.value.title = '服务协议';

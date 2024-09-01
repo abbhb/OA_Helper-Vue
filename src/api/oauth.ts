@@ -46,8 +46,8 @@ export function getClientName(clientId: string) {
   });
 }
 
-export function agreementGet(id: string,type:number) {
-  return axios.get<string>(`/api/oauth2.0/agreement_get/${id}/${type}`);
+export function agreementGet(way:string,id: string,type:number) {
+  return axios.get<string>(`/api/oauth2.0/agreement_get/${way}/${id}/${type}`);
 }
 
 export function agree(data: AgreeReq) {
