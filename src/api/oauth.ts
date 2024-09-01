@@ -29,7 +29,7 @@ export interface SysOauth {
   client_secret?: string;
   client_image?: string;
   redirect_uri: string;
-    force_configuration_redirect?: number;
+  force_configuration_redirect?: number;
   domain_name: string;
   no_sert_redirect: number;
   grant_type: string;
@@ -45,6 +45,11 @@ export function getClientName(clientId: string) {
     },
   });
 }
+
+export function agreementGet(id: string,type:number) {
+  return axios.get<string>(`/api/oauth2.0/agreement_get/${id}/${type}`);
+}
+
 export function agree(data: AgreeReq) {
   return axios.post<AgreeResp>('/api/oauth2.0/agree', data);
 }
@@ -65,6 +70,23 @@ export function deleteOauth(id: string) {
 
 export function updateOauth(data: SysOauth) {
   return axios.put<string>('/api/oauth2.0/update', data);
+}
+
+/**
+ * 服务协议/隐私保护协议更新
+ * @param sysOauth
+ * @param type 约束1：服务协议更新，2:隐私保护协议
+ * @return
+ */
+export function agreementUpdate(
+  data: {
+    id: string;
+    serviceAgreement?: string;
+    privacyShieldAgreement?: string;
+  },
+  type: number
+) {
+  return axios.put<string>(`/api/oauth2.0/agreement_update/${type}`, data);
 }
 
 export function addOauth(data: SysOauth) {

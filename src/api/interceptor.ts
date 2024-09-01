@@ -34,7 +34,9 @@ axios.interceptors.request.use(
     return config;
   },
   (error) => {
-    notifyMe('异常', error);
+    // notifyMe('异常', error);
+    console.error("拦截器发送报错:")
+    console.error(error)
     // do something
     return Promise.reject(error);
   }
@@ -72,15 +74,16 @@ axios.interceptors.response.use(
         });
         return res;
       }
-      if (
-          !response.config.url.startsWith('/api/room')
-      ) {
-        Message.error({
-          content: res.msg || 'Error',
-          duration: 2 * 1000,
-        });
-      }
-
+      // if (
+      //     !response.config.url.startsWith('/api/room')
+      // ) {
+      //   Message.error({
+      //     content: res.msg || 'Error',
+      //     duration: 2 * 1000,
+      //   });
+      // }
+      console.error("拦截器报错:")
+      console.error(res.msg)
 
       return Promise.reject(new Error(res.msg || 'Error'));
     }
@@ -88,10 +91,8 @@ axios.interceptors.response.use(
   },
   (error) => {
     notifyMe('异常', error);
-    Message.error({
-      content: error.msg || 'Request Error',
-      duration:2 * 1000,
-    });
+    console.error("拦截器报错:")
+    console.error(error.msg)
     return Promise.reject(error);
   }
 );

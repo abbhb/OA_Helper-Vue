@@ -164,7 +164,10 @@ const useUserStore = defineStore('user', {
     async logout() {
       try {
         await userLogout();
-      } finally {
+      } catch (e) {
+        console.error(e)
+      }
+      finally {
         this.logoutCallBack();
       }
     },

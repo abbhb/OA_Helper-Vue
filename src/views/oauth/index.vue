@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import {useUserStore} from '@/store';
-import {ref} from 'vue';
-import {agree, agreeLogin, getClientName} from '@/api/oauth';
-import {setToken} from '@/utils/auth';
-import router from '@/router';
+  import { useUserStore } from '@/store';
+  import { ref } from 'vue';
+  import { agree, agreeLogin, agreementGet, getClientName } from '@/api/oauth';
+  import { setToken } from '@/utils/auth';
+  import router from '@/router';
+  import useUser from "@/hooks/user";
 
-const winDatas = ref({
+  const agreementDialog = ref({
+    status: false,
+    data: '',
+    title: '',
+  });
+
+  const winDatas = ref({
     response_type: '',
     client_id: '',
     which: '',
@@ -72,10 +79,24 @@ const winDatas = ref({
     const { data } = await getClientName(winDatas.value.client_id);
     winDatas.value.client_name = data;
   };
+  const getagreement = async (type: number) => {
+    const { data } = await agreementGet(winDatas.value.client_id, type);
+    agreementDialog.value.data = data;
+    if (type === 1) {
+      agreementDialog.value.title = '服务协议';
+    } else {
+      agreementDialog.value.title = '隐私保护协议';
+    }
+    agreementDialog.value.status = true;
+  };
   if (winDatas.value.which === '') {
     // 展示未知错误页面
     yemian.value = 0;
-  } else if (winDatas.value.which === 'auth' && winDatas.value.client_id && winDatas.value.response_type) {
+  } else if (
+    winDatas.value.which === 'auth' &&
+    winDatas.value.client_id &&
+    winDatas.value.response_type
+  ) {
     yemian.value = 1;
     // 获取授权对象的名字
     getClientNames();
@@ -116,6 +137,15 @@ const winDatas = ref({
       name: 'register',
       query: router.currentRoute.value.query,
     });
+  };
+
+  const { logout } = useUser();
+
+  /**
+   * 切换账号
+   */
+  const qhzhHandel = () => {
+    logout();
   };
   const shouquanHandel = async () => {
     let myscope = '';
@@ -189,7 +219,8 @@ const winDatas = ref({
     <div v-if="yemian === 1" class="oauth2">
       <div id="lay_top" class="lay_top">
         <div class="lay_top_inner" style="width: 688px">
-          <h1 class="logo text_hide">Oauth2授权登录</h1>
+          <h1 class="logo text_hide">EasyOA | Oauth2授权登录</h1>
+
           <!--          <div class="lat_top_other">-->
           <!--            <a href="#/show" target="_blank" title="什么是Oauth2授权登录"-->
           <!--              ><i class="icon_help_white"></i>Oauth2授权登录</a-->
@@ -239,6 +270,7 @@ const winDatas = ref({
               </a-avatar>
               <div>
                 <span>{{ userStore.name }}</span>
+                <span>({{ userStore.username }})</span>
               </div>
             </div>
           </div>
@@ -295,40 +327,18 @@ const winDatas = ref({
               </a-form-item>
             </a-form>
           </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            <a-button
-              :size="'large'"
-              type="primary"
-              long
-              @click="shouquanHandel"
-              >授权访问</a-button
-            >
-            <a-button
-              v-if="!userStore.id || userStore.id === ''"
-              :size="'large'"
-              style="margin-top: 10px"
-              long
-              @click="registerHandel"
-            >注册账号
-            </a-button>
-          </div>
         </div>
         <div class="shouquan">
           <div class="shouquan-item">
+            <span style="color: #2299dd; font-size: 16px; font-weight: 800">{{
+              winDatas.client_name
+            }}</span>
+            将获取以下权限：
+          </div>
+          <div class="shouquan-item">
             <a-checkbox @change="quanxuanhuofanquanxuan"
-              ><span class="shouquan-item-font"
-                >全选
-                <span style="color: #2299dd">{{ winDatas.client_name }}</span>
-                将获取以下权限：</span
-              ></a-checkbox
-            >
+              ><span class="shouquan-item-font">全选 </span>
+            </a-checkbox>
           </div>
           <div
             v-for="(sqit, key) in quanbushouquanlist"
@@ -345,12 +355,53 @@ const winDatas = ref({
               }}</span></a-checkbox
             >
           </div>
-          <div class="shouquan-item">
+          <div class="shouquan-item" style="margin-top: 20px">
             <span class="shouquan-item-font"
-              >授权即同意服务协议和隐私保护协议</span
+              >授权即同意<a-button
+                :type="'text'"
+                :shape="'round'"
+                @click="getagreement(1)"
+                >服务协议</a-button
+              >和<a-button
+                :type="'text'"
+                :shape="'round'"
+                @click="getagreement(2)"
+                >隐私保护协议</a-button
+              ></span
             >
           </div>
         </div>
+      </div>
+      <div
+        style="
+          width: 20rem;
+          margin-top: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <a-button
+          v-if="userStore.id"
+          :size="'large'"
+          style="margin-right: 20px"
+          long
+          @click="qhzhHandel"
+          >切换账号</a-button
+        >
+        <a-button :size="'large'" type="primary" long @click="shouquanHandel"
+          >授权访问</a-button
+        >
+
+        <a-button
+          v-if="!userStore.id || userStore.id === ''"
+          :size="'large'"
+          style="margin-top: 10px"
+          long
+          @click="registerHandel"
+          >注册账号
+        </a-button>
       </div>
     </div>
     <div v-else class="error">
@@ -367,6 +418,15 @@ const winDatas = ref({
         <div style="font-size: 48px">QQ:1057117849</div>
       </div>
     </div>
+    <a-modal
+      v-model:visible="agreementDialog.status"
+      :draggable="true"
+      :title="agreementDialog.title"
+      :width="700"
+      unmount-on-close
+    >
+      <div v-html="agreementDialog.data"></div>
+    </a-modal>
   </div>
 </template>
 
@@ -384,7 +444,7 @@ const winDatas = ref({
     align-items: center;
   }
   .shouquan-item {
-    padding: 3px 1px 1px 3px;
+    padding: 13px 1px 1px 3px;
     display: flex;
     flex-direction: row;
   }
@@ -401,6 +461,7 @@ const winDatas = ref({
     margin-top: 10rem;
   }
   .lay_body {
+    padding: 1rem 8rem 1rem 10rem;
     display: flex;
     flex-direction: row;
   }
@@ -416,6 +477,6 @@ const winDatas = ref({
     padding-left: 2rem;
     display: flex;
     flex-direction: column;
-    width: 22rem;
+    //width: 22rem;
   }
 </style>
