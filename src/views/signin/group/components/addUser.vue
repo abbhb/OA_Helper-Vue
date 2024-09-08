@@ -4,7 +4,7 @@
   import { useAppStore } from '@/store';
   import { GroupUserFront } from '@/api/group';
   import {
-    getUserListManger,
+    getUserListManger, listForLevels,
     updataUserByAdmin,
     updataUserStatusByAdmin,
     UserManger,
@@ -20,6 +20,8 @@
   const emit = defineEmits(['commitUser']);
 
   interface statuEI {
+    levelsSelectO?:string[];
+
     name?: string;
     searchStatus?: boolean;
     clickLoading: boolean;
@@ -33,10 +35,14 @@
     formModel: boolean;
     refreshKey: number;
     jilian: boolean;
+    levelsOptions:string[];
+
   }
 
   const statuEs = ref<statuEI>({
     name: '',
+    levelsOptions:[],
+    levelsSelectO:[],
     clickLoading: false,
     mustHaveStudentId: 0,
     modelstatus: false,
@@ -75,7 +81,13 @@
     const { data } = await roleTagList();
     rolesStore.value = data;
   };
+  const initLevelsSelect = async () => {
+    const {data} = await listForLevels();
+    statuEs.value.levelsOptions = data;
+  };
   initSelect();
+  initLevelsSelect();
+
   const findDepartmentsWithNonEmptyChildren = (departments: DeptManger[]) => {
     const result: string[] = [];
 
@@ -146,7 +158,10 @@
       name: statuEs.value.name,
       cascade: statuEs.value.jilian ? 1 : 0,
       mustHaveStudentId: statuEs.value.mustHaveStudentId,
-
+      level:
+        statuEs.value.levelsSelectO.length > 0
+          ? statuEs.value.levelsSelectO.join(',').trim()
+          : undefined,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
@@ -274,26 +289,26 @@
         >
           <template #columns>
             <a-space direction="vertical">
+              <a-input-search
+                v-model:model-value="statuEs.name"
+                :allow-clear="true"
+                :loading="statuEs.searchStatus"
+                :placeholder="$t('syscenter.user.manger.search.tip')"
+                :style="{ width: '320px' }"
+                search-button
+                style="margin-bottom: 1rem"
+                @clear="getDataB()"
+                @search="getDataB()"
+                @press-enter="getDataB()"
+              >
+                <template #button-icon>
+                  <icon-search />
+                </template>
+                <template #button-default>
+                  {{ $t('syscenter.user.manger.search') }}
+                </template>
+              </a-input-search>
               <a-space direction="horizontal">
-                <a-input-search
-                  v-model:model-value="statuEs.name"
-                  :allow-clear="true"
-                  :loading="statuEs.searchStatus"
-                  :placeholder="$t('syscenter.user.manger.search.tip')"
-                  :style="{ width: '320px' }"
-                  search-button
-                  style="margin-bottom: 1rem"
-                  @clear="getDataB()"
-                  @search="getDataB()"
-                  @press-enter="getDataB()"
-                >
-                  <template #button-icon>
-                    <icon-search />
-                  </template>
-                  <template #button-default>
-                    {{ $t('syscenter.user.manger.search') }}
-                  </template>
-                </a-input-search>
                 <div>
                   <span>是否必须包含学号</span>
                   <a-switch
@@ -304,7 +319,25 @@
                     @change="refreshData"
                   />
                 </div>
+                <div>
+                  <span>年级筛选</span>
+                  <a-select
+                    :style="{ width: '460px' }"
+                    placeholder="通过年级筛选..."
+                    multiple
+                    :loading="statuEs.clickLoading"
+                    :max-tag-count="5"
+                    v-model="statuEs.levelsSelectO"
+                    @change="refreshData"
+                    allow-search
+                    allow-clear
+                    :scrollbar="true"
+                  >
+                    <a-option :value="item" v-for="(item,key) in statuEs.levelsOptions" :key="key">{{ item }}</a-option>
+                  </a-select>
+                </div>
               </a-space>
+
 
               <a-divider class="split-line" style="margin: 3px" />
             </a-space>

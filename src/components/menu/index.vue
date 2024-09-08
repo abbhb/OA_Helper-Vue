@@ -1,15 +1,15 @@
 <script lang="tsx">
-import {compile, computed, defineComponent, h, ref} from 'vue';
-import {useI18n} from 'vue-i18n';
-import type {RouteMeta} from 'vue-router';
-import {RouteRecordRaw, useRoute, useRouter} from 'vue-router';
-import {useAppStore} from '@/store';
-import {listenerRouteChange} from '@/utils/route-listener';
-import {openWindow, regexUrl} from '@/utils';
-import {Message} from '@arco-design/web-vue';
-import useMenuTree from './use-menu-tree';
+  import { compile, computed, defineComponent, h, ref } from 'vue';
+  import { useI18n } from 'vue-i18n';
+  import type { RouteMeta } from 'vue-router';
+  import { RouteRecordRaw, useRoute, useRouter } from 'vue-router';
+  import { useAppStore } from '@/store';
+  import { listenerRouteChange } from '@/utils/route-listener';
+  import { openWindow, regexUrl } from '@/utils';
+  import { Message } from '@arco-design/web-vue';
+  import useMenuTree from './use-menu-tree';
 
-export default defineComponent({
+  export default defineComponent({
     emit: ['collapse'],
     setup() {
       const { t } = useI18n();
@@ -43,7 +43,7 @@ export default defineComponent({
           Message.error('越权！该菜单禁止外链');
         }
         // Eliminate external link side effects
-        const {show, activeMenu} = item.meta as RouteMeta;
+        const { show, activeMenu } = item.meta as RouteMeta;
         if (route.name === item.name && show && !activeMenu) {
           return;
         }
@@ -53,7 +53,6 @@ export default defineComponent({
           name: item.name,
         });
         selectedKey.value = [item.name as string];
-
       };
       const findMenuOpenKeys = (target: string) => {
         const result: string[] = [];
@@ -77,7 +76,7 @@ export default defineComponent({
         return result;
       };
       listenerRouteChange((newRoute) => {
-        const {requiresAuth, activeMenu, show} = newRoute.meta;
+        const { requiresAuth, activeMenu, show } = newRoute.meta;
         if (requiresAuth && (show || activeMenu)) {
           const menuOpenKeys = findMenuOpenKeys(
             (activeMenu || newRoute.name) as string
@@ -105,7 +104,16 @@ export default defineComponent({
                 ? () => h(compile(`<${element?.meta?.icon}/>`))
                 : null;
               const node =
-                element?.children && element?.children.length !== 0 ? (
+                // eslint-disable-next-line no-nested-ternary
+                element?.meta?.type === 'C' ? (
+                  <a-menu-item
+                    key={element?.name}
+                    v-slots={{ icon }}
+                    onClick={() => goto(element)}
+                  >
+                    {t(element?.meta?.locale || '')}
+                  </a-menu-item>
+                ) : element?.children && element?.children.length !== 0 ? (
                   <a-sub-menu
                     key={element?.name}
                     v-slots={{

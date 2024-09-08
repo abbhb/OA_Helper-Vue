@@ -145,11 +145,11 @@
 
                 <div>
                   <a-tag color="red" v-if="item.count!==1&&bcForm.rules[item.count - 2].lianban">
-                  此班次的下班与下一班次的上班进行连班!
+                  此班次的上班与上一班次的下班进行连班!
                   </a-tag>
                   <a-tag color="red" v-if="item.count!==1&&bcForm.rules[item.count - 2].lianban">
 
-                  意思为一次打卡即可完成下个班次上班，无需重复打卡!
+                  意思为在上个班次下班期间一次打卡即可完成本个班次上班，无需重复打卡!（早退不算哦，只算下班时间到下班后允许打卡时间）
                   </a-tag>
                 </div>
 

@@ -6,7 +6,7 @@
   import {
     exportUserData,
     getImportUserTemplate,
-    getUserListManger,
+    getUserListManger, listForLevels,
     resetPassword,
     updataUserByAdmin,
     updataUserStatusByAdmin,
@@ -25,6 +25,7 @@
   const appStore = useAppStore();
 
   interface statuEI {
+    levelsSelectO?:string[];
     name?: string;
     searchStatus?: boolean;
     mustHaveStudentId?: number;
@@ -39,6 +40,7 @@
     formModel: boolean;
     refreshKey: number;
     jilian: boolean;
+    levelsOptions:string[];
   }
   const mimachongzhi = ref({
     userName: '',
@@ -49,6 +51,7 @@
 
   const statuEs = ref<statuEI>({
     name: '',
+    levelsSelectO:[],
     mustHaveStudentId: 0,
     clickLoading: false,
     loading: false,
@@ -60,6 +63,7 @@
     formModel: false,
     refreshKey: 1,
     jilian: true,
+    levelsOptions:[],
   });
 
   /*** 用户导入参数 */
@@ -99,7 +103,12 @@
     const { data } = await roleTagList();
     rolesStore.value = data;
   };
+  const initLevelsSelect = async () => {
+    const {data} = await listForLevels();
+    statuEs.value.levelsOptions = data;
+  };
   initSelect();
+  initLevelsSelect();
   const findDepartmentsWithNonEmptyChildren = (departments: DeptManger[]) => {
     const result: string[] = [];
 
@@ -172,6 +181,10 @@
       name: statuEs.value.name,
       cascade: statuEs.value.jilian ? 1 : 0,
       mustHaveStudentId: statuEs.value.mustHaveStudentId,
+      level:
+        statuEs.value.levelsSelectO.length > 0
+          ? statuEs.value.levelsSelectO.join(',').trim()
+          : undefined,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
@@ -429,11 +442,28 @@
                     @change="refreshData"
                   />
                 </div>
+                <div>
+                  <span>年级筛选</span>
+                  <a-select
+                    :style="{ width: '460px' }"
+                    placeholder="通过年级筛选..."
+                    multiple
+                    :loading="statuEs.loading"
+                    :max-tag-count="5"
+                    v-model="statuEs.levelsSelectO"
+                    @change="refreshData"
+                    allow-search
+                    allow-clear
+                    :scrollbar="true"
+                  >
+                    <a-option :value="item" v-for="(item,key) in statuEs.levelsOptions" :key="key">{{ item }}</a-option>
+                  </a-select>
+                </div>
               </a-space>
               <a-divider class="split-line" style="margin: 3px" />
             </a-space>
 
-            <a-space direction="horizontal">
+            <a-space direction="vertical">
               <a-button
                 :loading="statuEs.clickLoading"
                 type="primary"
@@ -441,21 +471,23 @@
               >
                 {{ $t('syscenter.user.manger.add') }}
               </a-button>
-              <a-button
-                v-permission="'sys:user:export'"
-                :loading="statuEs.clickLoading"
-                type="primary"
-                @click="exportData"
-              >
-                导出Excel
-              </a-button>
-              <a-button
-                v-permission="'sys:user:import'"
-                type="primary"
-                @click="openImport"
-              >
-                从Excel导入
-              </a-button>
+              <a-space direction="horizontal">
+                <a-button
+                  v-permission="'sys:user:export'"
+                  :loading="statuEs.clickLoading"
+                  type="primary"
+                  @click="exportData"
+                >
+                  导出Excel
+                </a-button>
+                <a-button
+                  v-permission="'sys:user:import'"
+                  type="primary"
+                  @click="openImport"
+                >
+                  从Excel导入
+                </a-button>
+              </a-space>
 
               <a-divider class="split-line" style="margin: 3px" />
             </a-space>

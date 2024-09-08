@@ -196,6 +196,7 @@ export function getUserListManger(params: {
   pageSize: number;
   name?: string;
   deptId?: string;
+  level?: string;
   cascade: number;
   mustHaveStudentId: number;
 }) {
@@ -209,6 +210,11 @@ export function listForBMPN(params: {
   deptId?: string;
 }) {
   return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', { params });
+}
+
+
+export function listForLevels() {
+  return axios.get<string[]>('/api/user/levels');
 }
 
 export function getUserPassword() {
