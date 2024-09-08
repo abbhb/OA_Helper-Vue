@@ -2,6 +2,7 @@
   import { computed, reactive } from 'vue';
   import { editBc } from '@/api/signin';
   import { Message } from '@arco-design/web-vue';
+  import Timeline from "@/views/signin/bc/components/Timeline.vue";
 
   const props = defineProps({
     signin: null,
@@ -38,6 +39,14 @@
   bcForm.everyDay = signin.value.everyDay;
   bcForm.rules = signin.value.rules;
 
+  const bcRulesR = ()=>{
+    for (let i = 0; i < bcForm.rules.length; i++) {
+      if (!bcForm.rules[i].lianban){
+        bcForm.rules[i].lianban = false;
+      }
+    }
+  }
+  bcRulesR();
   const everyDayChange = (newC, OldC) => {
     const needCount = newC;
 
@@ -69,7 +78,7 @@
   const chanjiLianban = (count:number) => {
     if (bcForm.rules[count - 1].lianban){
       // 开
-      bcForm.rules[count].sbStartTime = 1
+      bcForm.rules[count].sbStartTime = 0
       bcForm.rules[count].sbEndTime = 1
     }else {
       // 关
@@ -83,9 +92,16 @@
       <a-tag
         >请注意，班次的上下班时间必须顺着时间轴，上一班的下班时间必须早于本班的上班时间。每个班次内的上下班时间也必须满足顺序，否则会导致打卡失败!
       </a-tag>
+      <a-tag
+        color="blue"
+      >左闭右开，例如刚好18：00签到，第二班在这个点结束，第三班最早这个点开始，只算第三班哦~
+      </a-tag>
     </div>
     <div class="box-card">
       <div>
+        <Timeline :rules="bcForm.rules" />
+
+
         <a-form
           ref="loginForm"
           :model="bcForm"
@@ -126,7 +142,17 @@
               class="time-card"
             >
               <div> 第{{ item.count }}班</div>
-              <a-tag color="red" v-if="item.count!==1&&bcForm.rules[item.count - 2].lianban">此班次的上班与上一班次的下班进行连班!下班的时候将自动上班！</a-tag>
+
+                <div>
+                  <a-tag color="red" v-if="item.count!==1&&bcForm.rules[item.count - 2].lianban">
+                  此班次的下班与下一班次的上班进行连班!
+                  </a-tag>
+                  <a-tag color="red" v-if="item.count!==1&&bcForm.rules[item.count - 2].lianban">
+
+                  意思为一次打卡即可完成下个班次上班，无需重复打卡!
+                  </a-tag>
+                </div>
+
               <a-form-item
                 :rules="[{ required: true, message: '请设置上班时间' }]"
                 :validate-trigger="['change', 'blur']"
@@ -253,9 +279,9 @@
               >
                 <a-switch
                   v-model="bcForm.rules[item.count - 1].lianban"
-                  :checked-value="1"
+                  :checked-value="true"
                   @change="chanjiLianban(item.count)"
-                  :unchecked-value="0"
+                  :unchecked-value="false"
                 />
               </a-form-item>
             </div>
@@ -263,7 +289,7 @@
         </a-form>
       </div>
       <div class="button_group">
-        <a-button @click="updateBC">更新</a-button>
+        <a-button @click="updateBC" :type="'primary'">更新</a-button>
       </div>
     </div>
     <div></div>
