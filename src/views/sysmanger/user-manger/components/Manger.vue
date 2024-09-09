@@ -461,36 +461,38 @@
                 </div>
               </a-space>
               <a-divider class="split-line" style="margin: 3px" />
-            </a-space>
 
-            <a-space direction="vertical">
-              <a-button
-                :loading="statuEs.clickLoading"
-                type="primary"
-                @click="Message.info('暂时仅支持通过oauth2认证登录!')"
-              >
-                {{ $t('syscenter.user.manger.add') }}
-              </a-button>
-              <a-space direction="horizontal">
+              <a-space direction="vertical">
                 <a-button
-                  v-permission="'sys:user:export'"
                   :loading="statuEs.clickLoading"
                   type="primary"
-                  @click="exportData"
+                  @click="Message.info('暂时仅支持通过oauth2认证登录!')"
                 >
-                  导出Excel
+                  {{ $t('syscenter.user.manger.add') }}
                 </a-button>
-                <a-button
-                  v-permission="'sys:user:import'"
-                  type="primary"
-                  @click="openImport"
-                >
-                  从Excel导入
-                </a-button>
-              </a-space>
+                <a-space direction="horizontal">
+                  <a-button
+                    v-permission="'sys:user:export'"
+                    :loading="statuEs.clickLoading"
+                    type="primary"
+                    @click="exportData"
+                  >
+                    导出Excel
+                  </a-button>
+                  <a-button
+                    v-permission="'sys:user:import'"
+                    type="primary"
+                    @click="openImport"
+                  >
+                    从Excel导入
+                  </a-button>
+                </a-space>
 
-              <a-divider class="split-line" style="margin: 3px" />
+                <a-divider class="split-line" style="margin: 3px" />
+              </a-space>
             </a-space>
+
+
 
             <a-table-column
               :sortable="{ sortDirections: ['ascend', 'descend'] }"
