@@ -2,7 +2,7 @@
   import { compile, computed, defineComponent, h, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import type { RouteMeta } from 'vue-router';
-  import { RouteRecordRaw, useRoute, useRouter } from 'vue-router';
+  import {RouteLocationNormalized, RouteRecordRaw, useRoute, useRouter} from 'vue-router';
   import { useAppStore } from '@/store';
   import { listenerRouteChange } from '@/utils/route-listener';
   import { openWindow, regexUrl } from '@/utils';
@@ -31,12 +31,22 @@
       const openKeys = ref<string[]>([]);
       const selectedKey = ref<string[]>([]);
 
+
+      listenerRouteChange((route: RouteLocationNormalized) => {
+        selectedKey.value = [route.name as string];
+      }, true);
+
       const goto = (item: RouteRecordRaw) => {
         // 此item里的meta直接取决与后端返回
         // Open external link
         if (regexUrl.test(item.path)) {
           if (item.meta.frame) {
+            console.log("外联")
+            console.log(item)
             selectedKey.value = [item.name as string];
+            if (item?.meta?.frame){
+              selectedKey.value = [(item.name?item.name:item.path) as string];
+            }
             openWindow(item.path);
             return;
           }
@@ -52,7 +62,7 @@
         router.push({
           name: item.name,
         });
-        selectedKey.value = [item.name as string];
+
       };
       const findMenuOpenKeys = (target: string) => {
         const result: string[] = [];
@@ -77,10 +87,15 @@
       };
       listenerRouteChange((newRoute) => {
         const { requiresAuth, activeMenu, show } = newRoute.meta;
-        if (requiresAuth && (show || activeMenu)) {
+        console.log("三联")
+        console.log(requiresAuth)
+        console.log(activeMenu)
+        console.log(show)
+        if (requiresAuth) {
           const menuOpenKeys = findMenuOpenKeys(
             (activeMenu || newRoute.name) as string
           );
+          console.log(menuOpenKeys)
 
           const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
           openKeys.value = [...keySet];
@@ -93,6 +108,14 @@
       const setCollapse = (val: boolean) => {
         if (appStore.device === 'desktop')
           appStore.updateSettings({ menuCollapse: val });
+        // 对应修改高亮项
+        // if (val){
+        //   console.log("折叠")
+        //   console.log(openKeys.value[0] )
+        //   selectedKey.value = [openKeys.value[0] as string]
+        // }else {
+        //   selectedKey.value = [openKeys.value[openKeys.value.length - 1] as string]
+        // }
       };
 
       const renderSubMenu = () => {
@@ -107,7 +130,7 @@
                 // eslint-disable-next-line no-nested-ternary
                 element?.meta?.type === 'C' ? (
                   <a-menu-item
-                    key={element?.name}
+                    key={element?.name?element?.name:element?.path}
                     v-slots={{ icon }}
                     onClick={() => goto(element)}
                   >
@@ -146,7 +169,9 @@
           v-model:collapsed={collapsed.value}
           v-model:open-keys={openKeys.value}
           show-collapse-button={appStore.device !== 'mobile'}
-          auto-open={false}
+          auto-open={true}
+          auto-scroll-into-view={true}
+          accordion={true}
           selected-keys={selectedKey.value}
           auto-open-selected={true}
           level-indent={34}
@@ -165,6 +190,9 @@
     .arco-menu-inline-header {
       display: flex;
       align-items: center;
+      .arco-menu-selected .arco-menu-icon{
+        color: var(--color-text-3);
+      }
     }
     .arco-icon {
       &:not(.arco-icon-down) {
@@ -172,4 +200,6 @@
       }
     }
   }
+
+
 </style>

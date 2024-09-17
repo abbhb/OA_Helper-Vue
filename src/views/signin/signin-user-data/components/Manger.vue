@@ -347,27 +347,27 @@
                 </el-tag>
               </template>
             </a-table-column>
-            <a-table-column
-              :title="$t(`syscenter.user.manger.control`)"
-              :width="220"
-            >
-              <template #cell="{ record }">
-                <a-button @click="editAGroup(record)"
-                  >{{ $t('syscenter.user.manger.control.edit') }}
-                </a-button>
-                <a-button
-                  :status="record.status === 1 ? 'danger' : 'success'"
-                  @click="IBan(record)"
-                >
-                  <span v-if="record.status === 1">{{
-                    $t('syscenter.user.manger.control.banned')
-                  }}</span>
-                  <span v-else>{{
-                    $t('syscenter.user.manger.control.Nobanned')
-                  }}</span>
-                </a-button>
-              </template>
-            </a-table-column>
+<!--            <a-table-column-->
+<!--              :title="$t(`syscenter.user.manger.control`)"-->
+<!--              :width="220"-->
+<!--            >-->
+<!--              <template #cell="{ record }">-->
+<!--                <a-button @click="editAGroup(record)"-->
+<!--                  >{{ $t('syscenter.user.manger.control.edit') }}-->
+<!--                </a-button>-->
+<!--                <a-button-->
+<!--                  :status="record.status === 1 ? 'danger' : 'success'"-->
+<!--                  @click="IBan(record)"-->
+<!--                >-->
+<!--                  <span v-if="record.status === 1">{{-->
+<!--                    $t('syscenter.user.manger.control.banned')-->
+<!--                  }}</span>-->
+<!--                  <span v-else>{{-->
+<!--                    $t('syscenter.user.manger.control.Nobanned')-->
+<!--                  }}</span>-->
+<!--                </a-button>-->
+<!--              </template>-->
+<!--            </a-table-column>-->
           </template>
         </a-table>
       </a-card>

@@ -142,7 +142,7 @@ const useAppStore = defineStore('app', {
           lastPrintDevice: this.lastPrintDevice,
           menu: this.menu,
           menuCollapse: this.menuCollapse,
-          menuWidth: this.menuWidth,
+          menuWidth: 180,
           modelFullscreen: this.modelFullscreen,
           navbar: this.navbar,
           quickRouter: this.quickRouter,

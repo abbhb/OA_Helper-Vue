@@ -22,6 +22,8 @@ export default {
   'menu.usercenter': '个人中心',
   'menu.sysmanger': '系统管理',
   'menu.entertainment': '娱乐中心',
+  'menu.my-vacation': '我的假勤',
+  'menu.my-vacation.attendance': '我的出勤',
   'menu.entertainment.center': '娱乐中心',
   'menu.entertainment.game2048': '2048',
   'menu.version': '版本中心',

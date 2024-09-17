@@ -63,6 +63,8 @@ import 'element-plus/theme-chalk/display.css';
 import 'element-plus/theme-chalk/index.css';
 
 import './assets/style/global.less';
+import './assets/fonts.css'
+import './assets/style/menu.less';
 
 
 

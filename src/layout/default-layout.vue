@@ -17,9 +17,9 @@
           :hide-trigger="true"
           @collapse="setCollapsed"
         >
-          <div class="menu-wrapper">
-            <Menu />
-          </div>
+            <div class="menu-wrapper">
+              <Menu />
+            </div>
         </a-layout-sider>
         <a-drawer
           v-if="hideMenu"
@@ -53,7 +53,7 @@
   import TabBar from '@/components/tab-bar/index.vue';
   import usePermission from '@/hooks/permission';
   import useResponsive from '@/hooks/responsive';
-  import FooterView from '@/components/footer/index.vue'
+  import FooterView from '@/components/footer/index.vue';
   import PageLayout from './page-layout.vue';
 
   const isInit = ref(false);
@@ -148,14 +148,18 @@
 
   .menu-wrapper {
     height: 100%;
-    overflow: auto;
-    overflow-x: hidden;
-    :deep(.arco-menu) {
-      ::-webkit-scrollbar {
-        width: 12px;
-        height: 4px;
-      }
 
+    :deep(.arco-menu-inner) {
+      overflow-y: auto;
+      overflow-x: hidden;
+      //overflow: -moz-scrollbars-none;  /* Firefox */
+      //-ms-overflow-style: none;        /* Internet Explorer 10+ */
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      ::-webkit-scrollbar:hover {
+        display: block;
+      }
       ::-webkit-scrollbar-thumb {
         border: 4px solid transparent;
         background-clip: padding-box;
@@ -167,6 +171,7 @@
         background-color: var(--color-text-3);
       }
     }
+
   }
 
   .layout-content {

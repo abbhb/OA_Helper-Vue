@@ -63,6 +63,8 @@ module.exports = {
       "no-unused-expressions": 0,
       "no-prototype-builtins": 0,
       "no-lonely-if": 0,
+      "no-bitwise": 0,
+      "no-continue": 0,
       "no-new-func": 0,
       "guard-for-in": 0,
       "consistent-return": 0,
