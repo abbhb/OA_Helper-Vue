@@ -109,13 +109,7 @@
         if (appStore.device === 'desktop')
           appStore.updateSettings({ menuCollapse: val });
         // 对应修改高亮项
-        // if (val){
-        //   console.log("折叠")
-        //   console.log(openKeys.value[0] )
-        //   selectedKey.value = [openKeys.value[0] as string]
-        // }else {
-        //   selectedKey.value = [openKeys.value[openKeys.value.length - 1] as string]
-        // }
+
       };
 
       const renderSubMenu = () => {

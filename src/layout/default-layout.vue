@@ -75,9 +75,11 @@
     return appStore.menuCollapse;
   });
   const paddingStyle = computed(() => {
+    // console.log(menuWidth.value)
+    // 只需要在hover时用不hover时的宽度去预留left，并且执行展开菜单操作，离开hover就还原，曲线实现，右下角展开该层固定，一旦固定就真实走目前的逻辑
     const paddingLeft =
       renderMenu.value && !hideMenu.value
-        ? { paddingLeft: `${menuWidth.value}px` }
+        ? { paddingLeft: `${menuWidth.value-10}px` }
         : {};
     const paddingTop = navbar.value ? { paddingTop: navbarHeight } : {};
     return { ...paddingLeft, ...paddingTop };
