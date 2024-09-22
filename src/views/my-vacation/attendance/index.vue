@@ -162,6 +162,7 @@
               <a-link :hoverable="false" @click="gotoDetail(record)">
                 {{ record.currentDate }}<span> </span> {{ record.currentXQ
                 }}<Component
+                  v-if="!record.needSB"
                   :is="ShareCopyIcon"
                   style="width: 14px; height: 14px"
                 />

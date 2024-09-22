@@ -53,7 +53,6 @@ class WS {
       const userStore = useUserStore();
       const chatStore = useChatStore();
       const groupStore = useGroupStore();
-      const cachedStore = useCachedStore();
       switch (params.type) {
         // 获取登录二维码
         // case WsResponseMessageType.LoginQrCode: {
@@ -78,8 +77,7 @@ class WS {
               uid: userStore.id,
             },
           ]);
-          // 初始化所有用户基本信息
-          cachedStore.initAllUserBaseInfo();
+
           break;
         }
         // 用户 token 过期

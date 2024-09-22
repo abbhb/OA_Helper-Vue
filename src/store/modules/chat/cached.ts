@@ -13,7 +13,7 @@ export const useCachedStore = defineStore(
     const globalStore = useGlobalStore();
     const userCachedList = reactive<Record<string, Partial<CacheUserItem>>>({});
 
-    const currentRoomId = computed(() => globalStore.currentSession.roomId);
+    const currentRoomId = computed(() => globalStore?.currentSession?.roomId);
 
     const atUsersMap = reactive<Record<number, BaseUserItem[]>>({
       [currentRoomId.value]: [],

@@ -2,15 +2,18 @@
   import { computed, ref } from 'vue';
   import { RoomTypeEnum } from '@/types/enums/chat';
   import { useGlobalStore } from '@/store/modules/chat/global';
+  import { useCachedStore } from '@/store/modules/chat/cached';
   import UserList from '../UserList/index.vue';
   import ChatList from '../ChatList/index.vue';
   import SendBar from './SendBar/index.vue';
 
-
   const globalStore = useGlobalStore();
+  const cachedStore = useCachedStore();
+  // 初始化所有用户基本信息
+  cachedStore.initAllUserBaseInfo();
   const currentSession = computed(() => globalStore.currentSession);
-  const isSelect = computed(()=>{
-    return currentSession.value.roomId&&currentSession.value.roomId!==''
+  const isSelect = computed(() => {
+    return currentSession.value.roomId && currentSession.value.roomId !== '';
   });
 </script>
 
@@ -26,7 +29,10 @@
         <SendBar />
       </div>
     </div>
-    <UserList v-if="isSelect" v-show="currentSession.type === RoomTypeEnum.Group" />
+    <UserList
+      v-if="isSelect"
+      v-show="currentSession.type === RoomTypeEnum.Group"
+    />
   </div>
 </template>
 
