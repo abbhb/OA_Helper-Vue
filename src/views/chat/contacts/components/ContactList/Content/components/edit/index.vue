@@ -1,19 +1,13 @@
 <template>
   <div class="editable-remark">
-    <input
+    <a-input
       v-model="currentValue"
-      type="text"
-      :class="{ 'edit-mode': isEditing }"
-      @focus="isEditing = true"
+      :disabled="isEditing && currentValue && currentValue !== ''"
+      :style="{ width: '320px' }"
+      placeholder="点击输入备注"
+      allow-clear
       @blur="handleBlur"
-      @change="handleChange"
     />
-    <i
-      v-if="!isEditing && currentValue"
-      class="edit-icon"
-      @click="editMode"
-      >✎</i
-    >
   </div>
 </template>
 

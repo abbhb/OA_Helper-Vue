@@ -79,6 +79,14 @@ export function inviteGroupMember(params: {
   return axios.post<void>('/api/room/group/member', params);
 }
 
+
+export function setRemark(data: {
+  toId: string;
+  type: number;
+  remarkName: string;
+}) {
+  return axios.post<void>('/api/chat/remark/set', data);
+}
 /** 标记消息，点赞等 */
 export function markMsg(data?: MarkMsgReq) {
   return axios.put<void>('/api/chat/msg/mark', data);

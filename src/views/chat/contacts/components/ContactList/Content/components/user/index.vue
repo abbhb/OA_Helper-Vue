@@ -2,24 +2,25 @@
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { useUserInfo } from '@/hooks/chat/useCached';
   import { ElMessage, ElMessageBox } from 'element-plus';
-  import { sessionDetailWithFriends } from '@/api/chat';
+  import { sessionDetailWithFriends, setRemark } from '@/api/chat';
   import { RoomTypeEnum } from '@/types/enums/chat';
   import Router from '@/router';
   import { useChatStore } from '@/store/modules/chat/chat';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import { computed } from 'vue';
   import { ContactItemW } from '@/types/chat';
-  import EditableRemark from '../edit/index.vue'
+  import { Message } from '@arco-design/web-vue';
+  import { useContactStore } from '@/store/modules/chat/contacts';
+  import EditableRemark from '../edit/index.vue';
 
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
+  const contactStore = useContactStore();
 
   const selectedContact = computed(
     () => globalStore.currentSelectedContact as ContactItemW
   );
-  const haveRemark = computed(
-    () => !!selectedContact.value?.remarkName
-  );
+  const haveRemark = computed(() => !!selectedContact.value?.remarkName);
   // 不一定是用户，可能select的是个群组，也可能是新的朋友等其他模块，具体type具体
   const selectedContactUid = computed(() => selectedContact?.value?.id);
 
@@ -40,18 +41,28 @@
   };
   const onStartSession = async (uid: string) => {
     const { data } = await sessionDetailWithFriends({ uid });
-    if (data?.roomId){
+    if (data?.roomId) {
       globalStore.currentSession.roomId = data.roomId;
       globalStore.currentSession.type = RoomTypeEnum.Single;
       chatStore.updateSessionLastActiveTime(data.roomId, data);
       Router.push('/chat/chat');
     }
-
   };
 
-  const handleEdit = (model) => {
-    console.log(model)
-  }
+  const handleEdit = async (model) => {
+    const data = await setRemark({
+      // @ts-ignore
+      toId: globalStore.currentSelectedContact.id,
+      type: 0,
+      // @ts-ignore
+      remarkName: globalStore.currentSelectedContact.remarkName,
+    });
+    // @ts-ignore
+    if (data.code === 1) {
+      Message.success('修改备注成功');
+      await contactStore.getContactList(true);
+    }
+  };
 </script>
 
 <template>
@@ -66,8 +77,12 @@
           :size="70"
         />
         <div class="contact-info">
-          <span class="contact-info-name">{{ haveRemark?selectedContact.remarkName:selectedContact.name }}</span>
-          <span class="contact-info-nameb" v-if="haveRemark"> 昵称: {{ selectedContact.name }}</span>
+          <span class="contact-info-name">{{
+            haveRemark ? selectedContact.remarkName : selectedContact.name
+          }}</span>
+          <span v-if="haveRemark" class="contact-info-nameb">
+            昵称: {{ selectedContact.name }}</span
+          >
           <span class="contact-info-uid"> uid: {{ selectedContact.id }}</span>
           <span class="contact-info-place">
             地区: {{ currentUser.locPlace || '-' }}</span
@@ -77,22 +92,24 @@
       <el-divider />
       <div class="contact-info-wrapper">
         <div class="contact-info">
-          <div class="contact-info-nameb"> 备注:
-            <editable-remark v-model="globalStore.currentSelectedContact.remarkName" :onEdit="handleEdit"></editable-remark>
-
+          <div class="contact-info-nameb">
+            备注:
+            <editable-remark
+              v-model="globalStore.currentSelectedContact.remarkName"
+              :on-edit="handleEdit"
+            ></editable-remark>
           </div>
-
         </div>
       </div>
       <el-divider />
 
       <div class="contact-info-buttons">
         <ElButton type="primary" @click="onStartSession(selectedContact.id)"
-        >发消息</ElButton
+          >发消息</ElButton
         >
-<!--                  <ElButton type="danger" @click="onDeleteContact(selectedContact.uid)">-->
-<!--                    删除联系人-->
-<!--                  </ElButton>-->
+        <!--                  <ElButton type="danger" @click="onDeleteContact(selectedContact.uid)">-->
+        <!--                    删除联系人-->
+        <!--                  </ElButton>-->
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts" name="Contact">
-import Side from './Side/index.vue'
-import Content from './Content/index.vue'
+  import Side from './Side/index.vue';
+  import Content from './Content/index.vue';
 </script>
 
 <template>

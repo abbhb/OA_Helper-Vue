@@ -6,12 +6,15 @@
   import { computed } from 'vue';
   import { ContactItemW } from '@/types/chat';
   import { useUserInfo } from '@/hooks/chat/useCached';
-  import {sessionDetail, sessionDetailWithFriends} from "@/api/chat";
+  import {sessionDetail, sessionDetailWithFriends, setRemark} from "@/api/chat";
   import {RoomTypeEnum} from "@/types/enums/chat";
   import Router from "@/router";
+  import {Message} from "@arco-design/web-vue";
+  import {useContactStore} from "@/store/modules/chat/contacts";
 
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
+  const contactStore = useContactStore();
 
   const selectedContact = computed(
     () => globalStore.currentSelectedContact as ContactItemW
@@ -30,6 +33,20 @@
     }
 
   };
+  const handleEdit = async (val) => {
+    const data = await setRemark({
+      // @ts-ignore
+      toId: globalStore.currentSelectedContact.id ,
+      type: 1,
+      // @ts-ignore
+      remarkName: globalStore.currentSelectedContact.remarkName,
+    })
+    // @ts-ignore
+    if (data.code===1){
+      Message.success("修改备注成功");
+      await contactStore.getContactList(true);
+    }
+  }
 </script>
 
 <template>
