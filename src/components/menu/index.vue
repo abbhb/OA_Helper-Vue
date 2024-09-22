@@ -2,7 +2,12 @@
   import { compile, computed, defineComponent, h, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import type { RouteMeta } from 'vue-router';
-  import {RouteLocationNormalized, RouteRecordRaw, useRoute, useRouter} from 'vue-router';
+  import {
+    RouteLocationNormalized,
+    RouteRecordRaw,
+    useRoute,
+    useRouter,
+  } from 'vue-router';
   import { useAppStore } from '@/store';
   import { listenerRouteChange } from '@/utils/route-listener';
   import { openWindow, regexUrl } from '@/utils';
@@ -10,13 +15,14 @@
   import useMenuTree from './use-menu-tree';
 
   export default defineComponent({
-    emit: ['collapse'],
+    emit: ['collapse', 'setCollapse'],
     setup() {
       const { t } = useI18n();
       const appStore = useAppStore();
       const router = useRouter();
       const route = useRoute();
       const { menuTree } = useMenuTree();
+
       const collapsed = computed({
         get() {
           if (appStore.device === 'desktop') return appStore.menuCollapse;
@@ -31,7 +37,6 @@
       const openKeys = ref<string[]>([]);
       const selectedKey = ref<string[]>([]);
 
-
       listenerRouteChange((route: RouteLocationNormalized) => {
         selectedKey.value = [route.name as string];
       }, true);
@@ -41,11 +46,13 @@
         // Open external link
         if (regexUrl.test(item.path)) {
           if (item.meta.frame) {
-            console.log("外联")
-            console.log(item)
+            console.log('外联');
+            console.log(item);
             selectedKey.value = [item.name as string];
-            if (item?.meta?.frame){
-              selectedKey.value = [(item.name?item.name:item.path) as string];
+            if (item?.meta?.frame) {
+              selectedKey.value = [
+                (item.name ? item.name : item.path) as string,
+              ];
             }
             openWindow(item.path);
             return;
@@ -62,7 +69,6 @@
         router.push({
           name: item.name,
         });
-
       };
       const findMenuOpenKeys = (target: string) => {
         const result: string[] = [];
@@ -87,15 +93,15 @@
       };
       listenerRouteChange((newRoute) => {
         const { requiresAuth, activeMenu, show } = newRoute.meta;
-        console.log("三联")
-        console.log(requiresAuth)
-        console.log(activeMenu)
-        console.log(show)
+        console.log('三联');
+        console.log(requiresAuth);
+        console.log(activeMenu);
+        console.log(show);
         if (requiresAuth) {
           const menuOpenKeys = findMenuOpenKeys(
             (activeMenu || newRoute.name) as string
           );
-          console.log(menuOpenKeys)
+          console.log(menuOpenKeys);
 
           const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
           openKeys.value = [...keySet];
@@ -106,10 +112,8 @@
         }
       }, true);
       const setCollapse = (val: boolean) => {
-        if (appStore.device === 'desktop')
-          appStore.updateSettings({ menuCollapse: val });
+        // emit('setCollapse',val)
         // 对应修改高亮项
-
       };
 
       const renderSubMenu = () => {
@@ -124,7 +128,7 @@
                 // eslint-disable-next-line no-nested-ternary
                 element?.meta?.type === 'C' ? (
                   <a-menu-item
-                    key={element?.name?element?.name:element?.path}
+                    key={element?.name ? element?.name : element?.path}
                     v-slots={{ icon }}
                     onClick={() => goto(element)}
                   >
@@ -162,7 +166,7 @@
           mode={topMenu.value ? 'horizontal' : 'vertical'}
           v-model:collapsed={collapsed.value}
           v-model:open-keys={openKeys.value}
-          show-collapse-button={appStore.device !== 'mobile'}
+          show-collapse-button={false}
           auto-open={true}
           auto-scroll-into-view={true}
           accordion={true}
@@ -179,12 +183,16 @@
   });
 </script>
 
+<style lang="less">
+  @import '@/assets/style/menu.less';
+</style>
+
 <style lang="less" scoped>
   :deep(.arco-menu-inner) {
     .arco-menu-inline-header {
       display: flex;
       align-items: center;
-      .arco-menu-selected .arco-menu-icon{
+      .arco-menu-selected .arco-menu-icon {
         color: var(--color-text-3);
       }
     }
@@ -194,6 +202,4 @@
       }
     }
   }
-
-
 </style>

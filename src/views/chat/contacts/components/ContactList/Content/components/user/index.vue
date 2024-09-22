@@ -40,10 +40,13 @@
   };
   const onStartSession = async (uid: string) => {
     const { data } = await sessionDetailWithFriends({ uid });
-    globalStore.currentSession.roomId = data.roomId;
-    globalStore.currentSession.type = RoomTypeEnum.Single;
-    chatStore.updateSessionLastActiveTime(data.roomId, data);
-    Router.push('/chat/chat');
+    if (data?.roomId){
+      globalStore.currentSession.roomId = data.roomId;
+      globalStore.currentSession.type = RoomTypeEnum.Single;
+      chatStore.updateSessionLastActiveTime(data.roomId, data);
+      Router.push('/chat/chat');
+    }
+
   };
 
   const handleEdit = (model) => {

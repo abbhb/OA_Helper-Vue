@@ -26,7 +26,7 @@ export const useCachedStore = defineStore(
           atUsersMap[currentRoomId.value] = [];
         }
         if (currentRoomId.value === '1') {
-          return Object.values(userCachedList as BaseUserItem[]);
+          return Object.values(userCachedList as unknown as BaseUserItem[]);
         }
         return atUsersMap[currentRoomId.value];
       },

@@ -4,7 +4,6 @@ import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import 'md-editor-v3/lib/style.css';
 
-// import '@arco-themes/vue-qc-snow-onlyself/index.less';
 // 官方主题
 import '@arco-design/web-vue/dist/arco.css';
 import globalComponents from '@/components';
@@ -64,8 +63,9 @@ import 'element-plus/theme-chalk/index.css';
 
 import './assets/style/global.less';
 import './assets/fonts.css'
-import './assets/style/menu.less';
 
+
+import JsonViewer from "vue3-json-viewer"
 
 
 
@@ -103,6 +103,7 @@ app.use(ElementPlus);
 
 app.use(formCreate);
 app.use(FcDesigner);
+app.use(JsonViewer);
 app.mount('#app');
 
 // 初始化加密

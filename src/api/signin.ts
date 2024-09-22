@@ -1,6 +1,29 @@
 import axios from 'axios';
 import {UserInfo, UserManger} from "@/api/user";
 import {PageData} from "@/api/common";
+import {SigninLogCliBcDto} from "@/api/attendance";
+
+export interface SigninGroupDateUserDto {
+  userId?:string;
+  name?:string;
+  deptId?:string;
+  deptName?:string;
+  bcCount?:number;
+  state?:number;
+  logList?:SigninLogCliBcDto[];
+
+}
+
+export interface SigninGroupDateResp {
+  atendanceRequired?:boolean; // 今日是否需要考勤
+  numberOfPeopleSupposedToCome?:number;// 应该出勤人数
+  numberOfFullAttendance?:number;// numberOfFullAttendance
+  numberOfError?:number;// 出勤异常人数
+  userErrorLogList?:SigninGroupDateUserDto[];// 异常拷贝一份
+  userLogList?:SigninGroupDateUserDto[];// 用户详细情况
+
+
+}
 
 export interface BcRule {
   count?: number;
@@ -233,6 +256,15 @@ export function importSigninUserData(file,updateSupport:boolean) {
 }
 export function getImportTemplate() {
   return axios.get<string>('/api/signin_user_data/importTemplate');
+}
+
+export function getSigninGroupDate(groupId:string,date:string) {
+  return axios.get<SigninGroupDateResp>('/api/signin_log/export_signin_group_date',{
+    params:{
+      groupId,
+      date
+    }
+  });
 }
 
 export function updateGroupRule(data: SigninGroupDto) {

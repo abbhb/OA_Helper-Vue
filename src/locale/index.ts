@@ -10,9 +10,11 @@ const defaultLocale = localStorage.getItem('arco-locale') || 'zh-CN';
 
 const i18n = createI18n({
   locale: defaultLocale,
-  fallbackLocale: 'en-US',
+  fallbackLocale: 'zh-CN',
   legacy: false,
   allowComposition: true,
+  silentTranslationWarn: true,
+  missingWarn:true,
   messages: {
     'en-US': en,
     'zh-CN': cn,

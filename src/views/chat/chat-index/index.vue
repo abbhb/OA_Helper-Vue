@@ -158,9 +158,12 @@
   onMounted(() => {
     initListeners();
     if (toSystem && toSystem === 'to') {
-      globalStore.currentSession.roomId = serverConfigStore.systemMessage.roomId;
-      globalStore.currentSession.type = RoomTypeEnum.Group;
-      console.log('路由跳转切换');
+      if (serverConfigStore.systemMessage?.roomId){
+        globalStore.currentSession.roomId = serverConfigStore.systemMessage.roomId;
+        globalStore.currentSession.type = RoomTypeEnum.Group;
+        console.log('路由跳转切换');
+      }
+
     }
   });
 

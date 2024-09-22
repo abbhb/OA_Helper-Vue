@@ -1,4 +1,91 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import { h, ref } from 'vue';
+  import { IconSearch } from '@arco-design/web-vue/es/icon';
+  import { getColor } from '@/utils/color-index';
+  import { RoleManger } from '@/api/role';
+  import ShareCopyIcon from '@/assets/icons/shape-copy.svg';
+
+  import {
+    index_page_data_withuser,
+    IndexPageDataWithuserReq,
+    SigninLogForSelfResp,
+  } from '@/api/attendance';
+  import {Message} from "@arco-design/web-vue";
+  import router from "@/router";
+
+  interface statuEI {
+    clickLoading: boolean;
+    req: IndexPageDataWithuserReq;
+  }
+
+  const statuEs = ref<statuEI>({
+    clickLoading: false,
+    req: {
+      pageNum: 1,
+      pageSize: 10,
+      state: null,
+      start: null,
+      end: null,
+    },
+  });
+
+  const tableData = ref<SigninLogForSelfResp[]>([]);
+
+  const initData = async () => {
+    statuEs.value.clickLoading = true;
+    const { data } = await index_page_data_withuser(statuEs.value.req);
+    console.log(data);
+    tableData.value = data.records;
+    pagination.value.total = data.total;
+    statuEs.value.clickLoading = false;
+  };
+
+  const pagination = ref({
+    current: 1,
+    defaultPageSize: 10,
+    total: 0,
+    pageSize: 10,
+    pageSizeOptions: [10, 20, 50],
+    showPageSize: true,
+    showJumper: true,
+    onChange(page) {
+      pagination.value.current = page;
+      statuEs.value.req.pageNum = page;
+      initData();
+    },
+    onPageSizeChange(pageSize) {
+      pagination.value.pageSize = pageSize;
+      statuEs.value.req.pageSize = pageSize;
+
+      initData();
+    },
+    showTotal: () => `共 ${11} 条`,
+  });
+  initData();
+  const getStateName = (state: number) => {
+    if (state === 0) {
+      return '正常';
+    }
+    if (state === 4) {
+      return '请假';
+    }
+    if (state === 3) {
+      return '缺勤';
+    }
+
+    return '异常';
+  };
+
+  const gotoDetail = (record) => {
+    console.log(record);
+    Message.info('详情页暂未实现!敬请期待');
+  };
+  const gotoQingJia = () => {
+    router.push({
+      name:'StartProcessNewV1'
+    })
+  }
+</script>
 
 <template>
   <div class="content-region">
@@ -24,7 +111,9 @@
             ><div class="view-list-scroll-wrap"
               ><!-- react-text: 29 --><!-- /react-text --><!-- react-text: 35 --><!-- /react-text --></div
             ><!-- react-text: 36 --><!-- /react-text --></ul
-          ></div
+          >
+
+    </div
         ><div class="drop-list drop-list-real" style="display: none"
           ><ul class="clearfix"
             ><div class="view-list-scroll-wrap"
@@ -34,9 +123,111 @@
         ></div
       ></div
     >
-    <div class="content-view"
-      >11
-      <div class="test"></div>
+    <a-alert
+      banner
+      style="
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-left: 30px;
+        width: 96%;
+      "
+      >点击考勤日期可查看详情
+    </a-alert>
+    <a-button :type="'primary'" style="position: absolute;top: 0;right: 36px;margin-top: 12px;
+    margin-bottom: 12px;" @click="gotoQingJia">请假</a-button>
+
+    <div class="content-view">
+      <div class="shaixuan"> </div>
+
+      <a-table
+        class="test"
+        :bordered="false"
+        :data="tableData"
+        :loading="statuEs.clickLoading"
+        :pagination="pagination"
+        :size="'medium'"
+        row-key="id"
+        :scrollbar="true"
+        :scroll="{ y: 600 }"
+        column-resizable
+      >
+        <template #columns>
+          <a-table-column
+            :ellipsis="true"
+            :tooltip="true"
+            title="考勤日期"
+            :width="150"
+          >
+            <template #cell="{ record }">
+              <a-link :hoverable="false" @click="gotoDetail(record)">
+                {{ record.currentDate }}<span> </span> {{ record.currentXQ
+                }}<Component
+                  :is="ShareCopyIcon"
+                  style="width: 14px; height: 14px"
+                />
+              </a-link>
+            </template>
+          </a-table-column>
+          <a-table-column
+            title="首打卡"
+            :width="100"
+            :ellipsis="true"
+            :tooltip="true"
+          >
+            <template #cell="{ record }">
+              {{ record.firstTime ? record.firstTime : '--' }}
+            </template>
+          </a-table-column>
+          <a-table-column
+            title="末打卡"
+            :width="100"
+            :ellipsis="true"
+            :tooltip="true"
+          >
+            <template #cell="{ record }">
+              {{ record.endTime ? record.endTime : '--' }}
+            </template>
+          </a-table-column>
+          <a-table-column
+            :ellipsis="true"
+            :tooltip="true"
+            title="缺勤时长"
+            :width="100"
+          >
+            <template #cell="{ record }">
+              {{ record.queQinTime?record.queQinTime:'--' }}
+            </template>
+          </a-table-column>
+          <a-table-column
+            :ellipsis="true"
+            :tooltip="true"
+            title="考勤状态"
+            :width="100"
+          >
+            <template #cell="{ record }">
+              <span
+                :style="
+                  record.state !== 0 && record.state !== 4
+                    ? 'color: #cc2929'
+                    : ''
+                "
+              >
+                {{ record.needSB ? getStateName(record.state) : '正常' }}
+              </span>
+            </template>
+          </a-table-column>
+          <a-table-column
+            :ellipsis="true"
+            :tooltip="true"
+            title="异常原因"
+            :width="200"
+          >
+            <template #cell="{ record }">
+              {{ record.errMsg?record.errMsg:'--' }}
+            </template>
+          </a-table-column>
+        </template>
+      </a-table>
     </div>
   </div>
 </template>
@@ -44,6 +235,10 @@
 <style lang="less" scoped>
   @import '@/views/my-vacation/attendance/icon.css';
 
+  .arco-table-size-medium .arco-table-td {
+    font-size: 12px;
+    color: #0e1114;
+  }
   .content-region {
     position: relative;
     box-sizing: border-box;
@@ -106,7 +301,7 @@
   }
 
   .view-list .layerForTab .out_view_item:hover {
-    color: RGB( var(--skin-css-var-S3, 20, 106, 255));
+    color: RGB(var(--skin-css-var-S3, 20, 106, 255));
   }
 
   .view-list .layerForTab .out_view_item span {
@@ -591,8 +786,13 @@
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.05);
     background: #fff;
     overflow-y: hidden;
-    margin: 0 16px;
-    border-radius: var(--skin-css-var-Ra3, 8px);
+    margin: 0 26px;
+    border-radius: 16px;
+    padding: 0 16px;
+  }
+  .shaixuan {
+    width: 100%;
+    height: 50px;
   }
   .view-list .layerForTab .head-icon:before {
     color: #fff;

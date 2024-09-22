@@ -74,9 +74,12 @@
   );
   // 选中会话
   const onSelectSelectSession = (roomId: string, roomType: RoomTypeEnum) => {
-    globalStore.currentSession.roomId = roomId;
-    globalStore.currentSession.type = roomType;
-    console.log('切换');
+    if (roomId){
+      globalStore.currentSession.roomId = roomId;
+      globalStore.currentSession.type = roomType;
+      console.log('切换');
+    }
+
   };
 
   // 加载更多

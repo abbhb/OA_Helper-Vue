@@ -46,6 +46,8 @@ export const useGlobalStore = defineStore('global', () => {
 
   // 切换会话的时候重置消息已读数查询
   watch(currentSession, (val) => {
+    console.log("修改currentSession")
+    console.log(currentSession)
     // 清理已读数查询
     clearQueue();
     setTimeout(readCountQueue, 1000);

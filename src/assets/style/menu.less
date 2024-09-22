@@ -147,10 +147,14 @@
         color: ~'@{menu-@{theme}-color-item_default}';
         background-color: ~'@{menu-@{theme}-color-bg-item_default}';
 
+        //&:nth-last-child(1){
+        //  margin-bottom: @menu-vertical-item-height !important;
+        //}
         .@{prefix}-icon,
         .@{menu-prefix-cls}-icon {
           color: ~'@{menu-@{theme}-color-icon_default}';
         }
+
 
         &:hover {
           color: ~'@{menu-@{theme}-color-item_hover}';
@@ -523,7 +527,7 @@
       color: @dropdown-option-color-text_selected;
       font-weight: @dropdown-option-font-weight_selected;
       background-color: @dropdown-option-color-bg_selected;
-      transition: all @transition-duration-1 @transition-timing-function-linear;
+      transition: all @transition-duration-3 @transition-timing-function-linear;
     }
 
     // hover

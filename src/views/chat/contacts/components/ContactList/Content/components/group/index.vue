@@ -22,10 +22,13 @@
 
   const onStartSession = async (id: string) => {
     const { data } = await sessionDetail({ id });
-    globalStore.currentSession.roomId = data.roomId;
-    globalStore.currentSession.type = RoomTypeEnum.Single;
-    chatStore.updateSessionLastActiveTime(data.roomId, data);
-    Router.push('/chat/chat');
+    if (data?.roomId) {
+      globalStore.currentSession.roomId = data.roomId;
+      globalStore.currentSession.type = RoomTypeEnum.Single;
+      chatStore.updateSessionLastActiveTime(data.roomId, data);
+      Router.push('/chat/chat');
+    }
+
   };
 </script>
 
