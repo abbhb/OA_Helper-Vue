@@ -10,10 +10,11 @@
 
 <script setup>
   import axios from 'axios';
-  import { Message } from '@arco-design/web-vue';
+  import { Message,Modal } from '@arco-design/web-vue';
   import { ref, defineExpose } from 'vue';
   import SparkMD5 from "spark-md5";
   import {preUploadPrintFile} from "@/api/printer";
+  import { h } from 'vue';
 
   const props = defineProps({
     url: {
@@ -59,7 +60,22 @@
     formData.append(name || 'file', fileItem.file);
     // eslint-disable-next-line vue/custom-event-name-casing
     emit('on-before', fileItem.file.name);
+    const isLargeFile = fileItem.file.size / 1024 / 1024 > 50 && fileItem.file.size / 1024 / 1024 < 1024;
+    if (isLargeFile){
 
+      const ModalContent = {
+        setup() {
+
+          return () => h('div', {class: 'info-modal-content'}, [
+            h('span', {style: 'margin-bottom: 10px;'}, '您的文件大于50M,所需时间可能较长，请耐心等待转换!'),
+          ])
+        },
+      }
+      Modal.warning({
+        title: '大文件警告',
+        content: () => h(ModalContent)
+      });
+    }
     let fileHash = ""
     let url = props.url + "";
 

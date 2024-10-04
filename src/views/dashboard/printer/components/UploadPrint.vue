@@ -128,6 +128,7 @@
         </a-form-item>
       </div>
       <div v-else-if="thisPrint.state !== 0"> 解析中！ </div>
+      <div v-else-if="thisPrint.state === -1"> 解析失败，请点击复位检查文件重试！ </div>
       <a-form-item>
         <a-space>
           <a-button :disabled="thisPrint.state < 3" html-type="submit"

@@ -78,6 +78,10 @@
       Message.info('保障性能，最大支持同时5个文件！');
       return;
     }
+    if (fileItem.file.size / 1024 / 1024 > 100) {
+      Message.warning('保障性能，大于100M的文件请您使用单文件打印！');
+      return;
+    }
     const formData = new FormData();
     const myfilea = ref<PrintFileImpl>(new PrintFileImpl());
     myfilea.value.addFile(fileItem.file.name);

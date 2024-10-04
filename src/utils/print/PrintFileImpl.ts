@@ -101,6 +101,7 @@ export class PrintFileImpl implements fileItemType {
         if (data.type === 2) {
           // 失败了
           Message.error(data.message || '该任务转换失败了');
+          this.state = -1;
           this.stopFileConfigPolling();
         } else if (data.type === 1) {
           // 成功获取到了
