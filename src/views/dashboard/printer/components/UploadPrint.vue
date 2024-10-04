@@ -2,7 +2,7 @@
   <div class="s-upload" title="上传打印">
     <a-spin :loading="tishi.loading" :size="30" style="width: 500px" dot>
       <Upload
-        v-if="tishi.showUpload"
+        v-show="tishi.showUpload"
         ref="uploadRef"
         url="/api/printer/uploadPrintFile"
         :draggable="true"
@@ -11,12 +11,17 @@
         @on-before="beforeUpload"
       />
       <a-image
-        v-else-if="thisPrint.state !== 0 && thisPrint.canGetImage"
+        v-if="
+        !tishi.showUpload&&
+          thisPrint.state !== 0 &&
+          thisPrint.canGetImage
+        "
         width="300px"
         fit="fill"
         :src="`${thisPrint.imageUrl}`"
       />
-      <div v-else>图片获取中，现在可以开始打印了</div>
+      <div v-else-if="!tishi.showUpload && thisPrint.state === 3 && !thisPrint.canGetImage">缩略图片获取中，现在可以直接打印</div>
+      <div v-else-if="!tishi.showUpload">缩略图片获取中，解析配置获取中</div>
     </a-spin>
 
     <a-form :model="thisPrint" :style="{ width: '1200px' }" @submit="MakePrint">
@@ -143,12 +148,12 @@
   import { onBeforeUnmount, onMounted, ref, h } from 'vue';
   import { PrintFileImpl } from '@/utils/print/PrintFileImpl';
   import { Message, Modal, Button } from '@arco-design/web-vue';
-  import Upload from '@/components/upload/index.vue';
+  import Upload from '@/views/dashboard/printer/components/upload/index.vue';
   import usePrintStore from '@/store/modules/print';
   import printEventHub, {
     downloadFileFromUrl,
   } from '@/utils/print/printEventBus';
-  import { error } from 'echarts/types/src/util/log';
+  import eventBus from "@/utils/eventBus";
 
   const printStore = usePrintStore();
   const uploadRef = ref(null);
@@ -170,6 +175,7 @@
   const onRest = () => {
     // 复位
     thisPrint.value.endThisClass();
+    uploadRef.value.cleanUploadList();
     tishi.value.loading = false;
     tishi.value.showUpload = true;
   };
@@ -214,29 +220,46 @@
     tishi.value.visible = true;
   };
 
-  const oneClickPrintOkHandel = (e?: Event) => {
-    if (onePrintFileUrl.value.fileUrl === null || !onePrintFileUrl.value.fileUrl) {
+  const oneClickPrintOkHandel = async (e?: Event) => {
+    if (
+      onePrintFileUrl.value.fileUrl === null ||
+      !onePrintFileUrl.value.fileUrl
+    ) {
       Message.error('该文件无法一键打印，请尝试手动!');
       return;
     }
+    eventBus.emit("addLoading", {tip: "一键添加中~"});
+    console.log("添加中")
     // 先复位
     onRest();
-    downloadFileFromUrl(onePrintFileUrl.value.fileUrl,onePrintFileUrl.value.fileName)
-      .then((file) => {
-        console.log('file---------------object');
-        console.log(file);
-        uploadRef.value.getUploadRef().value.upload([file]);
-      })
-      .catch((error) => {
-        Message.error('该文件无法一键打印，请尝试手动!');
-      });
+    const file = await downloadFileFromUrl(
+      onePrintFileUrl.value.fileUrl,
+      onePrintFileUrl.value.fileName
+    );
+    try {
+      console.log('file---------------object');
+      console.log(file);
+      uploadRef.value.getUploadRef().value.upload([file]);
+    } catch (e) {
+      Message.error('该文件无法一键打印，请尝试手动!');
+    }
+    console.log("添加完成")
+
+    eventBus.emit('removeLoading');
+
     window.scrollTo({
       top: 0,
       behavior: 'smooth', // 使用平滑滚动
     });
   };
 
-  const onOneClickPrinting = ({ fileUrl,fileName }: { fileUrl: string;fileName?:string }) => {
+  const onOneClickPrinting = ({
+    fileUrl,
+    fileName,
+  }: {
+    fileUrl: string;
+    fileName?: string;
+  }) => {
     // 为了严谨还是判断一下打印模式
     if (printStore.getModel !== 1) {
       return;

@@ -13,6 +13,7 @@
           <div class="panel moduler-wrap">
             <DeviceSelect />
             <DeviceState />
+            <ServiceState />
           </div>
         </a-grid-item>
         <a-grid-item :span="24" class="panel">
@@ -32,6 +33,7 @@
   import PrinterTaskList from '@/views/dashboard/printer/components/printerTaskList.vue';
   import HistoryRecord from '@/views/dashboard/printer/components/HistoryRecord.vue';
   import StateManger from '@/views/dashboard/printer/components/StateManger.vue';
+  import ServiceState from '@/views/dashboard/printer/components/ServiceState.vue';
   import MultiUploadPrint from '@/views/dashboard/printer/components/MultiUploadPrint.vue';
   import usePrintStore from '@/store/modules/print';
   import PrintDocumentTypeStatistics from '@/views/dashboard/printer/components/PrintDocumentTypeStatistics.vue';

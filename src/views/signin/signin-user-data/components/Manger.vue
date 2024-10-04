@@ -13,7 +13,6 @@
     getImportTemplate,
     SigninDataResp,
   } from '@/api/signin';
-  import Upload from '@/components/upload/index.vue';
   import { getToken } from '@/utils/auth';
 
   const { t } = useI18n();

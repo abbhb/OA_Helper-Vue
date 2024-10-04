@@ -28,8 +28,6 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted, reactive } from 'vue';
-  import axios from 'axios';
   import usePrintStore from '@/store/modules/print';
 
   const printState = usePrintStore();

@@ -34,6 +34,10 @@ export interface CountTop10VO {
 interface UploadFile {
   file: any;
 }
+interface PreUploadPrintFileReq {
+  hash: string;
+  originFileName: string;
+}
 
 interface PrintFileReq {
   id: string;
@@ -82,6 +86,17 @@ interface PrintFileConfigResp {
   firstPage: number;
   lastPage: number;
   fileName: string;
+}
+
+/**
+ * 转换服务
+ */
+export interface UnoServiceInfo {
+  toPDFDiffNumber?: number;
+  toImageDiffNumber?: number;
+  toPDFConsumerNumber?: number;
+  toImageConsumerNumber?: number;
+  chulijianyi?: string;
 }
 
 interface PrinterBaseResp<T> {
@@ -142,12 +157,23 @@ export function getPrintDocumentTypeStatistics() {
   );
 }
 
+
+export function unoServiceInfo() {
+  return axios.get<UnoServiceInfo>(
+    '/api/printer/uno_service_info polling'
+  );
+}
+
 /**
  * 上传需要打印的文件
  * @param data
  */
 export function uploadPrintFile(data: UploadFile) {
   return axios.post<string>('/api/printer/uploadPrintFile', data);
+}
+
+export function preUploadPrintFile(data: PreUploadPrintFileReq) {
+  return axios.post<string>('/api/printer/pre-uploadPrintFile', data);
 }
 
 /**

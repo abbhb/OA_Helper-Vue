@@ -12,6 +12,8 @@
   import printEventHub, {
     downloadFileFromUrl,
   } from '@/utils/print/printEventBus';
+  import {preUploadPrintFile} from "@/api/printer";
+  import SparkMD5 from "spark-md5/spark-md5";
 
   interface thisStateType {
     visible: boolean;
@@ -41,8 +43,30 @@
       return false;
     });
   };
-  const customRequest = (option) => {
-    const { onProgress, onError, onSuccess, fileItem, name } = option;
+
+  const get_file_hash = (file) =>{
+    // eslint-disable-next-line func-names
+    return new Promise(function (resolve, reject) {
+      try {
+        const fileReader = new FileReader();
+        const spark = new SparkMD5.ArrayBuffer();
+        // 获取文件二进制数据
+        fileReader.readAsArrayBuffer(file);
+        fileReader.onload =(e)=>{
+          spark.append(e.target.result);
+          const fileHash = spark.end();
+          console.log(fileHash, '文件哈希值');
+          resolve(fileHash);
+        };
+      }catch (e) {
+        reject(e)
+      }
+
+
+    })
+  };
+  const customRequest = async (option) => {
+    const {onProgress, onError, onSuccess, fileItem, name} = option;
     const isHava = fileList.value.some(
       (item) => item.file_name === fileItem.file.name
     );
@@ -59,6 +83,33 @@
     myfilea.value.addFile(fileItem.file.name);
     fileList.value.push(myfilea.value);
     formData.append(name || 'file', fileItem.file);
+
+
+    let fileHash = ""
+    let url = "/api/printer/uploadPrintFile" ;
+
+    // 计算文件hash
+    // 预检
+    try {
+      fileHash = (await get_file_hash(fileItem.file)) as string;
+      const {data} = await preUploadPrintFile({
+        originFileName: fileItem.file.name,
+        hash: fileHash
+      });
+      if (data) {
+        // eslint-disable-next-line vue/custom-event-name-casing
+        myfilea.value.uploadSuccess(data);
+        return onSuccess(data);
+      }
+    } catch (e) {
+      // 预检查失败就正常走流程即可！
+      console.error(e);
+    }
+    if (fileHash !== "") {
+      url += "?hash=" + fileHash
+    }
+    console.log("预检流程结束")
+
     axios
       .post(`/api/printer/uploadPrintFile`, formData, {
         timeout: 150000,
@@ -163,7 +214,13 @@
   };
 
   // 一件打印
-  const onOneClickPrinting = ({ fileUrl,fileName }: { fileUrl: string;fileName?:string; }) => {
+  const onOneClickPrinting = ({
+    fileUrl,
+    fileName,
+  }: {
+    fileUrl: string;
+    fileName?: string;
+  }) => {
     // 为了严谨还是判断一下打印模式
     if (printStore.getModel !== 9) {
       return;
@@ -174,7 +231,7 @@
     }
     if (fileList.value.length <= 4) {
       // todo: 多文件打印模式的一键打印
-      downloadFileFromUrl(fileUrl,fileName)
+      downloadFileFromUrl(fileUrl, fileName)
         .then((file) => {
           uploadRef.value.upload([file]);
         })
@@ -183,7 +240,7 @@
         });
       window.scrollTo({
         top: 0,
-        behavior: 'smooth' // 使用平滑滚动
+        behavior: 'smooth', // 使用平滑滚动
       });
     } else {
       // 阻止

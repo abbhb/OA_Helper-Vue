@@ -111,7 +111,7 @@ export const useChatStore = defineStore('chat', () => {
    */
   const currentSessionInfo = computed(() =>
     sessionList.find(
-      (session) => session.roomId === globalStore.currentSession.roomId
+      (session) => session.roomId === globalStore?.currentSession?.roomId
     )
   );
 

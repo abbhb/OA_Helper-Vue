@@ -268,5 +268,32 @@
         "content": "全新的收集表功能即将上线。敬请期待！"
       }
     ]
+  },
+  {
+    "time": "2024-10-4",
+    "icon": "https://unpkg.byted-static.com/latest/byted/arco-config/assets/favicon.ico",
+    "version": "v4.1.0",
+    "info": [
+      {
+        "title": "考勤数据查询",
+        "content": "增加了考勤数据查询等功能，暂时仅支持个人查询，部门查询开发中~"
+      },
+      {
+        "title": "打印优化",
+        "content": "优化了打印任务处理的效率，可视化打印关键指标"
+      },
+      {
+        "title": "Chat全新升级",
+        "content": "类企业微信模式，群组内均为好友，轻量构建会话"
+      },
+      {
+        "title": "管理员功能优化",
+        "content": "补充筛选功能和重置普通用户密码"
+      },
+      {
+        "title": "敬请期待",
+        "content": "全新的收集表功能即将上线。敬请期待！"
+      }
+    ]
   }
 ]

@@ -51,7 +51,7 @@ export const useGroupStore = defineStore('group', () => {
     cursor: '',
   });
 
-  const currentRoomId = computed(() => globalStore.currentSession.roomId);
+  const currentRoomId = computed(() => globalStore?.currentSession?.roomId);
   /**
    * 获取当前群主ID
    */
