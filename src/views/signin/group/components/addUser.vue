@@ -119,7 +119,10 @@
       name: statuEs.value.name,
       cascade: statuEs.value.jilian ? 1 : 0,
       mustHaveStudentId: statuEs.value.mustHaveStudentId,
-
+      level:
+        statuEs.value.levelsSelectO.length > 0
+          ? statuEs.value.levelsSelectO.join(',').trim()
+          : undefined,
       deptId:
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]

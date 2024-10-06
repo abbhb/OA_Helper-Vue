@@ -145,6 +145,10 @@
         statuEs.value.deptId && statuEs.value.deptId.length >= 1
           ? statuEs.value.deptId[0]
           : undefined,
+      level:
+        statuEs.value.levelsSelectO.length > 0
+          ? statuEs.value.levelsSelectO.join(',').trim()
+          : undefined,
     });
     tableData.value = data.records;
     pagination.value.total = data.total;

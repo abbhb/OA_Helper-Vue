@@ -103,6 +103,7 @@
       if (data) {
         // eslint-disable-next-line vue/custom-event-name-casing
         myfilea.value.uploadSuccess(data);
+        myfilea.value.percent = 100;
         return onSuccess(data);
       }
     } catch (e) {
