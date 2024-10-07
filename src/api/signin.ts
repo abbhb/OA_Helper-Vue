@@ -21,9 +21,18 @@ export interface SigninGroupDateResp {
   numberOfError?:number;// 出勤异常人数
   userErrorLogList?:SigninGroupDateUserDto[];// 异常拷贝一份
   userLogList?:SigninGroupDateUserDto[];// 用户详细情况
-
-
 }
+
+export interface Holidays {
+  id?:string;
+  signinGroupId?:string;
+  dateD?:string;
+  name?:string;
+  workingDay?:number;
+}
+
+
+
 
 export interface BcRule {
   count?: number;
@@ -257,6 +266,26 @@ export function importSigninUserData(file,updateSupport:boolean) {
 export function getImportTemplate() {
   return axios.get<string>('/api/signin_user_data/importTemplate');
 }
+
+
+export function listHolidays(groupId,startDate,endDate) {
+  return axios.get<Holidays[]>('/api/signin_group/list_holidays/' + groupId, {
+    params:{
+      startDate,
+      endDate
+    }
+  });
+}
+
+export function deleteHolidays(groupId,id) {
+  return axios.delete<string>('/api/signin_group/delete_holidays/' + groupId+"/"+id);
+}
+
+export function updateHolidays(groupId, data: Holidays) {
+  return axios.post<string>('/api/signin_group/update_holidays/'+ groupId,data);
+}
+
+
 
 export function getSigninGroupDate(groupId:string,date:string) {
   return axios.get<SigninGroupDateResp>('/api/signin_log/export_signin_group_date',{

@@ -72,6 +72,19 @@
     });
   };
 
+  const mangerHolidays = (record) => {
+    console.log('管理节假日');
+    console.log(record);
+    router.push({
+      name: 'MangerHolidays',
+      query: {
+        groupId: record.signinGroup.id,
+      },
+
+    });
+  };
+
+
   const cleanForm = () => {
     form.id = '';
     form.sort = 1;
@@ -161,6 +174,12 @@
                 :type="'primary'"
                 @click="readSigninData(record)"
                 >查看统计数据</el-button
+              >
+              <el-button
+                class="margin_left"
+                :type="'primary'"
+                @click="mangerHolidays(record)"
+              >节假日管理</el-button
               >
               <a-button class="margin_left" @click="editHandel(record)"
                 >编辑</a-button

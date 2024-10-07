@@ -25,6 +25,16 @@ const Signin: AppRouteRecordRaw = {
         roles: ['*'],
         canGo: true,
       },
+    },{
+      path: 'manger-holidays',
+      name: 'MangerHolidays',
+      component: () => import('@/views/signin/signin-manger-holidays/index.vue'),
+      meta: {
+        locale: 'menu.signin-ext.manger-holidays',
+        requiresAuth: true,
+        roles: ['*'],
+        canGo: true,
+      },
     },
   ],
 };

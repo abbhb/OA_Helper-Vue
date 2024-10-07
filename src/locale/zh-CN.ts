@@ -44,6 +44,7 @@ export default {
   'menu.signin.bcgl': '班次管理',
   'menu.signin.group': '考勤组管理',
   'menu.signin-ext.data-read': '考勤统计',
+  'menu.signin-ext.manger-holidays': '节假日管理',
   'menu.signin-ext': '考勤功能',
   'menu.signin.device': '考勤设备',
   'menu.signin.userData': '生物数据',

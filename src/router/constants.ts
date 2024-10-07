@@ -9,6 +9,7 @@ export const WHITE_LIST = [
   { name: 'forgotPassword', children: [] },
     {name: 'NoticeEdit', children: []}, // 通知编辑组件
     {name: 'SigninDataRead', children: []}, // 考勤统计阅读组件
+    {name: 'MangerHolidays', children: []}, // 节假日管理组件
 ];
 
 export const NOT_FOUND = {

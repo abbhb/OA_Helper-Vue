@@ -219,6 +219,10 @@ export function cancelPrint(id: string, deviceId: string) {
   return axios.get<string>(`/api/printer/print_cancel/${id}/${deviceId}`);
 }
 
+export function deleteHistoryPrints(id: string) {
+  return axios.delete<string>(`/api/printer/deleteHistoryPrints/${id}`);
+}
+
 /**
  * 文件配置轮询接口，查询缩略图状态，有就返回，没告诉前端
  */

@@ -100,7 +100,7 @@
               @click="onePrint(record.url, record.name)"
               >一键打印</a-button
             >
-            <a-button class="button_item" @click="buttonDelete(record.url)">{{
+            <a-button class="button_item" @click="buttonDelete(record.id)">{{
               $t('printer.one.HistoryRecord.delete')
             }}</a-button>
           </template>
@@ -113,7 +113,7 @@
 <script lang="ts" setup>
 import {h, reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {queryAllPrinterList, querySelfPrinterList} from '@/api/printer';
+import {deleteHistoryPrints, queryAllPrinterList, querySelfPrinterList} from '@/api/printer';
 import {IconFaceSmileFill} from '@arco-design/web-vue/es/icon';
 import {Message} from '@arco-design/web-vue';
 import printEventHub from '@/utils/print/printEventBus';
@@ -230,11 +230,10 @@ const { t } = useI18n();
   const onePrint = (url: string, name?: string) => {
     printEventHub.emit('onOneClickPrinting', {fileUrl: url, fileName: name});
   };
-  const buttonDelete = (url: string) => {
-    Message.info({
-      content: () => t('printer.one.HistoryRecord.noDelete'),
-      icon: () => h(IconFaceSmileFill),
-    });
+  const buttonDelete = async (id: string) => {
+    await deleteHistoryPrints(id);
+    Message.success("删除记录成功")
+    await fetchSelfData(pagination.value.current, pagination.value.pageSize);
   };
   fetchSelfData(1, 5);
 

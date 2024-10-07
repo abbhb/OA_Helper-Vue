@@ -62,15 +62,11 @@ import 'element-plus/theme-chalk/display.css';
 import 'element-plus/theme-chalk/index.css';
 
 import './assets/style/global.less';
-import './assets/fonts.css'
+import './assets/fonts.css';
 
+import JsonViewer from 'vue3-json-viewer';
 
-import JsonViewer from "vue3-json-viewer"
-
-
-
-
-
+import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 const app = createApp(App);
 
@@ -99,8 +95,9 @@ app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
-app.use(ElementPlus);
-
+app.use(ElementPlus, {
+  locale: zhCn,
+});
 app.use(formCreate);
 app.use(FcDesigner);
 app.use(JsonViewer);
