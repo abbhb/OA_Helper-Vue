@@ -71,15 +71,20 @@
     }
     loading.value = true;
     console.log('请求');
-    currentMonth.value = range.value.getMonth();
-    const { data } = await listHolidays(
-      groupId.value,
-      getlastMonth(range.value),
-      getNowdate(range.value)
-    );
-    await initSigninData();
+    try {
+      currentMonth.value = range.value.getMonth();
+      const { data } = await listHolidays(
+        groupId.value,
+        getlastMonth(range.value),
+        getNowdate(range.value)
+      );
+      await initSigninData();
 
-    holidayData.value = data;
+      holidayData.value = data;
+    } catch (e) {
+      console.log(e);
+    }
+
     loading.value = false;
   };
 
@@ -141,18 +146,18 @@
 </script>
 
 <template>
-  <a-spin :loading="loading">
-    <a-card
-      class="general-card"
-      :header-style="{ paddingBottom: '0' }"
-      :body-style="{ padding: '17px 20px 21px 20px' }"
-    >
-      <template #title> 我的假勤 </template>
-      <template #extra>
-        <a-link v-if="!props.noMore" @click="emit('alertSome')"
-          >{{ $t('workplace.viewMore') }}
-        </a-link>
-      </template>
+  <a-card
+    class="general-card"
+    :header-style="{ paddingBottom: '0' }"
+    :body-style="{ padding: '17px 20px 21px 20px' }"
+  >
+    <template #title> 我的假勤 </template>
+    <template #extra>
+      <a-link v-if="!props.noMore" @click="emit('alertSome')"
+        >{{ $t('workplace.viewMore') }}
+      </a-link>
+    </template>
+    <a-spin :loading="loading">
       <el-calendar ref="calendar" v-model:model-value="dates">
         <template #header="{ date }">
           <span>{{ date }}</span>
@@ -188,13 +193,13 @@
                 >
                   {{ getHoliDayItem(data.date).name }}
                 </span>
-                <a-tooltip v-else-if="getHoliDayItem(data.date)" :title="getHoliDayItem(data.date).name">
-                  <span
-                    style="font-size: 10px"
-                    >{{
-                      getHoliDayItem(data.date).name.slice(0, 3) + '...'
-                    }}</span
-                  >
+                <a-tooltip
+                  v-else-if="getHoliDayItem(data.date)"
+                  :title="getHoliDayItem(data.date).name"
+                >
+                  <span style="font-size: 10px">{{
+                    getHoliDayItem(data.date).name.slice(0, 3) + '...'
+                  }}</span>
                 </a-tooltip>
               </span>
               <span
@@ -239,8 +244,8 @@
           </div>
         </template>
       </el-calendar>
-    </a-card>
-  </a-spin>
+    </a-spin>
+  </a-card>
 </template>
 
 <style scoped>

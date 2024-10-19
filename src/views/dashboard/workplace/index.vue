@@ -30,10 +30,10 @@
           <todoMy @alert-some="router.push({ name: 'Todo' })" />
         </a-grid-item>
         <a-grid-item
-          v-if="StatusTh.userSigninGroupId && StatusTh.userSigninGroupId !== ''"
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <attendance-index
+          <AttendanceIndex
+            v-if="StatusTh?.userSigninGroupId && StatusTh?.userSigninGroupId !== ''"
             :group-id="StatusTh.userSigninGroupId"
             @alert-some="router.push({ name: 'Attendance' })"
           />

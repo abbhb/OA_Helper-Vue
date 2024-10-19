@@ -139,8 +139,7 @@ export const useGroupStore = defineStore('group', () => {
         uniqueUserList(refresh ? data.list : [...data.list, ...userList.value])
       );
       tempNew.sort(sorAction);
-      console.log('更新群成员');
-      console.log(tempNew);
+
       userList.value = tempNew;
       userListOptions.cursor = data.cursor;
       userListOptions.isLast = data.isLast;
@@ -151,8 +150,7 @@ export const useGroupStore = defineStore('group', () => {
         uniqueUserList(refresh ? [] : [...[], ...userList.value])
       );
       tempNew.sort(sorAction);
-      console.log('更新群成员');
-      console.log(tempNew);
+
       userList.value = tempNew;
       userListOptions.cursor = '';
       userListOptions.isLast = true;
