@@ -11,7 +11,7 @@
 
 <template>
   <li class="person-item">
-    <AvatarImage class="avatar" :avatar="user.avatar" :key="user.avatar" :size="30" />
+    <AvatarImage class="avatar" :avatar="user.avatar" :key="user.uid+'useritem101'+user.name" :size="30" />
     <div class="person-item__name">
       {{ user.name }}
     </div>

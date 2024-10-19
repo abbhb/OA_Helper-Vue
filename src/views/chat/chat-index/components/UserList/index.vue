@@ -9,6 +9,8 @@
   const globalStore = useGlobalStore();
   const cachedStore = useCachedStore();
 
+  const loadMoreState = ref(false);
+  const searchModel = ref('');
   const groupListLastElRef = ref<HTMLDivElement>();
   const groupStore = useGroupStore();
   const groupUserList = computed(() => groupStore.userList);
@@ -20,7 +22,10 @@
       observer = new IntersectionObserver(async (entries) => {
         if (entries?.[0]?.isIntersecting) {
           // 加载更多
+          loadMoreState.value = true;
           await groupStore.loadMore();
+          loadMoreState.value = false;
+
           // 停止观察该元素
           // eslint-disable-next-line no-unused-expressions
           groupListLastElRef.value &&
@@ -52,6 +57,16 @@
     globalStore.createGroupModalInfo.selectedUid =
       cachedStore.currentAtUsersList.map((item) => item.uid);
   };
+  let timers = null;
+
+  const searchPeople = () => {
+    if (timers!==null){
+      clearTimeout(timers)
+    }
+    timers = setTimeout(() => {
+      groupStore.searchGroupUserList(searchModel.value)// 需要防抖的函数
+    }, 1000);
+  }
 </script>
 
 <template>
@@ -66,16 +81,21 @@
       :class="groupStore.showGroupList ? 'show' : ''"
     >
       <div class="user-list-header"
-        >在线人数：{{ statistic.onlineNum || 0 }}</div
-      >
-      <a-button
-        type="primary"
-        :shape="'circle'"
-        size="small"
-        style="font-size: 14px; font-weight: 900"
-        @click="onAddGroupMember"
+        >在线人数：{{ statistic.onlineNum || 0 }}
+        <a-button
+          type="primary"
+          :shape="'circle'"
+          size="small"
+          style="font-size: 14px; font-weight: 900; margin-left: auto"
+          @click="onAddGroupMember"
         >+</a-button
-      >
+        >
+      </div>
+      <div class="user-list-header"
+      >    <a-input-search v-model:model-value="searchModel"
+                           @input="searchPeople" @press-enter="searchPeople" @clear="searchPeople" :style="{width:'320px'}" placeholder="请输入筛选条件"/>
+
+      </div>
       <TransitionGroup
         v-show="groupUserList?.length"
         tag="ul"
@@ -83,7 +103,11 @@
         class="user-list"
       >
         <UserItem v-for="user in groupUserList" :key="user.uid" :user="user" />
-        <li key="visible_el" ref="groupListLastElRef">&nbsp;</li>
+        <li v-if="!loadMoreState" style="width: 100%;display: flex;align-items: center;justify-content: center" key="visible_el" ref="groupListLastElRef">到底了</li>
+        <li v-if="loadMoreState" style="width: 100%;display: flex;align-items: center;justify-content: center" key="visible_el" ref="groupListLastElRef">
+          <a-spin dot />
+
+        </li>
       </TransitionGroup>
       <template v-if="groupUserList?.length === 0">
         <div class="list-no-data">暂无成员~</div>
@@ -138,7 +162,9 @@
       color: var(--color-text-1);
     }
 
+
     &-wrapper {
+      // 额外的样式规则
       position: absolute;
       top: 0;
       right: -16px;
@@ -148,20 +174,28 @@
       width: 200px;
       height: 100%;
       padding: 8px 12px;
-      background-color: var(--color-secondary);
       border-radius: 8px;
       transition: transform 0.3s ease;
+
       transform: translateX(100%);
+      background-color: var(--color-secondary);
+
 
       &.show {
         transform: translateX(-16px);
       }
     }
 
+
     &-header {
+      display: flex;
+
+      align-items: center;
       padding-bottom: 8px;
+
     }
   }
+
 
   @media only screen and (min-width: 640px) {
     .user-list-wrapper {
@@ -186,6 +220,7 @@
       background-color: transparent;
     }
   }
+
 </style>
 
 

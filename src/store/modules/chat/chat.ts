@@ -21,7 +21,7 @@ import { cloneDeep } from 'lodash';
 import router from '@/router';
 import { pushNotifyByMessage } from '@/utils/chat/systemMessageNotify';
 
-export const pageSize = 20;
+export const pageSize = 80;
 // 标识是否第一次请求
 let isFirstInit = false;
 

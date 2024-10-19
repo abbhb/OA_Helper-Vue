@@ -46,7 +46,9 @@
     @contextmenu.prevent.stop="handleRightClick($event)"
   >
     <AvatarImage
+      :key="userInfo.uid+'useritem231'+userInfo.name"
       :avatar="userInfo.avatar"
+      :name="userInfo.name"
       :size="24"
       show-status
       :online="user.activeStatus === ChatOnlineEnum.ONLINE"

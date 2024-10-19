@@ -34,6 +34,7 @@
     <AvatarImage
       class="avatar"
       v-if="item.type!==1"
+      :key="currentUser.uid+'keycontactitem'+currentUser.name"
       :avatar="currentUser.avatar"
       :name="currentUser.name"
       :size="40"

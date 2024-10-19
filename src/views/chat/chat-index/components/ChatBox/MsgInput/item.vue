@@ -21,7 +21,7 @@ interface Props {
     :class="{ 'person-item--active': activeIndex === index }"
     @click="onClick"
   >
-    <AvatarImage class="avatar" :avatar="item.avatar" :key="item.avatar" :size="26" />
+    <AvatarImage class="avatar" :avatar="item.avatar" :name="item.name" :key="item.uid+'person1item'+item.name" :size="26" />
     <div class="person-item__name">
       {{ item.name }}
     </div>

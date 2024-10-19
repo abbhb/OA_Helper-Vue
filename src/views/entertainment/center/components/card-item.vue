@@ -44,6 +44,7 @@
       <AvatarImage
         v-if="!image.includes('/src')"
         class="game-card-body-image"
+        :key="image"
         :avatar="image"
       />
       <img v-else class="game-card-body-image" :src="image" />

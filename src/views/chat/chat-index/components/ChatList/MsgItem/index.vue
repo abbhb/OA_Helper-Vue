@@ -244,8 +244,9 @@
       <div v-if="!isRecall" :class="chatCls">
         <!-- 用户头像 -->
         <AvatarImage
-          :avatar="userInfo.avatar"
           :name="userInfo.name"
+          :avatar="userInfo.avatar"
+          :key="userInfo.uid+'chatlistmsgitem'+userInfo.name"
           @contextmenu.prevent.stop="handleUserRightClick($event)"
         />
         <div ref="boxRef" class="chat-item-box">

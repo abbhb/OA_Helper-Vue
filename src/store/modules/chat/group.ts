@@ -9,6 +9,7 @@ import { cloneDeep } from 'lodash';
 import { uniqueUserList } from '@/utils/chat/unique';
 import { useGlobalStore } from '@/store/modules/chat/global';
 import { useUserStore } from '@/store';
+import {Message} from "@arco-design/web-vue";
 
 const sorAction = (pre: UserItem, next: UserItem) => {
   if (
@@ -49,6 +50,7 @@ export const useGroupStore = defineStore('group', () => {
     isLast: false,
     loading: true,
     cursor: '',
+    currentSearch:'',
   });
 
   const currentRoomId = computed(() => globalStore?.currentSession?.roomId);
@@ -112,32 +114,52 @@ export const useGroupStore = defineStore('group', () => {
   // 移动端控制显隐
   const showGroupList = ref(false);
 
+  // 搜索群成员
+  const searchGroupUserList = async (search:string) => {
+    // 每次搜索都是全新的匹配条件  ,若search为''即可重置条件
+    userListOptions.currentSearch = search;
+    await getGroupUserList(true);
+  }
   // 获取群成员
   const getGroupUserList = async (refresh = false) => {
-    const { data } = await apis.getGroupList({
-      params: {
-        pageSize,
-        cursor: refresh ? undefined : userListOptions.cursor,
-        roomId: currentRoomId.value,
-      },
-    });
-    if (!data) return;
-    const tempNew = cloneDeep(
-      uniqueUserList(refresh ? data.list : [...data.list, ...userList.value])
-    );
-    tempNew.sort(sorAction);
-    console.log('更新群成员');
-    console.log(tempNew);
-    userList.value = tempNew;
-    userListOptions.cursor = data.cursor;
-    userListOptions.isLast = data.isLast;
-    userListOptions.loading = false;
+    try {
+      const { data } = await apis.getGroupList({
+        params: {
+          pageSize,
+          cursor: refresh ? undefined : userListOptions.cursor,
+          roomId: currentRoomId.value,
+          search:userListOptions.currentSearch===''? undefined:userListOptions.currentSearch
+        },
+      });
+      const tempNew = cloneDeep(
+          uniqueUserList(refresh ? data.list : [...data.list, ...userList.value])
+      );
+      tempNew.sort(sorAction);
+      console.log('更新群成员');
+      console.log(tempNew);
+      userList.value = tempNew;
+      userListOptions.cursor = data.cursor;
+      userListOptions.isLast = data.isLast;
+      userListOptions.loading = false;
+      /** 收集需要请求用户详情的 uid */
+      const uidCollectYet: Set<string> = new Set(); // 去重用
+      data.list?.forEach((user) => uidCollectYet.add(user.uid));
+      // 获取用户信息缓存
+      await cachedStore.getBatchUserInfo([...uidCollectYet]);
+    }catch (e) {
+      const tempNew = cloneDeep(
+          uniqueUserList(refresh ? [] : [...[], ...userList.value])
+      );
+      tempNew.sort(sorAction);
+      console.log('更新群成员');
+      console.log(tempNew);
+      userList.value = tempNew;
+      userListOptions.cursor = '';
+      userListOptions.isLast = true;
+      userListOptions.loading = false;
+      Message.info("返回结果为空");
+    }
 
-    /** 收集需要请求用户详情的 uid */
-    const uidCollectYet: Set<string> = new Set(); // 去重用
-    data.list?.forEach((user) => uidCollectYet.add(user.uid));
-    // 获取用户信息缓存
-    await cachedStore.getBatchUserInfo([...uidCollectYet]);
   };
 
   // 获取群成员数量统计
@@ -230,6 +252,7 @@ export const useGroupStore = defineStore('group', () => {
     userListOptions,
     loadMore,
     getGroupUserList,
+    searchGroupUserList,
     getCountStatistic,
     currentLordId,
     countInfo,

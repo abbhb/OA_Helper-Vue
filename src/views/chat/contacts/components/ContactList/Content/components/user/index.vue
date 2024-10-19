@@ -70,7 +70,7 @@
     <div v-if="selectedContactUid" class="contact-main">
       <div class="contact-info-wrapper">
         <AvatarImage
-          :key="selectedContact.avatar"
+          :key="selectedContact.id+'key1'+selectedContact.name"
           class="avatar"
           :avatar="selectedContact.avatar"
           :name="selectedContact.name"

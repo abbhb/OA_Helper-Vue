@@ -357,6 +357,7 @@
           >
             <template #cell="{ record }">
               <AvatarImage
+                :key="record.client_image+'oauth'+record.client_name"
                 :avatar="record.client_image"
                 :name="record.client_name"
               />

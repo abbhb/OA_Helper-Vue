@@ -219,6 +219,8 @@ const anchorChange = (hash: string) => {
                                 >
                                   <!--                                  <img v-if="item.image===''" class="img_" src="@/assets/notimage.png">-->
                                   <AvatarImage
+                                    :key="item.id+'navdh'+item.name"
+
                                     :avatar="item.image"
                                     :name="item.name"
                                   />

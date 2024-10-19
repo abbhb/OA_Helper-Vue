@@ -106,8 +106,9 @@
         :hidden="item.unreadCount < 1"
         class="item"
       >
+
         <AvatarImage
-          :key="item.avatar"
+          :key="item.roomId+'key2'+item.name"
           shape="circle"
           :size="38"
           :avatar="item.avatar"
@@ -120,8 +121,8 @@
           <span v-if="item.tag" class="tag">{{ item.tag }}</span>
         </div>
         <div class="message-message">{{
-          (item.name || '') + '：' + item.lastMsg
-        }}</div>
+              item.lastMsg
+          }}</div>
       </div>
       <span class="message-time">{{ item.lastMsgTime }}</span>
 

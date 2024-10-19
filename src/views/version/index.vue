@@ -46,7 +46,7 @@ const selectVersion = ref(data[data.length - 1]);
           class="info-item"
         >
           <div class="info-title">
-            <AvatarImage :avatar="iteminfo.icon" :key="iteminfo.icon" :name="iteminfo.title" alt="icon" class="title-icon" />
+            <AvatarImage :avatar="iteminfo.icon" :key="iteminfo.icon+'version'+iteminfo.title" :name="iteminfo.title" alt="icon" class="title-icon" />
             <strong>{{ iteminfo.title }}</strong>
           </div>
           <div class="info-content" v-html="iteminfo.content"></div>
