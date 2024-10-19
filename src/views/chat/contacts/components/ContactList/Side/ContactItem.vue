@@ -3,8 +3,8 @@
   import { ChatOnlineEnum } from '@/types/enums/chat';
   import { useUserInfo } from '@/hooks/chat/useCached';
   import AvatarImage from '@/components/image/AvatarImage.vue';
-  import NewFriend from '@/assets/images/newFriend.png'
-  import eventBus from "@/utils/eventBus";
+  import NewFriend from '@/assets/images/newFriend.png';
+  import eventBus from '@/utils/eventBus';
 
   const props = defineProps<{ item: any }>();
 
@@ -13,36 +13,45 @@
   const currentUid = computed(() => item?.value?.id);
   const currentUser = useUserInfo(currentUid.value);
 
-
   const onclickItem = (item) => {
-    eventBus.emit("changeContactSelect", {item});
-
-  }
+    eventBus.emit('changeContactSelect', { item });
+  };
 </script>
 
 <template>
-
-
-  <div v-if="item?.isHeader"  class="item-info contact-item" style="color: #999999">
-
+  <div
+    v-if="item?.isHeader"
+    class="item-info contact-item"
+    style="color: #999999"
+  >
     <div class="item-info-right">
-      <span class="item-info-name">  {{item.key}}</span>
+      <span class="item-info-name"> {{ item.key }}</span>
     </div>
   </div>
-  <div class="item-info contact-item marginend item-hover" @click="onclickItem(item)">
-    <img class="avatar" v-if="item.type===1" :src="NewFriend" width="40"/>
+  <div
+    class="item-info contact-item marginend item-hover"
+    @click="onclickItem(item)"
+  >
+    <img v-if="item.type === 1" class="avatar" :src="NewFriend" width="40" />
     <AvatarImage
+      v-if="item.type !== 1"
+      :key="item.uid + 'keycontactitem' + item.name"
       class="avatar"
-      v-if="item.type!==1"
-      :key="currentUser.uid+'keycontactitem'+currentUser.name"
-      :avatar="currentUser.avatar"
-      :name="currentUser.name"
+      :avatar="item.avatar"
+      :name="item.name"
       :size="40"
       show-status
-      :online="item?.ext?.activeStatus ? item?.ext?.activeStatus === ChatOnlineEnum.ONLINE:true"
+      :online="
+        item?.ext?.activeStatus
+          ? item?.ext?.activeStatus === ChatOnlineEnum.ONLINE
+          : true
+      "
     />
+
     <div class="item-info-right">
-      <span class="item-info-name"> {{ item?.remarkName?item?.remarkName:item.name }}</span>
+      <span class="item-info-name">
+        {{ item?.remarkName ? item?.remarkName : item.name }}</span
+      >
     </div>
   </div>
   <div v-if="item?.isLastInBlock" style="border-bottom: 1px solid #dfdddb">

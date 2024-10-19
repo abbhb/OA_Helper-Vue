@@ -61,6 +61,11 @@ nginx
 完全得猜好吧...
 ```
 
+```
+TypeError: Failed to fetch dynamically imported module: http://localhost:5173/src/views/dashboard/workplace/index.vue?t=1729337332918
+多半是引入了dist下的组件，删除dist即可
+```
+
 #### 打印机页面空指针引用会导致死循环
 
 #### worker线程没有window上下文

@@ -64,7 +64,7 @@
   initData();
   const getStateName = (state: number) => {
     if (state === 0) {
-      return '正常';
+      return '出勤';
     }
     if (state === 4) {
       return '请假';

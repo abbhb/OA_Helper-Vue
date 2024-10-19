@@ -15,9 +15,8 @@
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <PopularContent @alert-some="router.push({ name: 'Notice-List' })"/>
+          <PopularContent @alert-some="router.push({ name: 'Notice-List' })" />
         </a-grid-item>
-
 
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
@@ -25,11 +24,19 @@
           <IndexImage @alert-some="StatusTh.indexImageModelStatus = true" />
         </a-grid-item>
 
-
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <todoMy @alert-some="router.push({ name: 'Todo' })"/>
+          <todoMy @alert-some="router.push({ name: 'Todo' })" />
+        </a-grid-item>
+        <a-grid-item
+          v-if="StatusTh.userSigninGroupId && StatusTh.userSigninGroupId !== ''"
+          :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
+        >
+          <attendance-index
+            :group-id="StatusTh.userSigninGroupId"
+            @alert-some="router.push({ name: 'Attendance' })"
+          />
         </a-grid-item>
       </a-grid>
     </div>
@@ -45,12 +52,12 @@
         <a-grid-item class="panel" :span="24">
           <Carousel style="height: 188px" />
         </a-grid-item>
-<!--        <a-grid-item class="panel" :span="24">-->
-<!--          <Announcement />-->
-<!--        </a-grid-item>-->
-<!--        <a-grid-item class="panel" :span="24">-->
-<!--          <Docs />-->
-<!--        </a-grid-item>-->
+        <!--        <a-grid-item class="panel" :span="24">-->
+        <!--          <Announcement />-->
+        <!--        </a-grid-item>-->
+        <!--        <a-grid-item class="panel" :span="24">-->
+        <!--          <Docs />-->
+        <!--        </a-grid-item>-->
       </a-grid>
     </div>
     <a-modal
@@ -75,26 +82,32 @@
 </template>
 
 <script lang="ts" setup>
-import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
-import {Message} from '@arco-design/web-vue';
-import {onMounted, ref} from 'vue';
-import {useAppStore} from '@/store';
-import {driver} from 'driver.js';
-import {confirmToServer, isConfirm} from '@/api/common';
-import router from '@/router';
-import {FIRST_PAGE_HELPER, FIRST_SUCCESS_UPDATE_USER_INFO,} from '@/utils/my-string';
-import todoMy from '@/views/usercenter/todo-my/index.vue';
-import Banner from './components/banner.vue';
-import DataPanel from './components/data-panel.vue';
-import PopularContent from './components/popular-content.vue';
-import RecentlyVisited from './components/recently-visited.vue';
-import QuickOperation from './components/quick-operation.vue';
-import Announcement from './components/announcement.vue';
-import Carousel from './components/carousel.vue';
-import Docs from './components/docs.vue';
-import 'driver.js/dist/driver.css';
+  import IndexImage from '@/views/dashboard/workplace/components/index-image.vue';
+  import { Message } from '@arco-design/web-vue';
+  import { onMounted, ref } from 'vue';
+  import { useAppStore } from '@/store';
+  import { driver } from 'driver.js';
+  import { confirmToServer, isConfirm } from '@/api/common';
+  import router from '@/router';
+  import {
+    FIRST_PAGE_HELPER,
+    FIRST_SUCCESS_UPDATE_USER_INFO,
+  } from '@/utils/my-string';
+  import todoMy from '@/views/usercenter/todo-my/index.vue';
+  import AttendanceIndex from '@/views/dashboard/workplace/components/attendance-index.vue';
+  import Banner from './components/banner.vue';
+  import DataPanel from './components/data-panel.vue';
+  import PopularContent from './components/popular-content.vue';
+  import RecentlyVisited from './components/recently-visited.vue';
+  import QuickOperation from './components/quick-operation.vue';
+  import Announcement from './components/announcement.vue';
+  import Carousel from './components/carousel.vue';
+  import Docs from './components/docs.vue';
+  import 'driver.js/dist/driver.css';
+  // eslint-disable-next-line import/order
+  import { getMyGroupId } from '@/api/signin';
 
-const appStore = useAppStore();
+  const appStore = useAppStore();
   const selectMenu = (item) => {
     Message.info(item.label);
   };
@@ -103,21 +116,34 @@ const appStore = useAppStore();
     indexImageModelStatus: boolean;
     popularContentStatus: boolean;
     needDriver: boolean;
+    userSigninGroupId: string;
   }
 
   const StatusTh = ref<StatusT>({
     indexImageModelStatus: false,
     popularContentStatus: false,
     needDriver: false,
+    userSigninGroupId: '',
   });
 
   const confirmDriver = async () => {
     await confirmToServer(FIRST_PAGE_HELPER);
   };
 
+  const getUserSigninGroupId = async () => {
+    try {
+      const { data } = await getMyGroupId();
+      StatusTh.value.userSigninGroupId = data;
+    } catch (e) {
+      StatusTh.value.userSigninGroupId = '';
+      console.log('正常的不存在考勤组：');
+      console.error(e);
+    }
+  };
+  getUserSigninGroupId();
   onMounted(async () => {
     // 先判断该用户是不是建议过了！
-    const {data: dataas} = await isConfirm(FIRST_SUCCESS_UPDATE_USER_INFO);
+    const { data: dataas } = await isConfirm(FIRST_SUCCESS_UPDATE_USER_INFO);
     if (!dataas) {
       // 需要跳转更新信息界面
       router.push({

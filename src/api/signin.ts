@@ -296,6 +296,10 @@ export function getSigninGroupDate(groupId:string,date:string) {
   });
 }
 
+export function getMyGroupId() {
+  return axios.get<string>('/api/signin_log/get_my_group_id');
+}
+
 export function updateGroupRule(data: SigninGroupDto) {
   return axios.put<string>('/api/signin_group/update', data);
 }
