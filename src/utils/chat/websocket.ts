@@ -91,7 +91,7 @@ class WS {
           chatStore.pushMsg(params.data as MessageType);
           break;
         }
-        // 用户下线
+        // 用户上下线
         case WsResponseMessageType.OnOffLine: {
           const data = params.data as OnStatusChangeType;
           groupStore.countInfo.onlineNum = data.onlineNum;

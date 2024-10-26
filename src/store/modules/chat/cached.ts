@@ -35,6 +35,32 @@ export const useCachedStore = defineStore(
       },
     });
 
+    // 分片处理
+      async function fetchUserInfoInChunks(result, chunkSize) {
+          // 将所有批量请求创建为 Promise 数组
+          const promises = [];
+
+          for (let i = 0; i < result.length; i += chunkSize) {
+              const chunk = result.slice(i, i + chunkSize);
+              promises.push(Api.getUserInfoBatch(chunk));
+          }
+
+          // 使用 Promise.all 并行执行所有请求
+          const responses = await Promise.all(promises);
+
+          // 处理所有返回的数据
+          responses.forEach(({ data }) => {
+              data?.forEach((item) => {
+                  const curItemResult = {
+                      ...(item?.needRefresh ? item : userCachedList[item.uid]),
+                      needRefresh: undefined,
+                      lastModifyTime: Date.now(),
+                  };
+                  userCachedList[item.uid] = curItemResult;
+              });
+          });
+      }
+
     /** 批量获取用户详细信息 */
     const getBatchUserInfo = async (uids: string[]) => {
       // 没有 lastModifyTime 的要更新，lastModifyTime 距离现在 10 分钟已上的也要更新
@@ -47,17 +73,7 @@ export const useCachedStore = defineStore(
           (item) => !item.lastModifyTime || isDiffNow10Min(item.lastModifyTime)
         );
       if (!result.length) return;
-
-      const { data } = await Api.getUserInfoBatch(result);
-      data?.forEach((item) => {
-        // 更新最后更新时间。
-        const curItemResult = {
-          ...(item?.needRefresh ? item : userCachedList[item.uid]),
-          needRefresh: undefined,
-          lastModifyTime: Date.now(),
-        };
-        userCachedList[item.uid] = curItemResult;
-      });
+      await fetchUserInfoInChunks(result,50)
     };
     const getAllUserBaseInfo = async () => {
       const { data } = await Api.getAllUserBaseInfo({ params: { roomId: 1 } });

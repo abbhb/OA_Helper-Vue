@@ -220,7 +220,7 @@ export const useChatStore = defineStore('chat', () => {
       uidCollectYet.add(msg.fromUser.uid);
     });
     // 获取用户信息缓存
-    cachedStore.getBatchUserInfo([...uidCollectYet]);
+    await cachedStore.getBatchUserInfo([...uidCollectYet]);
     // 为保证获取的历史消息在前面
     const newList = [...computedList, ...chatMessageList.value];
     currentMessageMap.value?.clear(); // 清空Map
@@ -316,7 +316,7 @@ export const useChatStore = defineStore('chat', () => {
       return;
     }
     const cacheUser = cachedStore.userCachedList[msg.fromUser.uid];
-    cachedStore.getBatchUserInfo([msg.fromUser.uid]);
+    await cachedStore.getBatchUserInfo([msg.fromUser.uid]);
     // 发完消息就要刷新会话列表，
     // 如果sessionList当前不包含会话需要刷新
     const session = sessionList.find(
