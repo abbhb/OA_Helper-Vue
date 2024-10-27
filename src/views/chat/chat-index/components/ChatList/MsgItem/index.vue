@@ -27,6 +27,7 @@
   import eventBus from '@/utils/eventBus';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import setting from '@/config/setting';
+  import { useUpload } from '@/hooks/chat/useUpload';
   import MsgOption from '../MsgOption/index.vue';
 
   const props = defineProps({
@@ -86,7 +87,7 @@
       (isCurrentUser.value && props.bubbleMode === 'spread') ||
       props.bubbleMode === 'right',
   }));
-
+  const { progress } = useUpload();
   const onAtUser =
     inject<(uid: string, ignore: boolean) => void>('onSelectPerson');
   const renderMsgRef = ref<HTMLElement | null>(null);
@@ -120,11 +121,11 @@
     // 如果消息已经加载过了，就直接跳转
     const index = chatStore.getMsgIndex(reply.id);
     if (index > -1) {
-      console.log("加载过")
+      console.log('加载过');
       virtualListRef?.value?.scrollToIndex(index, true, 12);
     } else {
-      console.log(reply.id)
-      console.log("没加载过")
+      console.log(reply.id);
+      console.log('没加载过');
       // 如果没有加载过，就先加载，然后跳转
       const curMsgIndex = chatStore.getMsgIndex(id);
       // +1 是在 reply.gapCount - curMsgIndex 刚好是 pageSize 倍数的时候，跳转到的是第一条消息，会触发加载更多，样式会乱掉
@@ -304,7 +305,7 @@
               <!-- 消息加载中 -->
               <Icon v-if="msg?.loading" icon="loading" :size="20" spin />
               <!-- 渲染消息内容体 -->
-              {{ fromUser.username }}
+
               <RenderMessage
                 :message="message"
                 :ext-type="

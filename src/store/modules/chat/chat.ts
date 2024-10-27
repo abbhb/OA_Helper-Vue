@@ -307,7 +307,7 @@ export const useChatStore = defineStore('chat', () => {
   };
 
   const pushMsg = async (msg: MessageType) => {
-    const current = messageMap.get(msg.message.roomId);
+    const current = currentMessageMap.value;
     current?.set(msg.message.id, msg);
     // 获取用户信息缓存
     // 尝试取缓存user, 如果有 lastModifyTime 说明缓存过了，没有就一定是要缓存的用户了
@@ -500,6 +500,22 @@ export const useChatStore = defineStore('chat', () => {
     pushMsg(newMessage);
   };
 
+  // 处理本地mock消息,需要注意，后端真的收到了消息回再推一条真实的消息回来，这个消息idmock出来的，只有需要失败重试才需要留在客户端这边!且刷新就没了
+  const updateMsgMock = (
+    msgId: string,
+    newMessage: MessageType,
+    err: boolean
+  ) => {
+    // 当err为true，newMessage为null
+    if (err) {
+      const tempmockMessage = currentMessageMap.value?.get(msgId);
+      tempmockMessage.err = true;
+    } else {
+      // 成功了仅需要删除本地的mock消息即可!
+      currentMessageMap.value?.delete(msgId);
+    }
+  };
+
   // 标记已读数为 0
   const markSessionRead = (roomId: string) => {
     const session = sessionList.find((item) => item.roomId === roomId);
@@ -530,6 +546,7 @@ export const useChatStore = defineStore('chat', () => {
     updateMarkCount,
     updateRecallStatus,
     updateMsg,
+    updateMsgMock,
     chatListToBottomAction,
     newMsgCount,
     messageMap,

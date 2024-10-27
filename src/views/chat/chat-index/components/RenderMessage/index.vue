@@ -35,7 +35,7 @@
 <template>
   <component
     :is="getComponent(extType, message)"
-    :key="message"
+    :key="message.id"
     :body="message.body"
   />
 </template>

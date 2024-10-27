@@ -92,7 +92,7 @@ export type UserItem = {
   /** 用户名称 */
   name: string;
   /** 角色ID */
-  roleId?: number
+  roleId?: number;
   /** uid */
   uid: string;
 };
@@ -146,19 +146,18 @@ export type MarkItemType = {
   actType: ChatActEnum;
 };
 
-
 export type GroupDetailReq = {
   /** 群头像 */
-  avatar: string
+  avatar: string;
   /** 群名称 */
-  groupName: string
+  groupName: string;
   /** 在线人数 */
-  onlineNum: number
+  onlineNum: number;
   /** 成员角色 1群主 2管理员 3普通成员 4踢出群聊 */
-  role: number
+  role: number;
   /** 房间id */
-  roomId: string
-}
+  roomId: string;
+};
 
 export type RevokedMsgType = {
   /** 消息ID */
@@ -309,11 +308,19 @@ export type MessageType = {
   /** 消息主体 */
   message?: MsgType;
   /** 发送时间 */
-  sendTime?: string;
+  sendTime?: number;
   /** 时间段（可选） */
   timeBlock?: string;
   /** 是否加载中 */
   loading?: boolean;
+  /**
+   * 上传中,特有状态
+   */
+  uploading?:boolean
+  /**
+   * 是否发送失败！可用于本地重试，仅在客户端存在该字段
+   */
+  err?: boolean;
 };
 
 /**
@@ -358,15 +365,14 @@ export type RequestFriendItem = {
   roomId: string;
 };
 
-
 export type ChatMemberWResp = {
   id: string;
-  remarkName:string;
-  name:string;
-  avatar:string;
-  type:number;
+  remarkName: string;
+  name: string;
+  avatar: string;
+  type: number;
   ext: Map<string, any>;
-}
+};
 
 /** 联系人的列表项 -> V2 */
 export type ContactItem = {
@@ -382,9 +388,9 @@ export type ContactItemW = {
   key: string;
   type: number;
   id: string;
-  remarkName:string;
-  name:string;
-  avatar:string;
+  remarkName: string;
+  name: string;
+  avatar: string;
   ext: Map<string, any>;
 };
 

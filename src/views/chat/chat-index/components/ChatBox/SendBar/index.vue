@@ -1,32 +1,40 @@
 <script setup lang="ts" name="SendBar">
-import {computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch,} from 'vue';
-import {emojis} from '@/views/chat/chat-index/components/ChatBox/constant';
-import {insertInputText} from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
-import throttle from 'lodash/throttle';
+  import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    provide,
+    reactive,
+    ref,
+    watch,
+  } from 'vue';
+  import { emojis } from '@/views/chat/chat-index/components/ChatBox/constant';
+  import { insertInputText } from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
+  import throttle from 'lodash/throttle';
 
-import {judgeClient} from '@/utils/chat/detectDevice';
-import {useChatStore} from '@/store/modules/chat/chat';
-import {IMention} from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
-import {ChatMsgEnum, RoleEnum, RoomTypeEnum} from '@/types/enums/chat';
-import {Message} from '@arco-design/web-vue';
-import {sendMsg} from '@/api/chat';
-import {generateBody} from '@/utils/chat';
-import {useMockMessage} from '@/hooks/chat/useMockMessage';
-import {useRecording} from '@/hooks/chat/useRecording';
-import {useEmojiUpload} from '@/hooks/chat/useEmojiUpload';
-import {useUpload} from '@/hooks/chat/useUpload';
-import {useFileDialog} from '@vueuse/core';
-import {useUserInfo} from '@/hooks/chat/useCached';
-import {useEmojiStore} from '@/store/modules/chat/emoji';
-import {useUserStore} from '@/store';
-import {useGlobalStore} from '@/store/modules/chat/global';
-import eventBus from '@/utils/eventBus';
-import setting from '@/config/setting';
-import renderReplyContent from '@/utils/chat/renderReplyContent';
-import {useGroupStore} from '@/store/modules/chat/group';
-import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
+  import { judgeClient } from '@/utils/chat/detectDevice';
+  import { useChatStore } from '@/store/modules/chat/chat';
+  import { IMention } from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
+  import { ChatMsgEnum, RoleEnum, RoomTypeEnum } from '@/types/enums/chat';
+  import { Message } from '@arco-design/web-vue';
+  import { sendMsg } from '@/api/chat';
+  import { generateBody } from '@/utils/chat';
+  import { useMockMessage } from '@/hooks/chat/useMockMessage';
+  import { useRecording } from '@/hooks/chat/useRecording';
+  import { useEmojiUpload } from '@/hooks/chat/useEmojiUpload';
+  import { useUpload } from '@/hooks/chat/useUpload';
+  import { useFileDialog } from '@vueuse/core';
+  import { useUserInfo } from '@/hooks/chat/useCached';
+  import { useEmojiStore } from '@/store/modules/chat/emoji';
+  import { useUserStore } from '@/store';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import eventBus from '@/utils/eventBus';
+  import setting from '@/config/setting';
+  import renderReplyContent from '@/utils/chat/renderReplyContent';
+  import { useGroupStore } from '@/store/modules/chat/group';
+  import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
 
-const client = judgeClient();
+  const client = judgeClient();
 
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
@@ -87,11 +95,11 @@ const client = judgeClient();
         // chatStore.pushMsg(data); // 消息列表新增一条消息,发送消息没必要再push了，收到ws的消息就能push
       } else {
         // 更新上传状态下的消息
-        chatStore.updateMsg(tempMessageId.value, data);
+        // chatStore.updateMsg(tempMessageId.value, data);
       }
     } catch (e) {
       // Message.error(e.message);
-      console.log(e)
+      console.log(e);
     } finally {
       inputMsg.value = ''; // 清空输入列表
       // eslint-disable-next-line no-use-before-define
@@ -119,11 +127,14 @@ const client = judgeClient();
 
   const userStore = useUserStore(); // 是否已登录
   const emojiStore = useEmojiStore();
-  const groupStore = useGroupStore()
+  const groupStore = useGroupStore();
 
   // 是否被提出群聊
-  const isRemoved = computed(() => globalStore.currentSession.type === RoomTypeEnum.Group && groupStore.countInfo.role === RoleEnum.REMOVED)
-
+  const isRemoved = computed(
+    () =>
+      globalStore.currentSession.type === RoomTypeEnum.Group &&
+      groupStore.countInfo.role === RoleEnum.REMOVED
+  );
 
   const isSign = computed(() => userStore.isSign);
 
@@ -182,6 +193,7 @@ const client = judgeClient();
     isUploading,
     fileInfo,
     uploadFile,
+    progress,
     onStart,
     onChange: useUploadChange,
   } = useUpload();
@@ -235,11 +247,12 @@ const client = judgeClient();
       nowMsgType.value = ChatMsgEnum.VIDEO;
     }
 
-    const { type, body } = generateBody(fileInfo.value, nowMsgType.value, true);
-    const res = mockMessage(type, body);
-    tempMessageId.value = res.message.id; // 记录下上传状态下的消息id
-    chatStore.pushMsg(res); // 消息列表新增一条消息
-    chatStore.chatListToBottomAction?.(); // 滚动到消息列表底部
+    // const { type, body } = generateBody(fileInfo.value, nowMsgType.value, true);
+    // const res = mockMessage(type, body);
+    // res.uploading = true;
+    // tempMessageId.value = res.message.id; // 记录下上传状态下的消息id
+    // chatStore.pushMsg(res); // 消息列表新增一条消息
+    // chatStore.chatListToBottomAction?.(); // 滚动到消息列表底部
   });
 
   useUploadChange((status) => {
@@ -249,6 +262,9 @@ const client = judgeClient();
       send(type, body);
     }
     reset();
+  });
+  watch(isUploading, (newc) => {
+    isSending.value = newc;
   });
 
   onEnd((audioFile: any) => uploadFile(audioFile));
@@ -276,7 +292,10 @@ const client = judgeClient();
       <icon-close-circle :style="{ fontSize: 16 }" @click="onClearReply" />
     </div>
     <div class="msg-input">
-      <div class="action" @click="isAudio = !isAudio">
+      <div
+        :class="['action', { disabled: isUploading }]"
+        @click="isAudio = !isAudio"
+      >
         <icon-voice v-show="!isAudio" />
         <icon-pen-fill v-show="isAudio" />
       </div>
@@ -301,7 +320,11 @@ const client = judgeClient();
         :tabindex="!isSign || isSending"
         :disabled="!isSign || isSending"
         :placeholder="
-          isSign ? (isSending ? '消息发送中' : '来聊点什么吧~') : ''
+          isSign
+            ? isSending
+              ? '消息发送中' + (progress ? '(' + progress + ')%' : '')
+              : '来聊点什么吧~'
+            : ''
         "
         :max-length="10000"
         :mentions="mentionList"
@@ -391,7 +414,7 @@ const client = judgeClient();
         </template>
       </a-popover>
       <icon-at
-        class="action"
+        :class="['action', { disabled: isUploading }]"
         :size="emojiSize"
         colorful
         @click="insertInputText({ content: '@', ...mentionRef?.range })"
@@ -403,7 +426,7 @@ const client = judgeClient();
         @click="openFileSelect('img')"
       />
       <icon-file
-        class="action"
+        :class="['action', { disabled: isUploading }]"
         :size="emojiSize"
         colorful
         @click="openFileSelect('file')"
@@ -420,8 +443,9 @@ const client = judgeClient();
       </div>
     </div>
     <span v-if="!isSign" class="tips"> 请登录之后再发言~ </span>
-    <span v-if="isSign && isRemoved" class="tips"> 您已被踢出群聊，无法再发送消息 </span>
-
+    <span v-if="isSign && isRemoved" class="tips">
+      您已被踢出群聊，无法再发送消息
+    </span>
   </div>
 </template>
 

@@ -44,11 +44,16 @@
   );
 
   const showRecall = computed(
-    () =>
-      (isAdmin.value &&
-        globalStore.currentSession.type === RoomTypeEnum.Group) ||
-      (isCurrentUser.value &&
-        Number(Date.now()) - Number(props.msg.message.sendTime) <= 120000)
+    () =>{
+      console.log(props.msg.message)
+      console.log((isCurrentUser.value &&
+        Number(Date.now()) - Number(props.msg.message.sendTime)))
+      return (isAdmin.value &&
+          globalStore.currentSession.type === RoomTypeEnum.Group) ||
+        (isCurrentUser.value &&
+          Number(Date.now()) - Number(props.msg.message.sendTime) <= 120000)
+    }
+
   );
 
   // 撤回
