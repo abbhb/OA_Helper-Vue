@@ -1,3 +1,5 @@
+import {getAPIBase} from "@/utils/env";
+
 export const containers = [
   {
     type: 'grid',
@@ -762,7 +764,7 @@ export const advancedFields = [
       customRule: '',
       customRuleHint: '',
       //-------------------
-      uploadURL: import.meta.env.VITE_API_BASE_URL + '/api/common/upload_Form_v1',
+      uploadURL: getAPIBase() + '/api/common/upload_Form_v1',
       uploadTip: '',
       withCredentials: false,
       multipleSelect: false,
@@ -806,7 +808,7 @@ export const advancedFields = [
       customRule: '',
       customRuleHint: '',
       //-------------------
-      uploadURL: import.meta.env.VITE_API_BASE_URL + '/api/common/upload_Form_v1',
+      uploadURL: getAPIBase() + '/api/common/upload_Form_v1',
       uploadTip: '',
       withCredentials: false,
       multipleSelect: false,

@@ -6,7 +6,8 @@
   import {
     exportUserData,
     getImportUserTemplate,
-    getUserListManger, listForLevels,
+    getUserListManger,
+    listForLevels,
     resetPassword,
     updataUserByAdmin,
     updataUserStatusByAdmin,
@@ -20,12 +21,13 @@
   import ImageUpload from '@/components/image/ImageUpload.vue';
   import { exportSigninUserData, getImportTemplate } from '@/api/signin';
   import { getToken } from '@/utils/auth';
+  import { getAPIBase } from '@/utils/env';
 
   const { t } = useI18n();
   const appStore = useAppStore();
 
   interface statuEI {
-    levelsSelectO?:string[];
+    levelsSelectO?: string[];
     name?: string;
     searchStatus?: boolean;
     mustHaveStudentId?: number;
@@ -40,7 +42,7 @@
     formModel: boolean;
     refreshKey: number;
     jilian: boolean;
-    levelsOptions:string[];
+    levelsOptions: string[];
   }
   const mimachongzhi = ref({
     userName: '',
@@ -51,7 +53,7 @@
 
   const statuEs = ref<statuEI>({
     name: '',
-    levelsSelectO:[],
+    levelsSelectO: [],
     mustHaveStudentId: 0,
     clickLoading: false,
     loading: false,
@@ -63,7 +65,7 @@
     formModel: false,
     refreshKey: 1,
     jilian: true,
-    levelsOptions:[],
+    levelsOptions: [],
   });
 
   /*** 用户导入参数 */
@@ -75,7 +77,7 @@
     // 设置上传的请求头部
     headers: { Authorization: 'Bearer ' + getToken() },
     // 上传的地址
-    url: import.meta.env.VITE_API_BASE_URL + '/api/user/importData',
+    url: getAPIBase() + '/api/user/importData',
   });
 
   const form = ref<UserManger>({
@@ -104,7 +106,7 @@
     rolesStore.value = data;
   };
   const initLevelsSelect = async () => {
-    const {data} = await listForLevels();
+    const { data } = await listForLevels();
     statuEs.value.levelsOptions = data;
   };
   initSelect();
@@ -449,18 +451,23 @@
                 <div>
                   <span>年级筛选</span>
                   <a-select
+                    v-model="statuEs.levelsSelectO"
                     :style="{ width: '460px' }"
                     placeholder="通过年级筛选..."
                     multiple
                     :loading="statuEs.loading"
                     :max-tag-count="5"
-                    v-model="statuEs.levelsSelectO"
-                    @change="refreshData"
                     allow-search
                     allow-clear
                     :scrollbar="true"
+                    @change="refreshData"
                   >
-                    <a-option :value="item" v-for="(item,key) in statuEs.levelsOptions" :key="key">{{ item }}</a-option>
+                    <a-option
+                      v-for="(item, key) in statuEs.levelsOptions"
+                      :key="key"
+                      :value="item"
+                      >{{ item }}</a-option
+                    >
                   </a-select>
                 </div>
               </a-space>
@@ -495,8 +502,6 @@
                 <a-divider class="split-line" style="margin: 3px" />
               </a-space>
             </a-space>
-
-
 
             <a-table-column
               :sortable="{ sortDirections: ['ascend', 'descend'] }"

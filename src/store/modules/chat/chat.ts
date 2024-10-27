@@ -57,7 +57,7 @@ export const useChatStore = defineStore('chat', () => {
 
   const currentMessageMap = computed({
     get: () => {
-      if (!currentRoomId.value){
+      if (!currentRoomId.value) {
         return new Map();
       }
       const current = messageMap.get(currentRoomId.value as string);
@@ -67,7 +67,6 @@ export const useChatStore = defineStore('chat', () => {
       return messageMap.get(currentRoomId.value as string);
     },
     set: (val) => {
-
       messageMap.set(currentRoomId.value, val as Map<string, MessageType>);
     },
   });
@@ -257,7 +256,7 @@ export const useChatStore = defineStore('chat', () => {
     sortAndUniqueSessionList();
 
     sessionList[0].unreadCount = 0;
-    if ((!isFirstInit || isFresh )&& data?.list[0]?.roomId) {
+    if ((!isFirstInit || isFresh) && data?.list[0]?.roomId) {
       isFirstInit = true;
       globalStore.currentSession.roomId = data.list[0].roomId;
       globalStore.currentSession.type = data.list[0].type;
@@ -436,7 +435,7 @@ export const useChatStore = defineStore('chat', () => {
   // 查找消息在列表里面的索引
   const getMsgIndex = (msgId: string) => {
     if (!msgId) return -1;
-    const keys = Array.from(messageMap.keys());
+    const keys = Array.from(currentMessageMap.value.keys());
     return keys.findIndex((key) => key === msgId);
   };
 

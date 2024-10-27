@@ -94,9 +94,12 @@ class WS {
         // 用户上下线
         case WsResponseMessageType.OnOffLine: {
           const data = params.data as OnStatusChangeType;
-          groupStore.countInfo.onlineNum = data.onlineNum;
+          // 收到用户上下线后不直接更新人数，而是更新成员列表的状态，去计算状态数来实时更新
+
+          // groupStore.countInfo.onlineNum = data.onlineNum;
           // groupStore.countInfo.totalNum = data.totalNum;
           groupStore.batchUpdateUserStatus(data.changeList);
+          groupStore.updateCurrentOnlineNum();
           break;
         }
         // 小黑子的发言在禁用后，要删除他的发言

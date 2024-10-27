@@ -155,7 +155,7 @@ export const useGroupStore = defineStore('group', () => {
       userListOptions.cursor = '';
       userListOptions.isLast = true;
       userListOptions.loading = false;
-      Message.info('返回结果为空');
+      // Message.info('返回结果为空');
       return;
     }
     /** 收集需要请求用户详情的 uid */
@@ -183,14 +183,23 @@ export const useGroupStore = defineStore('group', () => {
     await getGroupUserList();
   };
 
+  const updateCurrentOnlineNum = () => {
+    const tempNew = cloneDeep(userList.value);
+    let total = 0;
+    for (let index = 0, len = tempNew.length; index < len; index += 1) {
+      const curUser = tempNew[index];
+      if (curUser.activeStatus === 1) total += 1;
+    }
+    countInfo.value.onlineNum = total;
+  };
   // 更新用户在线状态
   const batchUpdateUserStatus = (items: UserItem[]) => {
     const tempNew = cloneDeep(userList.value);
     for (let index = 0, len = items.length; index < len; index += 1) {
       const curUser = items[index];
-      const findIndex = tempNew.findIndex((item) => item.uid === curUser.uid);
-      // findIndex > -1 &&
-      //   (tempNew[findIndex].activeStatus = curUser.activeStatus)
+      const findIndex = tempNew.findIndex((item) => String(item.uid) === String(curUser.uid));
+      findIndex > -1 &&
+        (tempNew[findIndex].activeStatus = curUser.activeStatus);
     }
     tempNew.sort(sorAction);
     userList.value = tempNew;
@@ -261,6 +270,7 @@ export const useGroupStore = defineStore('group', () => {
     getCountStatistic,
     currentLordId,
     countInfo,
+    updateCurrentOnlineNum,
     batchUpdateUserStatus,
     showGroupList,
     filterUser,

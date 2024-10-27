@@ -14,6 +14,7 @@
     SigninDataResp,
   } from '@/api/signin';
   import { getToken } from '@/utils/auth';
+  import {getAPIBase} from "@/utils/env";
 
   const { t } = useI18n();
   const appStore = useAppStore();
@@ -53,7 +54,7 @@
     // 设置上传的请求头部
     headers: { Authorization: 'Bearer ' + getToken() },
     // 上传的地址
-    url: import.meta.env.VITE_API_BASE_URL+'/api/signin_user_data/importData',
+    url: getAPIBase()+'/api/signin_user_data/importData',
   });
 
   const tableData = ref<SigninDataResp[]>([]);

@@ -26,7 +26,7 @@
   import { useElementVisibility } from '@vueuse/core';
   import eventBus from '@/utils/eventBus';
   import { useGlobalStore } from '@/store/modules/chat/global';
-  import setting from "@/config/setting";
+  import setting from '@/config/setting';
   import MsgOption from '../MsgOption/index.vue';
 
   const props = defineProps({
@@ -64,14 +64,13 @@
   defineOptions({ inheritAttrs: false });
 
   // 只能对一级 props 进行 toRefs 结构，否则会丢失响应
-  const message = computed(() => props.msg.message)
-  const fromUser = computed(() => props.msg.fromUser)
+  const message = computed(() => props.msg.message);
+  const fromUser = computed(() => props.msg.fromUser);
   const isVisible = ref(false);
 
   const handleVisibilityChange = (visible) => {
     isVisible.value = visible;
   };
-
 
   const userStore = useUserStore();
   const chatStore = useChatStore();
@@ -121,8 +120,11 @@
     // 如果消息已经加载过了，就直接跳转
     const index = chatStore.getMsgIndex(reply.id);
     if (index > -1) {
+      console.log("加载过")
       virtualListRef?.value?.scrollToIndex(index, true, 12);
     } else {
+      console.log(reply.id)
+      console.log("没加载过")
       // 如果没有加载过，就先加载，然后跳转
       const curMsgIndex = chatStore.getMsgIndex(id);
       // +1 是在 reply.gapCount - curMsgIndex 刚好是 pageSize 倍数的时候，跳转到的是第一条消息，会触发加载更多，样式会乱掉
@@ -178,14 +180,14 @@
   onMounted(() => {
     nextTick(() => {
       if (renderMsgRef.value && boxRef.value) {
-        const renderMsgWidth = renderMsgRef.value.clientWidth
-        const boxWidth = boxRef.value.clientWidth
+        const renderMsgWidth = renderMsgRef.value.clientWidth;
+        const boxWidth = boxRef.value.clientWidth;
         if (renderMsgWidth + 150 <= boxWidth) {
-          tooltipPlacement.value = 'right-start'
+          tooltipPlacement.value = 'right-start';
         } else if (props.msg.message.body.reply) {
-          tooltipPlacement.value = 'top-end'
+          tooltipPlacement.value = 'top-end';
         } else {
-          tooltipPlacement.value = 'bottom-end'
+          tooltipPlacement.value = 'bottom-end';
         }
       }
       const targetIsVisible = useElementVisibility(msgVisibleEl);
@@ -200,12 +202,12 @@
         // ~~5分钟内每10s中查询一次已读数~~
         watch(isVisible, (visible) => {
           if (visible) {
-            console.log("消息进入视口")
+            console.log('消息进入视口');
             eventBus.emit('onAddReadCountTask', {
               msgId: props.msg.message.id,
             });
           } else {
-            console.log("消息离开视口")
+            console.log('消息离开视口');
 
             eventBus.emit('onRemoveReadCountTask', {
               msgId: props.msg.message.id,
@@ -218,12 +220,12 @@
 
   // 已读数
   eventBus.on('onGetReadCount', (res) => {
-    const currentMsgCount = res.get(props.msg.message.id)
+    const currentMsgCount = res.get(props.msg.message.id);
     if (currentMsgCount) {
-      readCount.read = currentMsgCount.readCount
-      readCount.unread = currentMsgCount.unReadCount
+      readCount.read = currentMsgCount.readCount;
+      readCount.unread = currentMsgCount.unReadCount;
     }
-  })
+  });
 
   const currentReadList = (msgId: string) => {
     // 全部已读禁止打开弹窗。
@@ -238,20 +240,18 @@
     msg.timeBlock
   }}</span>
   <span v-if="isRecall" class="send-time-block">{{ message.body }}</span>
-  <div ref="msgVisibleEl" v-visible="handleVisibilityChange"
-  >
+  <div ref="msgVisibleEl" v-visible="handleVisibilityChange">
     <transition name="remove">
       <div v-if="!isRecall" :class="chatCls">
         <!-- 用户头像 -->
         <AvatarImage
+          :key="userInfo.uid + 'chatlistmsgitem' + userInfo.name"
           :name="userInfo.name"
           :avatar="userInfo.avatar"
-          :key="userInfo.uid+'chatlistmsgitem'+userInfo.name"
           @contextmenu.prevent.stop="handleUserRightClick($event)"
         />
         <div ref="boxRef" class="chat-item-box">
           <div class="chat-item-user-info">
-
             <!-- 用户名 -->
             <span
               class="user-name"
@@ -304,8 +304,13 @@
               <!-- 消息加载中 -->
               <Icon v-if="msg?.loading" icon="loading" :size="20" spin />
               <!-- 渲染消息内容体 -->
-              {{fromUser.username}}
-              <RenderMessage :message="message" :ext-type="fromUser.uid===setting.chatgptUserInfo.uid?'chatgpt':''"/>
+              {{ fromUser.username }}
+              <RenderMessage
+                :message="message"
+                :ext-type="
+                  fromUser.uid === setting.chatgptUserInfo.uid ? 'chatgpt' : ''
+                "
+              />
             </div>
           </el-tooltip>
           <!-- 消息回复部分 -->

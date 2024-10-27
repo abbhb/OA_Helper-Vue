@@ -1,4 +1,3 @@
-import {createI18n} from "./smart-vue-i18n/index";
 
 import enLocale from "@/components/FormDesigner/lang/en-US";
 import zhLocale from "@/components/FormDesigner/lang/zh-CN";
@@ -6,6 +5,7 @@ import enLocale_render from "@/components/FormDesigner/lang/en-US_render";
 import zhLocale_render from "@/components/FormDesigner/lang/zh-CN_render";
 import enLocale_extension from "@/components/FormDesigner/lang/en-US_extension";
 import zhLocale_extension from "@/components/FormDesigner/lang/zh-CN_extension";
+import {createI18n} from "./smart-vue-i18n/index";
 
 const langResources = {
     "en-US": {
