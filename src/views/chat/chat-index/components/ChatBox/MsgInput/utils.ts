@@ -18,7 +18,7 @@ export const transformNodeListToMentionData = (nodeList: INode[]) => {
         length: name.length + 1,
         offset: pureString.length,
       });
-      pureString += `@${name}`;
+      pureString += `@${uid}○`;
     }
   });
   return { pureString, mentionList };

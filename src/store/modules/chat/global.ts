@@ -64,6 +64,14 @@ export const useGlobalStore = defineStore('global', () => {
     unReadMark.newMsgUnreadCount = resultCount > 0 ? resultCount : 0;
   });
 
+  // isSingleSession:当前是否是单聊会话
+  const isSingleSession = ():boolean => {
+    if (currentSession&&currentSession?.type===RoomTypeEnum.Single){
+      return true;
+    }
+    return false;
+  }
+
   return {
     unReadMark,
     currentSession,
@@ -71,6 +79,7 @@ export const useGlobalStore = defineStore('global', () => {
     currentSelectedContact,
     currentReadUnreadList,
     createGroupModalInfo,
+    isSingleSession
   };
 });
 

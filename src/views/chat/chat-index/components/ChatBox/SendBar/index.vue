@@ -40,6 +40,7 @@
   const globalStore = useGlobalStore();
   const isSending = ref(false);
   const inputMsg = ref('');
+  const inputMsgOrigin = ref('');// 原始数据
   const mentionRef = ref();
   const mentionList = ref<IMention[]>([]);
   const isAudio = ref(false);
@@ -102,6 +103,7 @@
       console.log(e);
     } finally {
       inputMsg.value = ''; // 清空输入列表
+      inputMsgOrigin.value = ''; // 清空输入列表
       // eslint-disable-next-line no-use-before-define
       onClearReply(); // 置空回复的消息
       isSending.value = false;
@@ -112,13 +114,13 @@
 
   const sendMsgHandler = () => {
     // 空消息或正在发送时禁止发送
-    if (!inputMsg.value?.trim().length || isSending.value) {
+    if (!inputMsg.value?.trim().length || !inputMsgOrigin.value?.trim().length || isSending.value) {
       return;
     }
 
     isSending.value = true;
     send(ChatMsgEnum.TEXT, {
-      content: inputMsg.value,
+      content: inputMsgOrigin.value,
       // eslint-disable-next-line no-use-before-define
       replyMsgId: currentMsgReply.value.message?.id,
       atUidList: mentionList.value.map((item) => item.uid),
@@ -184,6 +186,7 @@
   };
 
   const onInputChange = (val: string, mentions: IMention[]) => {
+    inputMsgOrigin.value = val;
     mentionList.value = mentions;
   };
   const options = reactive({ multiple: false, accept: '.jpg,.png' });
@@ -328,6 +331,7 @@
         "
         :max-length="10000"
         :mentions="mentionList"
+        :show-at="!globalStore.isSingleSession()"
         @change="onInputChange"
         @send="sendMsgHandler"
       />
@@ -414,6 +418,7 @@
         </template>
       </a-popover>
       <icon-at
+        v-show="!globalStore.isSingleSession()"
         :class="['action', { disabled: isUploading }]"
         :size="emojiSize"
         colorful

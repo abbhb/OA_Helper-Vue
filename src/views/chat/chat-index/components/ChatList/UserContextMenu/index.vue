@@ -6,10 +6,10 @@
   } from '@imengyu/vue3-context-menu';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import eventBus from '@/utils/eventBus';
-  import {sessionDetailWithFriends} from "@/api/chat";
-  import {RoomTypeEnum} from "@/types/enums/chat";
-  import Router from "@/router";
-  import {useChatStore} from "@/store/modules/chat/chat";
+  import { sessionDetailWithFriends } from '@/api/chat';
+  import { RoomTypeEnum } from '@/types/enums/chat';
+  import Router from '@/router';
+  import { useChatStore } from '@/store/modules/chat/chat';
 
   const props = defineProps<{
     // 用户id
@@ -30,15 +30,14 @@
     eventBus.emit('onSelectPerson', { uid, ignoreCheck });
 
   const onStartSession = async () => {
-    const { uid }  = props;
+    const { uid } = props;
     const { data } = await sessionDetailWithFriends({ uid });
-    if (data?.roomId){
+    if (data?.roomId) {
       globalStore.currentSession.roomId = data.roomId;
       globalStore.currentSession.type = RoomTypeEnum.Single;
       chatStore.updateSessionLastActiveTime(data.roomId, data);
       Router.push('/chat/chat');
     }
-
   };
 </script>
 
@@ -52,22 +51,28 @@
     }"
   >
     <ContextMenuItem
+      v-show="!globalStore.isSingleSession()"
       label="艾特Ta"
       @click="onAtUser?.(props.uid, true)"
     >
       <template #icon> <span class="icon">@</span> </template>
     </ContextMenuItem>
-<!--    <ContextMenuItem-->
-<!--      v-is-frient="uid"-->
-<!--      label="添加好友"-->
-<!--      @click="onAddFriend"-->
-<!--    > -->
+    <!--    <ContextMenuItem-->
+    <!--      v-is-frient="uid"-->
+    <!--      label="添加好友"-->
+    <!--      @click="onAddFriend"-->
+    <!--    > -->
 
-<!--      <template #icon>-->
-<!--        <Icon icon="tianjia" :size="13" />-->
-<!--      </template>-->
-<!--    </ContextMenuItem>-->
-     <ContextMenuItem v-login-show label="发送消息" @click="onStartSession">
+    <!--      <template #icon>-->
+    <!--        <Icon icon="tianjia" :size="13" />-->
+    <!--      </template>-->
+    <!--    </ContextMenuItem>-->
+    <ContextMenuItem
+      v-show="!globalStore.isSingleSession()"
+      v-login-show
+      label="发送消息"
+      @click="onStartSession"
+    >
       <template #icon>
         <Icon icon="tianjia" :size="13" />
       </template>

@@ -322,5 +322,20 @@
         "content": "全新的收集表功能即将上线。敬请期待！"
       }
     ]
+  },
+  {
+    "time": "2024-11-3",
+    "icon": "https://unpkg.byted-static.com/latest/byted/arco-config/assets/favicon.ico",
+    "version": "v4.2.1",
+    "info": [
+      {
+        "title": "Chat全新升级",
+        "content": "优化了文本消息相关内容，优化了交互，消息记录查询等功能开发中~敬请期待!"
+      },
+      {
+        "title": "敬请期待",
+        "content": "全新的收集表功能即将上线。敬请期待！"
+      }
+    ]
   }
 ]

@@ -9,9 +9,21 @@ import { useCachedStore } from '@/store/modules/chat/cached';
  */
 export const useUserInfo = (uid?: string | ComputedRef<string | undefined>) => {
   const cachedStore = useCachedStore();
-  const userInfo = computed(
-    () => (uid && cachedStore.userCachedList[toValue(uid as string)]) || {}
-  );
+  const userInfo = computed(() => {
+    if (uid === '0') {
+      return {
+        uid: '0',
+        name: '全体成员',
+        lastModifyTime: 0,
+        itemIds: [],
+        wearingItemId: '',
+        locPlace: '',
+        avatar: '',
+        lastOptTime: '',
+      };
+    }
+    return (uid && cachedStore.userCachedList[toValue(uid as string)]) || {};
+  });
   return userInfo;
 };
 

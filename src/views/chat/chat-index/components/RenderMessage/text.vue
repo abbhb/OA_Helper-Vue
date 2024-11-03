@@ -1,29 +1,39 @@
 <script setup lang="ts">
-import {computed} from 'vue';
-import {TextBody} from '@/types/chat';
+  import { computed } from 'vue';
+  import { TextBody } from '@/types/chat';
+  import { useUserInfo } from '../../../../../hooks/chat/useCached';
 
-// todo: fix多行样式，保留原本的消息样式
-const props = defineProps<{ body: TextBody }>();
+  // todo: fix多行样式，保留原本的消息样式
+  const props = defineProps<{ body: TextBody }>();
 
   // 获取所有匹配的字符串
   const urlMap = props.body.urlContentMap || {};
   const keys = Object.keys(urlMap);
   // 使用匹配字符串创建动态正则表达式，并将文本拆分为片段数组
+
   const fragments = computed(() => {
     let content = props.body.content || '';
     content = content.replace(/&nbsp;/g, '\u00A0');
-    const regex = new RegExp(`(@\\S+\\s|${keys.join('|')}|\\S+\\s)`, 'g');
-    const regex2 = new RegExp( '/```(.*?)```', 'g');
-    const contenes = [];
-    const lists = content.split(regex)
-    for (let i = 0; i < lists.length; i+=1) {
-      contenes.push(lists[i].split(regex2));
+    const regex = new RegExp(`(@[^@]+○)`, 'g');
+    const regex3 = new RegExp(`(${keys.join('|')})`, 'g');
+    const regex2 = new RegExp('/```(.*?)```', 'g');
+    // const contenes = [];
+    const lists = content.split(regex);
+    const newList = [];
+    for (let i = 0; i < lists.length; i += 1) {
+      if (!lists[i] || !lists[i].trim() || lists[i] === '') {
+        continue;
+      }
+      if (lists[i].startsWith('@') && lists[i].trim() !== '@') {
+        newList.push(lists[i]);
+      } else {
+        const temp = lists[i].split(regex3);
+        if (temp.length > 0) {
+          newList.push(...temp);
+        }
+      }
     }
-    console.log("1112312----------")
-    console.log(props)
-    console.log(contenes)
-    console.log(lists)
-    return lists;
+    return newList;
   });
 
   // 打开链接
@@ -32,18 +42,37 @@ const props = defineProps<{ body: TextBody }>();
     // 当没有协议时，自动添加协议
     window.open(url.startsWith('http') ? url : `//${url}`, '_blank');
   };
+  const regex = /@([0-9]+)○/;
+  const clickUser = (uid: string) => {
+    console.log(uid);
+    alert('别点' + useUserInfo(uid).value.name + '了，等之后在适配吧');
+  };
 </script>
 
 <template>
   <div class="text">
     <template v-for="(item, index) in fragments">
       <span
-        v-if="item.startsWith('@') && item.trim() !== '' && item.trim() !== '@'"
+        v-if="
+          item &&
+          item.startsWith('@') &&
+          item.match(regex) &&
+          item.match(regex)[1] !== ''
+        "
         :key="item"
         class="text-mention"
+        @click="clickUser(item.match(regex)[1])"
       >
-        {{ item }}
+        @{{
+          item.match(regex)?.length > 1 &&
+          useUserInfo(item.match(regex)[1]).value.name
+        }}
       </span>
+      <template v-else-if="keys.includes(item)">
+        <a-link :key="item" :href="item">
+          {{ item }}
+        </a-link>
+      </template>
       <template v-else>
         <span :key="item">
           {{ item }}
@@ -75,4 +104,3 @@ const props = defineProps<{ body: TextBody }>();
     </template>
   </div>
 </template>
-

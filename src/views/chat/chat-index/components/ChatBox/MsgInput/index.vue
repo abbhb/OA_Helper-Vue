@@ -40,12 +40,15 @@
     mentions?: IMention[];
     // 最大长度
     maxLength?: number;
+    // 是否展示at
+    showAt?: boolean;
     // 劫持
     className?: string;
     style?: object;
   }
   const props = withDefaults(defineProps<Props>(), {
     disabled: false,
+    showAt: true,
     modelValue: '',
     mentions: () => [],
     maxLength: -1,
@@ -271,6 +274,11 @@
 
   // @字符输入检测  是否展示选人弹窗
   const checkIsShowSelectDialog = () => {
+    if (!props.showAt){
+      showDialog.value = false;
+
+      return;
+    }
     const rangeInfo = getEditorRange();
     if (!rangeInfo || !rangeInfo.range || !rangeInfo.selection) {
       showDialog.value = false;
