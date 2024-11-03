@@ -49,7 +49,7 @@ export const useMockMessage = () => {
       message: {
         id: uniqueId,
         roomId: currentRoomId.value,
-        sendTime: Number(currentTimeStamp),
+        sendTime: '2024-01-01 12:41:12',
         content,
         urlContentMap: {},
         type,

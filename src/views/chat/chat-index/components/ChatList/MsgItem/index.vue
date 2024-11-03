@@ -18,7 +18,7 @@
   import { useUserInfo } from '@/hooks/chat/useCached';
   import { ChatMsgEnum } from '@/types/enums/chat';
   import { useLikeToggle } from '@/hooks/chat/useLikeToggle';
-  import { formatTimestamp } from '@/utils/chat/computedTime';
+  import {formatDateTime, formatTimestamp} from '@/utils/chat/computedTime';
   import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
@@ -264,7 +264,7 @@
             <span class="user-ip">({{ userInfo.locPlace || '未知' }})</span>
             <!-- 消息发送时间 -->
             <span v-if="isShowTime" class="send-time">
-              {{ formatTimestamp(msg.message.sendTime) }}
+              {{ formatTimestamp(formatDateTime(msg.message.sendTime)) }}
             </span>
           </div>
           <el-tooltip

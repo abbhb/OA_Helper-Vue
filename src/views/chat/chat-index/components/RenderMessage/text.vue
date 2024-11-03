@@ -2,6 +2,7 @@
 import {computed} from 'vue';
 import {TextBody} from '@/types/chat';
 
+// todo: fix多行样式，保留原本的消息样式
 const props = defineProps<{ body: TextBody }>();
 
   // 获取所有匹配的字符串
@@ -18,6 +19,10 @@ const props = defineProps<{ body: TextBody }>();
     for (let i = 0; i < lists.length; i+=1) {
       contenes.push(lists[i].split(regex2));
     }
+    console.log("1112312----------")
+    console.log(props)
+    console.log(contenes)
+    console.log(lists)
     return lists;
   });
 

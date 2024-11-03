@@ -292,8 +292,8 @@ export type MsgType = {
     | FileBody
     | EmojiBody
     | any;
-  /** 发送时间戳 */
-  sendTime: number;
+  /** 发送时间戳 yyyy-MM-dd */
+  sendTime: string;
   /** 消息互动信息 */
   messageMark: MessageMarkType;
   roomId: string;
@@ -308,7 +308,7 @@ export type MessageType = {
   /** 消息主体 */
   message?: MsgType;
   /** 发送时间 */
-  sendTime?: number;
+  sendTime?: string;
   /** 时间段（可选） */
   timeBlock?: string;
   /** 是否加载中 */

@@ -1,6 +1,7 @@
-import type {ConfigType, Dayjs, OpUnitType} from 'dayjs';
+import type { ConfigType, Dayjs, OpUnitType } from 'dayjs';
 import dayjs from 'dayjs';
-import {MessageType} from '@/types/chat';
+import { MessageType } from '@/types/chat';
+import { parseISO  } from 'date-fns';
 
 // 5 分钟 5 * 60 * 1000;
 const intervalTime = 300000;
@@ -29,13 +30,13 @@ const timeToStr = (time: number) => {
 const checkTimeInterval = (cur: MessageType, pre: MessageType) => {
   // 如果有一个超过 5 分钟了或者计数达到 20 条了
   if (
-    (pre && cur.message.sendTime - pre.message.sendTime > intervalTime) ||
+    (pre && formatDateTime(cur.message.sendTime) - formatDateTime(pre.message.sendTime) > intervalTime) ||
     computedCount >= computedCountMax
   ) {
     // 重置计数
     computedCount = 0;
     // 返回时间标记
-    return { ...cur, timeBlock: timeToStr(cur.message.sendTime) };
+    return { ...cur, timeBlock: timeToStr(formatDateTime(cur.message.sendTime)) };
   }
   // 时间间隔很短的就累计计数
   computedCount += 1;
@@ -47,7 +48,7 @@ export const computedTimeBlock = (list: MessageType[], needFirst = true) => {
   // 是否需要保留 传入 list 第一个，如果是接口拉回来的消息列表就要保留，如果接收到新消息，需要拿当前消息列表最后一个拿来做时间间隔计算的话，就不需要保留第一个
   const temp = needFirst ? [list[0]] : [];
   // 跳过第一个
-  for (let index = 1, len = list.length; index < len; index+=1) {
+  for (let index = 1, len = list.length; index < len; index += 1) {
     const item = list[index];
     // 上个聊天记录
     const preItem = list[index - 1];
@@ -55,6 +56,19 @@ export const computedTimeBlock = (list: MessageType[], needFirst = true) => {
     temp.push(checkTimeInterval(item, preItem));
   }
   return temp;
+};
+
+/**
+ * 消息格式化为时间戳
+ * @param datetime yyyy-MM-dd HH:mm:ss
+ * @returns 时间戳
+ */
+export const formatDateTime = (datetime: string): number => {
+  if (!datetime) {
+    console.error('序列化成时间戳失败' + datetime);
+    return 0;
+  }
+  return parseISO (datetime).getTime();
 };
 
 /**

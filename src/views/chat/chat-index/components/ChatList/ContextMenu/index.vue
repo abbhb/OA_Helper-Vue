@@ -18,6 +18,7 @@
   import { urlToFile } from '@/utils/chat';
   import eventBus from '@/utils/eventBus';
   import { useGlobalStore } from '@/store/modules/chat/global';
+  import {formatDateTime} from "@/utils/chat/computedTime";
 
   const props = defineProps<{
     // 消息体
@@ -40,21 +41,19 @@
         if (String(el.id) === '10013' || String(el.id) === '1') {
           return el;
         }
-      })!==undefined
+      }) !== undefined
   );
 
-  const showRecall = computed(
-    () =>{
-      console.log(props.msg.message)
-      console.log((isCurrentUser.value &&
-        Number(Date.now()) - Number(props.msg.message.sendTime)))
-      return (isAdmin.value &&
-          globalStore.currentSession.type === RoomTypeEnum.Group) ||
-        (isCurrentUser.value &&
-          Number(Date.now()) - Number(props.msg.message.sendTime) <= 120000)
-    }
-
-  );
+  const showRecall = computed(() => {
+    console.log(props.msg.message);
+    console.log(isCurrentUser.value && Date.now() - formatDateTime(props.msg.message.sendTime));
+    return (
+      (isAdmin.value &&
+        globalStore.currentSession.type === RoomTypeEnum.Group) ||
+      (isCurrentUser.value &&
+        Date.now() - formatDateTime(props.msg.message.sendTime) <= 120000)
+    );
+  });
 
   // 撤回
   const onRecall = async () => {
