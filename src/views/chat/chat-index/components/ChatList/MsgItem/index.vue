@@ -8,7 +8,6 @@
     reactive,
     ref,
     type Ref,
-    toRefs,
     watch,
   } from 'vue';
 
@@ -18,7 +17,7 @@
   import { useUserInfo } from '@/hooks/chat/useCached';
   import { ChatMsgEnum } from '@/types/enums/chat';
   import { useLikeToggle } from '@/hooks/chat/useLikeToggle';
-  import {formatDateTime, formatTimestamp} from '@/utils/chat/computedTime';
+  import { formatDateTime, formatTimestamp } from '@/utils/chat/computedTime';
   import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import ContextMenu from '@/views/chat/chat-index/components/ChatList/ContextMenu/index.vue';
@@ -68,7 +67,35 @@
   const message = computed(() => props.msg.message);
   const fromUser = computed(() => props.msg.fromUser);
   const isVisible = ref(false);
+  const getMessageBody = (msg: string, type: number) => {
+    console.log(msg, type);
+    if (msg && type && type === ChatMsgEnum.TEXT) {
+      // 获取消息内容
+      let content = msg;
 
+      // 使用正则表达式匹配成对的@到○之间的内容
+      const regex = /@([0-9]+)○/g;
+      let match;
+      const matchedUIDs = [];
+
+      // 匹配并保存到数组
+      // eslint-disable-next-line no-cond-assign
+      while ((match = regex.exec(content)) !== null) {
+        matchedUIDs.push(match[1]);
+      }
+
+      // 获取用户信息并替换文本
+      for (const uid of matchedUIDs) {
+        const userInfo = useUserInfo(String(uid));
+        const username = userInfo.value.name;
+        const regexUID = new RegExp(`@${uid}○`, 'g');
+        content = content.replace(regexUID, '@' + username);
+      }
+
+      return content;
+    }
+    return msg;
+  };
   const handleVisibilityChange = (visible) => {
     isVisible.value = visible;
   };
@@ -80,6 +107,7 @@
   const isCurrentUser = computed(
     () => props.msg?.fromUser.uid === userStore?.userInfo.id
   );
+  const flashMessageId = computed(() => chatStore.getFlashMsgId());
   const chatCls = computed(() => ({
     'chat-item': true,
     'is-me': isCurrentUser.value,
@@ -119,15 +147,18 @@
     // 不允许跳转不跳转，目前是 100 条(后端配置)以内允许跳转
     if (!reply || !reply.canCallback) return;
     // 如果消息已经加载过了，就直接跳转
-    const index = chatStore.getMsgIndex(reply.id);
+    const index = chatStore.getMsgIndex(String(reply.id));
+    console.log(index)
     if (index > -1) {
       console.log('加载过');
-      virtualListRef?.value?.scrollToIndex(index, true, 12);
+      chatStore.startFlash(String(reply.id));
+      virtualListRef?.value?.scrollToIndex(index, true, 12)
+
     } else {
       console.log(reply.id);
       console.log('没加载过');
       // 如果没有加载过，就先加载，然后跳转
-      const curMsgIndex = chatStore.getMsgIndex(id);
+      const curMsgIndex = await chatStore.getMsgIndex(id);
       // +1 是在 reply.gapCount - curMsgIndex 刚好是 pageSize 倍数的时候，跳转到的是第一条消息，会触发加载更多，样式会乱掉
       const needLoadPageSize =
         Math.ceil((reply.gapCount - curMsgIndex + 1) / pageSize) * pageSize;
@@ -135,15 +166,22 @@
       await chatStore.loadMore(needLoadPageSize);
       // 跳转
       // FIXME 这时候新加载消息了，所以会有滚动冲突，故不加动画效果，否则会很怪异。
+
+      // TODO 跳转到的消息 高亮一下
+      const index = await chatStore.getMsgIndex(String(reply.id));
+      console.log("加载完成")
+      console.log(index)
+      chatStore.startFlash(String(reply.id))
       setTimeout(
+
         virtualListRef?.value?.scrollToIndex(
-          chatStore.getMsgIndex(reply.id),
+          index,
           false,
           12
         ),
-        0
+        0.5
       );
-      // TODO 跳转到的消息 高亮一下
+
     }
   };
 
@@ -282,7 +320,7 @@
             </template>
             <div
               ref="renderMsgRef"
-              :class="['chat-item-content', { uploading: msg?.loading }]"
+              :class="['chat-item-content', { uploading: msg?.loading },{ 'isFlash': flashMessageId === String(msg.message.id) }]"
               @contextmenu.prevent.stop="handleRightClick($event)"
             >
               <!-- 这里是未读数计算 -->
@@ -323,7 +361,8 @@
           >
             <icon-to-top v-if="message.body.reply.canCallback" :size="12" />
             <span class="ellipsis">
-              {{ message.body.reply.username }}: {{ message.body.reply.body }}
+              {{ message.body.reply.username }}:
+              {{ getMessageBody(message.body.reply.body, message.type) }}
             </span>
           </div>
           <!-- 点赞数量和倒赞数量及动画 -->
@@ -907,5 +946,21 @@
     border: 1px solid currentcolor;
     border-radius: 8px;
     transform: scale(0.8);
+  }
+  @keyframes flash {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.3;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+  .isFlash {
+    animation: flash 1s infinite;
   }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { h, reactive, ref } from 'vue';
+  import { computed, h, reactive, ref } from 'vue';
   import { IconSearch } from '@arco-design/web-vue/es/icon';
   import { useAppStore } from '@/store';
   import {
@@ -12,8 +12,15 @@
   import EditGroup from '@/views/signin/group/components/editGroup.vue';
   import { Message } from '@arco-design/web-vue';
   import router from '@/router';
+  import { useCachedStore } from '@/store/modules/chat/cached';
+  import { useUserInfo } from '@/hooks/chat/useCached';
+  import Avatars from '@/components/Avatars/src/Avatars.vue';
+  import { AvatarItem } from '@/components/Avatars';
+  import useSigninStore from '@/store/modules/signin';
 
   const appStore = useAppStore();
+  const cacheStore = useCachedStore();
+  const signinStore = useSigninStore();
 
   interface statuEI {
     clickLoading: boolean;
@@ -31,7 +38,36 @@
     modelType: 'add',
   });
   const tableData = ref<SigninGroupDto[]>([]);
+  const avatarMap = new Map<string, AvatarItem[]>();
 
+  const initAvatarMap = (table: SigninGroupDto[]) => {
+    // 添加头像信息
+    for (let i = 0; i < table.length; i += 1) {
+      const avatars: AvatarItem[] = [];
+      if (table[i]?.signinGroupRule?.rulesInfo?.userIds?.length > 0) {
+        cacheStore.getBatchUserInfo(
+          table[i]?.signinGroupRule?.rulesInfo?.userIds
+        );
+      }
+      for (
+        let j = 0;
+        j < table[i]?.signinGroupRule?.rulesInfo?.userIds?.length;
+        j += 1
+      ) {
+        if (table[i]?.signinGroupRule?.rulesInfo?.userIds[j]) {
+          const itemUser = useUserInfo(
+            table[i]?.signinGroupRule?.rulesInfo?.userIds[j]
+          );
+          const itemAvatar: AvatarItem = {
+            url: itemUser.value.avatar,
+            name: itemUser.value.name,
+          };
+          avatars.push(itemAvatar);
+        }
+      }
+      avatarMap.set(String(table[i]?.signinGroup.id), avatars);
+    }
+  };
   const form = reactive({
     id: '',
     label: '',
@@ -44,6 +80,7 @@
     statuEs.value.clickLoading = true;
     const { data } = await listGroupRule();
     tableData.value = data;
+    initAvatarMap(data);
     statuEs.value.clickLoading = false;
   };
   initData();
@@ -68,7 +105,6 @@
       query: {
         groupId: record.signinGroup.id,
       },
-
     });
   };
 
@@ -80,10 +116,8 @@
       query: {
         groupId: record.signinGroup.id,
       },
-
     });
   };
-
 
   const cleanForm = () => {
     form.id = '';
@@ -152,21 +186,74 @@
               {{ record.signinGroup.name }}
             </template>
           </a-table-column>
-
+          <a-table-column :width="50" title="版本">
+            <template #cell="{ record }">
+              {{ record.signinGroupRule.rev }}
+            </template>
+          </a-table-column>
           <a-table-column
             :filterable="{
               filter: (value, record) => record.label.includes(value),
               slotName: 'locale-filter',
               icon: () => h(IconSearch),
             }"
-            :width="800"
+            :width="400"
             title="规则"
           >
             <template #cell="{ record }">
-              {{ record.signinGroupRule }}
+              <ul>
+                <li v-for="kq in record?.signinGroupRule?.rulesInfo
+              ?.kqsj" :key="'kqsji11'+kq.xq">
+                  星期{{kq.xq.split(',')}}班次ID:{{kq.bcId}}
+                </li>
+
+              </ul>
+            </template>
+          </a-table-column>
+          <a-table-column :width="150" title="考勤设备">
+            <template #cell="{ record }">
+              <ul>
+                <li
+                  v-for="device in record?.signinGroupRule?.rulesInfo
+                    ?.signinWays"
+                  :key="device.deviceId"
+                  >{{ signinStore.getDeviceById(device?.deviceId)?.name }}[方式:
+                  <a-checkbox-group
+                    :disabled="true"
+                    :default-value="
+                      record?.signinGroupRule?.rulesInfo?.signinWays?.map(
+                        (way) => {
+                          if (way.deviceId === device?.deviceId) {
+                            return way.type;
+                          }
+                        }
+                      )
+                    "
+                  >
+                    <a-checkbox
+                      v-for="way in signinStore
+                        .getDeviceById(device?.deviceId)
+                        ?.support.split(',')"
+                      :key="way"
+                      :value="way"
+                      >{{ way }}
+                    </a-checkbox>
+                  </a-checkbox-group>
+                  ]
+                </li>
+              </ul>
             </template>
           </a-table-column>
 
+          <a-table-column :width="150" title="成员">
+            <template #cell="{ record }">
+              <Avatars
+                :data="avatarMap.get(record.signinGroup.id)"
+                drec="更多成员"
+                :max="10"
+              ></Avatars>
+            </template>
+          </a-table-column>
           <a-table-column title="操作">
             <template #cell="{ record }">
               <el-button
@@ -179,7 +266,7 @@
                 class="margin_left"
                 :type="'primary'"
                 @click="mangerHolidays(record)"
-              >节假日管理</el-button
+                >节假日管理</el-button
               >
               <a-button class="margin_left" @click="editHandel(record)"
                 >编辑</a-button

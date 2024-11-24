@@ -10,7 +10,12 @@
   const urlMap = props.body.urlContentMap || {};
   const keys = Object.keys(urlMap);
   // 使用匹配字符串创建动态正则表达式，并将文本拆分为片段数组
-
+  console.log(keys)
+  for (let i = 0; i < keys.length; i+=1) {
+    if (keys[i]&&keys[i]!==""){
+      keys[i] = keys[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+  }
   const fragments = computed(() => {
     let content = props.body.content || '';
     content = content.replace(/&nbsp;/g, '\u00A0');
