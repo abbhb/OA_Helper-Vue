@@ -4,7 +4,8 @@
   import { useAppStore } from '@/store';
   import { GroupUserFront } from '@/api/group';
   import {
-    getUserListManger, listForLevels,
+    getUserListManger,
+    listForLevels,
     updataUserByAdmin,
     updataUserStatusByAdmin,
     UserManger,
@@ -13,14 +14,21 @@
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { deptListTree, DeptManger } from '@/api/dept';
   import { Role, roleTagList } from '@/api/role';
+  import {cloneDeep} from "lodash";
 
   const { t } = useI18n();
   const appStore = useAppStore();
 
   const emit = defineEmits(['commitUser']);
+  const props = defineProps({
+    preSelectUser: {
+      default: [],
+      require: false,
+    },
+  });
 
   interface statuEI {
-    levelsSelectO?:string[];
+    levelsSelectO?: string[];
 
     name?: string;
     searchStatus?: boolean;
@@ -35,14 +43,15 @@
     formModel: boolean;
     refreshKey: number;
     jilian: boolean;
-    levelsOptions:string[];
-
+    levelsOptions: string[];
   }
+
+
 
   const statuEs = ref<statuEI>({
     name: '',
-    levelsOptions:[],
-    levelsSelectO:[],
+    levelsOptions: [],
+    levelsSelectO: [],
     clickLoading: false,
     mustHaveStudentId: 0,
     modelstatus: false,
@@ -82,7 +91,7 @@
     rolesStore.value = data;
   };
   const initLevelsSelect = async () => {
-    const {data} = await listForLevels();
+    const { data } = await listForLevels();
     statuEs.value.levelsOptions = data;
   };
   initSelect();
@@ -206,6 +215,10 @@
   });
   const selectedRowKeys = ref();
 
+  if (props.preSelectUser?.length>0){
+    selectedRowKeys.value = cloneDeep(props.preSelectUser)
+  }
+
   const handelEditOK = async (done) => {
     const rolesIdList = [];
     form.value.roles.forEach((role) => {
@@ -313,7 +326,7 @@
               </a-input-search>
               <a-space direction="horizontal">
                 <div>
-                  <span>是否必须包含学号</span>
+                  <span>仅查看学号存在</span>
                   <a-switch
                     v-model:model-value="statuEs.mustHaveStudentId"
                     type="round"
@@ -325,22 +338,26 @@
                 <div>
                   <span>年级筛选</span>
                   <a-select
+                    v-model="statuEs.levelsSelectO"
                     :style="{ width: '460px' }"
                     placeholder="通过年级筛选..."
                     multiple
                     :loading="statuEs.clickLoading"
                     :max-tag-count="5"
-                    v-model="statuEs.levelsSelectO"
-                    @change="refreshData"
                     allow-search
                     allow-clear
                     :scrollbar="true"
+                    @change="refreshData"
                   >
-                    <a-option :value="item" v-for="(item,key) in statuEs.levelsOptions" :key="key">{{ item }}</a-option>
+                    <a-option
+                      v-for="(item, key) in statuEs.levelsOptions"
+                      :key="key"
+                      :value="item"
+                      >{{ item }}</a-option
+                    >
                   </a-select>
                 </div>
               </a-space>
-
 
               <a-divider class="split-line" style="margin: 3px" />
             </a-space>
@@ -397,7 +414,7 @@
             </a-table-column>
           </template>
         </a-table>
-        <!--        <a-button @click="console.log(selectedRowKeys)">查看</a-button>-->
+<!--        <a-button @click="console.log(selectedRowKeys)">查看</a-button>-->
         <a-button :type="'primary'" @click="selectCommit">确定 </a-button>
       </a-card>
     </div>

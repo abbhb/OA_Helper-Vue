@@ -50,11 +50,23 @@ export const useChatStore = defineStore('chat', () => {
       [currentRoomId.value, { isLast: false, isLoading: false, cursor: '' }],
     ])
   );
+  const flashMsgId = ref<string>('') // 记录当前回复的消息id 用于当前消息的闪烁
+  let timer: any = null // 消息闪烁计时器
   const replyMapping = reactive<Map<string, Map<string, string[]>>>(
     new Map([[currentRoomId.value, new Map()]])
   ); // 回复消息映射
   const { userInfo } = userStore;
+  // 开始闪烁
+  const startFlash = (replyId: string) => {
+    flashMsgId.value = replyId
+    // 以最后一次为准，清除上一次的定时器
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      flashMsgId.value = ''
+      clearTimeout(timer)
 
+    }, 3000)
+  }
   const currentMessageMap = computed({
     get: () => {
       if (!currentRoomId.value) {
@@ -500,6 +512,9 @@ export const useChatStore = defineStore('chat', () => {
     pushMsg(newMessage);
   };
 
+  const getFlashMsgId = () => {
+    return flashMsgId.value;
+  }
   // 处理本地mock消息,需要注意，后端真的收到了消息回再推一条真实的消息回来，这个消息idmock出来的，只有需要失败重试才需要留在客户端这边!且刷新就没了
   const updateMsgMock = (
     msgId: string,
@@ -564,7 +579,9 @@ export const useChatStore = defineStore('chat', () => {
     updateSessionLastActiveTime,
     markSessionRead,
     getSession,
+    startFlash,
     isGroup,
+    getFlashMsgId,
     currentSessionInfo,
     getMessage,
     removeContact,
