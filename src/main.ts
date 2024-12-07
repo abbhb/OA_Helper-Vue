@@ -3,6 +3,7 @@ import '@/utils/chat/websocket';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import 'md-editor-v3/lib/style.css';
+import { Notification } from '@arco-design/web-vue';
 
 // 官方主题
 import '@arco-design/web-vue/dist/arco.css';
@@ -69,6 +70,7 @@ import JsonViewer from 'vue3-json-viewer';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 const app = createApp(App);
+Notification._context = app._context;
 
 Object.keys(ElementPlusIcons).forEach((iconName) => {
   app.component(

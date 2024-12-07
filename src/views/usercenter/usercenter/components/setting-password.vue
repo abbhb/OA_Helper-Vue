@@ -1,64 +1,58 @@
 <template>
   <div class="safe-center">
-    <a-space direction="vertical" size="large" :style="{ width: '600px' }">
-      <span class="title">{{
-        $t('workplace.safe-center.settingpassword')
-      }}</span>
-
-      <a-form :model="form" :style="{ width: '600px' }" @submit="handleSubmit">
-        <a-form-item
-          field="password"
-          tooltip="只有首次不需要输入原密码"
-          :label="$t('workplace.safe-center.password')"
-        >
-          <a-input
-            v-model="form.password"
-            type="password"
-            autocomplete="password"
-            :disabled="!needPassword"
-            :placeholder="
+    <a-form :model="form" :style="{ width: '400px' }" @submit="handleSubmit">
+      <a-form-item
+        field="password"
+        tooltip="只有首次不需要输入原密码"
+        :label="$t('workplace.safe-center.password')"
+      >
+        <a-input
+          v-model="form.password"
+          type="password"
+          autocomplete="password"
+          :disabled="!needPassword"
+          :placeholder="
               $t('workplace.safe-center.please') +
               $t('workplace.safe-center.password')
             "
-          />
-        </a-form-item>
+        />
+      </a-form-item>
 
-        <a-form-item
-          field="newPassword"
-          :label="$t('workplace.safe-center.newPassword')"
-        >
-          <a-input
-            v-model="form.newPassword"
-            type="password"
-            autocomplete="new-password"
-            :placeholder="
+      <a-form-item
+        field="newPassword"
+        :label="$t('workplace.safe-center.newPassword')"
+      >
+        <a-input
+          v-model="form.newPassword"
+          type="password"
+          autocomplete="new-password"
+          :placeholder="
               $t('workplace.safe-center.please') +
               $t('workplace.safe-center.newPassword')
             "
-          />
-        </a-form-item>
-        <a-form-item
-          field="rePassword"
-          :label="$t('workplace.safe-center.rePassword')"
-        >
-          <a-input
-            v-model="form.rePassword"
-            autocomplete="re-password"
-            type="password"
-            :placeholder="
+        />
+      </a-form-item>
+      <a-form-item
+        field="rePassword"
+        :label="$t('workplace.safe-center.rePassword')"
+      >
+        <a-input
+          v-model="form.rePassword"
+          autocomplete="re-password"
+          type="password"
+          :placeholder="
               $t('workplace.safe-center.please') +
               $t('workplace.safe-center.rePassword')
             "
-          />
-        </a-form-item>
+        />
+      </a-form-item>
 
-        <a-form-item>
-          <a-button type="primary" html-type="submit">{{
+      <a-form-item>
+        <a-button type="primary" html-type="submit">{{
             $t('workplace.safe-center.reCommit')
           }}</a-button>
-        </a-form-item>
-      </a-form>
-    </a-space>
+      </a-form-item>
+    </a-form>
   </div>
 </template>
 

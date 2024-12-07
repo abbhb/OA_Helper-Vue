@@ -8,7 +8,7 @@ import { MockParams } from '@/types/mock';
 import { isLogin } from '@/utils/auth';
 
 setupMock({
-  mock:false,
+  mock: false,
   setup() {
     // Mock.XHR.prototype.withCredentials = true;
 
@@ -63,6 +63,29 @@ setupMock({
     // 登出
     Mock.mock(new RegExp('/api/user/logout'), () => {
       return successResponseWrap(null);
+    });
+
+    // 通行密钥登录选项
+    Mock.mock(new RegExp('/api/user/login/passkey/options'), () => {
+      return successResponseWrap({
+        challenge: 'mockChallenge123',
+        timeout: 60000,
+        rpId: window.location.hostname,
+        userVerification: 'preferred',
+        allowCredentials: []
+      });
+    });
+
+    // 通行密钥登录验证
+    Mock.mock(new RegExp('/api/user/login/passkey'), (params: MockParams) => {
+      const { assertion } = JSON.parse(params.body);
+      if (!assertion) {
+        return failResponseWrap(null, '验证失败：无效的认证数据', 50000);
+      }
+      // 模拟验证成功
+      return successResponseWrap({
+        token: 'passkey_mock_token_123',
+      });
     });
 
     // 用户的服务端菜单

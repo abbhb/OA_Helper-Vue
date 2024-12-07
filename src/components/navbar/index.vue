@@ -109,17 +109,15 @@
             </a-badge>
           </div>
         </a-tooltip>
-        <a-popover
-          trigger="click"
-          :arrow-style="{ display: 'none' }"
-          :content-style="{ padding: 0, minWidth: '400px' }"
-          content-class="message-popover"
+        <a-modal
+          :footer="false"
+          :hide-title="true"
+          :closable="true"
+          v-model:visible="messageBoxState.visible"
+          :width="1200"
         >
-          <div ref="refBtn" class="ref-btn"></div>
-          <template #content>
-            <MessageBox />
-          </template>
-        </a-popover>
+          <MessageBox />
+        </a-modal>
       </li>
       <li>
         <a-tooltip
@@ -236,6 +234,9 @@
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
   const locales = [...LOCALE_OPTIONS];
   const systemMessageStore = useSystemMessageStore();
+  const messageBoxState = ref({
+    visible:false
+  })
   const avatar = computed(() => {
     return userStore.avatar;
   });
@@ -269,12 +270,14 @@
   const refBtn = ref();
   const triggerBtn = ref();
   const setPopoverVisible = () => {
-    const event = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    refBtn.value.dispatchEvent(event);
+    // const event = new MouseEvent('click', {
+    //   view: window,
+    //   bubbles: true,
+    //   cancelable: true,
+    // });
+    // refBtn.value.dispatchEvent(event);
+    messageBoxState.value.visible = true;
+
   };
   const handleLogout = () => {
     logout();

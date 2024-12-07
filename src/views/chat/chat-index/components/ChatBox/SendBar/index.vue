@@ -33,6 +33,7 @@
   import renderReplyContent from '@/utils/chat/renderReplyContent';
   import { useGroupStore } from '@/store/modules/chat/group';
   import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
+  import { Notification } from '@arco-design/web-vue'
 
   const client = judgeClient();
 
@@ -101,6 +102,7 @@
     } catch (e) {
       // Message.error(e.message);
       console.log(e);
+      Notification.error(e)
     } finally {
       inputMsg.value = ''; // 清空输入列表
       inputMsgOrigin.value = ''; // 清空输入列表

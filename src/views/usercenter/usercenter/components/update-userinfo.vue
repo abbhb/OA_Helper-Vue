@@ -1,9 +1,9 @@
 <template>
   <div class="safe-center">
     <a-space direction="vertical" size="large" :style="{ width: '600px' }">
-      <span class="title">{{
-        $t('workplace.safe-center.updatauserinfo')
-      }}</span>
+<!--      <span class="title">{{-->
+<!--        $t('workplace.safe-center.updatauserinfo')-->
+<!--      }}</span>-->
 
       <a-form :model="form" :style="{ width: '600px' }" @submit="handleSubmit">
         <a-form-item
@@ -82,7 +82,6 @@
       </a-form>
     </a-space>
   </div>
-  <userinfobaseext />
 </template>
 
 <script>
@@ -92,11 +91,10 @@
   import { Message, Modal } from '@arco-design/web-vue';
   import { updataUserInfo } from '@/api/user';
   import { confirmToServer, isConfirm } from '@/api/common';
-  import userinfobaseext from '@/components/userinfo-base-ext/index.vue'
   import { FIRST_SUCCESS_UPDATE_USER_INFO } from '@/utils/my-string';
 
   export default {
-    components: { ImageUpload,userinfobaseext },
+    components: { ImageUpload },
     setup() {
       const form = reactive({
         username: '',

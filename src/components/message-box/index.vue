@@ -1,23 +1,81 @@
 <template>
   <a-spin style="display: block" :loading="loading">
-    <a-tabs v-model:activeKey="messageType" type="rounded" destroy-on-hide>
+    <a-tabs v-model:activeKey="messageType" type="line" destroy-on-hide>
       <a-tab-pane key="message">
         <template #title>
-          <span> 系统通知{{ SystemUnreadCount }} </span>
+          <span>
+            系统通知{{
+              SystemUnreadCount > 0 ? '(未读:' + SystemUnreadCount + ')' : ''
+            }}
+          </span>
         </template>
         <a-result v-if="!renderList.length" status="404">
           <template #subtitle> {{ $t('messageBox.noContent') }} </template>
         </a-result>
         <a-spin :loading="loading">
-          <List
-            :render-list="renderList"
-            :unread-count="unreadCount"
-            @item-click="handleItemClick"
-            @remove="handleRemove"
-            @all-read="handleAllRead"
-            @read-more="readMore"
+          <!--          <List-->
+          <!--            :render-list="renderList"-->
+          <!--            :unread-count="unreadCount"-->
+          <!--            @item-click="handleItemClick"-->
+          <!--            @remove="handleRemove"-->
+          <!--            @all-read="handleAllRead"-->
+          <!--            @read-more="readMore"-->
 
-          />
+          <!--          />-->
+          <a-table
+            :data="renderList"
+            :pagination="pagination"
+            :span-method="spanMethod"
+            :row-class="renderClass"
+          >
+            <template #columns>
+              <a-table-column title="通知人" data-index="username" :width="80">
+                <template #cell="{ record }">
+                  <AvatarImage
+                    :key="record.avatar + 'reas1' + record.username"
+                    :avatar="record.avatar"
+                    :name="record.username"
+                  />
+                </template>
+              </a-table-column>
+              <a-table-column :width="200">
+                <template #cell="{ record }">
+                  {{ record.username }}
+                </template>
+              </a-table-column>
+              <a-table-column
+                title="通知时间"
+                data-index="createTime"
+                :width="220"
+              >
+                <template #cell="{ record }">
+                  {{ record.createTime }}
+                </template>
+              </a-table-column>
+              <a-table-column title="内容" data-index="message" :width="500">
+                <template #cell="{ record }">
+                  <RenderMessage
+                    :message="record.message.message"
+                    :ext-type="''"
+                  />
+                </template>
+              </a-table-column>
+              <a-table-column title="操作" data-index="createTime" :width="160">
+                <template #cell="{ record }">
+                  <a-button :disabled="record.read" :type="'text'" @click="handleItemClick(record)">
+                    已读
+                  </a-button>
+                  <a-button
+                    :type="'text'"
+                    :status="'danger'"
+                    @click="handleRemove(record)"
+                  >
+                    删除
+                  </a-button>
+                </template>
+              </a-table-column>
+            </template>
+          </a-table>
         </a-spin>
       </a-tab-pane>
       <template #extra>
@@ -32,13 +90,7 @@
 <script lang="ts" setup>
   import { ref, reactive, toRefs, computed } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import {
-    queryMessageList,
-    setMessageStatus,
-    MessageRecord,
-    MessageListType,
-  } from '@/api/message';
-  import useLoading from '@/hooks/loading';
+  import { MessageRecord } from '@/api/message';
   import { useSystemMessageStore } from '@/store/modules/app/systemMessage';
   import {
     readPost,
@@ -46,14 +98,41 @@
     SystemMessageResp,
   } from '@/api/system-message';
   import { Message } from '@arco-design/web-vue';
-  import router from "@/router";
-  import List from './list.vue';
+  import router from '@/router';
+  import AvatarImage from '@/components/image/AvatarImage.vue';
+  import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
 
   interface TabItem {
     key: string;
     title: string;
     avatar?: string;
   }
+  const pagination = ref({
+    current: 1,
+    defaultPageSize: 10,
+    total: 0,
+    pageSize: 5,
+    pageSizeOptions: [5, 10, 20, 50],
+    showPageSize: true,
+    showJumper: true,
+    onChange(page) {
+      pagination.value.current = page;
+      // getData(pagination);
+    },
+    onPageSizeChange(pageSize) {
+      pagination.value.pageSize = pageSize;
+      // getData(pagination);
+    },
+    showTotal: () => `共 ${11} 条`,
+  });
+  const spanMethod = ({ rowIndex, columnIndex }) => {
+    if (rowIndex === 0 && columnIndex === 1) {
+      return {
+        rowspan: 1,
+        colspan: 2,
+      };
+    }
+  };
   const messageType = ref('message');
   const { t } = useI18n();
   const messageData = reactive<{
@@ -82,6 +161,14 @@
     return systemMessageStore.isLoading;
   });
 
+  const renderClass = (row, rowIndex) => {
+    console.log(row)
+    if (row.read){
+      console.log(rowIndex)
+      return 'warning-row'
+    }
+    return ""
+  }
   const handleItemClick = async (items: SystemMessageResp) => {
     if (renderList.value.length && !items.read) {
       // 标记并打开
@@ -97,10 +184,13 @@
     }
   };
   const readMore = () => {
-    router.push({name:'Chat-Index',query:{
-        toSystem:'to'
-      }})
-  }
+    router.push({
+      name: 'Chat-Index',
+      query: {
+        toSystem: 'to',
+      },
+    });
+  };
   const handleAllRead = async () => {
     const ids = [];
     const temp = systemMessageStore.systemMessageList;
@@ -147,4 +237,9 @@
       color: rgb(var(--gray-6));
     }
   }
+  ::v-deep .warning-row {
+    opacity: 0.5 !important;
+
+  }
+
 </style>

@@ -31,6 +31,7 @@ export default {
   'menu.nav': '导航管理',
   'menu.version.index': '版本详情',
   'menu.Message': '消息',
+  'menu.user.setting': '用户信息设置',
   'menu.Contacts': '联系人',
   'menu.bmp.form': '在线表单设计',
   'menu.bmp.bpmn': '流程定义',

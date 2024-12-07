@@ -13,7 +13,7 @@
       <div class="content">
         <div class="content-inner">
           <LoginForm/>
-          <ThirdLogin/>
+          
         </div>
         <div class="footer">
           <Footer />
@@ -29,7 +29,6 @@ import {getQueryVariable} from '@/utils/utils';
 import router from '@/router';
 import LoginBanner from './components/banner.vue';
 import LoginForm from './components/login-form.vue';
-import ThirdLogin from './components/third-login.vue';
 
 const callbackCode = getQueryVariable('code');
 const callbackType = getQueryVariable('type');

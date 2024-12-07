@@ -3,12 +3,13 @@
 import { ref } from 'vue';
 import { createEventHook } from '@vueuse/core';
 import { getUploadUrl, sendMsg } from '@/api/chat';
-import { Message } from '@arco-design/web-vue';
+import { Message,Notification } from '@arco-design/web-vue';
 import { ChatMsgEnum } from '@/types/enums/chat';
 import { generateBody } from '@/utils/chat';
 import { useMockMessage } from '@/hooks/chat/useMockMessage';
 import { useChatStore } from '@/store/modules/chat/chat';
 import { useGlobalStore } from '@/store/modules/chat/global';
+
 
 /** 文件信息类型 */
 export type FileInfoType = {
@@ -288,6 +289,8 @@ export const useUpload = () => {
               }
             })
             .catch((e) => {
+              Notification.error(e)
+
               console.log(e);
             });
 

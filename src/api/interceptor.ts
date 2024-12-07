@@ -14,9 +14,13 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
+axios.defaults.withCredentials = true
+
 if (getAPIBase()) {
   axios.defaults.baseURL = getAPIBase();
 }
+
+
 
 axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
@@ -91,8 +95,7 @@ axios.interceptors.response.use(
   },
   (error) => {
     notifyMe('异常', error);
-    console.error("拦截器报错:")
-    console.error(error.msg)
+    console.error("拦截器报错:",error)
     return Promise.reject(error);
   }
 );

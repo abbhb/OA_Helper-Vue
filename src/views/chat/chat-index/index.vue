@@ -20,11 +20,13 @@
   import { useGlobalStore } from '@/store/modules/chat/global';
   import { RoomTypeEnum } from '@/types/enums/chat';
   import useServerConfigStore from '@/store/modules/server-config';
+  import { Notification } from '@arco-design/web-vue'
   import SideBar from './components/SideBar/index.vue';
   import ToolBar from './components/ToolBar/index.vue';
   import ChatBox from './components/ChatBox/index.vue';
   import VideoPlayer from './components/VideoPlayer/index.vue';
   import PostCard from './components/PostCard/PostCard.vue';
+
 
   type TContainerDListener = {
     messageId: number | null;
@@ -118,6 +120,9 @@
             chatStore.updateSessionLastActiveTime(
               String(target.dataset.roomId)
             );
+          }).catch((reason)=>{
+            Notification.error(reason)
+
           });
         }
       }

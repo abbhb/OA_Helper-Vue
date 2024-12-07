@@ -38,9 +38,9 @@ export interface UserInfo {
 }
 
 export interface UserInfoBaseExtStateResp {
-    state:boolean; // 修改状态1 在等待审核中 0就是可以修改
-    currentInfo?: UserInfoBaseExt
-    newInfo?: UserInfoBaseExt // 如果在修改中，这里展示新的数据
+  state: boolean; // 修改状态1 在等待审核中 0就是可以修改
+  currentInfo?: UserInfoBaseExt;
+  newInfo?: UserInfoBaseExt; // 如果在修改中，这里展示新的数据
 }
 
 export interface UserInfoBaseExt {
@@ -104,7 +104,6 @@ export function resetPassword(data: ResetReq) {
   return axios.post<ResetResp>('/api/user/reset_password', data);
 }
 
-
 export function loginbycode(data: LoginDataByCode) {
   return axios.post<LoginRes>('/api/user/loginbycode', data);
 }
@@ -126,7 +125,6 @@ export function exportUserData() {
 export function getImportUserTemplate() {
   return axios.get<string>('/api/user/importTemplate');
 }
-
 
 export function updataUserByAdmin(data: UserManger) {
   return axios.put<string>('/api/user/updateByAdmin', data);
@@ -152,8 +150,8 @@ export function getUserInfo() {
   return axios.post<UserState>('/api/user/info');
 }
 
-export function updataUserInfoBaseExt(data:UserInfoBaseExt) {
-  return axios.post<string>('/api/user/userinfo_ext_my_apply_for',data);
+export function updataUserInfoBaseExt(data: UserInfoBaseExt) {
+  return axios.post<string>('/api/user/userinfo_ext_my_apply_for', data);
 }
 
 export function getUserCount() {
@@ -164,8 +162,10 @@ export function userinfoExtMy() {
   return axios.get<UserInfoBaseExtStateResp>('/api/user/userinfo_ext_my');
 }
 
-export function approvalUserinfoExtData(taskId:string) {
-  return axios.get<UserInfoBaseExt>('/api/user/approval_userinfo_ext_data/'+taskId);
+export function approvalUserinfoExtData(taskId: string) {
+  return axios.get<UserInfoBaseExt>(
+    '/api/user/approval_userinfo_ext_data/' + taskId
+  );
 }
 
 export function userinfoExtMyWthdraw() {
@@ -211,7 +211,6 @@ export function listForBMPN(params: {
 }) {
   return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', { params });
 }
-
 
 export function listForLevels() {
   return axios.get<string[]>('/api/user/levels');
