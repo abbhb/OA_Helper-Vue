@@ -96,7 +96,7 @@
   ]);
 
   const cancel = () => {
-    appStore.updateSettings({ globalSettings: false });
+    appStore.updateSettings({ globalSettings: false }, true);
     emit('cancel');
   };
   const copySettings = async () => {
@@ -105,7 +105,7 @@
     Message.success(t('settings.copySettings.message'));
   };
   const setVisible = () => {
-    appStore.updateSettings({ globalSettings: true });
+    appStore.updateSettings({ globalSettings: true },true);
   };
 </script>
 

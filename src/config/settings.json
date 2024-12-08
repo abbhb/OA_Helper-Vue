@@ -9,7 +9,7 @@
   "footer": true,
   "themeColor": "#165DFF",
   "menuWidth": 180,
-  "globalSettings": false,
+  "globalSettings": true,
   "device": "desktop",
   "tabBar": false,
   "recentlyRouter": [],

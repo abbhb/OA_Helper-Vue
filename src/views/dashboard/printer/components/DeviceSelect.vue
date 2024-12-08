@@ -15,7 +15,7 @@
 
 
 
-  const changeNewPrintDevice = () => {
+  const changeNewPrintDevice = async () => {
     // 这时候选择默认可使用的打印机，优先type为1的，依次往后
     let zuikuaideIndex = 999;
     let zuixiaodezhuangtai = 999;
@@ -34,7 +34,7 @@
       Message.info('当前可能所有打印机都寄掉了！');
     } else {
       printState.printDevice = printState.printDeviceList[zuikuaideIndex];
-      appState.changePrintDevice(printState.printDeviceList[zuikuaideIndex].id); // 并且写入用户上次的选择
+      await appState.changePrintDevice(printState.printDeviceList[zuikuaideIndex].id); // 并且写入用户上次的选择
       // 操作数据后更新视图
     }
 
@@ -57,9 +57,9 @@
         console.log("更新")
         caozuo.value += 1;
         // @ts-ignore
-        appState.changePrintDevice(lastDevice.id); // 并且写入用户上次的选择
+        await appState.changePrintDevice(lastDevice.id); // 并且写入用户上次的选择
       } else {
-        changeNewPrintDevice();
+        await changeNewPrintDevice();
       }
     }
   });
@@ -71,9 +71,9 @@
   const handleCancel = () => {
     printState.stopSelect();
   }
-  const changeOtherPrintDevice = (record) => {
+  const changeOtherPrintDevice = async (record) => {
     printState.setPrintDevice(record.id);
-    appState.changePrintDevice(record.id); // 并且写入用户上次的选择
+    await appState.changePrintDevice(record.id); // 并且写入用户上次的选择
     Message.success("更换打印机成功");
     printState.isSelecting = false;
   }

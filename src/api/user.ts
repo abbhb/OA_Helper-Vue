@@ -94,7 +94,7 @@ export interface UserSelectListResp {
 }
 
 interface UserFrontConfigReq {
-  req: string;
+  appState: AppStateVO;
 }
 
 export function login(data: LoginData) {
@@ -172,8 +172,22 @@ export function userinfoExtMyWthdraw() {
   return axios.post<string>('/api/user/userinfo_ext_my_withdraw');
 }
 
+// 用于与后端对接，不是前端AppState
+export interface AppStateVO {
+  menuWidth?:number;
+  tabBar?:boolean;
+  topMenu?:boolean;
+  footer?:boolean;
+  modelFullscreen?:boolean;
+  theme?:string;
+  colorWeak?:boolean;
+  lastPrintDevice?:string;
+  versionRead?:string;
+
+}
+
 export function getUserFrontConfig() {
-  return axios.get<string>('/api/user_front_config/get_user_front_config');
+  return axios.get<AppStateVO>('/api/user_front_config/get_user_front_config');
 }
 
 export function setUserFrontConfig(data: UserFrontConfigReq) {

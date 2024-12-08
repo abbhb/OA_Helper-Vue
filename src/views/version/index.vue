@@ -10,7 +10,7 @@ const selectVersion = ref(data[data.length - 1]);
 <template>
   <div style="display: flex; flex-direction: row; width: 100%; height: 97%">
     <div style="overflow-y: auto; height: 50rem; margin-top: 12rem">
-      <a-timeline :mode="'left'" :reverse="true" label-position="relative">
+      <a-timeline :mode="'left'" label-position="relative">
         <a-timeline-item
           v-for="timeit in data"
           :key="timeit"

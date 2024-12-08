@@ -4,8 +4,9 @@ import defaultSettings from '@/config/settings.json';
 import { getConfig } from '@/store/modules/app/persistence';
 // eslint-disable-next-line import/namespace
 import useRouterPlus from '@/hooks/router';
-import { getUserFrontConfig, setUserFrontConfig } from '@/api/user';
-import {isLogin} from "@/utils/auth";
+import { AppStateVO, getUserFrontConfig, setUserFrontConfig } from '@/api/user';
+import { isLogin } from '@/utils/auth';
+import eventBus from '@/utils/eventBus';
 import { AppState, RecentlyRouter } from './types';
 
 const useAppStore = defineStore('app', {
@@ -34,30 +35,39 @@ const useAppStore = defineStore('app', {
     },
     appquickRouter(state: AppState): RouteRecordNormalized[] {
       return state.quickRouter as unknown as RouteRecordNormalized[];
-    }
+    },
   },
 
   actions: {
     // Update app settings
-    updateSettings(partial: Partial<AppState>, ignoreUpdate?: boolean) {
+    async updateSettings(partial: Partial<AppState>, ignoreUpdate?: boolean) {
       this.$patch(partial);
       if (!ignoreUpdate) {
-        this.updateConfigServer();
+        await this.updateConfigServer();
       }
     },
     async initSettings() {
       // 每次登录成功首次就同步一次配置
       const { data } = await getUserFrontConfig();
-      this.$patch(JSON.parse(data));
+      this.$patch(data);
     },
     // Change theme color
-    toggleTheme(dark: boolean) {
-      if (dark) {
-        this.updateSettings({ theme: 'dark' });
-        document.body.setAttribute('arco-theme', 'dark');
-      } else {
-        this.updateSettings({ theme: 'light' });
-        document.body.removeAttribute('arco-theme');
+    async toggleTheme(dark: boolean) {
+      eventBus.emit('addLoading', { tip: '写入用户配置中~' });
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this
+      try {
+        if (dark) {
+          await that.updateSettings({ theme: 'dark' });
+          document.body.setAttribute('arco-theme', 'dark');
+        } else {
+          await that.updateSettings({ theme: 'light' });
+          document.body.removeAttribute('arco-theme');
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        eventBus.emit('removeLoading');
       }
     },
     getRecentlyRouter(): RecentlyRouter[] {
@@ -122,44 +132,31 @@ const useAppStore = defineStore('app', {
 
       this.updateConfigServer();
     },
-    changePrintDevice(id: string) {
-      this.updateSettings({ lastPrintDevice: id });
+    async changePrintDevice(id: string) {
+      await this.updateSettings({lastPrintDevice: id});
     },
-    updateConfigServer() {
-
-      // 我觉得异步更新即可
-      if (!isLogin){
-        console.log("未登录，同步配置失败");
+    async updateConfigServer() {
+      if (!isLogin) {
+        console.log('未登录，不更新用户配置');
         return;
       }
       try {
-        const duixiang:AppState = {
+        const duixiang: AppStateVO = {
           colorWeak: this.colorWeak,
-          device: this.device,
           footer: this.footer,
-          globalSettings: this.globalSettings,
-          hideMenu: this.hideMenu,
           lastPrintDevice: this.lastPrintDevice,
-          menu: this.menu,
-          menuCollapse: this.menuCollapse,
           menuWidth: 180,
           modelFullscreen: this.modelFullscreen,
-          navbar: this.navbar,
-          quickRouter: this.quickRouter,
-          recentlyRouter: this.recentlyRouter,
           tabBar: this.tabBar,
           theme: this.theme,
-          themeColor:  this.themeColor,
-          topMenu:  this.topMenu,
-          versionRead: this.versionRead
-        }
-        const text = JSON.stringify(duixiang);
-        setUserFrontConfig({ req: text });
-      }catch (e) {
-        console.log(e)
-        console.log("记录失败");
+          topMenu: this.topMenu,
+          versionRead: this.versionRead,
+        };
+        await setUserFrontConfig({ appState: duixiang });
+      } catch (e) {
+        console.log(e);
+        console.log('记录失败');
       }
-
     },
   },
 });

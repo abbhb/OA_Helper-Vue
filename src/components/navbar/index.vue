@@ -247,7 +247,7 @@
     return systemMessageStore.noReadCount.noread;
   });
   const topMenu = computed(() => appStore.topMenu && appStore.menu);
-  const currentVersion = version[version.length - 1].version;
+  const currentVersion = version[0]?.version;
   const isDark = useDark({
     selector: 'body',
     attribute: 'arco-theme',
@@ -299,9 +299,9 @@
     window.location.href = 'http://10.15.247.254:55554';
   };
 
-  const readVersion = () => {
-    appStore.updateSettings({ versionRead: currentVersion });
-    router.push({ name: 'VersionIndex' });
+  const readVersion = async () => {
+    await appStore.updateSettings({versionRead: currentVersion});
+    router.push({name: 'VersionIndex'});
   };
 </script>
 

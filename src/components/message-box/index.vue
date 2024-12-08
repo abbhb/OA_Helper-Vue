@@ -62,7 +62,11 @@
               </a-table-column>
               <a-table-column title="操作" data-index="createTime" :width="160">
                 <template #cell="{ record }">
-                  <a-button :disabled="record.read" :type="'text'" @click="handleItemClick(record)">
+                  <a-button
+                    :disabled="record.read"
+                    :type="'text'"
+                    @click="handleItemClick(record)"
+                  >
                     已读
                   </a-button>
                   <a-button
@@ -72,6 +76,52 @@
                   >
                     删除
                   </a-button>
+                </template>
+              </a-table-column>
+            </template>
+          </a-table>
+        </a-spin>
+      </a-tab-pane>
+      <a-tab-pane key="version">
+        <template #title>
+          <span> 版本发布 </span>
+        </template>
+        <a-result v-if="!renderList.length" status="404">
+          <template #subtitle> {{ $t('messageBox.noContent') }} </template>
+        </a-result>
+        <a-spin :loading="loading">
+          <!--          <List-->
+          <!--            :render-list="renderList"-->
+          <!--            :unread-count="unreadCount"-->
+          <!--            @item-click="handleItemClick"-->
+          <!--            @remove="handleRemove"-->
+          <!--            @all-read="handleAllRead"-->
+          <!--            @read-more="readMore"-->
+
+          <!--          />-->
+          <a-table
+            :data="versionData"
+            style="height: 500px"
+            :expandable="versionExpandable"
+          >
+            <template #columns>
+              <a-table-column title="版本图标" data-index="icon" :width="350">
+                <template #cell="{ record }">
+                  <img
+                    width="40"
+                    :style="{ marginRight: '16px', marginBottom: '12px' }"
+                    :src="record.icon"
+                  />
+                </template>
+              </a-table-column>
+              <a-table-column title="版本号" data-index="version" :width="380">
+                <template #cell="{ record }">
+                  {{ record.version }}
+                </template>
+              </a-table-column>
+              <a-table-column title="发布时间" data-index="time" :width="380">
+                <template #cell="{ record }">
+                  {{ record.time }}
                 </template>
               </a-table-column>
             </template>
@@ -88,7 +138,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, toRefs, computed } from 'vue';
+  import {
+    ref,
+    reactive,
+    toRefs,
+    computed,
+    VNodeChild,
+    createVNode,
+  } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { MessageRecord } from '@/api/message';
   import { useSystemMessageStore } from '@/store/modules/app/systemMessage';
@@ -101,6 +158,7 @@
   import router from '@/router';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
+  import version from '@/config/version.json';
 
   interface TabItem {
     key: string;
@@ -133,6 +191,29 @@
       };
     }
   };
+  const parseItems = (
+    items: Array<{ title: string; content: string }>
+  ): VNodeChild[] => {
+    return items
+      .map((item, index) => {
+        return [
+          createVNode('div', null, `【${item.title}】`),
+          createVNode('div', null, item.content),
+        ];
+      })
+      .flat(); // 使用 flat 将二维数组转换为一维数组
+  };
+  const versionData = version;
+  const versionExpandable = reactive({
+    title: 'Expand',
+    width: 0,
+    expandedRowRender: (record) => {
+      if (record?.info?.length > 0) {
+        return parseItems(record.info);
+      }
+    },
+  });
+
   const messageType = ref('message');
   const { t } = useI18n();
   const messageData = reactive<{
@@ -162,13 +243,13 @@
   });
 
   const renderClass = (row, rowIndex) => {
-    console.log(row)
-    if (row.read){
-      console.log(rowIndex)
-      return 'warning-row'
+    console.log(row);
+    if (row.read) {
+      console.log(rowIndex);
+      return 'warning-row';
     }
-    return ""
-  }
+    return '';
+  };
   const handleItemClick = async (items: SystemMessageResp) => {
     if (renderList.value.length && !items.read) {
       // 标记并打开
@@ -239,7 +320,5 @@
   }
   ::v-deep .warning-row {
     opacity: 0.5 !important;
-
   }
-
 </style>
