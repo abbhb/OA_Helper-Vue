@@ -19,7 +19,10 @@ import { useGroupStore } from '@/store/modules/chat/group';
 import { useContactStore } from '@/store/modules/chat/contacts';
 import { cloneDeep } from 'lodash';
 import router from '@/router';
-import { pushNotifyByMessage } from '@/utils/chat/systemMessageNotify';
+import {
+  pushNotifyByMessage,
+  pushWebNotifyByMessage,
+} from '@/utils/chat/systemMessageNotify';
 
 export const pageSize = 80;
 // 标识是否第一次请求
@@ -363,8 +366,10 @@ export const useChatStore = defineStore('chat', () => {
         msg.message.body.content,
         cacheUser.avatar as string
       );
+    }else if (String(msg.fromUser.uid) !== String(userStore.userInfo.id)) {
+      pushNotifyByMessage(msg);
     }
-    pushNotifyByMessage(msg);
+
     // tab 在后台获得新消息，就开始闪烁！
     if (document.hidden && !shakeTitle.isShaking) {
       shakeTitle.start();

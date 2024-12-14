@@ -97,6 +97,7 @@ initData();
 .title {
 
   padding: 3px 3px 3px 3px;
+  color: var(--color-text-1);
 
   font-size: 16px;
   font-weight: 800;

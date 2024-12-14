@@ -24,9 +24,11 @@
           <!--          />-->
           <a-table
             :data="renderList"
-            :pagination="pagination"
             :span-method="spanMethod"
             :row-class="renderClass"
+            :scroll="{
+              y: 500
+            }"
           >
             <template #columns>
               <a-table-column title="通知人" data-index="username" :width="80">
@@ -67,7 +69,7 @@
                     :type="'text'"
                     @click="handleItemClick(record)"
                   >
-                    已读
+                    确认
                   </a-button>
                   <a-button
                     :type="'text'"
@@ -101,7 +103,10 @@
           <!--          />-->
           <a-table
             :data="versionData"
-            style="height: 500px"
+            :scroll="{
+              y: 500
+            }"
+            row-key="version"
             :expandable="versionExpandable"
           >
             <template #columns>
@@ -205,9 +210,11 @@
   };
   const versionData = version;
   const versionExpandable = reactive({
-    title: 'Expand',
+    title: '',
     width: 0,
+    defaultExpandAllRows:true,
     expandedRowRender: (record) => {
+      // 改成data渲染
       if (record?.info?.length > 0) {
         return parseItems(record.info);
       }

@@ -60,13 +60,13 @@
   let timers = null;
 
   const searchPeople = () => {
-    if (timers!==null){
-      clearTimeout(timers)
+    if (timers !== null) {
+      clearTimeout(timers);
     }
     timers = setTimeout(() => {
-      groupStore.searchGroupUserList(searchModel.value)// 需要防抖的函数
-    }, 1000);
-  }
+      groupStore.searchGroupUserList(searchModel.value); // 需要防抖的函数
+    }, 200);
+  };
 </script>
 
 <template>
@@ -88,13 +88,18 @@
           size="small"
           style="font-size: 14px; font-weight: 900; margin-left: auto"
           @click="onAddGroupMember"
-        >+</a-button
+          >+</a-button
         >
       </div>
-      <div class="user-list-header"
-      >    <a-input-search v-model:model-value="searchModel"
-                           @input="searchPeople" @press-enter="searchPeople" @clear="searchPeople" :style="{width:'320px'}" placeholder="请输入筛选条件"/>
-
+      <div class="user-list-header">
+        <a-input-search
+          v-model:model-value="searchModel"
+          :style="{ width: '320px' }"
+          placeholder="请输入筛选条件"
+          @input="searchPeople"
+          @press-enter="searchPeople"
+          @clear="searchPeople"
+        />
       </div>
       <TransitionGroup
         v-show="groupUserList?.length"
@@ -103,10 +108,30 @@
         class="user-list"
       >
         <UserItem v-for="user in groupUserList" :key="user.uid" :user="user" />
-        <li v-if="!loadMoreState" style="width: 100%;display: flex;align-items: center;justify-content: center" key="visible_el" ref="groupListLastElRef">到底了</li>
-        <li v-if="loadMoreState" style="width: 100%;display: flex;align-items: center;justify-content: center" key="visible_el" ref="groupListLastElRef">
+        <li
+          v-if="!loadMoreState"
+          key="visible_el"
+          ref="groupListLastElRef"
+          style="
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+          >到底了</li
+        >
+        <li
+          v-if="loadMoreState"
+          key="visible_el"
+          ref="groupListLastElRef"
+          style="
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
           <a-spin dot />
-
         </li>
       </TransitionGroup>
       <template v-if="groupUserList?.length === 0">
@@ -162,7 +187,6 @@
       color: var(--color-text-1);
     }
 
-
     &-wrapper {
       // 额外的样式规则
       position: absolute;
@@ -180,22 +204,18 @@
       transform: translateX(100%);
       background-color: var(--color-secondary);
 
-
       &.show {
         transform: translateX(-16px);
       }
     }
-
 
     &-header {
       display: flex;
 
       align-items: center;
       padding-bottom: 8px;
-
     }
   }
-
 
   @media only screen and (min-width: 640px) {
     .user-list-wrapper {
@@ -220,7 +240,4 @@
       background-color: transparent;
     }
   }
-
 </style>
-
-

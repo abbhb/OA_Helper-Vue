@@ -224,6 +224,7 @@
   }
   .zhedie {
     height: 60px;
+
   }
   .fixbox {
     margin: 0;

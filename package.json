@@ -31,7 +31,7 @@
     ]
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.44.7",
+    "@arco-design/web-vue": "^2.56.0",
     "@arco-themes/vue-qc-snow-onlyself": "^0.0.2",
     "@bpmn-io/add-exporter": "^0.2.0",
     "@bpmn-io/element-template-chooser": "^1.0.0",
