@@ -38,6 +38,17 @@ const DASHBOARD: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'printer-manager',
+      name: 'printerManager',
+      component: () => import('@/views/printer/manager/index.vue'),
+      meta: {
+        locale: 'menu.dashboard.printerManager',
+        requiresAuth: true,
+        roles: ['*'],
+        canGo: true,
+      },
+    },
+    {
       path: 'keep',
       name: 'keep',
       component: () => import('@/views/dashboard/keep/index.vue'),

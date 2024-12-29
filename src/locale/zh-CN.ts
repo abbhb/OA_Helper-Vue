@@ -63,6 +63,7 @@ export default {
   'menu.sysmanger.NavFenLeiAdmin': '导航分类管理',
   'menu.sysmanger.NavItemAdmin': '导航项管理',
   'menu.dashboard.printer': '打印中心',
+  'menu.dashboard.printerManager': '打印机管理',
   'menu.docnotification.DocNotification': '通知管理',
   'menu.docnotification.IndexImage': '图片通知',
   'menu.contentpromotion': '内容管理',
