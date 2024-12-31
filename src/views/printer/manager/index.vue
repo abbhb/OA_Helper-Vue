@@ -1,7 +1,15 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue';
-  import { Message } from '@arco-design/web-vue';
+  import { Message, Modal } from '@arco-design/web-vue';
   import { useRouter } from 'vue-router';
+  import {
+    getPrintDeviceList,
+    updatePrintDeviceStatus,
+    deletePrintDevice,
+    transferPrintDeviceOwnership,
+    createPrintDevice,
+    addPrintDeviceUsers,
+  } from '@/api/print-device';
   import type { PrintDevice } from './types';
   import { PrintDeviceRole } from './types';
 
@@ -61,47 +69,15 @@
     },
   ];
 
-  // Mock数据获取
+  // 获取打印机列表
   const fetchData = async () => {
     loading.value = true;
     try {
-      // await api.getPrinterList()
-      // mock数据
-      dataSource.value = [
-        {
-          id: 1,
-          deviceId: 'printer_001',
-          deviceName: '打印机1号',
-          deviceDescription: '办公室打印机',
-          createTime: '2024-03-20 12:00:00',
-          createUserName: '张三',
-          ownerName: '李四',
-          status: 1,
-          userRole: PrintDeviceRole.OWNER,
-        },
-        {
-          id: 2,
-          deviceId: 'printer_002',
-          deviceName: '打印机2号',
-          deviceDescription: '会议室打印机',
-          createTime: '2024-03-20 13:00:00',
-          createUserName: '张三',
-          ownerName: '张三',
-          status: 0,
-          userRole: PrintDeviceRole.MANAGER,
-        },
-        {
-          id: 3,
-          deviceId: 'printer_003',
-          deviceName: '打印机3号',
-          deviceDescription: '地下城打印机',
-          createTime: '2024-03-22 13:00:00',
-          createUserName: '张三',
-          ownerName: '张三',
-          status: 0,
-          userRole: PrintDeviceRole.USER,
-        },
-      ];
+      const { data } = await getPrintDeviceList();
+      dataSource.value = data;
+    } catch (error) {
+      Message.error('获取打印机列表失败');
+      console.error('获取打印机列表错误:', error);
     } finally {
       loading.value = false;
     }
@@ -109,8 +85,24 @@
 
   // 转移所有权
   const handleTransferOwnership = async (record: PrintDevice) => {
-    // await api.transferOwnership(record.id)
-    Message.success('所有权转移成功');
+    try {
+      await Modal.confirm({
+        title: '确认转移',
+        content: '转移所有权后，您将失去对此打印机的所有权限，确认继续吗？',
+      });
+
+      const { data } = await transferPrintDeviceOwnership({
+        printDeviceId: record.id,
+        userId: '', // TODO: 需要选择转移的目标用户
+      });
+      Message.success('所有权转移成功');
+      await fetchData();
+    } catch (error) {
+      if (error instanceof Error) {
+        Message.error('转移所有权失败');
+        console.error('转移所有权错误:', error);
+      }
+    }
   };
 
   // 打开权限管理对话框
@@ -129,16 +121,24 @@
       Message.warning('请选择要授权的用户');
       return;
     }
-    
+    if (!currentDevice.value) {
+      Message.error('设备信息异常');
+      return;
+    }
+
     authLoading.value = true;
     try {
-      // await api.authUsers({
-      //   deviceId: currentDevice.value?.id,
-      //   userIds: selectedUsers.value,
-      //   role: selectedRole.value
-      // });
+      const { data } = await addPrintDeviceUsers({
+        printDeviceId: currentDevice.value.id,
+        userIds: selectedUsers.value,
+        role: selectedRole.value,
+      });
       Message.success('授权成功');
       showAuthDialog.value = false;
+      await fetchData();
+    } catch (error) {
+      Message.error('授权失败');
+      console.error('授权错误:', error);
     } finally {
       authLoading.value = false;
     }
@@ -156,16 +156,52 @@
 
   // 删除打印机
   const handleDelete = async (record: PrintDevice) => {
-    // await api.deletePrinter(record.id)
-    Message.success('删除成功');
-    console.log('删除打印机:', record);
+    try {
+      await Modal.confirm({
+        title: '确认删除',
+        content: '删除后无法恢复，确认继续吗？',
+      });
+
+      const { data } = await deletePrintDevice(record.id);
+      Message.success('删除成功');
+      await fetchData();
+    } catch (error) {
+      if (error instanceof Error) {
+        Message.error('删除失败');
+        console.error('删除打印机错误:', error);
+      }
+    }
   };
 
   // 切换状态
   const handleToggleStatus = async (record: PrintDevice) => {
-    // await api.updatePrinterStatus(record.id, record.status === 1 ? 0 : 1)
-    Message.success('状态更新成功');
-    console.log('切换状态:', record);
+    try {
+      const { data } = await updatePrintDeviceStatus(
+        record.id,
+        record.status === 1 ? 0 : 1
+      );
+      Message.success('状态更新成功');
+      await fetchData();
+    } catch (error) {
+      Message.error('状态更新失败');
+      console.error('更新状态错误:', error);
+    }
+  };
+
+  // 注册新打印机
+  const handleCreateDevice = async () => {
+    try {
+      const { data } = await createPrintDevice({
+        deviceId: '', // TODO: 需要填写表单
+        deviceName: '',
+        deviceDescription: '',
+      });
+      Message.success('注册成功');
+      await fetchData();
+    } catch (error) {
+      Message.error('注册失败');
+      console.error('注册打印机错误:', error);
+    }
   };
 
   onMounted(() => {
@@ -178,7 +214,7 @@
     <a-card class="general-card" :bordered="false">
       <div class="header">
         <h2>打印机管理</h2>
-        <a-button type="primary">
+        <a-button type="primary" @click="handleCreateDevice">
           <template #icon>
             <icon-plus />
           </template>
@@ -204,10 +240,6 @@
 
         <template #operations="{ record }">
           <a-space>
-
-
-
-
             <a-button
               v-if="hasEditPermission(record.userRole)"
               type="text"
@@ -256,8 +288,8 @@
       <a-modal
         v-model:visible="showAuthDialog"
         title="权限管理"
-        @ok="handleConfirmAuth"
         :loading="authLoading"
+        @ok="handleConfirmAuth"
         @cancel="showAuthDialog = false"
       >
         <a-form :model="{ selectedRole }" layout="vertical">
@@ -276,7 +308,7 @@
 
           <a-form-item label="设置角色" required>
             <a-radio-group v-model="selectedRole">
-              <a-radio 
+              <a-radio
                 v-for="option in roleOptions"
                 :key="option.value"
                 :value="option.value"

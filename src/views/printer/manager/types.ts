@@ -1,5 +1,5 @@
 export interface PrintDevice {
-  id: number;
+  id: string;
   deviceId: string;
   deviceName: string;
   deviceDescription: string;
