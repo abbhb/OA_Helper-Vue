@@ -1,15 +1,14 @@
 import axios from 'axios';
 import type { PrintDevice } from '@/views/printer/manager/types';
+import {PageData} from "@/api/common";
 
 // 打印机用户关联信息
 export interface PrintDeviceUser {
   id: string;
   userId: string;
   username: string;
-  email: string;
   printDeviceId: string;
   role: number;
-  createTime: string;
 }
 
 // 打印机设备信息(包含当前用户角色)
@@ -48,7 +47,7 @@ export interface TransferOwnershipReq {
   userId: string;
 }
 
-// 用户列表查询参数
+// 用户列表查询参数 role:0 all
 export interface PrintDeviceUserQuery {
   printDeviceId: string;
   role?: number;
@@ -56,13 +55,7 @@ export interface PrintDeviceUserQuery {
   pageSize?: number;
 }
 
-// 分页结果
-export interface PageResult<T> {
-  list: T[];
-  total: number;
-  pageNum: number;
-  pageSize: number;
-}
+
 
 // 获取打印机列表
 export function getPrintDeviceList() {
@@ -101,9 +94,9 @@ export function updatePrintDeviceStatus(id: string, status: number) {
   });
 }
 
-// 获取打印机用户列表
+// 获取打印机用户列表 done
 export function getPrintDeviceUsers(params: PrintDeviceUserQuery) {
-  return axios.get<PageResult<PrintDeviceUser>>('/api/print_device/user/list', {
+  return axios.get<PageData<PrintDeviceUser>>('/api/print_device/user/list', {
     params,
   });
 }
