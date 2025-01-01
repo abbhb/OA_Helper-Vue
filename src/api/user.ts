@@ -223,7 +223,7 @@ export function listForBMPN(params: {
   name?: string;
   deptId?: string;
 }) {
-  return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', { params });
+  return axios.get<PageData<UserManger[]>>('/api/user/listForSelect', { params });
 }
 
 export function listForLevels() {

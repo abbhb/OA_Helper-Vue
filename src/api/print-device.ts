@@ -13,8 +13,13 @@ export interface PrintDeviceUser {
 }
 
 // 打印机设备信息(包含当前用户角色)
-export interface PrintDeviceVO extends PrintDevice {
-  userRole?: number; // 当前用户在该打印机中的角色
+export type PrintDeviceVO = PrintDevice
+
+export interface PrintDeviceNotRegisterVO {
+  id:string;
+  name?: string;
+  description?:string;
+  status?:number;
 }
 
 // 创建打印机请求
@@ -64,24 +69,31 @@ export function getPrintDeviceList() {
   return axios.get<PrintDeviceVO[]>('/api/print_device/list');
 }
 
-// 创建打印机
+// 获取未注册的在线打印机 done
+export function getUnRegisterPrintDeviceList() {
+  return axios.get<PrintDeviceNotRegisterVO[]>(
+    '/api/print_device/unregister/list'
+  );
+}
+
+// 创建打印机 done
 export function createPrintDevice(data: CreatePrintDeviceReq) {
   return axios.post<string>('/api/print_device/create', data);
 }
 
-// 更新打印机信息
+// 更新打印机信息 暂不实现（信息会自动同步打印机）
 export function updatePrintDevice(data: UpdatePrintDeviceReq) {
   return axios.put<string>('/api/print_device/update', data);
 }
 
-// 删除打印机
+// 删除打印机 done
 export function deletePrintDevice(id: string) {
   return axios.delete<string>('/api/print_device/delete', {
     params: { id },
   });
 }
 
-// 更新打印机状态
+// 更新打印机状态 done
 export function updatePrintDeviceStatus(id: string, status: number) {
   return axios.put<string>('/api/print_device/update_status', {
     id,
