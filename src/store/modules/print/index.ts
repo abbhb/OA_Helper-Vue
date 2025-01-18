@@ -38,10 +38,6 @@ const usePrintStore = defineStore('print', {
       this.model = model;
     },
     startSelect() {
-      if (this.printDeviceList.length < 1) {
-        Message.info('当前没有打印机');
-        return;
-      }
       this.isSelecting = true;
     },
     stopSelect() {

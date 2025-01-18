@@ -414,7 +414,6 @@
             </a-table-column>
           </template>
         </a-table>
-<!--        <a-button @click="console.log(selectedRowKeys)">查看</a-button>-->
         <a-button :type="'primary'" @click="selectCommit">确定 </a-button>
       </a-card>
     </div>

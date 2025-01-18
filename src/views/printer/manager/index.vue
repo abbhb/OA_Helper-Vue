@@ -6,9 +6,9 @@
     getPrintDeviceList,
     updatePrintDeviceStatus,
     deletePrintDevice,
-    transferPrintDeviceOwnership,
     createPrintDevice,
-    addPrintDeviceUsers,
+    addPrintDeviceUsers, updatePrintDeviceUserRole,
+    getUnRegisterPrintDeviceList, PrintDeviceNotRegisterVO,
   } from '@/api/print-device';
   import type { PrintDevice } from './types';
   import { PrintDeviceRole } from './types';
@@ -91,9 +91,11 @@
         content: '转移所有权后，您将失去对此打印机的所有权限，确认继续吗？',
       });
 
-      const { data } = await transferPrintDeviceOwnership({
+      // 更新接口包含转交
+      const { data } = await updatePrintDeviceUserRole({
+        userIds: [], // TODO:转交的人选择
         printDeviceId: record.id,
-        userId: '', // TODO: 需要选择转移的目标用户
+        role: 1,
       });
       Message.success('所有权转移成功');
       await fetchData();
@@ -189,18 +191,54 @@
   };
 
   // 注册新打印机
-  const handleCreateDevice = async () => {
+  const showCreateDialog = ref(false);
+  const createLoading = ref(false);
+  const unregisteredDevices = ref<PrintDeviceNotRegisterVO[]>([]);
+  const createForm = ref({
+    deviceId: '',
+    deviceSecret: '',
+  });
+
+  const fetchUnregisteredDevices = async () => {
     try {
-      const { data } = await createPrintDevice({
-        deviceId: '', // TODO: 需要填写表单
-        deviceName: '',
-        deviceDescription: '',
-      });
+      const { data } = await getUnRegisterPrintDeviceList();
+      unregisteredDevices.value = data;
+    } catch (error) {
+      Message.error('获取未注册打印机列表失败');
+      console.error('获取未注册打印机列表错误:', error);
+    }
+  };
+
+  const handleCreateDevice = () => {
+    showCreateDialog.value = true;
+    fetchUnregisteredDevices();
+  };
+
+  const handleConfirmCreate = async () => {
+    if (!createForm.value.deviceId) {
+      Message.warning('请选择打印机');
+      return;
+    }
+    if (!createForm.value.deviceSecret) {
+      Message.warning('请输入打印机密钥');
+      return;
+    }
+
+    createLoading.value = true;
+    try {
+      await createPrintDevice(createForm.value);
       Message.success('注册成功');
+      showCreateDialog.value = false;
+      createForm.value = {
+        deviceId: '',
+        deviceSecret: '',
+      };
       await fetchData();
     } catch (error) {
       Message.error('注册失败');
       console.error('注册打印机错误:', error);
+    } finally {
+      createLoading.value = false;
     }
   };
 
@@ -259,16 +297,16 @@
               权限管理
             </a-button>
 
-            <a-popconfirm
-              v-if="record.userRole === PrintDeviceRole.OWNER"
-              content="确认转移设备所有权吗？"
-              @ok="handleTransferOwnership(record)"
-            >
-              <a-button type="text" status="warning">
-                <icon-swap />
-                转移所有权
-              </a-button>
-            </a-popconfirm>
+<!--            <a-popconfirm-->
+<!--              v-if="record.userRole === PrintDeviceRole.OWNER"-->
+<!--              content="确认转移设备所有权吗？"-->
+<!--              @ok="handleTransferOwnership(record)"-->
+<!--            >-->
+<!--              <a-button type="text" status="warning">-->
+<!--                <icon-swap />-->
+<!--                转移所有权-->
+<!--              </a-button>-->
+<!--            </a-popconfirm>-->
 
             <a-popconfirm
               v-if="hasDeletePermission(record.userRole)"
@@ -326,6 +364,40 @@
                 <div>- 普通用户仅可查看和使用打印机</div>
               </template>
             </a-alert>
+          </a-form-item>
+        </a-form>
+      </a-modal>
+
+      <a-modal
+        v-model:visible="showCreateDialog"
+        title="注册打印机"
+        @ok="handleConfirmCreate"
+        @cancel="showCreateDialog = false"
+        :loading="createLoading"
+      >
+        <a-form :model="createForm" layout="vertical">
+          <a-form-item label="选择打印机" required>
+            <a-select
+              v-model="createForm.deviceId"
+              placeholder="请选择未注册的打印机"
+              allow-search
+            >
+              <a-option
+                v-for="device in unregisteredDevices"
+                :key="device.id"
+                :value="device.id"
+              >
+                {{ device.name || device.id }}
+              </a-option>
+            </a-select>
+          </a-form-item>
+
+          <a-form-item label="打印机密钥" required>
+            <a-input
+              v-model="createForm.deviceSecret"
+              placeholder="请输入打印机密钥"
+              allow-clear
+            />
           </a-form-item>
         </a-form>
       </a-modal>

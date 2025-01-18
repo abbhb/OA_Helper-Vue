@@ -1,17 +1,19 @@
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { Message, Modal } from '@arco-design/web-vue';
   import { IconLeft, IconPlus, IconDelete } from '@arco-design/web-vue/es/icon';
+  import {
+    getPrintDeviceUsers,
+    addPrintDeviceUsers,
+    removePrintDeviceUser,
+    updatePrintDeviceUserRole,
+    PrintDeviceUser, getPrintDeviceUserIds,
+  } from '@/api/print-device';
+  import { useUserStore } from '@/store';
+  import SelectUser, {SelectUserType} from '@/components/select-user/index.vue';
 
-  interface UserRole {
-    id: number;
-    username: string;
-    role: 'owner' | 'manager' | 'user';
-    email: string;
-    createTime: string;
-    isCurrentUser: boolean;
-  }
+  type UserRole = PrintDeviceUser;
 
   interface PaginationState {
     current: number;
@@ -19,15 +21,15 @@
     total: number;
   }
 
-  interface UserForm {
-    email: string;
-  }
-
   const route = useRoute();
   const router = useRouter();
+  const userStore = useUserStore();
+  const currentUserId = computed(() => {
+    return userStore.userInfo.id;
+  });
   const printId = ref<string>('');
-  const activeType = ref<string>('all');
-  const currentUserRole = ref<'owner' | 'manager' | 'user'>('owner');
+  const activeType = ref<number>(0);
+  const currentUserRole = ref<1 | 2 | 3>(1);
   const tableData = ref<UserRole[]>([]);
   const pagination = ref<PaginationState>({
     current: 1,
@@ -36,43 +38,16 @@
   });
   const visible = ref(false);
   const loading = ref(false);
-  const form = ref<UserForm>({
-    email: '',
-  });
 
-  // Mock数据
-  const mockUsers: UserRole[] = [
-    {
-      id: 1,
-      username: '张三',
-      role: 'owner',
-      email: 'zhangsan@example.com',
-      createTime: '2024-03-20',
-      isCurrentUser: true,
-    },
-    {
-      id: 2,
-      username: '李四',
-      role: 'manager',
-      email: 'lisi@example.com',
-      createTime: '2024-03-21',
-      isCurrentUser: false,
-    },
-    {
-      id: 3,
-      username: '王五',
-      role: 'user',
-      email: 'wangwu@example.com',
-      createTime: '2024-03-22',
-      isCurrentUser: false,
-    },
-  ];
+  const tableLoading = ref(false);
 
+  const selectUserList = ref([]);
+  const selectUserListPre = ref<SelectUserType[]>([]); // 展示用
   const types = [
-    { label: '全部用户', value: 'all' },
-    { label: '所有者', value: 'owner' },
-    { label: '管理员', value: 'manager' },
-    { label: '普通用户', value: 'user' },
+    { label: '全部用户', value: 0 },
+    { label: '所有者', value: 1 },
+    { label: '管理员', value: 2 },
+    { label: '普通用户', value: 3 },
   ];
 
   onMounted(() => {
@@ -85,44 +60,51 @@
     loadTableData();
   });
 
-  const loadTableData = () => {
-    // TODO: 实际接口调用
-    // const res = await api.getPrinterUsers({
-    //   printerId: printId.value,
-    //   type: activeType.value === 'all' ? undefined : activeType.value,
-    //   current: pagination.value.current,
-    //   pageSize: pagination.value.pageSize
-    // })
-
-    // Mock 分页数据处理
-    const filteredData = mockUsers
-      .filter(
-        (user) => activeType.value === 'all' || user.role === activeType.value
-      )
-      .sort((a, b) => {
-        const roleOrder = { owner: 1, manager: 2, user: 3 };
-        return roleOrder[a.role] - roleOrder[b.role];
+  const loadTableData = async () => {
+    tableLoading.value = true;
+    try {
+      await getSelectIds();
+      const res = await getPrintDeviceUsers({
+        printDeviceId: printId.value,
+        role: activeType.value,
+        pageNum: pagination.value.current,
+        pageSize: pagination.value.pageSize,
       });
-
-    const start = (pagination.value.current - 1) * pagination.value.pageSize;
-    const end = start + pagination.value.pageSize;
-
-    tableData.value = filteredData.slice(start, end);
-    pagination.value.total = filteredData.length;
+      tableData.value = res.data.records;
+      pagination.value.total = res.data.total;
+    } finally {
+      tableLoading.value = false;
+    }
+  };
+  const getSelectIds = async () => {
+    // 获取ids
+    const {data} = await getPrintDeviceUserIds(printId.value);
+    selectUserListPre.value = data.map((value)=>{
+      return {id:value,name:''}
+    })
+  }
+  getSelectIds()
+  const getRoleNumber = (role: string): number => {
+    const roleMap: Record<string, number> = {
+      owner: 1,
+      manager: 2,
+      user: 3,
+    };
+    return roleMap[role];
   };
 
-  const handleRoleChange = async (row: UserRole, newRole: string) => {
-    if (currentUserRole.value !== 'owner') {
+  const handleRoleChange = async (row: UserRole, newRole: number) => {
+    if (currentUserRole.value !== 1) {
       Message.error('只有所有者可以修改角色');
       return;
     }
 
-    if (row.isCurrentUser) {
+    if (String(row.userId) === String(currentUserId)) {
       Message.error('不能修改自己的角色');
       return;
     }
 
-    if (row.role === 'owner') {
+    if (row.role === 1) {
       try {
         await Modal.warning({
           title: '警告',
@@ -136,10 +118,22 @@
       }
     }
 
-    // TODO: 调用修改角色接口
-    loadTableData();
+    try {
+      await updatePrintDeviceUserRole({
+        printDeviceId: printId.value,
+        userIds: [row.userId],
+        role: row.role,
+      });
+      Message.success('角色修改成功');
+      await loadTableData();
+    } catch (error) {
+      Message.error('角色修改失败');
+    }
   };
 
+  const selectUser = (userList) => {
+    selectUserList.value = userList;
+  };
   const handlePageChange = (current: number) => {
     pagination.value.current = current;
     loadTableData();
@@ -153,69 +147,68 @@
 
   const handleBack = () => {
     router.push({
-      name:'printerManager'
+      name: 'printerManager',
     });
   };
 
   const handleAdd = () => {
+    selectUserList.value = [];
     visible.value = true;
   };
 
   const handleOk = async () => {
-    if (!form.value.email) {
-      Message.error('请输入用户邮箱');
-      return;
-    }
     loading.value = true;
     try {
-      // TODO: 调用添加用户接口
-      // await api.addPrinterUser({
-      //   printerId: printId.value,
-      //   email: form.value.email,
-      //   role: 'user'
-      // });
+      if (selectUserList.value.length < 1) {
+        Message.error('请选择用户');
+
+        return;
+      }
+      const uids = selectUserList.value.map((value) => value.id);
+      await addPrintDeviceUsers({
+        printDeviceId: printId.value,
+        userIds: uids,
+        role: 3,
+      });
       Message.success('添加成功');
       visible.value = false;
-      form.value.email = '';
-      loadTableData();
+      await loadTableData();
+    } catch (error) {
+      Message.error('添加用户失败');
     } finally {
+      selectUserList.value = [];
       loading.value = false;
     }
   };
 
   const handleCancel = () => {
+    selectUserList.value = [];
     visible.value = false;
-    form.value.email = '';
   };
 
   const handleRemove = async (row: UserRole) => {
-    if (row.isCurrentUser) {
+    if (String(row.userId) === String(currentUserId)) {
       Message.error('不能移除自己');
       return;
     }
 
-    if (currentUserRole.value === 'manager' && row.role !== 'user') {
+    if (currentUserRole.value === 2 && row.role !== 3) {
       Message.error('管理员只能移除普通用户');
       return;
     }
 
     try {
-      await Modal.warning({
-        title: '警告',
-        content: '确认移除该用户吗？',
-        okText: '确认',
-        cancelText: '取消',
-      });
-      // TODO: 调用移除用户接口
-      // await api.removePrinterUser({
-      //   printerId: printId.value,
-      //   userId: row.id
-      // });
+      await removePrintDeviceUser(printId.value, row.userId);
       Message.success('移除成功');
-      loadTableData();
+      await loadTableData();
     } catch {
       return;
     }
+  };
+  const selectMenu = (type) => {
+    activeType.value = type.value;
+    pagination.value.current = 1;
+    loadTableData();
   };
 </script>
 
@@ -243,17 +236,12 @@
       </div>
       <div class="layout">
         <div class="sidebar">
-          <a-menu
-            :selected-keys="[activeType]"
-            @menu-item-click="
-              (key) => {
-                activeType = key;
-                pagination.current = 1;
-                loadTableData();
-              }
-            "
-          >
-            <a-menu-item v-for="type in types" :key="type.value">
+          <a-menu :selected-keys="[activeType]">
+            <a-menu-item
+              v-for="type in types"
+              :key="type.value"
+              @click="selectMenu(type)"
+            >
               {{ type.label }}
             </a-menu-item>
           </a-menu>
@@ -263,6 +251,7 @@
           <a-table
             :data="tableData"
             :pagination="pagination"
+            :loading="tableLoading"
             @page-change="handlePageChange"
             @page-size-change="handlePageSizeChange"
           >
@@ -272,19 +261,22 @@
               <a-table-column title="角色">
                 <template #cell="{ record }">
                   <a-select
-                    v-if="currentUserRole === 'owner' && !record.isCurrentUser"
+                    v-if="
+                      currentUserRole === 1 &&
+                      String(record.userId) !== String(currentUserId)
+                    "
                     v-model="record.role"
                     @change="(val) => handleRoleChange(record, val)"
                   >
-                    <a-option value="owner">所有者</a-option>
-                    <a-option value="manager">管理员</a-option>
-                    <a-option value="user">普通用户</a-option>
+                    <a-option :value="1">所有者</a-option>
+                    <a-option :value="2">管理员</a-option>
+                    <a-option :value="3">普通用户</a-option>
                   </a-select>
                   <span v-else>
                     {{
-                      record.role === 'owner'
+                      record.role === 1
                         ? '所有者'
-                        : record.role === 'manager'
+                        : record.role === 2
                         ? '管理员'
                         : '普通用户'
                     }}
@@ -296,8 +288,9 @@
                 <template #cell="{ record }">
                   <a-button
                     v-if="
-                      (currentUserRole === 'owner' && !record.isCurrentUser) ||
-                      (currentUserRole === 'manager' && record.role === 'user')
+                      (currentUserRole === 1 &&
+                        String(record.userId) !== String(currentUserId)) ||
+                      (currentUserRole === 2 && record.role === 3)
                     "
                     type="text"
                     status="danger"
@@ -320,72 +313,65 @@
     </div>
     <a-modal
       v-model:visible="visible"
-      @ok="handleOk"
-      @cancel="handleCancel"
+      :unmount-on-close="true"
       :loading="loading"
       title="添加用户"
+      :width="1200"
+      @ok="handleOk"
+      @cancel="handleCancel"
     >
-      <a-form :model="form">
-        <a-form-item field="email" label="用户邮箱">
-          <a-input
-            v-model="form.email"
-            placeholder="请输入用户邮箱"
-            allow-clear
-          />
-        </a-form-item>
-        <a-alert type="info">
-          新添加的用户默认为普通用户角色
-        </a-alert>
-      </a-form>
+      <a-alert type="info"> 新添加的用户默认为普通用户角色 </a-alert>
+      <a-divider/>
+      <SelectUser :list="selectUserListPre" @ok="selectUser"/>
     </a-modal>
   </div>
 </template>
 
 <style scoped>
-.page-container {
-  min-height: 100%;
-  background: var(--color-fill-2);
-  padding: 16px;
-}
+  .page-container {
+    min-height: 100%;
+    background: var(--color-fill-2);
+    padding: 16px;
+  }
 
-.page-header {
-  margin-bottom: 16px;
-}
+  .page-header {
+    margin-bottom: 16px;
+  }
 
-.container {
-  background: var(--color-bg-2);
-  border-radius: 4px;
-  padding: 16px;
-}
+  .container {
+    background: var(--color-bg-2);
+    border-radius: 4px;
+    padding: 16px;
+  }
 
-.layout {
-  display: flex;
-  gap: 16px;
-}
+  .layout {
+    display: flex;
+    gap: 16px;
+  }
 
-.sidebar {
-  width: 200px;
-  background: var(--color-fill-2);
-  border-radius: 4px;
-}
+  .sidebar {
+    width: 200px;
+    background: var(--color-fill-2);
+    border-radius: 4px;
+  }
 
-.content {
-  flex: 1;
-  background: var(--color-fill-2);
-  border-radius: 4px;
-  padding: 16px;
-}
+  .content {
+    flex: 1;
+    background: var(--color-fill-2);
+    border-radius: 4px;
+    padding: 16px;
+  }
 
-.error-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 400px;
-  background: var(--color-bg-2);
-  border-radius: 4px;
-}
+  .error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    background: var(--color-bg-2);
+    border-radius: 4px;
+  }
 
-.header {
-  margin-bottom: 16px;
-}
+  .header {
+    margin-bottom: 16px;
+  }
 </style>

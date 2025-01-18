@@ -57,7 +57,7 @@ export interface PrintDeviceUserQuery {
 
 
 
-// 获取打印机列表
+// 获取与我相关的打印机列表 done
 export function getPrintDeviceList() {
   return axios.get<PrintDeviceVO[]>('/api/print_device/list');
 }
@@ -96,17 +96,26 @@ export function updatePrintDeviceStatus(id: string, status: number) {
 
 // 获取打印机用户列表 done
 export function getPrintDeviceUsers(params: PrintDeviceUserQuery) {
-  return axios.get<PageData<PrintDeviceUser>>('/api/print_device/user/list', {
+  return axios.get<PageData<PrintDeviceUser[]>>('/api/print_device/user/list', {
     params,
   });
 }
+export function getPrintDeviceUserIds(deviceId: string) {
+  return axios.get<string[]>(
+    '/api/print_device/user/id/list',
+    {
+    params:{
+      deviceId
+    }
+  });
+}
 
-// 添加打印机用户
+// 添加打印机用户 done
 export function addPrintDeviceUsers(data: PrintDeviceUserReq) {
   return axios.post<string>('/api/print_device/user/add', data);
 }
 
-// 移除打印机用户
+// 移除打印机用户 userId可以，分隔(批量移除) done
 export function removePrintDeviceUser(printDeviceId: string, userId: string) {
   return axios.delete<string>('/api/print_device/user/remove', {
     params: {
@@ -116,14 +125,9 @@ export function removePrintDeviceUser(printDeviceId: string, userId: string) {
   });
 }
 
-// 更新用户角色
+// 更新用户角色 done
 export function updatePrintDeviceUserRole(data: PrintDeviceUserReq) {
   return axios.put<string>('/api/print_device/user/update_role', data);
-}
-
-// 转移打印机所有权
-export function transferPrintDeviceOwnership(data: TransferOwnershipReq) {
-  return axios.post<string>('/api/print_device/transfer_ownership', data);
 }
 
 // 获取打印机详情
