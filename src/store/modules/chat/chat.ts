@@ -1,21 +1,26 @@
-import {computed, reactive, ref, watch} from 'vue';
-import {defineStore} from 'pinia';
-import {useCachedStore} from '@/store/modules/chat/cached';
-import {useUserStore} from '@/store';
-import {MarkItemType, MessageType, RevokedMsgType, SessionItem,} from '@/types/chat';
+import { computed, Reactive, reactive, ref, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { useCachedStore } from '@/store/modules/chat/cached';
+import { useUserStore } from '@/store';
+import {
+  MarkItemType,
+  MessageType,
+  RevokedMsgType,
+  SessionItem,
+} from '@/types/chat';
 import * as Api from '@/api/chat';
-import {markMsgRead, removeMsg, sessionDetail} from '@/api/chat';
-import {computedTimeBlock} from '@/utils/chat/computedTime';
+import { markMsgRead, removeMsg, sessionDetail } from '@/api/chat';
+import { computedTimeBlock } from '@/utils/chat/computedTime';
 import shakeTitle from '@/utils/chat/shakeTitle';
-import {ChatMarkEnum, ChatMsgEnum, RoomTypeEnum} from '@/types/enums/chat';
-import {notifyMe} from '@/utils/notify';
-import {useGlobalStore} from '@/store/modules/chat/global';
-import {useGroupStore} from '@/store/modules/chat/group';
-import {useContactStore} from '@/store/modules/chat/contacts';
-import {cloneDeep} from 'lodash';
+import { ChatMarkEnum, ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
+import { notifyMe } from '@/utils/notify';
+import { useGlobalStore } from '@/store/modules/chat/global';
+import { useGroupStore } from '@/store/modules/chat/group';
+import { useContactStore } from '@/store/modules/chat/contacts';
+import { cloneDeep } from 'lodash';
 import router from '@/router';
-import {pushNotifyByMessage,} from '@/utils/chat/systemMessageNotify';
-import {UploadTask} from "@/hooks/chat/useUploadN";
+import { pushNotifyByMessage } from '@/utils/chat/systemMessageNotify';
+import { UploadTask } from '@/hooks/chat/useUploadN';
 
 export const pageSize = 80;
 // 标识是否第一次请求
@@ -36,9 +41,9 @@ export const useChatStore = defineStore('chat', () => {
   const currentRoomType = computed(() => globalStore.currentSession?.type);
   const currentRoomId = computed(() => globalStore.currentSession?.roomId);
 
-  const messageMap = reactive<Map<string, Map<string, MessageType|UploadTask>>>(
-    new Map([[currentRoomId.value, new Map()]])
-  ); // 消息Map
+  const messageMap = reactive<
+    Map<string, Map<string, MessageType | Reactive<UploadTask>>>
+  >(new Map([[currentRoomId.value, new Map()]])); // 消息Map
   const messageOptions = reactive<
     Map<string, { isLast: boolean; isLoading: boolean; cursor: string }>
   >(
@@ -313,7 +318,7 @@ export const useChatStore = defineStore('chat', () => {
     return sessionList.find((item) => item.roomId === roomId) as SessionItem;
   };
 
-  const pushMsg = async (msg: MessageType) => {
+  const pushMsg = async (msg: MessageType | Reactive<UploadTask>) => {
     const current = currentMessageMap.value;
     current?.set(msg.message.id, msg);
     // 获取用户信息缓存
@@ -510,17 +515,13 @@ export const useChatStore = defineStore('chat', () => {
     // await deleteMsg(msgId);
     currentMessageMap.value?.delete(msgId);
     await pushMsg(newMessage);
-
   };
 
   const getFlashMsgId = () => {
     return flashMsgId.value;
   };
   // 处理本地mock消息,需要注意，后端真的收到了消息回再推一条真实的消息回来，这个消息idmock出来的，只有需要失败重试才需要留在客户端这边!且刷新就没了
-  const updateMsgMock = (
-    msgId: string,
-    newMessage: MessageType,
-  ) => {
+  const updateMsgMock = (msgId: string, newMessage: MessageType) => {
     // 成功了仅需要删除本地的mock消息即可,暂时还是走服务器推送!
     currentMessageMap.value?.delete(msgId);
   };

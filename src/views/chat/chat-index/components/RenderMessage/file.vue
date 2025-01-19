@@ -39,13 +39,29 @@ import {computed, watch} from 'vue';
     );
   });
 
+watch(
+  () => props.body,
+  (newBody, oldBody) => {
+    console.log("props.body 发生变化：", oldBody, "=>", newBody);
+    // 根据 props.body 的变化做一些事情
+  },
+  { deep: true } // 如果 props.body 是嵌套对象且需要监听其中的值
+);
+
+const messageBody = computed(()=>{
+  return props.body;
+})
+
+const messageOrigin = computed(()=>{
+  return props.origin;
+})
   const process = computed(() => {
     // eslint-disable-next-line no-unsafe-optional-chaining
-    return ((props.body?.url && downloadObjMap.get(props.body.url)?.process / 100.0) || 0);
+    return ((messageBody.value?.url && downloadObjMap.get(messageBody.value.url)?.process / 100.0) || 0);
   });
   const isUploading = computed(() => {
     //@ts-ignore
-    if (props.origin?.Mock) {
+    if (messageOrigin.value?.Mock) {
       console.log('上传中');
       return true;
     }
@@ -53,9 +69,9 @@ import {computed, watch} from 'vue';
   });
   const uploadErr = computed(() => {
     //@ts-ignore
-    if (props.origin?.Mock) {
+    if (messageOrigin.value?.Mock) {
       //@ts-ignore
-      if (props.origin?.state === 2) {
+      if (messageOrigin.value?.state === 2) {
         return true;
       }
       return false;
@@ -64,21 +80,28 @@ import {computed, watch} from 'vue';
   });
   const uploadProgress = computed(() => {
     //@ts-ignore
-    return props.origin?.progress.value || 0;
+    return messageOrigin.value?.progress || 0;
   });
 
   // 是否排队中
   const isQuenu = computed(() => {
-    if (!props.body?.url) {
+    if (!messageBody.value?.url) {
       return false;
     }
-    return quenu.includes(props.body.url);
+    return quenu.includes(messageBody.value.url);
   });
+
+  const fileName = computed(()=>{
+    return messageBody.value?.fileName || '未知文件';
+  })
+const fileSize = computed(()=>{
+    return messageBody.value?.size || 0;
+  })
 
   // 重试上传
   const retryUpload = () => {
     const chatStore = useChatStore();
-    const message = chatStore.getMessage(props.origin.message.id);
+    const message = chatStore.getMessage(messageOrigin.value.message.id);
     if (!message?.Mock) {
       Message.error('请删除该消息，已失效');
       return;
@@ -90,11 +113,11 @@ import {computed, watch} from 'vue';
 </script>
 
 <template>
-  <div class="file" :key="props.origin.message.id+props.origin?.state?.value">
-    <icon-file :icon="getFileSuffix(body?.fileName)" :size="32" colorful />
+  <div class="file">
+    <icon-file :icon="getFileSuffix(messageBody?.fileName)" :size="32" colorful />
     <div class="file-desc">
-      <span class="file-name">{{ body?.fileName || '未知文件' }}</span>
-      <span class="file-size">{{ formatBytes(body?.size) }}</span>
+      <span class="file-name">{{ fileName }}</span>
+      <span class="file-size">{{ formatBytes(fileSize) }}</span>
     </div>
     <div
       v-if="isQuenu"
@@ -121,7 +144,7 @@ import {computed, watch} from 'vue';
     <a-popover v-else-if="uploadErr" title="错误原因">
       <IconExclamationCircle :size="22" @click="retryUpload" />
       <template #content>
-        <p>{{ props.origin?.err }}</p>
+        <p>{{ messageOrigin?.err }}</p>
       </template>
     </a-popover>
 

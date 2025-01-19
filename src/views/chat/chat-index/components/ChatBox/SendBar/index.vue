@@ -92,8 +92,8 @@ const client = judgeClient();
       }
       const mockMessage = new UploadTask(msgType, body, null);
       console.log("开始发送消息--4")
-
-      await chatStore.pushMsg(mockMessage);
+      const mockMessageObject = reactive<UploadTask>(mockMessage);
+      await chatStore.pushMsg(mockMessageObject);
       console.log("开始上传文件--5")
       await mockMessage.start();
 
@@ -241,8 +241,9 @@ const client = judgeClient();
 
       const mockMessage = new UploadTask(ChatMsgEnum.FILE, null, file);
       console.log("开始上传文件--4")
+      const mockMessageObject = reactive<UploadTask>(mockMessage);
 
-      await chatStore.pushMsg(mockMessage);
+      await chatStore.pushMsg(mockMessageObject);
       console.log("开始上传文件--5")
       await mockMessage.start();
       isUploading.value = false;
