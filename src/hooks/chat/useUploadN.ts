@@ -1,15 +1,23 @@
 // hooks/useUpload.ts
 
-import { ref } from 'vue';
-import { createEventHook } from '@vueuse/core';
+import { computed, ref } from 'vue';
 import { getUploadUrl, sendMsg } from '@/api/chat';
-import { Message,Notification } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 import { ChatMsgEnum } from '@/types/enums/chat';
 import { generateBody } from '@/utils/chat';
-import { useMockMessage } from '@/hooks/chat/useMockMessage';
 import { useChatStore } from '@/store/modules/chat/chat';
 import { useGlobalStore } from '@/store/modules/chat/global';
+import { MockMessageInterface, MsgType, MsgUserType } from '@/types/chat';
+import { useUserStore } from '@/store';
 
+/**
+ * 优化计划
+ * 视频获取第一帧和音频获取秒这个都作为ext信息传入，mock下的用class记录，不兼容正式json
+ * 然后传给worker的包含全部的信息，worker完成上传，此时拿到了各种downloadurl，但此时还未正式发送消息
+ *
+ * 发送消息这步是统一的，麻烦在这里，mock的消息什么时机触发发送，怎么触发，异步worker任务通过任务回调，文本消息直接调用
+ * 还需要个class-mock消息对象（直接放入map。当发送成功替换成send接口的消息），还需要解决前端页面不自动更新的问题（小问题）
+ */
 
 /** 文件信息类型 */
 export type FileInfoType = {
@@ -22,146 +30,274 @@ export type FileInfoType = {
   downloadUrl?: string;
   second?: number;
   thumbWidth?: number;
+  thumbFile?: File;
   thumbHeight?: number;
   thumbUrl?: string;
 };
 
+export type FileWorkerBody = {
+  file: File;
+  uploadUrl: string;
+};
+
+export type VedioWorkerBody = {
+  file: File;
+  uploadUrl: string;
+  thumbFile: File; // 缩略图
+  thumbUploadUrl: string;
+};
+
+export type WorkerType = {
+  taskType: 'FILE' | 'VIOCE' | 'VEDIO' | 'IMAGE';
+  msgId: string;
+  taskBody:
+    | FileWorkerBody
+    | VedioWorkerBody
+};
+
 const Max = 5000; // 单位M
 const MAX_FILE_SIZE = Max * 1024 * 1024; // 最大上传限制
+// 获取本地存储的用户信息
+const globalStore = useGlobalStore();
+const userStore = useUserStore();
+const chatStore = useChatStore();
+
+// 获取本地存储的用户信息
+const currentRoomId = computed(() => globalStore.currentSession.roomId);
 
 /** 上传任务类 */
-class UploadTask {
+export class UploadTask implements MockMessageInterface {
+
+  Mock = true;// 此状态用来做兼容处理，只对mock下的接入新特性
+
+  FileI?: File;
+
+  worker = null;
+
+  state = ref<number>(0);
+
+  progress = ref<number>(0);
+
+  err = ref<string>('');
+
+  fromUser?: MsgUserType;
+
+  message?: MsgType;
+
+  sendTime = String(Date.now());
+
+  timeBlock = 'mock下不展示时间段';
+
+  loading = false;
+
+  fileInfo = ref<FileInfoType | null>(null);
+
   // eslint-disable-next-line no-useless-constructor
-  constructor(public msgId: string, public file: File, public url: string) {}
-
-  status = ref('Initialized');
-
-  progress = ref(0);
-
-  async upload(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.status.value = 'Uploading';
-      const xhr = new XMLHttpRequest();
-      xhr.open('PUT', this.url, true);
-      xhr.setRequestHeader('Content-Type', this.file.type);
-      xhr.upload.onprogress = (e) => {
-        this.progress.value = Math.round((e.loaded / e.total) * 100);
-      };
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          this.status.value = 'Completed';
-          resolve();
-        } else {
-          this.status.value = 'Failed';
-          reject(new Error(`Upload failed with status: ${xhr.status}`));
-        }
-      };
-      xhr.onerror = () => {
-        this.status.value = 'Error';
-        reject(new Error('Upload encountered an error'));
-      };
-      xhr.send(this.file);
-    });
-  }
-}
-
-/** 上传管理器类 */
-class UploadManager {
-  private tasks: Record<string, UploadTask> = {};
-
-  addTask(msgId: string, file: File, url: string) {
-    const task = new UploadTask(msgId, file, url);
-    this.tasks[msgId] = task;
-    return task.upload();
-  }
-
-  getStatus(msgId: string) {
-    const task = this.tasks[msgId];
-    if (task) {
-      return { status: task.status.value, progress: task.progress.value };
-    } else {
-      return { status: 'No such task', progress: 0 };
+  constructor(
+    public type: ChatMsgEnum,
+    public body: any,
+    public msgId: string,
+    public file: File,
+    public url: string
+  ) {
+    const currentTimeStamp: number = Date.now();
+    const random: number = Math.floor(Math.random() * 15);
+    // 唯一id 后五位时间戳+随机数
+    const uniqueId = String(currentTimeStamp).slice(-7) + random;
+    const { id, name, avatar } = userStore;
+    this.fromUser = {
+      avatar: avatar,
+      locPlace: '',
+      uid: id,
+      username: name,
+    };
+    this.message = {
+      body: body,
+      id: uniqueId,
+      messageMark: {
+        likeCount: 0,
+        userLike: 0,
+        dislikeCount: 0,
+        userDislike: 0,
+      },
+      roomId: currentRoomId.value,
+      sendTime: '2024-01-01 12:41:12',
+      type: type,
+    };
+    if (type === ChatMsgEnum.TEXT) {
+      // 无需上传文件
+      this.state.value = 3;
+      return;
     }
-  }
-
-  getTask(msgId: string) {
-    const task = this.tasks[msgId];
-    if (task) {
-      return task;
-    } else {
-      return null;
-    }
-  }
-}
-
-/** 文件上传Hooks */
-export const useUpload = () => {
-  const isUploading = ref(false);
-  const progress = ref(0);
-  const fileInfo = ref<FileInfoType | null>(null);
-  const { on: onChange, trigger } = createEventHook();
-  const onStart = createEventHook();
-  const manager = new UploadManager();
-  const nowMsgType = ref<ChatMsgEnum>(ChatMsgEnum.FILE);
-  const globalStore = useGlobalStore();
-
-  const upload = async (url: string, file: File) => {
-    isUploading.value = true;
-    const task = new UploadTask(Date.now().toString(), file, url);
-    await task.upload();
-    progress.value = task.progress.value;
-    isUploading.value = false;
-    if (task.status.value === 'Completed') {
-      trigger('success');
-    } else {
-      trigger('fail');
-    }
-  };
-
-  const getVideoCover = (file: File) => {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video');
-      const tempUrl = URL.createObjectURL(file);
-      video.src = tempUrl;
-      video.crossOrigin = 'anonymous';
-      video.currentTime = 2;
-      video.oncanplay = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas
-          .getContext('2d')
-          ?.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(async (blob) => {
-          if (!blob) return;
-          const name = `${Date.now()}thumb.jpg`;
-          const thumbFile = new File([blob], name, { type: 'image/jpeg' });
-          const { data } = await getUploadUrl({ fileName: name, scene: '1' });
-          if (data.uploadUrl && data.downloadUrl) {
-            manager
-              .addTask(Date.now().toString(), thumbFile, data.uploadUrl)
-              .then(() => {
-                resolve({
-                  thumbWidth: canvas.width,
-                  thumbHeight: canvas.height,
-                  thumbUrl: data.downloadUrl,
-                  thumbSize: thumbFile.size,
-                  tempUrl,
-                });
-              })
-              .catch(reject);
+    this.state.value = 1; // 默认认为走这个需要上传文件
+    this.worker = new Worker(
+      new URL('../../worker/chatUploadWorker.ts', import.meta.url)
+    );
+    // 消息发送处理,只有文件上传类型才走这个
+    this.worker.onmessage = async (e) => {
+      console.log(e.data);
+      switch (e.data.type) {
+        case 'UploadProgress':
+          this.state.value = 1;
+          this.progress.value = e.data.progress;
+          break;
+        case 'Success':
+          // 发送消息，等待回收掉该mock
+          // eslint-disable-next-line no-case-declarations
+          const {type, body} = generateBody(
+              this.fileInfo.value,
+              this.type,
+              true
+          );
+          try {
+            await this.putMsg()
+          } catch (e) {
+            console.log(e);
+            this.state.value = 4;
           }
-        });
-      };
-      video.onerror = function () {
-        URL.revokeObjectURL(tempUrl);
-        // eslint-disable-next-line prefer-promise-reject-errors
-        reject({ width: 0, height: 0, url: null });
-      };
-    });
-  };
+          break;
+        case 'Error':
+          this.state.value = 2;
+          this.err.value = e.data.msg;
+          break;
+        default:
+          console.log('异常的任务');
+          this.state.value = 2;
+          this.err.value = e.data.msg;
+          break;
+      }
+    };
+    this.FileI = file;
+  }
 
-  const getImgWH = (file: File) => {
+
+
+  private async putMsg(){
+    const { data } = await sendMsg({
+      roomId: globalStore.currentSession.roomId,
+      msgType: this.message.type,
+      body: this.message.body,
+    });
+    // 删除自己，mock对象
+    chatStore.updateMsgMock(this.msgId,data);
+
+  }
+
+  async start() {
+    // 当放入map后手动触发
+    if (this.message.type === ChatMsgEnum.TEXT) {
+      try {
+        await this.putMsg()
+      } catch (e) {
+        console.error(`消息发送失败${e}`);
+        this.state.value = 4; // 可重试
+      }
+      return;
+    }
+    const info = await this.parseFile(this.FileI);
+    // eslint-disable-next-line no-case-declarations
+    if (info.size > MAX_FILE_SIZE) {
+      Message.warning(`文件不得大于 ${Max} MB`);
+      this.state.value = 2;
+      this.err.value = `文件不得大于 ${Max} MB`;
+      return;
+    }
+    // 默认当存在上传的类型
+    switch (this.message.type) {
+      case ChatMsgEnum.FILE:
+      case ChatMsgEnum.IMAGE:
+      case ChatMsgEnum.VOICE:
+
+        // eslint-disable-next-line no-case-declarations
+        let UploadUrl = '';
+        try {
+          // eslint-disable-next-line no-case-declarations
+          const { data } = await getUploadUrl({
+            fileName: info.name,
+            scene: '1',
+          });
+          if (!data.uploadUrl || !data.downloadUrl) {
+            this.state.value = 2;
+            this.err.value = `无法获取上传url`;
+            return;
+          }
+          UploadUrl = data.uploadUrl;
+          this.fileInfo.value = { ...info, downloadUrl: data.downloadUrl };
+        } catch (e) {
+          this.state.value = 2;
+          this.err.value = `无法获取上传url`;
+        }
+
+        this.worker.postMessage({
+          taskType: 'FILE',
+          msgId: String(this.message.id),
+          taskBody: {
+            uploadUrl: UploadUrl,
+            file: this.FileI,
+          },
+        });
+
+        break;
+      case ChatMsgEnum.VIDEO:
+        // eslint-disable-next-line no-case-declarations
+        let UploadUrl1 = '';
+        // eslint-disable-next-line no-case-declarations
+        let UploadThumbFileUrl1 = '';
+        try {
+          // eslint-disable-next-line no-case-declarations
+          const { data } = await getUploadUrl({
+            fileName: info.name,
+            scene: '1',
+          });
+          if (!data.uploadUrl || !data.downloadUrl) {
+            this.state.value = 2;
+            this.err.value = `无法获取上传url`;
+            return;
+          }
+          UploadUrl1 = data.uploadUrl;
+          this.fileInfo.value = { ...info, downloadUrl: data.downloadUrl };
+        } catch (e) {
+          this.state.value = 2;
+          this.err.value = `无法获取上传url`;
+        }
+
+        try {
+          // eslint-disable-next-line no-case-declarations
+          const { data } = await getUploadUrl({
+            // @ts-ignore
+            fileName: info?.thumbFile,
+            scene: '1',
+          });
+          if (!data.uploadUrl || !data.downloadUrl) {
+            this.state.value = 2;
+            this.err.value = `无法获取上传url`;
+            return;
+          }
+          UploadThumbFileUrl1 = data.uploadUrl;
+          this.fileInfo.value = { ...info, thumbUrl: data.downloadUrl };
+        } catch (e) {
+          this.state.value = 2;
+          this.err.value = `无法获取上传url`;
+        }
+        this.worker.postMessage({
+          taskType: 'VEDIO',
+          msgId: String(this.message.id),
+          taskBody: {
+            uploadUrl: UploadUrl1,
+            file: this.FileI,
+            thumbFile: this.fileInfo.value.thumbFile,
+            thumbUploadUrl: UploadThumbFileUrl1
+          },
+        });
+        break;
+      default:
+        console.log('不支持的类型');
+        return;
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getImgWH(file: File) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const tempUrl = URL.createObjectURL(file);
@@ -175,9 +311,10 @@ export const useUpload = () => {
         reject({ width: 0, height: 0, url: null });
       };
     });
-  };
+  }
 
-  const getAudioDuration = (file: File) => {
+  // eslint-disable-next-line class-methods-use-this
+  getAudioDuration(file: File) {
     return new Promise((resolve, reject) => {
       const audio = new Audio();
       const tempUrl = URL.createObjectURL(file);
@@ -197,118 +334,80 @@ export const useUpload = () => {
         reject({ second: 0, tempUrl });
       };
     });
-  };
+  }
 
-  const parseFile = async (file: File, addParams: Record<string, any> = {}) => {
+  // eslint-disable-next-line class-methods-use-this
+  getVideoCover(file: File) {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      const tempUrl = URL.createObjectURL(file);
+      video.src = tempUrl;
+      video.crossOrigin = 'anonymous';
+      video.currentTime = 2;
+      video.oncanplay = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas
+          .getContext('2d')
+          ?.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const name = `${Date.now()}thumb.jpg`;
+          const thumbFile = new File([blob], name, { type: 'image/jpeg' });
+          resolve({
+            thumbWidth: canvas.width,
+            thumbHeight: canvas.height,
+            thumbUrl: '',
+            thumbFile: thumbFile,
+            thumbSize: thumbFile.size,
+            tempUrl,
+          });
+        });
+      };
+      video.onerror = function () {
+        URL.revokeObjectURL(tempUrl);
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject({ width: 0, height: 0, url: null });
+      };
+    });
+  }
+
+  async parseFile(file: File) {
     const { name, size, type } = file;
     const suffix = name.split('.').pop()?.trim().toLowerCase() || '';
-    const baseInfo = { name, size, type, suffix, ...addParams };
+    const baseInfo = { name, size, type, suffix };
 
     if (type.includes('image')) {
-      const { width, height, tempUrl } = (await getImgWH(file)) as any;
+      const { width, height, tempUrl } = (await this.getImgWH(file)) as any;
       return { ...baseInfo, width, height, tempUrl };
     }
 
     if (type.includes('audio')) {
-      const { second, tempUrl } = (await getAudioDuration(file)) as any;
+      const { second, tempUrl } = (await this.getAudioDuration(file)) as any;
       return { second, tempUrl, ...baseInfo };
     }
 
     if (type.includes('video')) {
-      const { thumbWidth, thumbHeight, tempUrl, thumbUrl, thumbSize } =
-        (await getVideoCover(file)) as any;
+      const {
+        thumbWidth,
+        thumbHeight,
+        tempUrl,
+        thumbFile,
+        thumbUrl,
+        thumbSize,
+      } = (await this.getVideoCover(file)) as any;
       return {
         ...baseInfo,
         thumbWidth,
         thumbHeight,
         tempUrl,
         thumbUrl,
+        thumbFile,
         thumbSize,
       };
     }
 
     return baseInfo;
-  };
-
-  const uploadFile = async (file: File, addParams?: Record<string, any>) => {
-    if (isUploading.value || !file) return;
-    const info = await parseFile(file, addParams);
-    const { mockMessage } = useMockMessage();
-    const chatStore = useChatStore();
-
-    if (info.size > MAX_FILE_SIZE) {
-      Message.warning(`文件不得大于 ${Max} MB`);
-      return;
-    }
-
-    const { data } = await getUploadUrl({
-      fileName: info.name,
-      scene: '1',
-    });
-
-    if (data.uploadUrl && data.downloadUrl) {
-      fileInfo.value = { ...info, downloadUrl: data.downloadUrl };
-      onStart.trigger(fileInfo);
-      isUploading.value = true;
-      let tempMessageId = '';
-      const { type, body } = generateBody(
-        fileInfo.value,
-        nowMsgType.value,
-        true
-      );
-      const res = mockMessage(type, body);
-      tempMessageId = res.message.id; // 记录下上传状态下的消息id
-      if (!fileInfo.value) return;
-      // 如果文件是视频就把消息类型改为视频
-      if (fileInfo.value.type.includes('video')) {
-        nowMsgType.value = ChatMsgEnum.VIDEO;
-      }
-      chatStore.pushMsg(res); // 消息列表新增一条消息
-      chatStore.chatListToBottomAction?.(); // 滚动到消息列表底部
-      manager
-        .addTask(tempMessageId, file, data.uploadUrl)
-        .then(() => {
-
-          if (!fileInfo.value) return;
-          const { body, type } = generateBody(fileInfo.value, nowMsgType.value);
-          sendMsg({
-            roomId: globalStore.currentSession.roomId,
-            msgType: nowMsgType.value,
-            body,
-          })
-            .then((req) => {
-              if (req.data.message.type === ChatMsgEnum.TEXT) {
-                // chatStore.pushMsg(data); // 消息列表新增一条消息,发送消息没必要再push了，收到ws的消息就能push
-                // 暂时文本消息不发送mock消息，失败了就是没有!无需重试
-              } else if (
-                req.data.message.type === ChatMsgEnum.VOICE ||
-                req.data.message.type === ChatMsgEnum.FILE
-              ) {
-                // 更新上传状态下的消息
-                chatStore.updateMsgMock(tempMessageId, req.data, false);
-              }
-            })
-            .catch((e) => {
-              Notification.error(e)
-
-              console.log(e);
-            });
-
-          trigger('success');
-        })
-        .catch(() => trigger('fail'))
-        // eslint-disable-next-line no-return-assign
-        .finally(() => (isUploading.value = false));
-    } else {
-      trigger('fail');
-      Message.error('获取上传链接失败');
-    }
-  };
-
-  return {
-    uploadFile,
-    isUploading,
-    getTask: manager.getTask.bind(manager),
-    getStatus: manager.getStatus.bind(manager),
-  };
-};
+  }
+}

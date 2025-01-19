@@ -16,7 +16,7 @@
   import { useChatStore } from '@/store/modules/chat/chat';
   import { IMention } from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
   import { ChatMsgEnum, RoleEnum, RoomTypeEnum } from '@/types/enums/chat';
-  import { Message } from '@arco-design/web-vue';
+  import { Message, Notification } from '@arco-design/web-vue';
   import { sendMsg } from '@/api/chat';
   import { generateBody } from '@/utils/chat';
   import { useMockMessage } from '@/hooks/chat/useMockMessage';
@@ -33,7 +33,6 @@
   import renderReplyContent from '@/utils/chat/renderReplyContent';
   import { useGroupStore } from '@/store/modules/chat/group';
   import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
-  import { Notification } from '@arco-design/web-vue'
 
   const client = judgeClient();
 
@@ -41,7 +40,7 @@
   const globalStore = useGlobalStore();
   const isSending = ref(false);
   const inputMsg = ref('');
-  const inputMsgOrigin = ref('');// 原始数据
+  const inputMsgOrigin = ref(''); // 原始数据
   const mentionRef = ref();
   const mentionList = ref<IMention[]>([]);
   const isAudio = ref(false);
@@ -102,7 +101,7 @@
     } catch (e) {
       // Message.error(e.message);
       console.log(e);
-      Notification.error(e)
+      Notification.error(e);
     } finally {
       inputMsg.value = ''; // 清空输入列表
       inputMsgOrigin.value = ''; // 清空输入列表
@@ -116,7 +115,11 @@
 
   const sendMsgHandler = () => {
     // 空消息或正在发送时禁止发送
-    if (!inputMsg.value?.trim().length || !inputMsgOrigin.value?.trim().length || isSending.value) {
+    if (
+      !inputMsg.value?.trim().length ||
+      !inputMsgOrigin.value?.trim().length ||
+      isSending.value
+    ) {
       return;
     }
 

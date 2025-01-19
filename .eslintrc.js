@@ -49,7 +49,7 @@ module.exports = {
     'vue/custom-event-name-casing': [2, 'camelCase'],
     'vue/no-v-text': 1,
     "no-shadow": "off",
-      "no-underscore-dangle": 0,
+    "no-underscore-dangle": 0,
       "no-use-before-define": 0,
       "vue/no-mutating-props": 0,
       "no-restricted-globals": 0,

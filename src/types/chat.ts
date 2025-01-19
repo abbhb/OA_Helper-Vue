@@ -5,6 +5,7 @@ import {
   ChatOnlineEnum,
   RoomTypeEnum,
 } from '@/types/enums/chat';
+import { Ref, ref } from 'vue';
 
 export type ChatUserItem = {
   /** 在线状态 */
@@ -313,15 +314,13 @@ export type MessageType = {
   timeBlock?: string;
   /** 是否加载中 */
   loading?: boolean;
-  /**
-   * 上传中,特有状态
-   */
-  uploading?:boolean
-  /**
-   * 是否发送失败！可用于本地重试，仅在客户端存在该字段
-   */
-  err?: boolean;
 };
+
+export interface MockMessageInterface extends MessageType {
+  state?: Ref<number>; // 仅mock消息存在
+  progress?: Ref<number>;
+  msg?: Ref<string>;
+}
 
 /**
  * 发送消息载体
