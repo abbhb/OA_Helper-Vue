@@ -27,12 +27,13 @@
   import { useGlobalStore } from '@/store/modules/chat/global';
   import setting from '@/config/setting';
   import { useUpload } from '@/hooks/chat/useUpload';
+  import {UploadTask} from "@/hooks/chat/useUploadN";
   import MsgOption from '../MsgOption/index.vue';
 
   const props = defineProps({
     // 消息体
     msg: {
-      type: Object as PropType<MessageType>,
+      type: Object as PropType<MessageType&UploadTask>,
       required: true,
     },
     // 是否显示时间
@@ -221,8 +222,10 @@
       }
       const targetIsVisible = useElementVisibility(msgVisibleEl);
       const msg = props.msg.message;
+      const msgObject = props.msg;
       // 自己的消息, 且不是撤回/系统消息，才监听未读数计算
       if (
+        !msgObject?.Mock &&
         isCurrentUser.value &&
         msgVisibleEl &&
         ![ChatMsgEnum.RECALL, ChatMsgEnum.SYSTEM].includes(msg.type)
@@ -339,7 +342,7 @@
               <!-- 渲染消息内容体 -->
 
               <RenderMessage
-                :message="message"
+                :message="msg"
                 :ext-type="
                   fromUser.uid === setting.chatgptUserInfo.uid ? 'chatgpt' : ''
                 "

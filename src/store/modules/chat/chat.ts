@@ -1,28 +1,20 @@
-import { computed, reactive, ref, watch } from 'vue';
-import { defineStore } from 'pinia';
-import { useCachedStore } from '@/store/modules/chat/cached';
-import { useUserStore } from '@/store';
-import {
-  MarkItemType,
-  MessageType,
-  RevokedMsgType,
-  SessionItem,
-} from '@/types/chat';
+import {computed, reactive, ref, watch} from 'vue';
+import {defineStore} from 'pinia';
+import {useCachedStore} from '@/store/modules/chat/cached';
+import {useUserStore} from '@/store';
+import {MarkItemType, MessageType, RevokedMsgType, SessionItem,} from '@/types/chat';
 import * as Api from '@/api/chat';
-import { markMsgRead, removeMsg, sessionDetail } from '@/api/chat';
-import { computedTimeBlock } from '@/utils/chat/computedTime';
+import {markMsgRead, removeMsg, sessionDetail} from '@/api/chat';
+import {computedTimeBlock} from '@/utils/chat/computedTime';
 import shakeTitle from '@/utils/chat/shakeTitle';
-import { ChatMarkEnum, ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
-import { notifyMe } from '@/utils/notify';
-import { useGlobalStore } from '@/store/modules/chat/global';
-import { useGroupStore } from '@/store/modules/chat/group';
-import { useContactStore } from '@/store/modules/chat/contacts';
-import { cloneDeep } from 'lodash';
+import {ChatMarkEnum, ChatMsgEnum, RoomTypeEnum} from '@/types/enums/chat';
+import {notifyMe} from '@/utils/notify';
+import {useGlobalStore} from '@/store/modules/chat/global';
+import {useGroupStore} from '@/store/modules/chat/group';
+import {useContactStore} from '@/store/modules/chat/contacts';
+import {cloneDeep} from 'lodash';
 import router from '@/router';
-import {
-  pushNotifyByMessage,
-  pushWebNotifyByMessage,
-} from '@/utils/chat/systemMessageNotify';
+import {pushNotifyByMessage,} from '@/utils/chat/systemMessageNotify';
 import {UploadTask} from "@/hooks/chat/useUploadN";
 
 export const pageSize = 80;
@@ -358,6 +350,7 @@ export const useChatStore = defineStore('chat', () => {
     }
     // 如果收到的消息里面是艾特自己的就发送系统通知
     if (
+      msg.message.type === ChatMsgEnum.TEXT &&
       msg.message.body.atUidList?.includes(userStore.userInfo.id) &&
       cacheUser
     ) {
@@ -512,9 +505,12 @@ export const useChatStore = defineStore('chat', () => {
     }
   };
   // 更新消息
-  const updateMsg = (msgId: string, newMessage: MessageType) => {
-    deleteMsg(msgId);
-    pushMsg(newMessage);
+  const updateMsg = async (msgId: string, newMessage: MessageType) => {
+    // 2025/1/19 更新，无需接口删除，本身就是本地mock消息
+    // await deleteMsg(msgId);
+    currentMessageMap.value?.delete(msgId);
+    await pushMsg(newMessage);
+
   };
 
   const getFlashMsgId = () => {

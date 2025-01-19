@@ -50,9 +50,7 @@ export type VedioWorkerBody = {
 export type WorkerType = {
   taskType: 'FILE' | 'VIOCE' | 'VEDIO' | 'IMAGE';
   msgId: string;
-  taskBody:
-    | FileWorkerBody
-    | VedioWorkerBody
+  taskBody: FileWorkerBody | VedioWorkerBody;
 };
 
 const Max = 5000; // 单位M
@@ -61,14 +59,13 @@ const MAX_FILE_SIZE = Max * 1024 * 1024; // 最大上传限制
 const globalStore = useGlobalStore();
 const userStore = useUserStore();
 const chatStore = useChatStore();
-
+const whiteMessageType = [ChatMsgEnum.TEXT, ChatMsgEnum.EMOJI];
 // 获取本地存储的用户信息
 const currentRoomId = computed(() => globalStore.currentSession.roomId);
 
 /** 上传任务类 */
 export class UploadTask implements MockMessageInterface {
-
-  Mock = true;// 此状态用来做兼容处理，只对mock下的接入新特性
+  Mock = true; // 此状态用来做兼容处理，只对mock下的接入新特性
 
   FileI?: File;
 
@@ -82,7 +79,7 @@ export class UploadTask implements MockMessageInterface {
 
   fromUser?: MsgUserType;
 
-  message?: MsgType;
+  message?: MsgType; // 不是响应式，怎么动态更新
 
   sendTime = String(Date.now());
 
@@ -96,9 +93,8 @@ export class UploadTask implements MockMessageInterface {
   constructor(
     public type: ChatMsgEnum,
     public body: any,
-    public msgId: string,
-    public file: File,
-    public url: string
+    // public msgId: string,
+    public file: File // public url: string
   ) {
     const currentTimeStamp: number = Date.now();
     const random: number = Math.floor(Math.random() * 15);
@@ -124,7 +120,7 @@ export class UploadTask implements MockMessageInterface {
       sendTime: '2024-01-01 12:41:12',
       type: type,
     };
-    if (type === ChatMsgEnum.TEXT) {
+    if (whiteMessageType.includes(type)) {
       // 无需上传文件
       this.state.value = 3;
       return;
@@ -144,13 +140,9 @@ export class UploadTask implements MockMessageInterface {
         case 'Success':
           // 发送消息，等待回收掉该mock
           // eslint-disable-next-line no-case-declarations
-          const {type, body} = generateBody(
-              this.fileInfo.value,
-              this.type,
-              true
-          );
+
           try {
-            await this.putMsg()
+            await this.putMsg();
           } catch (e) {
             console.log(e);
             this.state.value = 4;
@@ -170,24 +162,21 @@ export class UploadTask implements MockMessageInterface {
     this.FileI = file;
   }
 
-
-
-  private async putMsg(){
+  private async putMsg() {
     const { data } = await sendMsg({
       roomId: globalStore.currentSession.roomId,
       msgType: this.message.type,
       body: this.message.body,
     });
     // 删除自己，mock对象
-    chatStore.updateMsgMock(this.msgId,data);
-
+    chatStore.updateMsg(this.message.id, data);
   }
 
   async start() {
-    // 当放入map后手动触发
-    if (this.message.type === ChatMsgEnum.TEXT) {
+    // 当放入map后手动触发 Text or EMOJI
+    if (whiteMessageType.includes(this.message.type)) {
       try {
-        await this.putMsg()
+        await this.putMsg();
       } catch (e) {
         console.error(`消息发送失败${e}`);
         this.state.value = 4; // 可重试
@@ -202,12 +191,12 @@ export class UploadTask implements MockMessageInterface {
       this.err.value = `文件不得大于 ${Max} MB`;
       return;
     }
+    this.state.value = 1;
     // 默认当存在上传的类型
     switch (this.message.type) {
       case ChatMsgEnum.FILE:
       case ChatMsgEnum.IMAGE:
       case ChatMsgEnum.VOICE:
-
         // eslint-disable-next-line no-case-declarations
         let UploadUrl = '';
         try {
@@ -286,7 +275,7 @@ export class UploadTask implements MockMessageInterface {
             uploadUrl: UploadUrl1,
             file: this.FileI,
             thumbFile: this.fileInfo.value.thumbFile,
-            thumbUploadUrl: UploadThumbFileUrl1
+            thumbUploadUrl: UploadThumbFileUrl1,
           },
         });
         break;
@@ -294,6 +283,9 @@ export class UploadTask implements MockMessageInterface {
         console.log('不支持的类型');
         return;
     }
+    const { type, body } = generateBody(this.fileInfo.value, this.type, true);
+
+    this.message.body = body;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -389,6 +381,7 @@ export class UploadTask implements MockMessageInterface {
     }
 
     if (type.includes('video')) {
+      this.message.type = ChatMsgEnum.VIDEO;
       const {
         thumbWidth,
         thumbHeight,
