@@ -40,6 +40,7 @@ module.exports = {
     // Vue: Recommended rules to be closed or modify
     'vue/require-default-prop': 0,
     'vue/singleline-html-element-content-newline': 0,
+    'vue/eslint-disable-next-line': 0,
     'vue/max-attributes-per-line': 0,
       "no-console": "off",
       "no-debugger": "off",
@@ -60,7 +61,9 @@ module.exports = {
       "prefer-template": 0,
       "no-useless-return": 0,
       "no-plusplus": 0,
-      "no-unused-expressions": 0,
+    'no-unsafe-optional-chaining': 'off',
+
+    "no-unused-expressions": 0,
       "no-prototype-builtins": 0,
       "no-lonely-if": 0,
       "no-bitwise": 0,

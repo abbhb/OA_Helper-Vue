@@ -1,6 +1,6 @@
 // hooks/useUpload.ts
 
-import { computed, ref } from 'vue';
+import {computed, Reactive, reactive, ref} from 'vue';
 import { getUploadUrl, sendMsg } from '@/api/chat';
 import { Message } from '@arco-design/web-vue';
 import { ChatMsgEnum } from '@/types/enums/chat';
@@ -9,6 +9,7 @@ import { useChatStore } from '@/store/modules/chat/chat';
 import { useGlobalStore } from '@/store/modules/chat/global';
 import { MockMessageInterface, MsgType, MsgUserType } from '@/types/chat';
 import { useUserStore } from '@/store';
+import { timesTamp } from '@/utils/utils';
 
 /**
  * 优化计划
@@ -71,23 +72,27 @@ export class UploadTask implements MockMessageInterface {
 
   worker = null;
 
-  state = ref<number>(0);
-
-  progress = ref<number>(0);
-
-  err = ref<string>('');
+  extInfo = reactive<{
+    state: number;
+    progress: number;
+    err: string;
+  }>({
+    state: 0,
+    progress: 0,
+    err: '',
+  });
 
   fromUser?: MsgUserType;
 
-  message?: MsgType; // 不是响应式，怎么动态更新
+  message?: Reactive<MsgType>; // 不是响应式，怎么动态更新
 
   sendTime = String(Date.now());
 
-  timeBlock = 'mock下不展示时间段';
+  timeBlock = '';
 
   loading = false;
 
-  fileInfo = ref<FileInfoType | null>(null);
+  fileInfo = reactive<FileInfoType | null>(null);
 
   // eslint-disable-next-line no-useless-constructor
   constructor(
@@ -107,7 +112,7 @@ export class UploadTask implements MockMessageInterface {
       uid: id,
       username: name,
     };
-    this.message = {
+    this.message = reactive({
       body: body,
       id: uniqueId,
       messageMark: {
@@ -117,15 +122,15 @@ export class UploadTask implements MockMessageInterface {
         userDislike: 0,
       },
       roomId: currentRoomId.value,
-      sendTime: '2024-01-01 12:41:12',
+      sendTime: timesTamp(currentTimeStamp),
       type: type,
-    };
+    })
     if (whiteMessageType.includes(type)) {
       // 无需上传文件
-      this.state.value = 3;
+      this.extInfo.state = 3;
       return;
     }
-    this.state.value = 1; // 默认认为走这个需要上传文件
+    this.extInfo.state = 1; // 默认认为走这个需要上传文件
     this.worker = new Worker(
       new URL('../../worker/chatUploadWorker.ts', import.meta.url)
     );
@@ -134,8 +139,8 @@ export class UploadTask implements MockMessageInterface {
       console.log(e.data);
       switch (e.data.type) {
         case 'UploadProgress':
-          this.state.value = 1;
-          this.progress.value = e.data.progress;
+          this.extInfo.state = 1;
+          this.extInfo.progress = e.data.progress;
           break;
         case 'Success':
           // 发送消息，等待回收掉该mock
@@ -145,17 +150,17 @@ export class UploadTask implements MockMessageInterface {
             await this.putMsg();
           } catch (e) {
             console.log(e);
-            this.state.value = 4;
+            this.extInfo.state = 4;
           }
           break;
         case 'Error':
-          this.state.value = 2;
-          this.err.value = e.data.msg;
+          this.extInfo.state = 2;
+          this.extInfo.err = e.data.msg;
           break;
         default:
           console.log('异常的任务');
-          this.state.value = 2;
-          this.err.value = e.data.msg;
+          this.extInfo.state = 2;
+          this.extInfo.err = e.data.msg;
           break;
       }
     };
@@ -163,13 +168,26 @@ export class UploadTask implements MockMessageInterface {
   }
 
   private async putMsg() {
-    const { data } = await sendMsg({
-      roomId: globalStore.currentSession.roomId,
-      msgType: this.message.type,
-      body: this.message.body,
-    });
-    // 删除自己，mock对象
-    chatStore.updateMsg(this.message.id, data);
+    try {
+      const req = await sendMsg({
+        roomId: globalStore.currentSession.roomId,
+        msgType: this.message.type,
+        body: this.message.body,
+      });
+      // @ts-ignore
+      if (req.code !== 1){
+        this.extInfo.state = 4;
+        // @ts-ignore
+        this.extInfo.err = req.msg;
+        return
+      }
+      await chatStore.updateMsg(this.message.id, req.data);
+    }catch (e) {
+      console.log(e);
+      this.extInfo.state = 4;
+      this.extInfo.err = e;
+    }
+
   }
 
   async start() {
@@ -179,7 +197,7 @@ export class UploadTask implements MockMessageInterface {
         await this.putMsg();
       } catch (e) {
         console.error(`消息发送失败${e}`);
-        this.state.value = 4; // 可重试
+        this.extInfo.state = 4; // 可重试
       }
       return;
     }
@@ -187,11 +205,11 @@ export class UploadTask implements MockMessageInterface {
     // eslint-disable-next-line no-case-declarations
     if (info.size > MAX_FILE_SIZE) {
       Message.warning(`文件不得大于 ${Max} MB`);
-      this.state.value = 2;
-      this.err.value = `文件不得大于 ${Max} MB`;
+      this.extInfo.state = 2;
+      this.extInfo.err = `文件不得大于 ${Max} MB`;
       return;
     }
-    this.state.value = 1;
+    this.extInfo.state = 1;
     // 默认当存在上传的类型
     switch (this.message.type) {
       case ChatMsgEnum.FILE:
@@ -206,15 +224,15 @@ export class UploadTask implements MockMessageInterface {
             scene: '1',
           });
           if (!data.uploadUrl || !data.downloadUrl) {
-            this.state.value = 2;
-            this.err.value = `无法获取上传url`;
+            this.extInfo.state = 2;
+            this.extInfo.err = `无法获取上传url`;
             return;
           }
           UploadUrl = data.uploadUrl;
-          this.fileInfo.value = { ...info, downloadUrl: data.downloadUrl };
+          this.fileInfo = { ...info, downloadUrl: data.downloadUrl };
         } catch (e) {
-          this.state.value = 2;
-          this.err.value = `无法获取上传url`;
+          this.extInfo.state = 2;
+          this.extInfo.err = `无法获取上传url`;
         }
 
         this.worker.postMessage({
@@ -239,15 +257,15 @@ export class UploadTask implements MockMessageInterface {
             scene: '1',
           });
           if (!data.uploadUrl || !data.downloadUrl) {
-            this.state.value = 2;
-            this.err.value = `无法获取上传url`;
+            this.extInfo.state = 2;
+            this.extInfo.err = `无法获取上传url`;
             return;
           }
           UploadUrl1 = data.uploadUrl;
-          this.fileInfo.value = { ...info, downloadUrl: data.downloadUrl };
+          this.fileInfo = { ...info, downloadUrl: data.downloadUrl };
         } catch (e) {
-          this.state.value = 2;
-          this.err.value = `无法获取上传url`;
+          this.extInfo.state = 2;
+          this.extInfo.err = `无法获取上传url`;
         }
 
         try {
@@ -258,15 +276,15 @@ export class UploadTask implements MockMessageInterface {
             scene: '1',
           });
           if (!data.uploadUrl || !data.downloadUrl) {
-            this.state.value = 2;
-            this.err.value = `无法获取上传url`;
+            this.extInfo.state = 2;
+            this.extInfo.err = `无法获取上传url`;
             return;
           }
           UploadThumbFileUrl1 = data.uploadUrl;
-          this.fileInfo.value = { ...info, thumbUrl: data.downloadUrl };
+          this.fileInfo = { ...info, thumbUrl: data.downloadUrl };
         } catch (e) {
-          this.state.value = 2;
-          this.err.value = `无法获取上传url`;
+          this.extInfo.state = 2;
+          this.extInfo.err = `无法获取上传url`;
         }
         this.worker.postMessage({
           taskType: 'VEDIO',
@@ -274,7 +292,7 @@ export class UploadTask implements MockMessageInterface {
           taskBody: {
             uploadUrl: UploadUrl1,
             file: this.FileI,
-            thumbFile: this.fileInfo.value.thumbFile,
+            thumbFile: this.fileInfo.thumbFile,
             thumbUploadUrl: UploadThumbFileUrl1,
           },
         });
@@ -283,7 +301,7 @@ export class UploadTask implements MockMessageInterface {
         console.log('不支持的类型');
         return;
     }
-    const { type, body } = generateBody(this.fileInfo.value, this.type, true);
+    const { type, body } = generateBody(this.fileInfo, this.type, true);
 
     this.message.body = body;
   }

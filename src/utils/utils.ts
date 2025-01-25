@@ -88,4 +88,23 @@ nameMap.set('MoveDown', 'ArrowDown');
 nameMap.set('MoveLeft', 'ArrowLeft');
 nameMap.set('MoveRight', 'ArrowRight');
 
-export default { setChildrenUndefined, getQueryVariable, nameMap };
+export const timesTamp = (createdAt) => {
+  //时间戳转时间；时间戳->yyyy-mm-dd hh:mm:ss
+  const date = new Date(createdAt);
+  const Y = date.getFullYear() + '-';
+  const M =
+    (date.getMonth() + 1 < 10
+      ? '0' + (date.getMonth() + 1)
+      : date.getMonth() + 1) + '-';
+  const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ';
+  const h =
+    (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+  const m =
+    (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) +
+    ':';
+  const s =
+    date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+  return Y + M + D + h + m + s;
+};
+
+export default { setChildrenUndefined, getQueryVariable, nameMap, timesTamp };

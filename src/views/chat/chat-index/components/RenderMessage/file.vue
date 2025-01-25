@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, watch} from 'vue';
+  import { computed, watch } from 'vue';
   import useDownloadQuenuStore from '@/store/modules/chat/downloadQuenu';
   import { FileBody, MessageType, MsgType } from '@/types/chat';
   import { formatBytes, getFileSuffix } from '@/utils/chat';
@@ -20,7 +20,6 @@ import {computed, watch} from 'vue';
   //   console.log('----子组件： watch -- props.origin：', props.origin)
   // })
 
-
   // 下载文件
   const downloadFile = () => {
     // 队列下载
@@ -39,25 +38,28 @@ import {computed, watch} from 'vue';
     );
   });
 
-watch(
-  () => props.body,
-  (newBody, oldBody) => {
-    console.log("props.body 发生变化：", oldBody, "=>", newBody);
-    // 根据 props.body 的变化做一些事情
-  },
-  { deep: true } // 如果 props.body 是嵌套对象且需要监听其中的值
-);
+  watch(
+    () => props.body,
+    (newBody, oldBody) => {
+      console.log('props.body 发生变化：', oldBody, '=>', newBody);
+      // 根据 props.body 的变化做一些事情
+    },
+    { deep: true } // 如果 props.body 是嵌套对象且需要监听其中的值
+  );
 
-const messageBody = computed(()=>{
-  return props.body;
-})
+  const messageBody = computed(() => {
+    return props.origin.message.body;
+  });
 
-const messageOrigin = computed(()=>{
-  return props.origin;
-})
+  const messageOrigin = computed(() => {
+    return props.origin;
+  });
   const process = computed(() => {
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    return ((messageBody.value?.url && downloadObjMap.get(messageBody.value.url)?.process / 100.0) || 0);
+    return (
+      (messageBody.value?.url &&
+        downloadObjMap.get(messageBody.value.url)?.process / 100.0) ||
+      0
+    );
   });
   const isUploading = computed(() => {
     //@ts-ignore
@@ -71,7 +73,7 @@ const messageOrigin = computed(()=>{
     //@ts-ignore
     if (messageOrigin.value?.Mock) {
       //@ts-ignore
-      if (messageOrigin.value?.state === 2) {
+      if (messageOrigin.value?.extInfo?.state === 2) {
         return true;
       }
       return false;
@@ -80,7 +82,11 @@ const messageOrigin = computed(()=>{
   });
   const uploadProgress = computed(() => {
     //@ts-ignore
-    return messageOrigin.value?.progress || 0;
+    console.log("上传进度"+messageOrigin.value?.extInfo?.progress)
+    //@ts-ignore
+    console.log(messageOrigin.value?.extInfo?.progress)
+    //@ts-ignore
+    return messageOrigin.value?.extInfo?.progress/100.0 || 0;
   });
 
   // 是否排队中
@@ -91,12 +97,12 @@ const messageOrigin = computed(()=>{
     return quenu.includes(messageBody.value.url);
   });
 
-  const fileName = computed(()=>{
+  const fileName = computed(() => {
     return messageBody.value?.fileName || '未知文件';
-  })
-const fileSize = computed(()=>{
+  });
+  const fileSize = computed(() => {
     return messageBody.value?.size || 0;
-  })
+  });
 
   // 重试上传
   const retryUpload = () => {
@@ -106,15 +112,19 @@ const fileSize = computed(()=>{
       Message.error('请删除该消息，已失效');
       return;
     }
-    console.log(message)
-    console.log(typeof message)
+    console.log(message);
+    console.log(typeof message);
     message?.start();
   };
 </script>
 
 <template>
   <div class="file">
-    <icon-file :icon="getFileSuffix(messageBody?.fileName)" :size="32" colorful />
+    <icon-file
+      :icon="getFileSuffix(messageBody?.fileName)"
+      :size="32"
+      colorful
+    />
     <div class="file-desc">
       <span class="file-name">{{ fileName }}</span>
       <span class="file-size">{{ formatBytes(fileSize) }}</span>

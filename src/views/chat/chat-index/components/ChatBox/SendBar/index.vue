@@ -1,31 +1,39 @@
 <script setup lang="ts" name="SendBar">
-import {computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch,} from 'vue';
-import {emojis} from '@/views/chat/chat-index/components/ChatBox/constant';
-import {insertInputText} from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
-import throttle from 'lodash/throttle';
+  import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    provide,
+    reactive,
+    ref,
+    watch,
+  } from 'vue';
+  import { emojis } from '@/views/chat/chat-index/components/ChatBox/constant';
+  import { insertInputText } from '@/views/chat/chat-index/components/ChatBox/MsgInput/utils';
+  import throttle from 'lodash/throttle';
 
-import {judgeClient} from '@/utils/chat/detectDevice';
-import {useChatStore} from '@/store/modules/chat/chat';
-import {IMention} from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
-import {ChatMsgEnum, RoleEnum, RoomTypeEnum} from '@/types/enums/chat';
-import {Message, Notification} from '@arco-design/web-vue';
-import {useMockMessage} from '@/hooks/chat/useMockMessage';
-import {useRecording} from '@/hooks/chat/useRecording';
-import {useEmojiUpload} from '@/hooks/chat/useEmojiUpload';
-import {useUpload} from '@/hooks/chat/useUpload';
-import {useFileDialog} from '@vueuse/core';
-import {useUserInfo} from '@/hooks/chat/useCached';
-import {useEmojiStore} from '@/store/modules/chat/emoji';
-import {useUserStore} from '@/store';
-import {useGlobalStore} from '@/store/modules/chat/global';
-import eventBus from '@/utils/eventBus';
-import setting from '@/config/setting';
-import renderReplyContent from '@/utils/chat/renderReplyContent';
-import {useGroupStore} from '@/store/modules/chat/group';
-import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
-import {UploadTask} from '@/hooks/chat/useUploadN';
+  import { judgeClient } from '@/utils/chat/detectDevice';
+  import { useChatStore } from '@/store/modules/chat/chat';
+  import { IMention } from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
+  import { ChatMsgEnum, RoleEnum, RoomTypeEnum } from '@/types/enums/chat';
+  import { Message, Notification } from '@arco-design/web-vue';
+  import { useMockMessage } from '@/hooks/chat/useMockMessage';
+  import { useRecording } from '@/hooks/chat/useRecording';
+  import { useEmojiUpload } from '@/hooks/chat/useEmojiUpload';
+  import { useUpload } from '@/hooks/chat/useUpload';
+  import { useFileDialog } from '@vueuse/core';
+  import { useUserInfo } from '@/hooks/chat/useCached';
+  import { useEmojiStore } from '@/store/modules/chat/emoji';
+  import { useUserStore } from '@/store';
+  import { useGlobalStore } from '@/store/modules/chat/global';
+  import eventBus from '@/utils/eventBus';
+  import setting from '@/config/setting';
+  import renderReplyContent from '@/utils/chat/renderReplyContent';
+  import { useGroupStore } from '@/store/modules/chat/group';
+  import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
+  import { UploadTask } from '@/hooks/chat/useUploadN';
 
-const client = judgeClient();
+  const client = judgeClient();
 
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
@@ -84,19 +92,18 @@ const client = judgeClient();
       //   body,
       // });
       // update:2025.1.19
-      if (msgType !== ChatMsgEnum.TEXT && msgType !== ChatMsgEnum.EMOJI){
-        Message.error("请联系管理员升级，该消息类型不支持");
-        console.log("警告：该类型消息未支持")
-        console.log(body)
-        console.log(msgType)
+      if (msgType !== ChatMsgEnum.TEXT && msgType !== ChatMsgEnum.EMOJI) {
+        Message.error('请联系管理员升级，该消息类型不支持');
+        console.log('警告：该类型消息未支持');
+        console.log(body);
+        console.log(msgType);
       }
       const mockMessage = new UploadTask(msgType, body, null);
-      console.log("开始发送消息--4")
+      console.log('开始发送消息--4');
       const mockMessageObject = reactive<UploadTask>(mockMessage);
       await chatStore.pushMsg(mockMessageObject);
-      console.log("开始上传文件--5")
+      console.log('开始上传文件--5');
       await mockMessage.start();
-
     } catch (e) {
       // Message.error(e.message);
       console.log(e);
@@ -229,22 +236,22 @@ const client = judgeClient();
         return;
       }
     }
-    console.log("开始上传文件--1")
+    console.log('开始上传文件--1');
     if (isUpEmoji.value) {
       await uploadEmoji(file);
     } else {
-      console.log("开始上传文件--2")
+      console.log('开始上传文件--2');
 
       isUploading.value = true;
       // 最终一致，当解析文件后是视频会修改状态
-      console.log("开始上传文件--3")
+      console.log('开始上传文件--3');
 
       const mockMessage = new UploadTask(ChatMsgEnum.FILE, null, file);
-      console.log("开始上传文件--4")
+      console.log('开始上传文件--4');
       const mockMessageObject = reactive<UploadTask>(mockMessage);
 
       await chatStore.pushMsg(mockMessageObject);
-      console.log("开始上传文件--5")
+      console.log('开始上传文件--5');
       await mockMessage.start();
       isUploading.value = false;
       // await uploadFile(file);
@@ -394,7 +401,7 @@ const client = judgeClient();
                   @contextmenu="handleRightClick($event, emoji.id)"
                 >
                   <a-image :width="50" :src="emoji.expressionUrl" />
-                  <icon-folder-add
+                  <icon-delete
                     v-if="emoji.id === tempEmojiId"
                     icon="guanbi1"
                     class="del"
@@ -412,7 +419,7 @@ const client = judgeClient();
                 </div>
               </div>
               <div class="footer">
-                <div
+                <icon-face-meh-fill
                   :class="[
                     'cursor-pointer',
                     'footer-act',
@@ -420,8 +427,7 @@ const client = judgeClient();
                   ]"
                   :size="emojiSize"
                   @click="panelIndex = 0"
-                  >emoji</div
-                >
+                />
                 <icon-heart-fill
                   :class="[
                     'cursor-pointer',
@@ -473,7 +479,7 @@ const client = judgeClient();
   </div>
 </template>
 
-<style lang="scss" src="./styles.scss" scoped />
+<style lang="scss" src="./styles.scss" />
 
 <style lang="scss">
   .emoji-warpper {
