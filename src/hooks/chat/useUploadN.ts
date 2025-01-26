@@ -169,6 +169,8 @@ export class UploadTask implements MockMessageInterface {
 
   private async putMsg() {
     try {
+      this.extInfo.state = 3
+      this.extInfo.err = ''
       const req = await sendMsg({
         roomId: globalStore.currentSession.roomId,
         msgType: this.message.type,

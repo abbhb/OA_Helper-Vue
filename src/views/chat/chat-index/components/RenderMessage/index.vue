@@ -51,12 +51,15 @@
     }
     return componentMap[extType];
   };
+  const retrySend = (msg:UploadTask) => {
+    msg.start()
+  }
 </script>
 
 <template>
   <div style="display: flex;align-items: center">
     <a-popover v-if="SendErr" title="错误原因">
-      <IconExclamationCircle style="color: red" :size="22" @click="retryUpload" />
+      <IconExclamationCircle style="color: red" :size="22" @click="retrySend(message)" />
       <template #content>
         <p>{{ messageOriginErr }}</p>
       </template>

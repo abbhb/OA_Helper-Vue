@@ -101,6 +101,10 @@
     isVisible.value = visible;
   };
 
+  const upLoading = computed(()=>{
+    return props.msg?.Mock || false;
+  })
+
   const userStore = useUserStore();
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
@@ -309,7 +313,7 @@
           >
             <!-- 消息的操作，点赞回复那些 -->
             <template #content>
-              <MsgOption :msg="msg" />
+              <MsgOption :msg="msg" v-if="!upLoading" />
             </template>
             <div
               ref="renderMsgRef"
@@ -322,7 +326,7 @@
             >
               <!-- 这里是未读数计算 -->
               <div
-                v-if="isCurrentUser"
+                v-if="isCurrentUser && !upLoading"
                 class="chat-item-read-count"
                 :class="{
                   'is-gray': readCount.unread === 0,
