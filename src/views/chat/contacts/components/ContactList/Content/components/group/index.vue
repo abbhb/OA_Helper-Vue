@@ -23,11 +23,11 @@
   // 不一定是用户，可能select的是个群组，也可能是新的朋友等其他模块，具体type具体
   const selectedContactUid = computed(() => selectedContact?.value?.id);
 
-  const onStartSession = async (id: string) => {
+  const onStartSession = async (id: string,type:RoomTypeEnum) => {
     const { data } = await sessionDetail({ id });
     if (data?.roomId) {
       globalStore.currentSession.roomId = data.roomId;
-      globalStore.currentSession.type = RoomTypeEnum.Single;
+      globalStore.currentSession.type = type;
       chatStore.updateSessionLastActiveTime(data.roomId, data);
       Router.push('/chat/chat');
     }
@@ -105,7 +105,7 @@
       <el-divider />
 
       <div class="contact-info-buttons">
-        <ElButton type="primary" @click="onStartSession(selectedContact.id)"
+        <ElButton type="primary" @click="onStartSession(selectedContact.id,RoomTypeEnum.Group)"
           >发消息</ElButton
         >
         <!--                  <ElButton type="danger" @click="onDeleteContact(selectedContact.uid)">-->

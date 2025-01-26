@@ -122,10 +122,14 @@
   const sendMsgHandler = () => {
     // 空消息或正在发送时禁止发送
     if (
-      !inputMsg.value?.trim().length ||
-      !inputMsgOrigin.value?.trim().length ||
+      (inputMsg.value?.trim().length === 0 ||
+      inputMsgOrigin.value?.trim().length === 0 )||
       isSending.value
     ) {
+      console.log("禁止发送状态")
+      console.log(inputMsg.value)
+      console.log(inputMsgOrigin.value)
+      console.log(isSending.value)
       return;
     }
 
@@ -190,6 +194,7 @@
     insertInputText({ content: emoji, ...editRange });
     // 需要更新以触发 onChang
     inputMsg.value = input.innerText;
+    inputMsgOrigin.value = input.innerText;
     // 关闭表情弹窗，一次只选一个表情
     showEmoji.value = false;
     // 临时让获取焦点
@@ -296,7 +301,15 @@
     isSending.value = newc;
   });
 
-  onEnd((audioFile: any) => uploadFile(audioFile));
+  onEnd(async (audioFile: any) => {
+    const mockMessage = new UploadTask(ChatMsgEnum.VOICE, null, audioFile);
+    console.log('开始上传文件--4');
+    const mockMessageObject = reactive<UploadTask>(mockMessage);
+
+    await chatStore.pushMsg(mockMessageObject);
+    console.log('开始上传文件--5');
+    await mockMessage.start();
+  });
 
   const onStartRecord = () => {
     nowMsgType.value = ChatMsgEnum.VOICE;

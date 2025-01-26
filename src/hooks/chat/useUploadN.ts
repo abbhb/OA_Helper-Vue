@@ -1,6 +1,6 @@
 // hooks/useUpload.ts
 
-import {computed, Reactive, reactive, ref} from 'vue';
+import { computed, Reactive, reactive, ref } from 'vue';
 import { getUploadUrl, sendMsg } from '@/api/chat';
 import { Message } from '@arco-design/web-vue';
 import { ChatMsgEnum } from '@/types/enums/chat';
@@ -34,6 +34,7 @@ export type FileInfoType = {
   thumbFile?: File;
   thumbHeight?: number;
   thumbUrl?: string;
+  tempUrl?: string; // 临时
 };
 
 export type FileWorkerBody = {
@@ -124,7 +125,7 @@ export class UploadTask implements MockMessageInterface {
       roomId: currentRoomId.value,
       sendTime: timesTamp(currentTimeStamp),
       type: type,
-    })
+    });
     if (whiteMessageType.includes(type)) {
       // 无需上传文件
       this.extInfo.state = 3;
@@ -169,32 +170,34 @@ export class UploadTask implements MockMessageInterface {
 
   private async putMsg() {
     try {
-      this.extInfo.state = 3
-      this.extInfo.err = ''
+      this.extInfo.state = 3;
+      this.extInfo.err = '';
       const req = await sendMsg({
         roomId: globalStore.currentSession.roomId,
         msgType: this.message.type,
         body: this.message.body,
       });
       // @ts-ignore
-      if (req.code !== 1){
+      if (req.code !== 1) {
         this.extInfo.state = 4;
         // @ts-ignore
         this.extInfo.err = req.msg;
-        return
+        return;
       }
       await chatStore.updateMsg(this.message.id, req.data);
-    }catch (e) {
+    } catch (e) {
       console.log(e);
       this.extInfo.state = 4;
       this.extInfo.err = e;
     }
-
   }
 
   async start() {
     // 当放入map后手动触发 Text or EMOJI
-    if (whiteMessageType.includes(this.message.type)) {
+    if (
+      this.extInfo.state > 2 ||
+      whiteMessageType.includes(this.message.type)
+    ) {
       try {
         await this.putMsg();
       } catch (e) {

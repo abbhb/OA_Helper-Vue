@@ -214,10 +214,13 @@ export default defineComponent({
     // 滚动到底部
     const scrollToBottom = (smooth?: boolean) => {
       if (shepherd.value) {
+        console.log("回到底部")
         const offset = shepherd.value.offsetTop;
         scrollToOffset(offset, smooth);
         setTimeout(() => {
-          if (getOffset() + getClientSize() < getScrollSize()) {
+          // 加上1px 防止误判导致无限回到底部
+          // todo: 后续找更合理解决办法 tag:无限回到底部
+          if (getOffset() + getClientSize() + 1 < getScrollSize()) {
             scrollToBottom(smooth);
           }
         }, 3);

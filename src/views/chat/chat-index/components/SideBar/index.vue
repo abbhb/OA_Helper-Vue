@@ -5,7 +5,7 @@
   import { formatTimestamp } from '@/utils/chat/computedTime';
   import AvatarImage from '@/components/image/AvatarImage.vue';
   import { ChatMsgEnum, RoomTypeEnum } from '@/types/enums/chat';
-  import {IsAllUserEnum, SessionItem} from '@/types/chat';
+  import { IsAllUserEnum, SessionItem } from '@/types/chat';
   import { useGlobalStore } from '@/store/modules/chat/global';
   import renderReplyContent from '@/utils/chat/renderReplyContent';
   import { isLogin } from '@/utils/auth';
@@ -32,7 +32,7 @@
   // FIXME 未登录到登录这些监听没有变化。需处理
   const isCurrentUser = computed(() => isLogin());
   /** 右键菜单 */
-  const handleRightClick = (e: MouseEvent,item:SessionItem) => {
+  const handleRightClick = (e: MouseEvent, item: SessionItem) => {
     // perf: 未登录时，禁用右键菜单功能
     if (!isCurrentUser.value) {
       return;
@@ -74,12 +74,11 @@
   );
   // 选中会话
   const onSelectSelectSession = (roomId: string, roomType: RoomTypeEnum) => {
-    if (roomId){
+    if (roomId) {
       globalStore.currentSession.roomId = roomId;
       globalStore.currentSession.type = roomType;
       console.log('切换');
     }
-
   };
 
   // 加载更多
@@ -98,7 +97,7 @@
         { active: currentSession.roomId === item.roomId },
       ]"
       @click="onSelectSelectSession(item.roomId, item.type)"
-      @contextmenu.prevent.stop="handleRightClick($event,item)"
+      @contextmenu.prevent.stop="handleRightClick($event, item)"
     >
       <el-badge
         :value="item.unreadCount"
@@ -106,9 +105,8 @@
         :hidden="item.unreadCount < 1"
         class="item"
       >
-
         <AvatarImage
-          :key="item.roomId+'key2'+item.name"
+          :key="item.roomId + 'key2' + item.name"
           shape="circle"
           :size="38"
           :avatar="item.avatar"
@@ -120,12 +118,9 @@
           <span class="person">{{ item.name }}</span>
           <span v-if="item.tag" class="tag">{{ item.tag }}</span>
         </div>
-        <div class="message-message">{{
-              item.lastMsg
-          }}</div>
+        <div class="message-message">{{ item.lastMsg }}</div>
       </div>
       <span class="message-time">{{ item.lastMsgTime }}</span>
-
     </div>
     <ContextMenu
       v-model:show="isShowMenu"
