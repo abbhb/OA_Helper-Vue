@@ -23,14 +23,14 @@
           <a-tag>{{ currentVersion }}</a-tag>
         </a-badge>
         <icon-menu-fold
-          v-if="!topMenu && appStore.device === 'mobile'"
+          v-if="appStore.device === 'mobile'"
           style="font-size: 22px; cursor: pointer"
           @click="toggleDrawerMenu"
         />
       </a-space>
     </div>
     <div class="center-side">
-      <Menu v-if="topMenu" />
+      <Menu v-if="topMenu" key="topMenu" :top="true"/>
     </div>
     <ul class="right-side">
       <!--      <li>-->

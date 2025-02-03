@@ -54,7 +54,7 @@
       </a-space>
     </div>
     <div class="center-side">
-      <Menu v-if="topMenu" />
+      <Menu v-if="topMenu" key="topMenu" :top="true"/>
     </div>
     <ul class="right-side">
       <li>

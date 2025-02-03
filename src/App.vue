@@ -19,6 +19,7 @@
 
   const loading = ref(false);
   const loadingTip = ref('');
+
   const appStore = useAppStore();
   appStore.initSettings();
   const { currentLocale } = useLocale();
@@ -40,14 +41,21 @@
   const removeLoading = () => {
     loading.value = false;
   };
+  const updatePageWidth = () => {
+    appStore.mobileTerminalAdaptation()
+  };
 
   onMounted(() => {
     eventBus.on('addLoading', addLoading);
     eventBus.on('removeLoading', removeLoading);
+    window.addEventListener('resize', updatePageWidth); // 监听窗口大小变化
+
   });
   onBeforeUnmount(() => {
     eventBus.off('addLoading', addLoading);
     eventBus.off('removeLoading', removeLoading);
+    window.removeEventListener('resize', updatePageWidth); // 清除监听
+
   });
 </script>
 

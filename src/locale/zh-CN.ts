@@ -36,6 +36,8 @@ export default {
   'menu.bmp.form': '在线表单设计',
   'menu.bmp.bpmn': '流程定义',
   'menu.bmp.bpmn-group': '流程组',
+  'menu.dev.test': '开发-测试',
+  'menu.dev': '开发',
   'menu.bmp.bpmn-group-act': '流程关联组',
   'menu.bmp': '审批流',
   'menu.chat': 'Chat',

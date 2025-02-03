@@ -50,6 +50,8 @@ const useAppStore = defineStore('app', {
       // 每次登录成功首次就同步一次配置
       const { data } = await getUserFrontConfig();
       this.$patch(data);
+      // 移动端适配
+      this.mobileTerminalAdaptation()
     },
     // Change theme color
     async toggleTheme(dark: boolean) {
@@ -68,6 +70,13 @@ const useAppStore = defineStore('app', {
         console.log(e);
       } finally {
         eventBus.emit('removeLoading');
+      }
+    },
+    // 移动端适配
+    mobileTerminalAdaptation(){
+      // 屏幕宽度小于600px
+      if (document.documentElement.clientWidth <= 600){
+        this.updateSettings({ topMenu: false }, true);
       }
     },
     getRecentlyRouter(): RecentlyRouter[] {
