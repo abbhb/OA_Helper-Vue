@@ -81,19 +81,6 @@
         return findTopLevel(tree, targetName);
       }
 
-      listenerRouteChange((route: RouteLocationNormalized) => {
-        if (props.top){
-          // 顶级菜单开启后selectedKey 设置为顶级菜单的key
-          const resp = findTopLevelMenuName(menuTree.value,route.name as string)
-          console.log("顶级")
-          console.log(resp)
-          if (resp) {
-            selectedKey.value = [resp as string];
-          }
-        }else {
-          selectedKey.value = [route.name as string];
-        }
-      }, true);
 
       const goto = (item: RouteRecordRaw) => {
         // 此item里的meta直接取决与后端返回
@@ -146,6 +133,17 @@
         return result;
       };
       listenerRouteChange((newRoute) => {
+        if (props.top){
+          // 顶级菜单开启后selectedKey 设置为顶级菜单的key
+          const resp = findTopLevelMenuName(menuTree.value,newRoute.name as string)
+          console.log("顶级")
+          console.log(resp)
+          if (resp) {
+            selectedKey.value = [resp as string];
+          }
+          return
+        }
+        // 侧边菜单逻辑
         const { requiresAuth, activeMenu, show } = newRoute.meta;
         console.log('三联');
         console.log(requiresAuth);
@@ -159,10 +157,15 @@
 
           const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
           openKeys.value = [...keySet];
-
+          console.log("selectKey:")
+          console.log(selectedKey.value)
           selectedKey.value = [
             activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
           ];
+          console.log("selectKey-NEW:")
+
+          console.log(selectedKey.value)
+
         }
       }, true);
       const setCollapse = (val: boolean) => {
@@ -226,8 +229,13 @@
         }
 
         function travel(_route: RouteRecordRaw[], nodes = []) {
+          console.log("生成---2-2")
+          console.log(_route)
           if (_route) {
+            console.log("生成菜单----------------------1")
             console.log(_route)
+            console.log("生成菜单----------------------2")
+
             _route.forEach((element) => {
               const icon = element?.meta?.icon
                 ? () => h(compile(`<${element?.meta?.icon}/>`))

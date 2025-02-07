@@ -156,15 +156,15 @@
         }
 
 
-        &:hover {
-          color: ~'@{menu-@{theme}-color-item_hover}';
-          background-color: ~'@{menu-@{theme}-color-bg-item_hover}';
-
-          .@{prefix}-icon,
-          .@{menu-prefix-cls}-icon {
-            color: ~'@{menu-@{theme}-color-icon_hover}';
-          }
-        }
+        //&:hover {
+        //  color: ~'@{menu-@{theme}-color-item_hover}';
+        //  background-color: ~'@{menu-@{theme}-color-bg-item_hover}';
+        //
+        //  .@{prefix}-icon,
+        //  .@{menu-prefix-cls}-icon {
+        //    color: ~'@{menu-@{theme}-color-icon_hover}';
+        //  }
+        //}
 
         &.arco-menu-pop-header.@{menu-prefix-cls}-selected {
           background: #146aff;
@@ -219,20 +219,40 @@
           color:~'@{menu-@{theme}-color-item_default}';
         }
 
-        &:hover {
-          background-color: ~'@{menu-@{theme}-color-bg-submenu_selected_hover}';
-        }
+        //&:hover {
+        //  background-color: ~'@{menu-@{theme}-color-bg-submenu_selected_hover}';
+        //}
       }
 
       // 为水平菜单添加项目选中的样式
       &.@{menu-prefix-cls}-horizontal {
         @item-selected-style: {
+          &.arco-menu-pop-header.@{menu-prefix-cls}-selected {
+            background: #146aff;
+            background: RGB(var(--convoy-theme-S3));
+            box-shadow: 0 10px 20px 0 rgba(20, 106, 255, .2);
+            box-shadow: 0 10px 20px 0 RGBA(var(--convoy-theme-S3), .2);
+            border-radius: 8px;
+            border-radius: var(--skin-css-var-Ra3, 8px);
+          }
           &.@{menu-prefix-cls}-selected {
-            background: none;
+            //background: none;
+            background: #146aff;
+            background: RGB(var(--convoy-theme-S3));
+            box-shadow: 0 10px 20px 0 rgba(20, 106, 255, .2);
+            box-shadow: 0 10px 20px 0 RGBA(var(--convoy-theme-S3), .2);
+            border-radius: 8px;
+            border-radius: var(--skin-css-var-Ra3, 8px);
             .text-color-transition();
 
             &:hover {
-              background-color: ~'@{menu-@{theme}-color-bg-item_hover}';
+              //background-color: ~'@{menu-@{theme}-color-bg-item_hover}';
+              background: #146aff;
+              background: RGB(var(--convoy-theme-S3));
+              box-shadow: 0 10px 20px 0 rgba(20, 106, 255, .2);
+              box-shadow: 0 10px 20px 0 RGBA(var(--convoy-theme-S3), .2);
+              border-radius: 8px;
+              border-radius: var(--skin-css-var-Ra3, 8px);
             }
           }
         };

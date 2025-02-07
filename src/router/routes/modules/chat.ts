@@ -1,11 +1,11 @@
-import { DEFAULT_LAYOUT } from '../base';
+import { CUSTOM_MENU_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
 // @ts-ignore
 const Chat: AppRouteRecordRaw = {
   path: '/chat',
   name: 'Chat',
-  component: DEFAULT_LAYOUT,
+  component: CUSTOM_MENU_LAYOUT,
   meta: {
     locale: 'menu.chat',
     requiresAuth: true,
@@ -37,18 +37,7 @@ const Chat: AppRouteRecordRaw = {
         canGo: true,
       },
     },
-    {
-      path: 'notice-list',
-      name: 'Notice-List',
-      component: () =>
-        import('@/views/content-promotion/notice-list/index.vue'),
-      meta: {
-        locale: 'menu.notice-list',
-        requiresAuth: true,
-        roles: ['*'],
-        canGo: true,
-      },
-    },
+
   ],
 };
 

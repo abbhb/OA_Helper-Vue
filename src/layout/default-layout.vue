@@ -131,6 +131,10 @@
     const targetName = selectedKey.value[0];
     const depth = findDepth(menuTree.value, targetName);
 
+    // 兼容老版本菜单
+    if(!appStore.topMenu){
+      return false;
+    }
     if (depth !== null) {
       console.log(`找到节点深度：${depth}`);
       if (depth <= 1) {
