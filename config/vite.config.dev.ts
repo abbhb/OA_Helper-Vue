@@ -2,7 +2,6 @@ import { mergeConfig } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import baseConfig from './vite.config.base';
 
-// @ts-ignore
 export default mergeConfig(
   {
     mode: 'development',
@@ -26,5 +25,6 @@ export default mergeConfig(
       }),
     ],
   },
+  // @ts-ignore
   baseConfig
 );

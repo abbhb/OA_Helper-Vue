@@ -85,8 +85,9 @@ const anchorChange = (hash: string) => {
   <div id="Oauth-management" class="bd">
     <div class="portal">
       <div class="tableBar">
-        <a-link target="_blank" @click="pathGoTo('houtai', 'goto')"
-        >工作台
+        <a-link class="alink" target="_blank" @click="pathGoTo('houtai', 'goto')"
+        >
+          <span class="front">工作台</span>
         </a-link>
 
         <a-dropdown trigger="click">
@@ -303,5 +304,11 @@ const anchorChange = (hash: string) => {
 <style>
 .arco-anchor-line-less .arco-anchor-link-active > .arco-anchor-link {
   background-color: var(--color-bg-1);
+}
+.front {
+  color: #ffffff;
+}
+.alink:hover {
+  background-color: #5b99ee;
 }
 </style>

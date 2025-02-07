@@ -6,7 +6,7 @@
     <a-layout>
       <a-layout>
         <a-layout-sider
-          v-if="renderMenu"
+          v-if="renderMenu && !noMenu"
           v-show="!hideMenu"
           class="layout-sider"
           breakpoint="xl"
@@ -21,25 +21,26 @@
         >
           <el-scrollbar class="elscrollbar-max">
             <div class="menu-wrapper">
-              <Menu
-                @collapse="setCollapsed"
-              />
+              <Menu :top="false" @collapse="setCollapsed" />
             </div>
           </el-scrollbar>
           <div v-if="appStore.device !== 'mobile'" class="zhedie">
             <div class="fixbox" @click="setCollapsed(!collapsed)"
               ><div class="fixbox-wrapper" style=""
-                ><span class="fixbox-fixbtn" :style="collapsed?'':'display:block;'">
-                  <a-tooltip :content="!collapsed&&!byHover?'取消固定':'固定'">
-                     <IconPushpin />
-                  </a-tooltip>
-
-            </span></div
+                ><span
+                  class="fixbox-fixbtn"
+                  :style="collapsed ? '' : 'display:block;'"
+                >
+                  <a-tooltip
+                    :content="!collapsed && !byHover ? '取消固定' : '固定'"
+                  >
+                    <IconPushpin />
+                  </a-tooltip> </span></div
             ></div>
           </div>
         </a-layout-sider>
         <a-drawer
-          v-if="hideMenu"
+          v-if="hideMenu && !noMenu"
           :visible="drawerVisible"
           placement="left"
           :footer="false"
@@ -47,7 +48,7 @@
           :closable="false"
           @cancel="drawerCancel"
         >
-          <Menu />
+          <Menu :top="false" />
         </a-drawer>
         <a-layout class="layout-content" :style="paddingStyle">
           <TabBar v-if="appStore.tabBar" />
@@ -63,7 +64,7 @@
 
 <script lang="ts" setup>
   import { computed, onMounted, provide, ref, watch } from 'vue';
-  import { useRoute, useRouter } from 'vue-router';
+  import { RouteLocationNormalized, useRoute, useRouter } from 'vue-router';
   import { useAppStore, useUserStore } from '@/store';
   import NavBar from '@/components/navbar/index.vue';
   import Menu from '@/components/menu/index.vue';
@@ -71,6 +72,8 @@
   import usePermission from '@/hooks/permission';
   import useResponsive from '@/hooks/responsive';
   import FooterView from '@/components/footer/index.vue';
+  import useMenuTree from '@/components/menu/use-menu-tree';
+  import { listenerRouteChange } from '@/utils/route-listener';
   import PageLayout from './page-layout.vue';
 
   const isInit = ref(false);
@@ -80,11 +83,69 @@
   const router = useRouter();
   const route = useRoute();
   const permission = usePermission();
+  const { menuTree } = useMenuTree();
+
   useResponsive(true);
   const navbarHeight = `60px`;
+
+  const selectedKey = ref<string[]>([]);
+
+  listenerRouteChange((route: RouteLocationNormalized) => {
+    selectedKey.value = [route.name as string];
+  }, true);
+
+  // 递归查找层级深度的函数：
+  function findDepth(
+    tree: any[],
+    targetName: string,
+    currentDepth = 1
+  ): number | null {
+    for (const node of tree) {
+      // 如果找到目标节点
+      if (node?.name === targetName) {
+        return currentDepth;
+      }
+      // 如果有子节点，继续递归并增加层级值
+      if (node?.children && node?.children?.length > 0) {
+        const depthInChild = findDepth(
+          node.children,
+          targetName,
+          currentDepth + 1
+        );
+        if (depthInChild !== null) {
+          return depthInChild;
+        }
+      }
+    }
+    // 如果未找到目标，返回 null
+    return null;
+  }
+
   const navbar = computed(() => appStore.navbar);
-  const renderMenu = computed(() => appStore.menu && !appStore.topMenu);
+  const renderMenu = computed(() => appStore.menu);
   const hideMenu = computed(() => appStore.hideMenu);
+  const noMenu = computed(() => {
+    if (selectedKey.value?.length === 0) {
+      return true;
+    }
+    const targetName = selectedKey.value[0];
+    const depth = findDepth(menuTree.value, targetName);
+
+    // 兼容老版本菜单
+    if(!appStore.topMenu){
+      return false;
+    }
+    if (depth !== null) {
+      console.log(`找到节点深度：${depth}`);
+      if (depth <= 1) {
+        return true;
+      }
+      return false;
+    } else {
+      console.log('未找到匹配节点');
+      return true;
+    }
+  });
   const footer = computed(() => appStore.footer);
   const menuWidth = computed(() => {
     return appStore.menuCollapse ? 48 : appStore.menuWidth;
@@ -96,14 +157,14 @@
     // 只需要在hover时用不hover时的宽度去预留left，并且执行展开菜单操作，离开hover就还原，曲线实现，右下角展开该层固定，一旦固定就真实走目前的逻辑
     if (byHover.value && !appStore.menuCollapse) {
       const paddingLeft =
-        renderMenu.value && !hideMenu.value
+        renderMenu.value && !hideMenu.value && !noMenu.value
           ? { paddingLeft: `${48 - 10}px` }
           : {};
       const paddingTop = navbar.value ? { paddingTop: navbarHeight } : {};
       return { ...paddingLeft, ...paddingTop };
     }
     const paddingLeft =
-      renderMenu.value && !hideMenu.value
+      renderMenu.value && !hideMenu.value && !noMenu.value
         ? { paddingLeft: `${menuWidth.value - 10}px` }
         : {};
     const paddingTop = navbar.value ? { paddingTop: navbarHeight } : {};

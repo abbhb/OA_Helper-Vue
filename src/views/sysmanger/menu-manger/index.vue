@@ -97,6 +97,24 @@
     const tree = [{ key: '0', title: '根节点', children: newas }];
     treeData.value = tree;
   };
+
+  function findObjectById(
+    data: MenuManger[],
+    targetId: string
+  ): MenuManger | null {
+    for (const item of data) {
+      if (item.id === targetId) {
+        return item;
+      }
+      if (item.children && item.children.length > 0) {
+        const childResult = findObjectById(item.children, targetId);
+        if (childResult) {
+          return childResult;
+        }
+      }
+    }
+    return null;
+  }
   const initData = async () => {
     statuEs.value.clickLoading = true;
     const { data } = await menuList();
@@ -244,9 +262,16 @@
     }
     if (form.type === 'M') {
       if (Number(form.parentId) !== 0) {
-        Message.error('此时父节点只能为根节点');
-        done(false);
-        return;
+        const itsm = findObjectById(tableData.value, String(form.parentId));
+        if (itsm) {
+          if (itsm.type !== 'M') {
+            Message.error('此时父节点只能为目录节点');
+          }
+        } else {
+          Message.error('父节点不存在');
+          done(false);
+          return;
+        }
       }
       if (form.locale === '') {
         Message.error('请填写locale字段');
@@ -289,7 +314,7 @@
         :pagination="false"
         :size="'medium'"
         :scrollbar="true"
-        :scroll="{y:600}"
+        :scroll="{ y: 600 }"
         row-key="id"
       >
         <template

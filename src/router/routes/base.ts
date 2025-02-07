@@ -3,6 +3,7 @@ import {REDIRECT_ROUTE_NAME} from '@/router/constants';
 
 export const DEFAULT_LAYOUT = () => import('@/layout/default-layout.vue');
 export const FULL_LAYOUT = () => import('@/layout/full-layout.vue');
+export const CUSTOM_MENU_LAYOUT = () => import('@/layout/custom-menu-layout.vue');
 
 export const REDIRECT_MAIN: RouteRecordRaw = {
   path: '/redirect',

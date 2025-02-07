@@ -40,6 +40,7 @@ module.exports = {
     // Vue: Recommended rules to be closed or modify
     'vue/require-default-prop': 0,
     'vue/singleline-html-element-content-newline': 0,
+    'vue/eslint-disable-next-line': 0,
     'vue/max-attributes-per-line': 0,
       "no-console": "off",
       "no-debugger": "off",
@@ -49,7 +50,7 @@ module.exports = {
     'vue/custom-event-name-casing': [2, 'camelCase'],
     'vue/no-v-text': 1,
     "no-shadow": "off",
-      "no-underscore-dangle": 0,
+    "no-underscore-dangle": 0,
       "no-use-before-define": 0,
       "vue/no-mutating-props": 0,
       "no-restricted-globals": 0,
@@ -60,7 +61,9 @@ module.exports = {
       "prefer-template": 0,
       "no-useless-return": 0,
       "no-plusplus": 0,
-      "no-unused-expressions": 0,
+    'no-unsafe-optional-chaining': 'off',
+
+    "no-unused-expressions": 0,
       "no-prototype-builtins": 0,
       "no-lonely-if": 0,
       "no-bitwise": 0,

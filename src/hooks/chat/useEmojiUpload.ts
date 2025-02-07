@@ -1,7 +1,7 @@
-import {ref} from 'vue';
-import {createEventHook} from '@vueuse/core';
-import {useEmojiStore} from '@/store/modules/chat/emoji';
-import {getUploadUrl} from '@/api/chat';
+import { ref } from 'vue';
+import { createEventHook } from '@vueuse/core';
+import { useEmojiStore } from '@/store/modules/chat/emoji';
+import { getUploadUrl } from '@/api/chat';
 
 /**
  * 表情图上传Hook
@@ -28,7 +28,7 @@ export const useEmojiUpload = () => {
    * @param url 上传链接
    * @param file 文件
    */
-   const upload = async (url: string, file: File) => {
+  const upload = async (url: string, file: File) => {
     isEmojiUp.value = true;
 
     return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export const useEmojiUpload = () => {
    * @param file 原文件
    * @returns 压缩图
    */
-   const compressImage = async (file: File) => {
+  const compressImage = async (file: File) => {
     const maxDimension = 240; // 目标最大尺寸
     const targetQuality = 0.9; // 目标质量
 
@@ -132,7 +132,7 @@ export const useEmojiUpload = () => {
     });
   };
 
-   const uploadEmoji = async (file: File) => {
+  const uploadEmoji = async (file: File) => {
     const compressFile = (await compressImage(file)) as File;
     if (!compressFile) return;
 

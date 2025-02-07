@@ -7,9 +7,11 @@ export const WHITE_LIST = [
   { name: 'callback', children: [] },
   { name: 'oauthShow', children: [] },
   { name: 'forgotPassword', children: [] },
-    {name: 'NoticeEdit', children: []}, // 通知编辑组件
-    {name: 'SigninDataRead', children: []}, // 考勤统计阅读组件
-    {name: 'MangerHolidays', children: []}, // 节假日管理组件
+  { name: 'NoticeEdit', children: [] }, // 通知编辑组件
+  { name: 'SigninDataRead', children: [] }, // 考勤统计阅读组件
+  { name: 'MangerHolidays', children: [] }, // 节假日管理组件
+  { name: 'printerManager', children: [] }, // 打印机注册管理组件
+  { name: 'printerManagerUser', children: [] }, // 打印机注册管理组件-权限管理
 ];
 
 export const NOT_FOUND = {

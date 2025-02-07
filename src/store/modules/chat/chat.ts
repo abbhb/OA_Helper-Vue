@@ -1,4 +1,4 @@
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, Reactive, reactive, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { useCachedStore } from '@/store/modules/chat/cached';
 import { useUserStore } from '@/store';
@@ -20,6 +20,7 @@ import { useContactStore } from '@/store/modules/chat/contacts';
 import { cloneDeep } from 'lodash';
 import router from '@/router';
 import { pushNotifyByMessage } from '@/utils/chat/systemMessageNotify';
+import { UploadTask } from '@/hooks/chat/useUploadN';
 
 export const pageSize = 80;
 // 标识是否第一次请求
@@ -40,9 +41,9 @@ export const useChatStore = defineStore('chat', () => {
   const currentRoomType = computed(() => globalStore.currentSession?.type);
   const currentRoomId = computed(() => globalStore.currentSession?.roomId);
 
-  const messageMap = reactive<Map<string, Map<string, MessageType>>>(
-    new Map([[currentRoomId.value, new Map()]])
-  ); // 消息Map
+  const messageMap = reactive<
+    Map<string, Map<string, MessageType | Reactive<UploadTask>>>
+  >(new Map([[currentRoomId.value, new Map()]])); // 消息Map
   const messageOptions = reactive<
     Map<string, { isLast: boolean; isLoading: boolean; cursor: string }>
   >(
@@ -50,23 +51,22 @@ export const useChatStore = defineStore('chat', () => {
       [currentRoomId.value, { isLast: false, isLoading: false, cursor: '' }],
     ])
   );
-  const flashMsgId = ref<string>('') // 记录当前回复的消息id 用于当前消息的闪烁
-  let timer: any = null // 消息闪烁计时器
+  const flashMsgId = ref<string>(''); // 记录当前回复的消息id 用于当前消息的闪烁
+  let timer: any = null; // 消息闪烁计时器
   const replyMapping = reactive<Map<string, Map<string, string[]>>>(
     new Map([[currentRoomId.value, new Map()]])
   ); // 回复消息映射
   const { userInfo } = userStore;
   // 开始闪烁
   const startFlash = (replyId: string) => {
-    flashMsgId.value = replyId
+    flashMsgId.value = replyId;
     // 以最后一次为准，清除上一次的定时器
-    clearTimeout(timer)
+    clearTimeout(timer);
     timer = setTimeout(() => {
-      flashMsgId.value = ''
-      clearTimeout(timer)
-
-    }, 3000)
-  }
+      flashMsgId.value = '';
+      clearTimeout(timer);
+    }, 3000);
+  };
   const currentMessageMap = computed({
     get: () => {
       if (!currentRoomId.value) {
@@ -318,7 +318,7 @@ export const useChatStore = defineStore('chat', () => {
     return sessionList.find((item) => item.roomId === roomId) as SessionItem;
   };
 
-  const pushMsg = async (msg: MessageType) => {
+  const pushMsg = async (msg: MessageType | Reactive<UploadTask>) => {
     const current = currentMessageMap.value;
     current?.set(msg.message.id, msg);
     // 获取用户信息缓存
@@ -355,6 +355,7 @@ export const useChatStore = defineStore('chat', () => {
     }
     // 如果收到的消息里面是艾特自己的就发送系统通知
     if (
+      msg.message.type === ChatMsgEnum.TEXT &&
       msg.message.body.atUidList?.includes(userStore.userInfo.id) &&
       cacheUser
     ) {
@@ -363,8 +364,10 @@ export const useChatStore = defineStore('chat', () => {
         msg.message.body.content,
         cacheUser.avatar as string
       );
+    } else if (String(msg.fromUser.uid) !== String(userStore.userInfo.id)) {
+      pushNotifyByMessage(msg);
     }
-    pushNotifyByMessage(msg);
+
     // tab 在后台获得新消息，就开始闪烁！
     if (document.hidden && !shakeTitle.isShaking) {
       shakeTitle.start();
@@ -507,28 +510,20 @@ export const useChatStore = defineStore('chat', () => {
     }
   };
   // 更新消息
-  const updateMsg = (msgId: string, newMessage: MessageType) => {
-    deleteMsg(msgId);
-    pushMsg(newMessage);
+  const updateMsg = async (msgId: string, newMessage: MessageType) => {
+    // 2025/1/19 更新，无需接口删除，本身就是本地mock消息
+    // await deleteMsg(msgId);
+    currentMessageMap.value?.delete(msgId);
+    await pushMsg(newMessage);
   };
 
   const getFlashMsgId = () => {
     return flashMsgId.value;
-  }
+  };
   // 处理本地mock消息,需要注意，后端真的收到了消息回再推一条真实的消息回来，这个消息idmock出来的，只有需要失败重试才需要留在客户端这边!且刷新就没了
-  const updateMsgMock = (
-    msgId: string,
-    newMessage: MessageType,
-    err: boolean
-  ) => {
-    // 当err为true，newMessage为null
-    if (err) {
-      const tempmockMessage = currentMessageMap.value?.get(msgId);
-      tempmockMessage.err = true;
-    } else {
-      // 成功了仅需要删除本地的mock消息即可!
-      currentMessageMap.value?.delete(msgId);
-    }
+  const updateMsgMock = (msgId: string, newMessage: MessageType) => {
+    // 成功了仅需要删除本地的mock消息即可,暂时还是走服务器推送!
+    currentMessageMap.value?.delete(msgId);
   };
 
   // 标记已读数为 0

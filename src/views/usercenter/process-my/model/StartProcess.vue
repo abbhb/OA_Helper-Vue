@@ -1,65 +1,68 @@
 <template>
-  <div>
-    <el-drawer v-model="open" title="发起流程" size="600px" append-to-body>
-      <el-alert title="需要注意的事项" type="success" :closable="false">
-        <template #title>
-          <div
-          >1.业务key
-            businessKey的作用:可以提供businessKey来将流程实例与具有明确业务含义的某个标识符关联起来。例如，在订单流程中，业务键可以是订单id。然后可以使用该业务键轻松地查找流程实例.
-          </div
-          >
-          <div
-          >
-            2.当然一个订单业务可以有多个流程实例,多个流程实例绑定一个businessKey,假设一个流程实例在某一个节点结束了,但是这个实例没有通过审核,那我们可以重新起一个流程实例,查询历史记录时可以根据businessKey来查找
-          </div
-          >
-          <div
-          >3.主表单
-            比如:张三要请5天假,那么张三就要填写:请假天数、请假类型、请假理由等信息,那么这里的主表单就要选择请假相关表单和流程,在流程定义中可以设置成流程条件
-          </div
-          >
-        </template>
-      </el-alert>
-      <br/>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="业务key" prop="businessKey">
-          <el-input
-            v-model="form.businessKey"
-            placeholder="businessKey就是业务key"
-          />
-        </el-form-item>
+  <div class="container">
 
-        <el-form-item
-          label="选择流程"
-          prop="definitionId"
-          class="disabled-color"
-        >
-          <el-input v-model="form.definitionName" readonly="readonly">
-            <template #append>
-              <el-button :icon="Search" @click="selectProcess.init()"/>
-            </template>
-          </el-input>
-        </el-form-item>
-      </el-form>
+    <div>
+      <el-drawer v-model="open" title="发起流程" size="600px" append-to-body>
+        <el-alert title="需要注意的事项" type="success" :closable="false">
+          <template #title>
+            <div
+            >1.业务key
+              businessKey的作用:可以提供businessKey来将流程实例与具有明确业务含义的某个标识符关联起来。例如，在订单流程中，业务键可以是订单id。然后可以使用该业务键轻松地查找流程实例.
+            </div
+            >
+            <div
+            >
+              2.当然一个订单业务可以有多个流程实例,多个流程实例绑定一个businessKey,假设一个流程实例在某一个节点结束了,但是这个实例没有通过审核,那我们可以重新起一个流程实例,查询历史记录时可以根据businessKey来查找
+            </div
+            >
+            <div
+            >3.主表单
+              比如:张三要请5天假,那么张三就要填写:请假天数、请假类型、请假理由等信息,那么这里的主表单就要选择请假相关表单和流程,在流程定义中可以设置成流程条件
+            </div
+            >
+          </template>
+        </el-alert>
+        <br/>
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="业务key" prop="businessKey">
+            <el-input
+              v-model="form.businessKey"
+              placeholder="businessKey就是业务key"
+            />
+          </el-form-item>
 
-      <el-card v-if="Object.keys(form.formJson).length !== 0" class="box-card">
-        <template #header>
-          <div class="card-header">
-            <span>主表单</span>
+          <el-form-item
+            label="选择流程"
+            prop="definitionId"
+            class="disabled-color"
+          >
+            <el-input v-model="form.definitionName" readonly="readonly">
+              <template #append>
+                <el-button :icon="Search" @click="selectProcess.init()"/>
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+
+        <el-card v-if="Object.keys(form.formJson).length !== 0" class="box-card">
+          <template #header>
+            <div class="card-header">
+              <span>主表单</span>
+            </div>
+          </template>
+          <!-- 节点动态表单 -->
+          <VFormRender ref="preForm" :preview-state="true"/>
+        </el-card>
+
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button @click="open = false">取 消</el-button>
           </div>
         </template>
-        <!-- 节点动态表单 -->
-        <VFormRender ref="preForm" :preview-state="true"/>
-      </el-card>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="open = false">取 消</el-button>
-        </div>
-      </template>
-    </el-drawer>
-    <SelectProcess ref="selectProcess" @ok="selectProcessOk"/>
+      </el-drawer>
+      <SelectProcess ref="selectProcess" @ok="selectProcessOk"/>
+    </div>
   </div>
 </template>
 

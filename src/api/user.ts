@@ -217,13 +217,16 @@ export function getUserListManger(params: {
   return axios.get<PageData<UserManger[]>>('/api/user/user_manger', { params });
 }
 
-export function listForBMPN(params: {
+export function listForSelectUser(params: {
   pageNum: number;
   pageSize: number;
-  name?: string;
+  name?: string;// 此处以下均为可选
   deptId?: string;
+  level?: string;
+  cascade?: number;
+  mustHaveStudentId?: number;
 }) {
-  return axios.get<PageData<UserManger[]>>('/api/user/listForBMPN', { params });
+  return axios.get<PageData<UserManger[]>>('/api/user/listForSelect', { params });
 }
 
 export function listForLevels() {

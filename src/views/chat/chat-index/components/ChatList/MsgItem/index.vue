@@ -27,12 +27,13 @@
   import { useGlobalStore } from '@/store/modules/chat/global';
   import setting from '@/config/setting';
   import { useUpload } from '@/hooks/chat/useUpload';
+  import {UploadTask} from "@/hooks/chat/useUploadN";
   import MsgOption from '../MsgOption/index.vue';
 
   const props = defineProps({
     // 消息体
     msg: {
-      type: Object as PropType<MessageType>,
+      type: Object as PropType<MessageType&UploadTask>,
       required: true,
     },
     // 是否显示时间
@@ -100,6 +101,10 @@
     isVisible.value = visible;
   };
 
+  const upLoading = computed(()=>{
+    return props.msg?.Mock || false;
+  })
+
   const userStore = useUserStore();
   const chatStore = useChatStore();
   const globalStore = useGlobalStore();
@@ -148,12 +153,11 @@
     if (!reply || !reply.canCallback) return;
     // 如果消息已经加载过了，就直接跳转
     const index = chatStore.getMsgIndex(String(reply.id));
-    console.log(index)
+    console.log(index);
     if (index > -1) {
       console.log('加载过');
       chatStore.startFlash(String(reply.id));
-      virtualListRef?.value?.scrollToIndex(index, true, 12)
-
+      virtualListRef?.value?.scrollToIndex(index, true, 12);
     } else {
       console.log(reply.id);
       console.log('没加载过');
@@ -169,19 +173,10 @@
 
       // TODO 跳转到的消息 高亮一下
       const index = await chatStore.getMsgIndex(String(reply.id));
-      console.log("加载完成")
-      console.log(index)
-      chatStore.startFlash(String(reply.id))
-      setTimeout(
-
-        virtualListRef?.value?.scrollToIndex(
-          index,
-          false,
-          12
-        ),
-        0.5
-      );
-
+      console.log('加载完成');
+      console.log(index);
+      chatStore.startFlash(String(reply.id));
+      setTimeout(virtualListRef?.value?.scrollToIndex(index, false, 12), 0.5);
     }
   };
 
@@ -231,8 +226,10 @@
       }
       const targetIsVisible = useElementVisibility(msgVisibleEl);
       const msg = props.msg.message;
+      const msgObject = props.msg;
       // 自己的消息, 且不是撤回/系统消息，才监听未读数计算
       if (
+        !msgObject?.Mock &&
         isCurrentUser.value &&
         msgVisibleEl &&
         ![ChatMsgEnum.RECALL, ChatMsgEnum.SYSTEM].includes(msg.type)
@@ -316,16 +313,20 @@
           >
             <!-- 消息的操作，点赞回复那些 -->
             <template #content>
-              <MsgOption :msg="msg" />
+              <MsgOption :msg="msg" v-if="!upLoading" />
             </template>
             <div
               ref="renderMsgRef"
-              :class="['chat-item-content', { uploading: msg?.loading },{ 'isFlash': flashMessageId === String(msg.message.id) }]"
+              :class="[
+                'chat-item-content',
+                { uploading: msg?.loading },
+                { isFlash: flashMessageId === String(msg.message.id) },
+              ]"
               @contextmenu.prevent.stop="handleRightClick($event)"
             >
               <!-- 这里是未读数计算 -->
               <div
-                v-if="isCurrentUser"
+                v-if="isCurrentUser && !upLoading"
                 class="chat-item-read-count"
                 :class="{
                   'is-gray': readCount.unread === 0,
@@ -345,7 +346,7 @@
               <!-- 渲染消息内容体 -->
 
               <RenderMessage
-                :message="message"
+                :message="msg"
                 :ext-type="
                   fromUser.uid === setting.chatgptUserInfo.uid ? 'chatgpt' : ''
                 "

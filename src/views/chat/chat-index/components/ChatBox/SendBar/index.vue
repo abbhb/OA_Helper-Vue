@@ -16,9 +16,7 @@
   import { useChatStore } from '@/store/modules/chat/chat';
   import { IMention } from '@/views/chat/chat-index/components/ChatBox/MsgInput/types';
   import { ChatMsgEnum, RoleEnum, RoomTypeEnum } from '@/types/enums/chat';
-  import { Message } from '@arco-design/web-vue';
-  import { sendMsg } from '@/api/chat';
-  import { generateBody } from '@/utils/chat';
+  import { Message, Notification } from '@arco-design/web-vue';
   import { useMockMessage } from '@/hooks/chat/useMockMessage';
   import { useRecording } from '@/hooks/chat/useRecording';
   import { useEmojiUpload } from '@/hooks/chat/useEmojiUpload';
@@ -33,7 +31,7 @@
   import renderReplyContent from '@/utils/chat/renderReplyContent';
   import { useGroupStore } from '@/store/modules/chat/group';
   import MsgInput from '@/views/chat/chat-index/components/ChatBox/MsgInput/index.vue';
-  import { Notification } from '@arco-design/web-vue'
+  import { UploadTask } from '@/hooks/chat/useUploadN';
 
   const client = judgeClient();
 
@@ -41,7 +39,7 @@
   const globalStore = useGlobalStore();
   const isSending = ref(false);
   const inputMsg = ref('');
-  const inputMsgOrigin = ref('');// 原始数据
+  const inputMsgOrigin = ref(''); // 原始数据
   const mentionRef = ref();
   const mentionList = ref<IMention[]>([]);
   const isAudio = ref(false);
@@ -88,21 +86,28 @@
   // 发送消息
   const send = async (msgType: ChatMsgEnum, body: any) => {
     try {
-      const { data } = await sendMsg({
-        roomId: globalStore.currentSession.roomId,
-        msgType,
-        body,
-      });
-      if (data.message.type === ChatMsgEnum.TEXT) {
-        // chatStore.pushMsg(data); // 消息列表新增一条消息,发送消息没必要再push了，收到ws的消息就能push
-      } else {
-        // 更新上传状态下的消息
-        // chatStore.updateMsg(tempMessageId.value, data);
+      // const { data } = await sendMsg({
+      //   roomId: globalStore.currentSession.roomId,
+      //   msgType,
+      //   body,
+      // });
+      // update:2025.1.19
+      if (msgType !== ChatMsgEnum.TEXT && msgType !== ChatMsgEnum.EMOJI) {
+        Message.error('请联系管理员升级，该消息类型不支持');
+        console.log('警告：该类型消息未支持');
+        console.log(body);
+        console.log(msgType);
       }
+      const mockMessage = new UploadTask(msgType, body, null);
+      console.log('开始发送消息--4');
+      const mockMessageObject = reactive<UploadTask>(mockMessage);
+      await chatStore.pushMsg(mockMessageObject);
+      console.log('开始上传文件--5');
+      await mockMessage.start();
     } catch (e) {
       // Message.error(e.message);
       console.log(e);
-      Notification.error(e)
+      Notification.error(e);
     } finally {
       inputMsg.value = ''; // 清空输入列表
       inputMsgOrigin.value = ''; // 清空输入列表
@@ -116,7 +121,15 @@
 
   const sendMsgHandler = () => {
     // 空消息或正在发送时禁止发送
-    if (!inputMsg.value?.trim().length || !inputMsgOrigin.value?.trim().length || isSending.value) {
+    if (
+      (inputMsg.value?.trim().length === 0 ||
+      inputMsgOrigin.value?.trim().length === 0 )||
+      isSending.value
+    ) {
+      console.log("禁止发送状态")
+      console.log(inputMsg.value)
+      console.log(inputMsgOrigin.value)
+      console.log(isSending.value)
       return;
     }
 
@@ -181,6 +194,7 @@
     insertInputText({ content: emoji, ...editRange });
     // 需要更新以触发 onChang
     inputMsg.value = input.innerText;
+    inputMsgOrigin.value = input.innerText;
     // 关闭表情弹窗，一次只选一个表情
     showEmoji.value = false;
     // 临时让获取焦点
@@ -227,10 +241,25 @@
         return;
       }
     }
+    console.log('开始上传文件--1');
     if (isUpEmoji.value) {
       await uploadEmoji(file);
     } else {
-      await uploadFile(file);
+      console.log('开始上传文件--2');
+
+      isUploading.value = true;
+      // 最终一致，当解析文件后是视频会修改状态
+      console.log('开始上传文件--3');
+
+      const mockMessage = new UploadTask(ChatMsgEnum.FILE, null, file);
+      console.log('开始上传文件--4');
+      const mockMessageObject = reactive<UploadTask>(mockMessage);
+
+      await chatStore.pushMsg(mockMessageObject);
+      console.log('开始上传文件--5');
+      await mockMessage.start();
+      isUploading.value = false;
+      // await uploadFile(file);
     }
   };
 
@@ -261,18 +290,26 @@
   });
 
   useUploadChange((status) => {
-    if (status === 'success') {
-      if (!fileInfo.value) return;
-      const { body, type } = generateBody(fileInfo.value, nowMsgType.value);
-      send(type, body);
-    }
+    // if (status === 'success') {
+    //   if (!fileInfo.value) return;
+    //   const { body, type } = generateBody(fileInfo.value, nowMsgType.value);
+    //   send(type, body);
+    // }
     reset();
   });
   watch(isUploading, (newc) => {
     isSending.value = newc;
   });
 
-  onEnd((audioFile: any) => uploadFile(audioFile));
+  onEnd(async (audioFile: any) => {
+    const mockMessage = new UploadTask(ChatMsgEnum.VOICE, null, audioFile);
+    console.log('开始上传文件--4');
+    const mockMessageObject = reactive<UploadTask>(mockMessage);
+
+    await chatStore.pushMsg(mockMessageObject);
+    console.log('开始上传文件--5');
+    await mockMessage.start();
+  });
 
   const onStartRecord = () => {
     nowMsgType.value = ChatMsgEnum.VOICE;
@@ -377,7 +414,7 @@
                   @contextmenu="handleRightClick($event, emoji.id)"
                 >
                   <a-image :width="50" :src="emoji.expressionUrl" />
-                  <icon-folder-add
+                  <icon-delete
                     v-if="emoji.id === tempEmojiId"
                     icon="guanbi1"
                     class="del"
@@ -395,7 +432,7 @@
                 </div>
               </div>
               <div class="footer">
-                <div
+                <icon-face-meh-fill
                   :class="[
                     'cursor-pointer',
                     'footer-act',
@@ -403,8 +440,7 @@
                   ]"
                   :size="emojiSize"
                   @click="panelIndex = 0"
-                  >emoji</div
-                >
+                />
                 <icon-heart-fill
                   :class="[
                     'cursor-pointer',
@@ -456,7 +492,7 @@
   </div>
 </template>
 
-<style lang="scss" src="./styles.scss" scoped />
+<style lang="scss" src="./styles.scss" />
 
 <style lang="scss">
   .emoji-warpper {

@@ -117,7 +117,7 @@ export const generateBody = (
   if (msgType === ChatMsgEnum.IMAGE) {
     body = { ...baseBody, width, height };
   } else if (msgType === ChatMsgEnum.VOICE) {
-    body = { ...baseBody, second };
+    body = { ...baseBody, second, url: downloadUrl };
   } else if (msgType === ChatMsgEnum.VIDEO) {
     body = { ...baseBody, thumbWidth, thumbHeight, thumbUrl, thumbSize };
   } else if (msgType === ChatMsgEnum.FILE) {

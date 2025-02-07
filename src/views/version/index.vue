@@ -4,7 +4,7 @@ import version from '@/config/version.json';
 import AvatarImage from "@/components/image/AvatarImage.vue";
 
 const data = version;
-const selectVersion = ref(data[data.length - 1]);
+const selectVersion = ref(data[0]);
 </script>
 
 <template>
