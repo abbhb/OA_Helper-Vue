@@ -227,7 +227,7 @@
     form.value.avatar = record.avatar;
     form.value.status = record.status;
     form.value.sex = record.sex;
-    form.value.username = record.username;
+    form.value.linkName = record.username;
     form.value.name = record.name;
     const sadas = [];
     if (record.roles) {
@@ -316,7 +316,7 @@
     form.value.avatar = '';
     form.value.status = 1;
     form.value.sex = '男';
-    form.value.username = '';
+    form.value.linkName = '';
     form.value.roles = [];
     form.value.email = '';
     form.value.phone = '';

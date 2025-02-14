@@ -5,8 +5,9 @@ import {PageData} from "@/api/common";
 // 打印机用户关联信息
 export interface PrintDeviceUser {
   id: string;
-  userId: string;
-  username: string;
+  linkId: string;
+  linkName: string;
+  linkType: number;
   printDeviceId: string;
   role: number;
 }
@@ -35,9 +36,10 @@ export interface UpdatePrintDeviceReq {
 }
 
 // 打印机用户权限请求
-export interface PrintDeviceUserReq {
+export interface PrintDeviceLinkReq {
   printDeviceId: string; // 打印机行id
-  userIds: string[];
+  linkIds: string[];
+  linkType: number;
   role: number;
 }
 
@@ -48,7 +50,7 @@ export interface TransferOwnershipReq {
 }
 
 // 用户列表查询参数 role:0 all
-export interface PrintDeviceUserQuery {
+export interface PrintDeviceLinkQuery {
   printDeviceId: string;
   role?: number;
   pageNum?: number;
@@ -95,14 +97,14 @@ export function updatePrintDeviceStatus(id: string, status: number) {
 }
 
 // 获取打印机用户列表 done
-export function getPrintDeviceUsers(params: PrintDeviceUserQuery) {
-  return axios.get<PageData<PrintDeviceUser[]>>('/api/print_device/user/list', {
+export function getPrintDeviceLinks(params: PrintDeviceLinkQuery) {
+  return axios.get<PageData<PrintDeviceUser[]>>('/api/print_device/link/list', {
     params,
   });
 }
-export function getPrintDeviceUserIds(deviceId: string) {
-  return axios.get<string[]>(
-    '/api/print_device/user/id/list',
+export function getPrintDeviceLinkIds(deviceId: string) {
+  return axios.get<Map<number,string[]>>(
+    '/api/print_device/link/id/list',
     {
     params:{
       deviceId
@@ -111,23 +113,25 @@ export function getPrintDeviceUserIds(deviceId: string) {
 }
 
 // 添加打印机用户 done
-export function addPrintDeviceUsers(data: PrintDeviceUserReq) {
-  return axios.post<string>('/api/print_device/user/add', data);
+export function addPrintDeviceLinks(data: PrintDeviceLinkReq) {
+  return axios.post<string>('/api/print_device/link/add', data);
 }
 
 // 移除打印机用户 userId可以，分隔(批量移除) done
-export function removePrintDeviceUser(printDeviceId: string, userId: string) {
-  return axios.delete<string>('/api/print_device/user/remove', {
+export function removePrintDeviceLink(printDeviceId: string, linkId: string
+                                      ,linkType :number) {
+  return axios.delete<string>('/api/print_device/link/remove', {
     params: {
       printDeviceId,
-      userId,
+      linkId,
+      linkType,
     },
   });
 }
 
 // 更新用户角色 done
-export function updatePrintDeviceUserRole(data: PrintDeviceUserReq) {
-  return axios.put<string>('/api/print_device/user/update_role', data);
+export function updatePrintDeviceLinkRole(data: PrintDeviceLinkReq) {
+  return axios.put<string>('/api/print_device/link/update_role', data);
 }
 
 // 获取打印机详情

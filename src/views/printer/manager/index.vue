@@ -7,7 +7,7 @@
     updatePrintDeviceStatus,
     deletePrintDevice,
     createPrintDevice,
-    addPrintDeviceUsers, updatePrintDeviceUserRole,
+    addPrintDeviceLinks, updatePrintDeviceLinkRole,
     getUnRegisterPrintDeviceList, PrintDeviceNotRegisterVO,
   } from '@/api/print-device';
   import type { PrintDevice } from './types';
@@ -83,29 +83,29 @@
     }
   };
 
-  // 转移所有权
-  const handleTransferOwnership = async (record: PrintDevice) => {
-    try {
-      await Modal.confirm({
-        title: '确认转移',
-        content: '转移所有权后，您将失去对此打印机的所有权限，确认继续吗？',
-      });
-
-      // 更新接口包含转交
-      const { data } = await updatePrintDeviceUserRole({
-        userIds: [], // TODO:转交的人选择
-        printDeviceId: record.id,
-        role: 1,
-      });
-      Message.success('所有权转移成功');
-      await fetchData();
-    } catch (error) {
-      if (error instanceof Error) {
-        Message.error('转移所有权失败');
-        console.error('转移所有权错误:', error);
-      }
-    }
-  };
+  // // 转移所有权
+  // const handleTransferOwnership = async (record: PrintDevice) => {
+  //   try {
+  //     await Modal.confirm({
+  //       title: '确认转移',
+  //       content: '转移所有权后，您将失去对此打印机的所有权限，确认继续吗？',
+  //     });
+  //
+  //     // 更新接口包含转交
+  //     const { data } = await updatePrintDeviceLinkRole({
+  //       linkIds: [], // TODO:转交的人选择
+  //       printDeviceId: record.id,
+  //       role: 1,
+  //     });
+  //     Message.success('所有权转移成功');
+  //     await fetchData();
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       Message.error('转移所有权失败');
+  //       console.error('转移所有权错误:', error);
+  //     }
+  //   }
+  // };
 
   // 打开权限管理对话框
   const handleManageUsers = (record: PrintDevice) => {
@@ -117,34 +117,34 @@
     });
   };
 
-  // 确认授权
-  const handleConfirmAuth = async () => {
-    if (!selectedUsers.value.length) {
-      Message.warning('请选择要授权的用户');
-      return;
-    }
-    if (!currentDevice.value) {
-      Message.error('设备信息异常');
-      return;
-    }
-
-    authLoading.value = true;
-    try {
-      const { data } = await addPrintDeviceUsers({
-        printDeviceId: currentDevice.value.id,
-        userIds: selectedUsers.value,
-        role: selectedRole.value,
-      });
-      Message.success('授权成功');
-      showAuthDialog.value = false;
-      await fetchData();
-    } catch (error) {
-      Message.error('授权失败');
-      console.error('授权错误:', error);
-    } finally {
-      authLoading.value = false;
-    }
-  };
+  // // 确认授权
+  // const handleConfirmAuth = async () => {
+  //   if (!selectedUsers.value.length) {
+  //     Message.warning('请选择要授权的用户');
+  //     return;
+  //   }
+  //   if (!currentDevice.value) {
+  //     Message.error('设备信息异常');
+  //     return;
+  //   }
+  //
+  //   authLoading.value = true;
+  //   try {
+  //     const { data } = await addPrintDeviceLinks({
+  //       printDeviceId: currentDevice.value.id,
+  //       linkIds: selectedUsers.value,
+  //       role: selectedRole.value,
+  //     });
+  //     Message.success('授权成功');
+  //     showAuthDialog.value = false;
+  //     await fetchData();
+  //   } catch (error) {
+  //     Message.error('授权失败');
+  //     console.error('授权错误:', error);
+  //   } finally {
+  //     authLoading.value = false;
+  //   }
+  // };
 
   // 检查是否有编辑权限
   const hasEditPermission = (role?: number) => {
@@ -327,9 +327,10 @@
         v-model:visible="showAuthDialog"
         title="权限管理"
         :loading="authLoading"
-        @ok="handleConfirmAuth"
         @cancel="showAuthDialog = false"
       >
+        <!--        @ok="handleConfirmAuth"-->
+
         <a-form :model="{ selectedRole }" layout="vertical">
           <a-form-item label="选择用户" required>
             <a-select

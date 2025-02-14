@@ -105,7 +105,7 @@ const handleClick = async () => {
   const auserList = ref<GroupUser[]>([]);
   selectUser.value.forEach((item) => {
     const auser = ref<GroupUser>({userId: ''});
-    auser.value.userId = item;
+    auser.value.linkId = item;
     auserList.value.push(auser.value);
   });
   const {data} = await updateGroup({
