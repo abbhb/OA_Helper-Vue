@@ -1,5 +1,5 @@
 <template>
-  <div class="number" :style="style">
+  <div class="number" :style="style" @click="clickItem(item)">
     <div
       class="appear"
       :class="{
@@ -40,12 +40,15 @@
     const transform = `translate(${item.y * 110}px,${item.x * 110}px)`;
     return {
       transform,
-      zIndex: item.number + zIndex.value,
+      zIndex: item.number/2 + zIndex.value,
     };
   });
 
-  const emit = defineEmits(['remove']);
-
+  const emit = defineEmits(['remove', 'bclick']);
+  const clickItem = (item) => {
+    // eslint-disable-next-line vue/custom-event-name-casing
+    emit('bclick', item);
+  };
   watch(
     () => item.number,
     () => {
@@ -66,6 +69,7 @@
         zIndex.value = 0;
         nextTick(() => {
           setTimeout(() => {
+            console.log('方块被删除');
             emit('remove');
           }, 200);
         });

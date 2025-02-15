@@ -22,6 +22,10 @@ export const useUserInfo = (uid?: string | ComputedRef<string | undefined>) => {
         lastOptTime: '',
       };
     }
+    if (!(uid && cachedStore.userCachedList[toValue(uid as string)])){
+      cachedStore.getBatchUserInfo([uid as string])
+      return {}
+    }
     return (uid && cachedStore.userCachedList[toValue(uid as string)]) || {};
   });
   return userInfo;
