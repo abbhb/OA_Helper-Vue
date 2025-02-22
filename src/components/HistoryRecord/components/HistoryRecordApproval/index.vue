@@ -10,41 +10,12 @@
         <el-tab-pane label="审批记录" name="1">
           <div class="history-root">
             <div class="box-card main-form" style="overflow-y: auto">
-              <el-card class="main-form" shadow="hover">
-                <template #header>
-                  <div class="card-header">
-                    <span>主表单信息</span>
-                  </div>
-                </template>
-                <!--      支持额外拓展的一些组件,当definitionKey===Process_system_1使用userinfo-base-ext组件展示-->
-
-                <userinfobaseext v-if="mydefinitionKey === 'Process_system_1'" :privie=true :taskId="instanceId"/>
-                <MainForm v-else
-                  ref="mainForm"
-                  :form-json="mainFormInfo.formJson"
-                  :form-data="mainFormInfo.formData"
-                />
-              </el-card>
-              <el-card class="history-container" shadow="hover">
-                <template #header>
-                  <div class="card-header">
-                    <span>历史记录</span>
-                  </div>
-                </template>
-                <div class="hint-container">
-                  <div class="history">已审批</div>
-                  <div class="next">待审批</div>
-                </div>
-                <el-timeline>
-                  <el-timeline-item
-                    v-for="(item, index) in historyRecordList"
-                    :key="index"
-                    :color="item.status === 1 ? '#0bbd87' : '#e4e7ed'"
-                  >
-                    <HistoryNodeInfo :node-item="item" />
-                  </el-timeline-item>
-                </el-timeline>
-              </el-card>
+              <MainFormPanel
+                :instance-id="instanceId"
+                :definition-key="mydefinitionKey"
+              />
+              <!-- 替换为新的历史记录组件 -->
+              <HistoryRecord :instance-id="instanceId" />
             </div>
             <el-card class="box-card shenpi-container" shadow="hover">
               <template #header>
@@ -64,7 +35,6 @@
                   <el-button @click="drawer = false">取消</el-button>
                 </span>
               </div>
-
             </el-card>
           </div>
         </el-tab-pane>
@@ -87,11 +57,9 @@
   } from '@/api/bpmn';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import VFormRender from '@/components/FormDesigner/form-render/index.vue';
-  import userinfobaseext from '@/components/userinfo-base-ext/index.vue'
-  import HistoryNodeInfo from './components/HistoryNodeInfo.vue';
-  import MainForm from './components/MainForm.vue';
-  import HighlightNode from './components/HighlightNode.vue';
-
+  import MainFormPanel from '@/components/BpmnJs/components/MainFormPanel/index.vue';
+  import HistoryRecord from '@/components/BpmnJs/components/HistoryRecord/index.vue';
+  import HighlightNode from '@/components/BpmnJs/components/HistoryRecord/HighlightNode.vue';
 
   // 是否打开弹出框
   const drawer = ref(false);
@@ -126,8 +94,6 @@
   let activityId = '';
   let mydefinitionKey = '';
 
-
-
   /**
    * 初始化
    * @param id 流程实例id
@@ -151,8 +117,7 @@
     instance_id: string,
     taskId: string,
     taskDefinitionKey: string,
-  definitionKey: string
-
+    definitionKey: string
   ) => {
     instanceId.value = instance_id;
     tabsValue.value = '1';
@@ -163,6 +128,7 @@
     activityId = taskDefinitionKey;
     // 获取动态表单
     const res = await getNodeForm(taskId);
+    // @ts-ignore
     if (res.code === 1 && res.data !== '') {
       formJson.value = res.data;
       drawer.value = true;
@@ -219,11 +185,12 @@
       );
       form.value.variables = variables;
       const res = await completeProcessTodo(form.value);
+      // @ts-ignore
       if (res.code === 1) {
+        // @ts-ignore
         ElMessage.success(res.msg);
         emit('ok');
         drawer.value = false;
-
       }
     });
   }

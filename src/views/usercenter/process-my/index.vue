@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
       <el-form-item label="业务key">
         <el-input
@@ -49,7 +49,7 @@
           <el-tag v-if="scope.row.status === 1" type="success">进行中</el-tag>
           <el-tag v-if="scope.row.status === 2">已完成</el-tag>
           <el-tag v-if="scope.row.status === 3" type="danger"
-          >发起人撤销
+          >{{ scope.row.statusName }}
           </el-tag
           >
         </template>
@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
-import HistoryRecord from '@/components/HistoryRecord/index.vue';
+import HistoryRecord from '@/components/HistoryRecord/components/HistoryRecord/index.vue';
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {deleteProcessStart, processStartList} from '@/api/bpmn';
 import StartProcess from './model/StartProcess.vue';

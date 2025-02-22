@@ -1,93 +1,96 @@
 <template>
-  <a-card
-    class="general-card"
-    :header-style="{ paddingBottom: '0' }"
-    :body-style="{ padding: '17px 20px 21px 20px' }"
-  >
-    <template #title> 我的待办 </template>
-    <template #extra>
-      <a-link v-if="!props.noMore" @click="emit('alertSome')"
+  <div class="container">
+    <a-card
+      class="general-card"
+      :header-style="{ paddingBottom: '0' }"
+      :body-style="{ padding: '17px 20px 21px 20px' }"
+    >
+      <template #title> 我的待办 </template>
+      <template #extra>
+        <a-link v-if="!props.noMore" @click="emit('alertSome')"
         >{{ $t('workplace.viewMore') }}
-      </a-link>
-    </template>
-    <div>
-      <el-form :inline="true" :model="queryForm" class="demo-form-inline">
-        <el-form-item label="流程名称">
-          <el-input
-            v-model="queryForm.definitionName"
-            placeholder="流程名称"
-            clearable
+        </a-link>
+      </template>
+      <div>
+        <el-form :inline="true" :model="queryForm" class="demo-form-inline">
+          <el-form-item label="流程名称">
+            <el-input
+              v-model="queryForm.definitionName"
+              placeholder="流程名称"
+              clearable
+            />
+          </el-form-item>
+          <!--      <el-form-item label="流程key">-->
+          <!--        <el-input-->
+          <!--          v-model="queryForm.definitionKey"-->
+          <!--          placeholder="流程key"-->
+          <!--          clearable-->
+          <!--        />-->
+          <!--      </el-form-item>-->
+          <el-form-item>
+            <el-button type="primary" @click="handleQuery">查询</el-button>
+          </el-form-item>
+        </el-form>
+
+        <el-table v-loading="loading" :data="list">
+          <el-table-column label="序号" type="index" width="100" />
+          <el-table-column
+            label="流程名称"
+            align="center"
+            prop="definitionName"
           />
-        </el-form-item>
-        <!--      <el-form-item label="流程key">-->
-        <!--        <el-input-->
-        <!--          v-model="queryForm.definitionKey"-->
-        <!--          placeholder="流程key"-->
-        <!--          clearable-->
-        <!--        />-->
-        <!--      </el-form-item>-->
-        <el-form-item>
-          <el-button type="primary" @click="handleQuery">查询</el-button>
-        </el-form-item>
-      </el-form>
-
-      <el-table v-loading="loading" :data="list">
-        <el-table-column label="序号" type="index" width="100" />
-        <el-table-column
-          label="流程名称"
-          align="center"
-          prop="definitionName"
-        />
-        <!--      <el-table-column label="流程key" align="center" prop="definitionKey"/>-->
-        <el-table-column label="创建时间" align="center" prop="createTime" />
-        <el-table-column label="当前节点" align="center" prop="taskName" />
-        <!--      <el-table-column-->
-        <!--        label="当前节点key"-->
-        <!--        align="center"-->
-        <!--        prop="taskDefinitionKey"-->
-        <!--      />-->
-        <el-table-column label="发起人" align="center" prop="startUserName" />
-        <el-table-column>
-          <template #default="scope">
-            <el-button
-              link
-              type="primary"
-              icon="Pointer"
-              @click="handleApproval(scope.row)"
+          <!--      <el-table-column label="流程key" align="center" prop="definitionKey"/>-->
+          <el-table-column label="创建时间" align="center" prop="createTime" />
+          <el-table-column label="当前节点" align="center" prop="taskName" />
+          <!--      <el-table-column-->
+          <!--        label="当前节点key"-->
+          <!--        align="center"-->
+          <!--        prop="taskDefinitionKey"-->
+          <!--      />-->
+          <el-table-column label="发起人" align="center" prop="startUserName" />
+          <el-table-column>
+            <template #default="scope">
+              <el-button
+                link
+                type="primary"
+                icon="Pointer"
+                @click="handleApproval(scope.row)"
               >快捷审批
-            </el-button>
-            <el-button
-              link
-              type="primary"
-              icon="Pointer"
-              @click="handleHistoryRecord(scope.row)"
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                icon="Pointer"
+                @click="handleHistoryRecord(scope.row)"
               >审批
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-      <el-pagination
-        v-model:page-size="queryForm.pageSize"
-        v-model:current-page="queryForm.pageNo"
-        background
-        layout="prev, pager, next"
-        :total="total"
-        @current-change="getList"
-      />
+        <el-pagination
+          v-model:page-size="queryForm.pageSize"
+          v-model:current-page="queryForm.pageNo"
+          background
+          layout="prev, pager, next"
+          :total="total"
+          @current-change="getList"
+        />
 
-      <!-- 审批 -->
-      <Approval ref="approvalRef" @ok="getList" />
+        <!-- 审批 -->
+        <Approval ref="approvalRef" @ok="getList" />
 
-      <!-- 审批记录 -->
-      <HistoryRecordApproval ref="historyRecordApprovalRef" @ok="getList" />
-    </div>
-  </a-card>
+        <!-- 审批记录 -->
+        <HistoryRecordApproval ref="historyRecordApprovalRef" @ok="getList" />
+      </div>
+    </a-card>
+  </div>
+
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, defineEmits } from 'vue';
-  import HistoryRecordApproval from '@/components/HistoryRecordApproval/index.vue';
+  import HistoryRecordApproval from '@/components/HistoryRecord/components/HistoryRecordApproval/index.vue';
   import { processTodoList } from '@/api/bpmn';
   import Approval from './model/Approval.vue';
 

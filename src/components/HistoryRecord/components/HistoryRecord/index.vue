@@ -9,40 +9,13 @@
       >
         <el-tab-pane label="审批记录" name="1">
           <div class="history-root">
-            <el-card class="box-card main-form" shadow="hover" style="height: 600px;overflow-y: auto">
-              <template #header>
-                <div class="card-header">
-                  <span>主表单信息</span>
-                </div>
-              </template>
-              <userinfobaseext :key="instanceId" v-if="mydefinitionKey === 'Process_system_1'" :privie=true :taskId="instanceId"/>
-              <MainForm v-else
-                ref="mainForm"
-                :form-json="mainFormInfo.formJson"
-                :form-data="mainFormInfo.formData"
-              />
-            </el-card>
+            <MainFormPanel
+              :instance-id="instanceId"
+              :definition-key="mydefinitionKey"
+            />
 
-            <el-card class="box-card history-container" shadow="hover">
-              <template #header>
-                <div class="card-header">
-                  <span>历史记录</span>
-                </div>
-              </template>
-              <div class="hint-container">
-                <div class="history">已审批</div>
-                <div class="next">待审批</div>
-              </div>
-              <el-timeline>
-                <el-timeline-item
-                  v-for="(item, index) in historyRecordList"
-                  :key="index"
-                  :color="item.status === 1 ? '#0bbd87' : '#e4e7ed'"
-                >
-                  <HistoryNodeInfo :node-item="item" />
-                </el-timeline-item>
-              </el-timeline>
-            </el-card>
+            <!-- 替换为新的历史记录组件 -->
+            <HistoryRecord :instance-id="instanceId" />
           </div>
         </el-tab-pane>
         <el-tab-pane label="流程节点" name="2">
@@ -57,19 +30,14 @@
   import { ref } from 'vue';
   import {
     getHighlightNodeInfo,
-    getHistoryRecord,
     getMainFormInfo,
   } from '@/api/bpmn';
-  import VFormRender from '@/components/FormDesigner/form-render/index.vue';
-  import userinfobaseext from '@/components/userinfo-base-ext/index.vue'
-  import HistoryNodeInfo from './components/HistoryNodeInfo.vue';
-  import MainForm from './components/MainForm.vue';
-  import HighlightNode from './components/HighlightNode.vue';
+  import MainFormPanel from '@/components/BpmnJs/components/MainFormPanel/index.vue';
+  import HistoryRecord from '@/components/BpmnJs/components/HistoryRecord/index.vue';
+  import HighlightNode from '../../../BpmnJs/components/HistoryRecord/HighlightNode.vue';
 
   // 是否打开弹出框
   const drawer = ref(false);
-  // 审批历史记录列表数据
-  const historyRecordList = ref<any[]>([]);
   // 流程图高亮信息
   const highlightNodee = ref<any>({});
   // 主表单信息
@@ -93,16 +61,13 @@
   const historyRecord = async () => {
     loading.value = true;
     mainFormInfo.value = {};
-    historyRecordList.value = [];
-    const { data } = await getHistoryRecord(instanceId.value);
-    historyRecordList.value = data;
 
     const res = await getMainFormInfo(instanceId.value);
     mainFormInfo.value = res.data;
 
     loading.value = false;
   };
-  const open = (instance_id: string,definitionKey?:string) => {
+  const open = (instance_id: string, definitionKey?: string) => {
     instanceId.value = instance_id;
     tabsValue.value = '1';
     mydefinitionKey = definitionKey;
@@ -201,6 +166,10 @@
 
   .history::before {
     background-color: #0bbd87 !important;
+  }
+
+  .history_reject::before {
+    background-color: red !important;
   }
 
   .next::before {

@@ -1,6 +1,6 @@
-<!-- 多选用户组件 -->
+<!-- 监听器组件 -->
 <template>
-  <el-dialog v-model="open" title="选择人" width="1200px" append-to-body>
+  <el-dialog v-model="open" title="选择监听器" width="1200px" append-to-body>
     <el-form :inline="true" :model="queryForm" class="demo-form-inline">
       <el-form-item label="监听器名称">
         <el-input
@@ -85,7 +85,13 @@ const total = ref(0);
 // 列表是否加载
 const loading = ref(true);
 // 列表返回值
-const list = ref<any[]>([]);
+const list = ref<any[]>([
+  {
+    listenerName:"不存在的监听器",
+    javaClass:"com.java.c",
+    remark:"请勿选择",
+  }
+]);
 // 是否打开弹出框
 const open = ref(false);
 
@@ -101,15 +107,16 @@ const handleOpen = () => {
  * 查询列表
  */
 const getList = async () => {
+
   loading.value = true;
-  const {data} = await listenerList({
-    pageSize: queryForm.pageSize,
-    pageNum: queryForm.pageNo,
-    listenerName: queryForm.listenerName,
-  });
+  // const {data} = await listenerList({
+  //   pageSize: queryForm.pageSize,
+  //   pageNum: queryForm.pageNo,
+  //   listenerName: queryForm.listenerName,
+  // });
   loading.value = false;
-  list.value = data.records;
-  total.value = data.total;
+  // list.value = data.records;
+  // total.value = data.total;
 };
 
 /**

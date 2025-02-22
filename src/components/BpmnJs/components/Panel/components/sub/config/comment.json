@@ -1,13 +1,58 @@
 {
   "widgetList": [
     {
-      "key": 62068,
-      "type": "textarea",
-      "icon": "textarea-field",
+      "key": 24192,
+      "type": "radio",
+      "icon": "radio-field",
       "formItemFlag": true,
       "options": {
         "name": "comment",
         "label": "审批意见",
+        "labelAlign": "label-left-align",
+        "defaultValue": null,
+        "columnWidth": "200px",
+        "size": "",
+        "displayStyle": "inline",
+        "buttonStyle": false,
+        "border": false,
+        "labelWidth": null,
+        "labelHidden": false,
+        "disabled": false,
+        "hidden": false,
+        "optionItems": [
+          {
+            "label": "通过",
+            "value": "True"
+          },
+          {
+            "label": "不通过",
+            "value": "False"
+          }
+        ],
+        "required": true,
+        "requiredHint": "请选择是否通过审批",
+        "validation": "",
+        "validationHint": "",
+        "customClass": [],
+        "labelIconClass": null,
+        "labelIconPosition": "rear",
+        "labelTooltip": null,
+        "onCreated": "",
+        "onMounted": "",
+        "onChange": "",
+        "onValidate": "",
+        "checkField": false
+      },
+      "id": "radio79167"
+    },
+    {
+      "key": 63853,
+      "type": "textarea",
+      "icon": "textarea-field",
+      "formItemFlag": true,
+      "options": {
+        "name": "remark",
+        "label": "备注",
         "labelAlign": "",
         "rows": 3,
         "defaultValue": "",
@@ -23,6 +68,7 @@
         "requiredHint": "",
         "validation": "",
         "validationHint": "",
+        "customClass": "",
         "labelIconClass": null,
         "labelIconPosition": "rear",
         "labelTooltip": null,
@@ -35,9 +81,10 @@
         "onChange": "",
         "onFocus": "",
         "onBlur": "",
-        "onValidate": ""
+        "onValidate": "",
+        "checkField": false
       },
-      "id": "textarea108737"
+      "id": "textarea52546"
     }
   ],
   "formConfig": {
