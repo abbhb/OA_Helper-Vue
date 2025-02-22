@@ -71,7 +71,6 @@
         <el-pagination
           v-model:page-size="queryForm.pageSize"
           v-model:current-page="queryForm.pageNo"
-          background
           layout="prev, pager, next"
           :total="total"
           @current-change="getList"
@@ -133,7 +132,7 @@
     });
     if (res.code === 1) {
       list.value = res.data.records;
-      total.value = res.data.total;
+      total.value =  Number(res.data.total);
     } else {
       list.value = [];
     }
