@@ -23,11 +23,12 @@
 
           <!--          />-->
           <a-table
+            v-if="renderList.length > 0"
             :data="renderList"
             :span-method="spanMethod"
             :row-class="renderClass"
             :scroll="{
-              y: 500
+              y: 500,
             }"
           >
             <template #columns>
@@ -40,15 +41,14 @@
                   />
                 </template>
               </a-table-column>
-              <a-table-column :width="200">
+              <a-table-column :width="120">
                 <template #cell="{ record }">
                   {{ record.username }}
                 </template>
               </a-table-column>
               <a-table-column
                 title="通知时间"
-                data-index="createTime"
-                :width="220"
+                :width="150"
               >
                 <template #cell="{ record }">
                   {{ record.createTime }}
@@ -57,7 +57,7 @@
               <a-table-column title="内容" data-index="message" :width="500">
                 <template #cell="{ record }">
                   <RenderMessage
-                    :message="record.message.message"
+                    :message="record.message"
                     :ext-type="''"
                   />
                 </template>
@@ -88,9 +88,7 @@
         <template #title>
           <span> 版本发布 </span>
         </template>
-        <a-result v-if="!renderList.length" status="404">
-          <template #subtitle> {{ $t('messageBox.noContent') }} </template>
-        </a-result>
+
         <a-spin :loading="loading">
           <!--          <List-->
           <!--            :render-list="renderList"-->
@@ -104,7 +102,7 @@
           <a-table
             :data="versionData"
             :scroll="{
-              y: 500
+              y: 500,
             }"
             row-key="version"
             :expandable="versionExpandable"
@@ -192,7 +190,7 @@
     if (rowIndex === 0 && columnIndex === 1) {
       return {
         rowspan: 1,
-        colspan: 2,
+        colspan: 1,
       };
     }
   };
@@ -212,7 +210,7 @@
   const versionExpandable = reactive({
     title: '',
     width: 0,
-    defaultExpandAllRows:true,
+    defaultExpandAllRows: true,
     expandedRowRender: (record) => {
       // 改成data渲染
       if (record?.info?.length > 0) {

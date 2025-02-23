@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div :class="props.noMore?'':'container'">
     <a-card
       class="general-card"
       :header-style="{ paddingBottom: '0' }"
@@ -7,8 +7,8 @@
     >
       <template #title> 我的待办 </template>
       <template #extra>
-        <a-link v-if="!props.noMore" @click="emit('alertSome')"
-        >{{ $t('workplace.viewMore') }}
+        <a-link v-if="props.noMore" @click="emit('alertSome')"
+          >{{ $t('workplace.viewMore') }}
         </a-link>
       </template>
       <div>
@@ -55,14 +55,14 @@
                 type="primary"
                 icon="Pointer"
                 @click="handleApproval(scope.row)"
-              >快捷审批
+                >快捷审批
               </el-button>
               <el-button
                 link
                 type="primary"
                 icon="Pointer"
                 @click="handleHistoryRecord(scope.row)"
-              >审批
+                >审批
               </el-button>
             </template>
           </el-table-column>
@@ -84,7 +84,6 @@
       </div>
     </a-card>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -132,7 +131,7 @@
     });
     if (res.code === 1) {
       list.value = res.data.records;
-      total.value =  Number(res.data.total);
+      total.value = Number(res.data.total);
     } else {
       list.value = [];
     }

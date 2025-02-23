@@ -308,7 +308,7 @@
         :size="'medium'"
         row-key="id"
         :scrollbar="true"
-        :scroll="{ y: 600 }"
+        :scroll="{ y: 800 }"
       >
         <template #columns>
           <a-space direction="vertical">

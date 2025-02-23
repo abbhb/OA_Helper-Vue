@@ -27,7 +27,7 @@
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
         >
-          <todoMy @alert-some="router.push({ name: 'Todo' })" />
+          <todoMy @alert-some="router.push({ name: 'Todo' })" :no-more="true"/>
         </a-grid-item>
         <a-grid-item
           :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 12, xxl: 12 }"
