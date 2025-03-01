@@ -355,9 +355,6 @@
   });
 </script>
 
-<style lang="less">
-  @import '@/assets/style/menu.less';
-</style>
 
 <style lang="less" scoped>
   :deep(.arco-menu-inner) {

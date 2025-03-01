@@ -41,13 +41,7 @@
 <template>
   <div class="game-card">
     <div class="game-card-body">
-      <AvatarImage
-        v-if="!image.includes('/src')"
-        class="game-card-body-image"
-        :key="image"
-        :avatar="image"
-      />
-      <img v-else class="game-card-body-image" :src="image" />
+      <img class="game-card-body-image" :src="image" />
       <div class="game-card-body-content">
         <div class="game-card-body-title">{{ name }}</div>
         <div class="game-card-body-description">{{ description }}</div>
@@ -75,7 +69,7 @@
     .game-card-body-image {
       width: 15rem;
       height: 15rem;
-      background-color: #cbcecb;
+      //background-color: #cbcecb;
       border-radius: 1rem;
       padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     }

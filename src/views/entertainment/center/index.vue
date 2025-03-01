@@ -12,7 +12,7 @@
       :image="TwoZeroFourEight"
       start="Game2048"
     />
-    缺少好看的背景图
+
   </div>
 </template>
 
