@@ -10,8 +10,8 @@
     IndexPageDataWithuserReq,
     SigninLogForSelfResp,
   } from '@/api/attendance';
-  import {Message} from "@arco-design/web-vue";
-  import router from "@/router";
+  import { Message } from '@arco-design/web-vue';
+  import router from '@/router';
 
   interface statuEI {
     clickLoading: boolean;
@@ -78,13 +78,20 @@
 
   const gotoDetail = (record) => {
     console.log(record);
-    Message.info('详情页暂未实现!敬请期待');
+    const hrefs = router.resolve({
+      name: 'signinDetail',
+      query: {
+        userId: record.userId,
+        date: record.currentDate,
+      },
+    }).href;
+    window.open(hrefs, '_blank');
   };
   const gotoQingJia = () => {
     router.push({
-      name:'StartProcessNewV1'
-    })
-  }
+      name: 'StartProcessNewV1',
+    });
+  };
 </script>
 
 <template>
@@ -111,9 +118,7 @@
             ><div class="view-list-scroll-wrap"
               ><!-- react-text: 29 --><!-- /react-text --><!-- react-text: 35 --><!-- /react-text --></div
             ><!-- react-text: 36 --><!-- /react-text --></ul
-          >
-
-    </div
+          > </div
         ><div class="drop-list drop-list-real" style="display: none"
           ><ul class="clearfix"
             ><div class="view-list-scroll-wrap"
@@ -133,8 +138,18 @@
       "
       >点击考勤日期可查看详情
     </a-alert>
-    <a-button :type="'primary'" style="position: absolute;top: 0;right: 36px;margin-top: 12px;
-    margin-bottom: 12px;" @click="gotoQingJia">请假</a-button>
+    <a-button
+      :type="'primary'"
+      style="
+        position: absolute;
+        top: 0;
+        right: 36px;
+        margin-top: 12px;
+        margin-bottom: 12px;
+      "
+      @click="gotoQingJia"
+      >请假</a-button
+    >
 
     <div class="content-view">
       <div class="shaixuan"> </div>
@@ -162,8 +177,8 @@
               <a-link :hoverable="false" @click="gotoDetail(record)">
                 {{ record.currentDate }}<span> </span> {{ record.currentXQ
                 }}<Component
-                  v-if="!record.needSB"
                   :is="ShareCopyIcon"
+                  v-if="!record.needSB"
                   style="width: 14px; height: 14px"
                 />
               </a-link>
@@ -196,7 +211,7 @@
             :width="100"
           >
             <template #cell="{ record }">
-              {{ record.queQinTime?record.queQinTime:'--' }}
+              {{ record.queQinTime ? record.queQinTime : '--' }}
             </template>
           </a-table-column>
           <a-table-column
@@ -224,7 +239,7 @@
             :width="200"
           >
             <template #cell="{ record }">
-              {{ record.errMsg?record.errMsg:'--' }}
+              {{ record.errMsg ? record.errMsg : '--' }}
             </template>
           </a-table-column>
         </template>

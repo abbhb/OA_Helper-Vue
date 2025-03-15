@@ -12,6 +12,7 @@ export const WHITE_LIST = [
   { name: 'MangerHolidays', children: [] }, // 节假日管理组件
   { name: 'printerManager', children: [] }, // 打印机注册管理组件
   { name: 'printerManagerUser', children: [] }, // 打印机注册管理组件-权限管理
+  { name: 'signinDetail', children: [] }, // 考勤数据详情页
 ];
 
 export const NOT_FOUND = {
