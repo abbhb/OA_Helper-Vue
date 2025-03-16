@@ -149,7 +149,7 @@
       await initData();
       isCommit.value = true;
     } catch (e) {
-      Message.error(e);
+      Message.error(e.toString());
     }
   };
   const initSelect = ()=>{

@@ -93,7 +93,7 @@
           userStore.info();
 
         } catch (e) {
-          Message.error(e);
+          Message.error(e.toString());
         }
       };
 

@@ -1,41 +1,8 @@
 <script setup lang="ts">
-  import { ref, onMounted, reactive } from 'vue';
+  import { ref, onMounted, reactive, onBeforeUnmount } from 'vue';
   import { IconDown, IconUp } from '@arco-design/web-vue/es/icon';
   import { Message } from '@arco-design/web-vue';
-
-  interface SigninLog {
-    id: number;
-    log_datetime: string;
-    state: number;
-    bc_count: number;
-    start_end: number;
-    log_time: string | null;
-    from_log: string | null;
-    state_time: number | null;
-    user_id: number;
-  }
-
-  interface SigninRenewal {
-    id: number;
-    user_id: number;
-    renewal_time: string;
-    renewal_reason: string | null;
-    create_time: string;
-    signin_log_id: string | null;
-    renewal_about_act_id: string;
-    state: number;
-    update_time: string;
-  }
-
-  interface AskLeave {
-    id: number;
-    user_id: number;
-    start_time: string;
-    end_time: string;
-    ask_leave_reason: string | null;
-    create_time: string | null;
-    ask_leave_about_act_id: string | null;
-  }
+  import {getSigninDetailUserInfo, getSigninInfo, SigninDetailUserInfoResp} from "@/api/attendance";
 
   // 只接收必要的属性
   const props = defineProps({
@@ -54,7 +21,8 @@
     date: '',
     workingHours: '',
     attendanceStatus: '',
-    totalSeconds: 0,
+    supplementStatus: '',
+    durationOfAbsence: '',
     remarks: '',
   });
 
@@ -68,6 +36,16 @@
   const clockingDataCollapsed = ref(false);
   const supplementCollapsed = ref(false);
 
+  // 用户信息
+  const userInfo = reactive<SigninDetailUserInfoResp>({
+    name: '',
+    avatar: '',
+    department: ''
+  });
+
+  // 顶部栏滚动状态
+  const isScrolled = ref(false);
+
   // 获取考勤数据
   const fetchAttendanceData = async () => {
     try {
@@ -78,14 +56,15 @@
 
       // 暂时使用模拟数据
       console.log('获取考勤数据', props.userId, props.date);
-      attendanceData.date = `${props.date} 星期五`;
-      attendanceData.workingHours = '15:08';
-      attendanceData.attendanceStatus = '异常';
-      attendanceData.totalSeconds = 49 * 60;
-      attendanceData.remarks = '';
+      const {data} = await getSigninInfo(props.userId,props.date)
+      attendanceData.attendanceStatus = data.attendanceStatus;
+      attendanceData.date = data.date;
+      attendanceData.durationOfAbsence = data.durationOfAbsence;
+      attendanceData.workingHours = data.workingHours;
+      attendanceData.supplementStatus = data.supplementStatus;
+      attendanceData.remarks = data.remarks;
     } catch (error) {
-      Message.error('获取考勤数据失败');
-      console.error(error);
+      Message.error(error.toString());
     }
   };
 
@@ -177,6 +156,19 @@
     }
   };
 
+  // 获取用户信息
+  const fetchUserInfo = async () => {
+    try {
+      const {data} = await getSigninDetailUserInfo(props.userId);
+      userInfo.avatar = data.avatar;
+      userInfo.name = data.name;
+      userInfo.department = data.department;
+
+    } catch (error) {
+      Message.error(error.toString());
+    }
+  };
+
   // 获取状态文本
   const getStatusText = (state: number) => {
     switch (state) {
@@ -222,17 +214,45 @@
     supplementCollapsed.value = !supplementCollapsed.value;
   };
 
-  // 在组件挂载时获取数据
+  // 处理页面滚动
+  const handleScroll = () => {
+    isScrolled.value = window.scrollY > 10;
+  };
+
+  // 在组件挂载时获取数据并添加滚动监听
   onMounted(() => {
+    fetchUserInfo();
     fetchAttendanceData();
     fetchPunchData();
     fetchClockingData();
     fetchSupplementRecords();
+    
+    // 添加滚动事件监听
+    window.addEventListener('scroll', handleScroll);
+  });
+  
+  // 组件卸载前移除滚动监听
+  onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll);
   });
 </script>
 
 <template>
-  <div class="signin-detail-container">
+  <div :class="{'signin-detail-container':true,'signin-detail-container-top':!isScrolled,'signin-detail-container-scr':isScrolled}">
+    <!-- 顶部用户信息栏 -->
+    <div class="user-header" :class="{ 'scrolled': isScrolled }">
+      <div class="user-info">
+        <div class="user-avatar">
+          <img :src="userInfo.avatar" alt="用户头像" v-if="userInfo.avatar">
+          <div class="avatar-placeholder" v-else>{{ userInfo.name ? userInfo.name.charAt(0) : '?' }}</div>
+        </div>
+        <div class="user-details">
+          <div class="user-name">{{ userInfo.name }}</div>
+          <div class="user-department">{{ userInfo.department }}</div>
+        </div>
+      </div>
+    </div>
+    
     <!-- 考勤数据 -->
     <a-card class="detail-card" :bordered="false">
       <template #title>
@@ -251,15 +271,17 @@
       <div v-show="!attendanceCollapsed">
         <a-descriptions
           :data="[
+            { label: '考勤组织', value: '--' },
             { label: '考勤日期', value: attendanceData.date },
-            { label: '工作时长', value: attendanceData.workingHours },
-            { label: '考勤状态', value: attendanceData.attendanceStatus },
+            { label: '工作时长', value: `${attendanceData.workingHours} 分钟` },
             {
-              label: '总用时长',
-              value: `${Math.floor(attendanceData.totalSeconds / 60)} 分钟`,
+              label: '缺勤时长',
+              value: `${Math.floor(attendanceData.durationOfAbsence)} 分钟`,
             },
-            { label: '补签状态', value: '' },
-            { label: '备注', value: attendanceData.remarks },
+            { label: '考勤状态', value: attendanceData.attendanceStatus },
+
+            { label: '补签状态', value: attendanceData.supplementStatus },
+            { label: '备注', value: attendanceData.remarks?.length>0?attendanceData.remarks:'--' },
           ]"
           layout="inline-horizontal"
           :column="2"
@@ -422,6 +444,12 @@
     padding: 16px;
     background-color: #f2f3f5;
   }
+  .signin-detail-container-scr {
+    padding-top: 120px; /* 为顶部栏留出空间 */
+  }
+  .signin-detail-container-top {
+    padding-top: 80px; /* 为顶部栏留出空间 */
+  }
 
   .detail-card {
     margin-bottom: 16px;
@@ -509,5 +537,92 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* 顶部用户信息栏样式 */
+  .user-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+  }
+
+  .user-header.scrolled {
+    height: 64px;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+  }
+
+  .user-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 16px;
+    transition: all 0.3s ease;
+    background-color: #e5e6eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-header.scrolled .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    font-size: 24px;
+    color: #fff;
+    background-color: #165dff;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-details {
+    transition: all 0.3s ease;
+  }
+
+  .user-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1d2129;
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .user-header.scrolled .user-name {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+
+  .user-department {
+    font-size: 14px;
+    color: #86909c;
+    transition: all 0.3s ease;
+  }
+
+  .user-header.scrolled .user-department {
+    font-size: 12px;
   }
 </style>

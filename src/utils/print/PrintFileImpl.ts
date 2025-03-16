@@ -182,7 +182,7 @@ export class PrintFileImpl implements fileItemType {
       if (typeof callback === 'function') {
         callback(this.file_name);
       } else {
-        Message.error(e);
+        Message.error(e.toString());
       }
     } finally {
       // 停止轮询，此时对象也该销毁了
