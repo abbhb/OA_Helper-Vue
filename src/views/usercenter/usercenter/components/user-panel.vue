@@ -14,7 +14,11 @@
             <template #trigger-icon>
               <icon-camera />
             </template>
-            <img :key="fileList[0].url" v-if="fileList.length" :src="fileList[0].url" />
+            <img
+              v-if="fileList.length"
+              :key="fileList[0].url"
+              :src="fileList[0].url"
+            />
           </a-avatar>
         </template>
       </a-upload>
@@ -36,12 +40,8 @@
       >
         <template #label="{ label }">{{ $t(label) }} :</template>
         <template #value="{ value, data }">
-          <a-tag
-            v-if="data.label === '已实名'"
-            color="green"
-            size="small"
-          >
-            已认证
+          <a-tag v-if="data.label === '实名状态'" color="green" size="small">
+            {{ value === 1 ? '已实名' : value === 0 ? '未实名' : '审批中' }}
           </a-tag>
           <span v-else>{{ value }}</span>
         </template>
@@ -51,29 +51,31 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+import {reactive, ref} from 'vue';
   import type {
     FileItem,
     RequestOption,
   } from '@arco-design/web-vue/es/upload/interfaces';
   import { useUserStore } from '@/store';
   import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
-  import {Message} from "@arco-design/web-vue";
+  import { Message } from '@arco-design/web-vue';
+  import { getUserVerificationState } from '@/api/user';
 
   const userStore = useUserStore();
+  const userVerificationState = ref<number>(0);
   const file = {
     uid: '-2',
     name: 'avatar.png',
     url: userStore.avatar,
   };
-  const renderData = [
+  const renderData = reactive([
     {
       label: '昵称',
       value: userStore.name,
     },
     {
       label: '实名状态',
-      value: '暂未返回该字段',
+      value: userVerificationState,
     },
     {
       label: '学号',
@@ -87,11 +89,17 @@
       label: '最后登录时间',
       value: userStore.updateTime,
     },
-  ] as DescData[];
+  ] as DescData[]);
   const fileList = ref<FileItem[]>([file]);
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = [fileItem];
   };
+  const refreshUserVerificationState = async () => {
+    const { data } = await getUserVerificationState();
+    userVerificationState.value = data.state;
+  };
+  refreshUserVerificationState();
+
   const customRequest = (options: RequestOption) => {
     // docs: https://axios-http.com/docs/cancellation
     const controller = new AbortController();
@@ -114,7 +122,7 @@
         }
         onProgress(parseInt(String(percent), 10), event);
       };
-      Message.info("未适配此处，不会保存")
+      Message.info('未适配此处，不会保存');
       // try {
       //   // https://github.com/axios/axios/issues/1630
       //   // https://github.com/nuysoft/Mock/issues/127
@@ -128,6 +136,7 @@
       //   onError(error);
       // }
     })();
+
     return {
       abort() {
         controller.abort();

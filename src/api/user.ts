@@ -97,6 +97,21 @@ interface UserFrontConfigReq {
   appState: AppStateVO;
 }
 
+export interface UserVerificationStateResp {
+  /**
+   * 实名认证状态
+   * 0:未认证
+   * 1:已认证
+   * 2:审批中
+   */
+  state: number;
+
+  /**
+   * 所属用户
+   */
+  userId: string;
+}
+
 export function login(data: LoginData) {
   return axios.post<LoginRes>('/api/user/login', data);
 }
@@ -162,6 +177,14 @@ export function userinfoExtMy() {
   return axios.get<UserInfoBaseExtStateResp>('/api/user/userinfo_ext_my');
 }
 
+// 返回实名认证状态
+export function getUserVerificationState() {
+  return axios.get<UserVerificationStateResp>(
+    '/api/user/user_verification_state'
+  );
+}
+
+
 export function approvalUserinfoExtData(taskId: string) {
   return axios.get<UserInfoBaseExt>(
     '/api/user/approval_userinfo_ext_data/' + taskId
@@ -174,16 +197,15 @@ export function userinfoExtMyWthdraw() {
 
 // 用于与后端对接，不是前端AppState
 export interface AppStateVO {
-  menuWidth?:number;
-  tabBar?:boolean;
-  topMenu?:boolean;
-  footer?:boolean;
-  modelFullscreen?:boolean;
-  theme?:string;
-  colorWeak?:boolean;
-  lastPrintDevice?:string;
-  versionRead?:string;
-
+  menuWidth?: number;
+  tabBar?: boolean;
+  topMenu?: boolean;
+  footer?: boolean;
+  modelFullscreen?: boolean;
+  theme?: string;
+  colorWeak?: boolean;
+  lastPrintDevice?: string;
+  versionRead?: string;
 }
 
 export function getUserFrontConfig() {
@@ -220,13 +242,15 @@ export function getUserListManger(params: {
 export function listForSelectUser(params: {
   pageNum: number;
   pageSize: number;
-  name?: string;// 此处以下均为可选
+  name?: string; // 此处以下均为可选
   deptId?: string;
   level?: string;
   cascade?: number;
   mustHaveStudentId?: number;
 }) {
-  return axios.get<PageData<UserManger[]>>('/api/user/listForSelect', { params });
+  return axios.get<PageData<UserManger[]>>('/api/user/listForSelect', {
+    params,
+  });
 }
 
 export function listForLevels() {

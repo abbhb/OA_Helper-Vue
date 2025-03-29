@@ -14,14 +14,17 @@
           "
           :label="$t('workplace.safe-center.username')"
         >
-          <a-input
-            v-model="form.username"
-            disabled
-            :placeholder="
-              $t('workplace.safe-center.please') +
-              $t('workplace.safe-center.username')
-            "
-          />
+          <a-tooltip content="此项不可更改">
+
+            <a-input
+              v-model="form.username"
+              disabled
+              :placeholder="
+                $t('workplace.safe-center.please') +
+                $t('workplace.safe-center.username')
+              "
+            />
+          </a-tooltip>
         </a-form-item>
         <a-form-item field="name" :label="$t('workplace.safe-center.name')">
           <a-input
@@ -46,28 +49,36 @@
           </a-select>
         </a-form-item>
         <a-form-item field="phone" :label="$t('workplace.safe-center.phone')">
-          <a-input
-            v-model="form.phone"
-            :placeholder="
+          <a-tooltip content="请在实名认证页更改此项">
+            <a-input
+              :disabled="true"
+              v-model="form.phone"
+              :placeholder="
               $t('workplace.safe-center.please') +
               $t('workplace.safe-center.phone')
             "
-          />
+            />
+          </a-tooltip>
+
         </a-form-item>
         <a-form-item
           field="studentId"
           :label="$t('workplace.safe-center.studentId')"
         >
-          <a-input
-            v-model="form.studentId"
-            :placeholder="
-              $t('workplace.safe-center.please') +
-              $t('workplace.safe-center.studentId')
-            "
-          />
+          <a-tooltip content="请在实名认证页更改此项">
+            <a-input
+              :disabled="true"
+              v-model="form.studentId"
+              :placeholder="
+                $t('workplace.safe-center.please') +
+                $t('workplace.safe-center.studentId')
+              "
+            />
+          </a-tooltip>
         </a-form-item>
         <a-form-item field="avatar" :label="$t('workplace.safe-center.avatar')">
           <ImageUpload
+            :key="form.avatar"
             :draggable="true"
             :image="form.avatar"
             url="./api/common/uploadimage"
@@ -96,6 +107,15 @@
   export default {
     components: { ImageUpload },
     setup() {
+      const updateAvatar = (data) => {
+        // r为data
+        if (data.indexOf('http') !== -1) {
+          // eslint-disable-next-line prefer-destructuring
+          form.avatar = data.split('aistudio/')[1];
+        } else {
+          form.avatar = data;
+        }
+      }
       const form = reactive({
         username: '',
         id: undefined,
@@ -133,15 +153,11 @@
       form.avatar = info.avatar;
       form.age = info.age;
       const handleSuccess = (data) => {
-        // r为data
-        if (data.indexOf('http') !== -1) {
-          // eslint-disable-next-line prefer-destructuring
-          form.avatar = data.split('aistudio/')[1];
-        } else {
-          form.avatar = data;
-        }
+        updateAvatar(data)
         Message.success('上传成功!');
       };
+
+
 
       watch(
         form,
