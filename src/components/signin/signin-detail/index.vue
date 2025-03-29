@@ -2,7 +2,16 @@
   import { ref, onMounted, reactive, onBeforeUnmount } from 'vue';
   import { IconDown, IconUp } from '@arco-design/web-vue/es/icon';
   import { Message } from '@arco-design/web-vue';
-  import {getSigninDetailUserInfo, getSigninInfo, SigninDetailUserInfoResp} from "@/api/attendance";
+  import {
+    getSigninDetailUserInfo,
+    getSigninInfo,
+    SigninDetailUserInfoResp,
+    getSigninDetailSigninInfos,
+    SigninDetailSigninInfoResp,
+  } from '@/api/attendance';
+
+  // 打卡记录接口定义，使用API定义的接口
+  type PunchRecord = SigninDetailSigninInfoResp;
 
   // 只接收必要的属性
   const props = defineProps({
@@ -22,11 +31,11 @@
     workingHours: '',
     attendanceStatus: '',
     supplementStatus: '',
-    durationOfAbsence: '',
+    durationOfAbsence: 0,
     remarks: '',
   });
 
-  const punchRecords = ref<any[]>([]);
+  const punchRecords = ref<PunchRecord[]>([]);
   const clockingRecords = ref<any[]>([]);
   const supplementRecords = ref<any[]>([]);
 
@@ -40,7 +49,7 @@
   const userInfo = reactive<SigninDetailUserInfoResp>({
     name: '',
     avatar: '',
-    department: ''
+    department: '',
   });
 
   // 顶部栏滚动状态
@@ -56,10 +65,10 @@
 
       // 暂时使用模拟数据
       console.log('获取考勤数据', props.userId, props.date);
-      const {data} = await getSigninInfo(props.userId,props.date)
+      const { data } = await getSigninInfo(props.userId, props.date);
       attendanceData.attendanceStatus = data.attendanceStatus;
       attendanceData.date = data.date;
-      attendanceData.durationOfAbsence = data.durationOfAbsence;
+      attendanceData.durationOfAbsence = Number(data.durationOfAbsence);
       attendanceData.workingHours = data.workingHours;
       attendanceData.supplementStatus = data.supplementStatus;
       attendanceData.remarks = data.remarks;
@@ -71,35 +80,13 @@
   // 获取打卡信息
   const fetchPunchData = async () => {
     try {
-      // 实际API调用
-      // const response = await fetch(`/api/punch/${props.userId}?date=${props.date}`);
-      // const data = await response.json();
-      // punchRecords.value = data;
-
-      // 模拟数据
+      // 调用API获取真实数据
       console.log('获取打卡信息', props.userId, props.date);
-      punchRecords.value = [
-        {
-          punchInTime: '2023-03-14 09:00',
-          punchOutTime: '2023-03-14 09:49',
-          duration: '49 分钟',
-          supplementStatus: '',
-          supplementReason: '',
-          attendanceStatus: '异常',
-          supplementApplyTime: '',
-          supplementApprovalTime: '',
-        },
-        {
-          punchInTime: '2023-03-14 18:30',
-          punchOutTime: '2023-03-15 00:54',
-          duration: '0 分钟',
-          supplementStatus: '',
-          supplementReason: '',
-          attendanceStatus: '正常',
-          supplementApplyTime: '',
-          supplementApprovalTime: '',
-        },
-      ];
+      const { data } = await getSigninDetailSigninInfos(
+        props.userId,
+        props.date
+      );
+      punchRecords.value = data;
     } catch (error) {
       Message.error('获取打卡信息失败');
       console.error(error);
@@ -159,11 +146,10 @@
   // 获取用户信息
   const fetchUserInfo = async () => {
     try {
-      const {data} = await getSigninDetailUserInfo(props.userId);
+      const { data } = await getSigninDetailUserInfo(props.userId);
       userInfo.avatar = data.avatar;
       userInfo.name = data.name;
       userInfo.department = data.department;
-
     } catch (error) {
       Message.error(error.toString());
     }
@@ -226,11 +212,11 @@
     fetchPunchData();
     fetchClockingData();
     fetchSupplementRecords();
-    
+
     // 添加滚动事件监听
     window.addEventListener('scroll', handleScroll);
   });
-  
+
   // 组件卸载前移除滚动监听
   onBeforeUnmount(() => {
     window.removeEventListener('scroll', handleScroll);
@@ -238,13 +224,21 @@
 </script>
 
 <template>
-  <div :class="{'signin-detail-container':true,'signin-detail-container-top':!isScrolled,'signin-detail-container-scr':isScrolled}">
+  <div
+    :class="{
+      'signin-detail-container': true,
+      'signin-detail-container-top': !isScrolled,
+      'signin-detail-container-scr': isScrolled,
+    }"
+  >
     <!-- 顶部用户信息栏 -->
-    <div class="user-header" :class="{ 'scrolled': isScrolled }">
+    <div class="user-header" :class="{ scrolled: isScrolled }">
       <div class="user-info">
         <div class="user-avatar">
-          <img :src="userInfo.avatar" alt="用户头像" v-if="userInfo.avatar">
-          <div class="avatar-placeholder" v-else>{{ userInfo.name ? userInfo.name.charAt(0) : '?' }}</div>
+          <img v-if="userInfo.avatar" :src="userInfo.avatar" alt="用户头像" />
+          <div v-else class="avatar-placeholder">{{
+            userInfo.name ? userInfo.name.charAt(0) : '?'
+          }}</div>
         </div>
         <div class="user-details">
           <div class="user-name">{{ userInfo.name }}</div>
@@ -252,7 +246,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 考勤数据 -->
     <a-card class="detail-card" :bordered="false">
       <template #title>
@@ -281,7 +275,13 @@
             { label: '考勤状态', value: attendanceData.attendanceStatus },
 
             { label: '补签状态', value: attendanceData.supplementStatus },
-            { label: '备注', value: attendanceData.remarks?.length>0?attendanceData.remarks:'--' },
+            {
+              label: '备注',
+              value:
+                attendanceData.remarks?.length > 0
+                  ? attendanceData.remarks
+                  : '--',
+            },
           ]"
           layout="inline-horizontal"
           :column="2"
@@ -318,12 +318,13 @@
           class="custom-table"
         >
           <template #columns>
-            <a-table-column title="起打卡" data-index="punchInTime" />
-            <a-table-column title="止打卡" data-index="punchOutTime" />
+            <a-table-column title="应打卡" data-index="scheduledPunchTime" />
+            <a-table-column title="实打卡" data-index="actualPunchTime" />
+            <a-table-column title="缺勤时长" data-index="absentDuration" />
+            <a-table-column title="补签点" data-index="supplementPoint" />
             <a-table-column title="补签状态" data-index="supplementStatus" />
             <a-table-column title="补签理由" data-index="supplementReason" />
-            <a-table-column title="考勤状态·" data-index="attendanceStatus" />
-<!--            <a-table-column title="考勤状态" data-index="attendanceStatus" />-->
+            <a-table-column title="考勤状态" data-index="attendanceStatus" />
             <a-table-column
               title="补签申请时间"
               data-index="supplementApplyTime"

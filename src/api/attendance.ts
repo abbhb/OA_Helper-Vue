@@ -122,3 +122,64 @@ export function getSigninInfo(userId: string, date: string) {
     }
   );
 }
+
+/**
+ * 打卡信息响应接口
+ */
+export interface SigninDetailSigninInfoResp {
+  /**
+   * 排序
+   */
+  index: number;
+  /**
+   * 应打卡时间 例如：2024-03-16 12:00:00
+   */
+  scheduledPunchTime: string;
+  /**
+   * 实打卡时间 例如：2024-03-16 12:00:00
+   */
+  actualPunchTime: string;
+  /**
+   * 缺勤时长 例如：40分钟
+   */
+  absentDuration: string;
+  /**
+   * 考勤状态 例如：正常、迟到、早退、缺勤
+   */
+  attendanceStatus: string;
+  /**
+   * 补签点 例如：2024-03-16 12:00:00
+   */
+  supplementPoint: string;
+  /**
+   * 补签状态 例如：待审批、已通过、已拒绝
+   */
+  supplementStatus: string;
+  /**
+   * 补签理由 例如：迟到、早退、漏打卡
+   */
+  supplementReason: string;
+  /**
+   * 补签申请时间
+   */
+  supplementApplyTime: string;
+  /**
+   * 补签审批时间
+   */
+  supplementApprovalTime: string;
+}
+
+/**
+ * 获取某日考勤打卡信息
+ * @param userId 用户ID
+ * @param date 日期，格式为 2024-03-16
+ * @returns 打卡信息列表
+ */
+export function getSigninDetailSigninInfos(userId: string, date: string) {
+  return axios.get<SigninDetailSigninInfoResp[]>(
+    `/api/signin_detail/get_signin_detail_signin_infos/${userId}`,
+    {
+      params: { date },
+    }
+  );
+}

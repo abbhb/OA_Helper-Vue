@@ -36,7 +36,6 @@ module.exports = {
     },
   },
   rules: {
-    'prettier/prettier': 1,
     // Vue: Recommended rules to be closed or modify
     'vue/require-default-prop': 0,
     'vue/singleline-html-element-content-newline': 0,
@@ -46,6 +45,7 @@ module.exports = {
       "no-debugger": "off",
       "@typescript-eslint/no-explicit-any": ["off"],
       "@typescript-eslint/no-var-requires": 0,
+    "prettier/prettier": ["error", { "endOfLine": "auto" }],
     // Vue: Add extra rules
     'vue/custom-event-name-casing': [2, 'camelCase'],
     'vue/no-v-text': 1,
