@@ -70,7 +70,7 @@ import JsonViewer from 'vue3-json-viewer';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 
 // 自定义菜单覆盖
-import './assets/style/menu.less'
+import './assets/style/menu.less';
 
 const app = createApp(App);
 Notification._context = app._context;

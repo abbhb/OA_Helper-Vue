@@ -105,27 +105,33 @@
     return undefined;
   };
 
-  const getStateName = (state: number) => {
-    if (state === 0) {
+  const getStateName = (state: SigninLogForSelfResp) => {
+    if (!state.needSB){
+      return '休息';
+    }
+    if (state.state === 0) {
       return '出勤';
     }
-    if (state === 4) {
+    if (state.state === 4) {
       return '请假';
     }
-    if (state === 3) {
+    if (state.state === 3) {
       return '缺勤';
     }
-    console.log(state);
+    console.log(state.state);
     return '异常';
   };
-  const getStateType = (state: number) => {
-    if (state === 0) {
+  const getStateType = (state: SigninLogForSelfResp) => {
+    if (!state.needSB){
       return 'info';
     }
-    if (state === 4) {
+    if (state.state === 0) {
+      return 'success';
+    }
+    if (state.state === 4) {
       return 'warn';
     }
-    if (state === 3) {
+    if (state.state === 3) {
       return 'error';
     }
 
@@ -213,22 +219,22 @@
             <el-tag
               v-if="jiaqing.get(formatDateString(data.date))"
               :type="
-                getStateType(jiaqing.get(formatDateString(data.date))?.state)
+                getStateType(jiaqing.get(formatDateString(data.date)))
               "
             >
               {{
-                getStateName(jiaqing.get(formatDateString(data.date))?.state)
+                getStateName(jiaqing.get(formatDateString(data.date)))
               }}</el-tag
             >
           </el-tooltip>
           <el-tag
             v-else-if="jiaqing.get(formatDateString(data.date))"
             :type="
-              getStateType(jiaqing.get(formatDateString(data.date))?.state)
+              getStateType(jiaqing.get(formatDateString(data.date)))
             "
           >
             {{
-              getStateName(jiaqing.get(formatDateString(data.date))?.state)
+              getStateName(jiaqing.get(formatDateString(data.date)))
             }}</el-tag
           >
         </div>

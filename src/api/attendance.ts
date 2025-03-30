@@ -1,6 +1,24 @@
 import axios from 'axios';
 import { PageData } from '@/api/common';
 
+
+// 打卡数据记录接口定义
+export interface ClockingRecord {
+  employee: {
+    avatar: string;
+    name: string;
+  };
+  punchTime: string;
+  attendanceCard: string;
+  signinOrigin: string;
+  locationInfo: string;
+  locationDescription: string;
+  deviceInfo: string;
+  department: string;
+  signinOriginDetail: string;
+  creationTime: string;
+}
+
 export interface SigninLogCliBcItem {
   timeY?: string;
   timeS?: string;
@@ -181,5 +199,37 @@ export function getSigninDetailSigninInfos(userId: string, date: string) {
     {
       params: { date },
     }
+  );
+}
+
+/**
+ * 获取打卡书数据
+ * @param userId
+ * @param date
+ */
+export function fetchClockingDataApi(userId: string, date: string) {
+  return axios.get<ClockingRecord[]>(
+      `/api/signin_detail/get_clocking_records/${userId}`,
+      {
+        params: { date }
+      }
+  );
+}
+
+// 补签记录接口定义
+export interface SupplementRecord {
+  supplementItem: string;     // 补签项
+  supplementReason: string;   // 补签理由
+  remarks: string;            // 备注
+  approvalStatus: string;     // 审批状态
+  source: string;             // 单据来源
+}
+
+export function fetchSupplementRecord(userId,date) {
+  return axios.get<SupplementRecord[]>(
+      `/api/signin_detail/get_supplement_records/${userId}`,
+      {
+        params: { date }
+      }
   );
 }

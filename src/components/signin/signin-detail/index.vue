@@ -7,8 +7,9 @@
     getSigninInfo,
     SigninDetailUserInfoResp,
     getSigninDetailSigninInfos,
-    SigninDetailSigninInfoResp,
+    SigninDetailSigninInfoResp, fetchClockingDataApi, ClockingRecord, fetchSupplementRecord, SupplementRecord,
   } from '@/api/attendance';
+  import axios from 'axios';
 
   // 打卡记录接口定义，使用API定义的接口
   type PunchRecord = SigninDetailSigninInfoResp;
@@ -36,8 +37,8 @@
   });
 
   const punchRecords = ref<PunchRecord[]>([]);
-  const clockingRecords = ref<any[]>([]);
-  const supplementRecords = ref<any[]>([]);
+  const clockingRecords = ref<ClockingRecord[]>([]);
+  const supplementRecords = ref<SupplementRecord[]>([]);
 
   // 控制卡片的折叠状态
   const attendanceCollapsed = ref(false);
@@ -46,7 +47,7 @@
   const supplementCollapsed = ref(false);
 
   // 用户信息
-  const userInfo = reactive<SigninDetailUserInfoResp>({
+  const userInfo:SigninDetailUserInfoResp = reactive<SigninDetailUserInfoResp>({
     name: '',
     avatar: '',
     department: '',
@@ -58,12 +59,6 @@
   // 获取考勤数据
   const fetchAttendanceData = async () => {
     try {
-      // 这里替换为真实API调用
-      // const response = await fetch(`/api/attendance/${props.userId}?date=${props.date}`);
-      // const data = await response.json();
-      // Object.assign(attendanceData, data);
-
-      // 暂时使用模拟数据
       console.log('获取考勤数据', props.userId, props.date);
       const { data } = await getSigninInfo(props.userId, props.date);
       attendanceData.attendanceStatus = data.attendanceStatus;
@@ -96,50 +91,37 @@
   // 获取打卡数据
   const fetchClockingData = async () => {
     try {
-      // 实际API调用
-      // const response = await fetch(`/api/clocking/${props.userId}?date=${props.date}`);
-      // const data = await response.json();
-      // clockingRecords.value = data;
-
-      // 模拟数据
+      // 调用API获取真实数据
       console.log('获取打卡数据', props.userId, props.date);
-      clockingRecords.value = [
-        {
-          employee: {
-            avatar: '',
-            name: '',
-          },
-          punchTime: '2023-03-14 09:49:00',
-          attendanceCard: '',
-          locationDetail: '网口登入',
-          locationInfo: '',
-          locationDescription: '',
-          deviceInfo: '',
-          department: '',
-          locationNote: '网口登入',
-          creationTime: '2023-03-14 12:00:36',
-        },
-      ];
+      // 使用axios调用API
+      const { data } = await fetchClockingDataApi(props.userId,props.date);
+      clockingRecords.value = data;
     } catch (error) {
       Message.error('获取打卡数据失败');
       console.error(error);
+      // 加载失败时使用模拟数据
+      clockingRecords.value = [];
     }
   };
 
   // 获取补签记录
   const fetchSupplementRecords = async () => {
     try {
-      // 实际API调用
-      // const response = await fetch(`/api/supplement/${props.userId}?date=${props.date}`);
-      // const data = await response.json();
-      // supplementRecords.value = data;
-
-      // 模拟空数据
+      // 调用API获取真实数据
       console.log('获取补签记录', props.userId, props.date);
-      supplementRecords.value = [];
+      // 使用axios调用API
+      const { data } = await fetchSupplementRecord(props.userId,props.date);
+      supplementRecords.value = data;
+      
+      // 如果API还未实现或返回空数据，保持空数组
+      if (!data || data.length === 0) {
+        supplementRecords.value = [];
+      }
     } catch (error) {
       Message.error('获取补签记录失败');
       console.error(error);
+      // 加载失败时设置为空数组
+      supplementRecords.value = [];
     }
   };
 
@@ -152,34 +134,6 @@
       userInfo.department = data.department;
     } catch (error) {
       Message.error(error.toString());
-    }
-  };
-
-  // 获取状态文本
-  const getStatusText = (state: number) => {
-    switch (state) {
-      case 0:
-        return '正常';
-      case 1:
-        return '迟到';
-      case 2:
-        return '早退';
-      default:
-        return '未知';
-    }
-  };
-
-  // 获取补签状态文本
-  const getSupplementStateText = (state: number) => {
-    switch (state) {
-      case 0:
-        return '流程中';
-      case 1:
-        return '已通过';
-      case 2:
-        return '已拒绝';
-      default:
-        return '未知';
     }
   };
 
@@ -370,11 +324,13 @@
           class="custom-table"
         >
           <template #columns>
-            <a-table-column title="员工" data-index="employee">
+            <a-table-column title="人员" data-index="employee">
               <template #cell="{ record }">
                 <a-space>
                   <div v-if="record.employee.avatar" class="avatar">
-                    <img :src="record.employee.avatar" alt="头像" />
+                    <img
+                         :src="record.employee.avatar"
+                         alt="头像" />
                   </div>
                   <span>{{ record.employee.name }}</span>
                 </a-space>
