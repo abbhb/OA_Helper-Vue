@@ -52,6 +52,8 @@ export default {
   'menu.signin.device': '考勤设备',
   'menu.signin-ext.signin-detail': '考勤详情',
   'menu.signin.userData': '生物数据',
+  'menu.ikuai.allow': 'Ikuai网络授权',
+  'menu.ikuai': 'Ikuai管理',
   'menu.signin': '打卡服务',
   'menu.usercenter.usercenter': '个人中心',
   'menu.usercenter.process-my': '我发起的',

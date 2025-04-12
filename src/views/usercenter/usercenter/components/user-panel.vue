@@ -89,6 +89,10 @@ import {reactive, ref} from 'vue';
       label: '最后登录时间',
       value: userStore.updateTime,
     },
+    {
+      label: 'LDAP账号',
+      value: userStore.username,
+    },
   ] as DescData[]);
   const fileList = ref<FileItem[]>([file]);
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
