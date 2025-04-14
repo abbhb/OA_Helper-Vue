@@ -500,6 +500,10 @@
         }, 300);
       } catch (err) {
         loginStatus.value.loading = false;
+        Notification.info({
+          title: '登录失败',
+          content: (err as Error).message,
+        })
         errorMessage.value = (err as Error).message;
       }
     }
