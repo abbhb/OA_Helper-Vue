@@ -311,7 +311,7 @@ body .@{menu-prefix-cls} {
     .item-mode(vertical);
 
     .@{menu-prefix-cls}-inner {
-      padding: @menu-vertical-padding-vertical @menu-vertical-padding-horizontal;
+      padding: @menu-collapse-padding-vertical @menu-collapse-padding-horizontal;
     }
 
     .@{menu-prefix-cls}-item.@{menu-prefix-cls}-item-indented {
@@ -335,8 +335,8 @@ body .@{menu-prefix-cls} {
     .@{menu-prefix-cls}-inner {
       display: flex;
       align-items: center;
-      padding: @menu-horizontal-padding-vertical
-      @menu-horizontal-padding-horizontal;
+      padding: @menu-collapse-padding-vertical @menu-collapse-padding-horizontal;
+
     }
 
     .@{menu-prefix-cls}-item,
@@ -411,8 +411,8 @@ body .@{menu-prefix-cls} {
 
   // 折叠样式
   &-collapsed {
-    width: @menu-collapse-width;
-
+    // 加宽度折叠会比较奇怪
+    //width: @menu-collapse-width;
     .@{menu-prefix-cls}-inner {
       padding: @menu-collapse-padding-vertical @menu-collapse-padding-horizontal;
     }

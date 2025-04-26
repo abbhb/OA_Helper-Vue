@@ -565,19 +565,27 @@
                 </a-tag>
               </template>
             </a-table-column>
+
+
             <a-table-column
               :sortable="{ sortDirections: ['ascend', 'descend'] }"
               :title="$t(`syscenter.user.manger.roles`)"
               :width="220"
             >
               <template #cell="{ record }">
-                <a-tag
-                  v-for="(role, index) of record.roles"
-                  :key="index"
-                  :color="getColor(role.sort)"
-                  bordered
-                  >{{ role.name }}
-                </a-tag>
+                <a-tooltip content="注意:此处的角色只显示直接赋予用户的角色，不包含继承自部门的角色!">
+                  <div>
+                    <a-tag
+                      v-for="(role, index) of record.roles"
+                      :key="index"
+                      :color="getColor(role.sort)"
+                      bordered
+                    >{{ role.name }}
+                    </a-tag>
+                  </div>
+
+                </a-tooltip>
+
               </template>
             </a-table-column>
             <a-table-column

@@ -37,3 +37,20 @@ export function confirmToServer(key: string) {
 export function getAllImageUrl(params: { key: string }) {
   return axios.get<string>('/api/common/get_all_image_url', { params });
 }
+
+// ---- LDAP
+
+export interface SyncLdapJobVO {
+  id?:string;
+  createTime?:string;
+  updateTime?:string;
+  state?:string;//0：进行中，1：成功，2：失败
+  createUser?:string;
+  userName?:string;
+}
+export function SyncMysqlToLdap() {
+  return axios.get<string>('/api/system_control/sync_mysql_ldap');
+}
+export function syncMysqlToLdapJobs() {
+  return axios.get<SyncLdapJobVO>('/api/system_control/sync_mysql_ldap_jobs');
+}

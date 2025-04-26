@@ -10,6 +10,7 @@ import SelectUser, {
 import SelectGroup, {
   SelectGroupType,
 } from '@/components/select-group/index.vue';
+import LdapSyncComponent from '@/components/ldap-sync-component/index.vue'
 import {
   addIkuaiAllowLinks,
   getIkuaiAllowLinkIds,
@@ -214,7 +215,7 @@ const selectMenu = (type) => {
           返回设备管理
         </a-button>
         <a-tag>
-          注意：新添加的用户需要实际登录过本平台次日后才会同步数据至Ikuai。（次日才能正常使用）
+          注意：新添加的用户需要实际登录过本平台次日后才会同步数据至Ikuai。（次日才能正常使用）<LdapSyncComponent/>
         </a-tag>
       </a-space>
     </div>

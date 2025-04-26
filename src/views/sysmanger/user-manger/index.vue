@@ -1,13 +1,15 @@
 <script lang="ts" setup>
 import Manger from '@/views/sysmanger/user-manger/components/Manger.vue';
+import LdapSyncComponent from "@/components/ldap-sync-component/index.vue";
 </script>
 
 <template>
   <div class="container">
     <div class="left-side">
-      <a-alert banner center
-      >注意:此处的角色只显示直接赋予用户的角色，不包含继承自部门的角色!
-      </a-alert>
+      <a-tag>
+        注意：新添加的用户需要实际登录过本平台次日后才会同步数据至Ldap。（次日才能正常使用）<LdapSyncComponent/>
+      </a-tag>
+
 
       <Manger style="margin-top: 5px"
       />
