@@ -369,6 +369,20 @@
                 </template>
               </a-table-column>
 
+              <a-table-column title="自动缩放">
+                <template #cell="{ record }">
+                  <a-radio-group
+                    v-if="record.state === 3"
+                    v-model:model-value="record.bShrinkToFit"
+                    size="small"
+                    type="button"
+                  >
+                    <a-radio :value="0">不缩放</a-radio>
+                    <a-radio :value="1"><a-tooltip content="可能存在打印字符异常，例如堆叠字符的问题！">可缩放时缩放到纸张大小</a-tooltip></a-radio>
+                  </a-radio-group>
+                </template>
+              </a-table-column>
+
               <a-table-column title="单双面">
                 <template #cell="{ record }">
                   <a-radio-group

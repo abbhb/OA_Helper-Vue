@@ -47,6 +47,7 @@ interface PrintFileReq {
   endNum: number;
   landscape: number;
   deviceId: string;
+  bShrinkToFit: number; // 0:不缩放 1:缩放
 }
 
 export interface PrintJobC {

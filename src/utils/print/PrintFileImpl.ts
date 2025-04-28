@@ -29,6 +29,8 @@ export class PrintFileImpl implements fileItemType {
 
   position: number; // 方向0 为垂直 1为水平
 
+  bShrinkToFit: number; // 0:不缩放 1:缩放
+
   state: number;
 
   uuid: string;
@@ -52,6 +54,7 @@ export class PrintFileImpl implements fileItemType {
     this.canGetImage = false;
     this.duplex = 1;
     this.percent = 0;
+    this.bShrinkToFit = 0;
   }
 
   addFile(fileName) {
@@ -83,6 +86,7 @@ export class PrintFileImpl implements fileItemType {
     this.duplex = 1;
     this.page_start = 1;
     this.page_end = 1;
+    this.bShrinkToFit = 0;
     this.imageUrl = '';
     this.configTimer = null;
     this.imageTimer = null;
@@ -173,6 +177,7 @@ export class PrintFileImpl implements fileItemType {
         copies: this.copies_num,
         isDuplex: this.duplex,
         landscape: this.position,
+        bShrinkToFit: this.bShrinkToFit,
         deviceId,
       });
       if (messageTip) {

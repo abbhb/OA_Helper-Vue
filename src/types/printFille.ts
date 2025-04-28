@@ -10,5 +10,6 @@ export interface fileItemType {
     percent?: number;
     uuid?: string;
     state: number;
+    bShrinkToFit: number;
     imageUrl?:string;
 }

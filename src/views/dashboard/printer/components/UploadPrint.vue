@@ -119,6 +119,13 @@
           </a-radio-group>
         </a-form-item>
 
+        <a-form-item field="bShrinkToFit" label="自动缩放">
+          <a-radio-group v-model="thisPrint.bShrinkToFit">
+            <a-radio :value="0">不缩放</a-radio>
+            <a-radio :value="1"><a-tooltip content="可能存在打印字符异常，例如堆叠字符的问题！">可缩放时缩放到纸张大小</a-tooltip></a-radio>
+          </a-radio-group>
+        </a-form-item>
+
         <a-form-item field="mode" label="打印模式">
           <a-radio-group v-model="thisPrint.duplex">
             <a-radio :value="1">单面打印</a-radio>
