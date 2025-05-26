@@ -358,7 +358,7 @@
           query: { ...othersQuery },
         });
       }
-    }, 1500); // 1.5秒后跳转
+    }, 5);
   };
 
   const emailLoginHandel = async () => {
