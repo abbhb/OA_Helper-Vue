@@ -1,4 +1,4 @@
-import { computed, Reactive, reactive, ref, watch } from 'vue';
+import {computed, h, Reactive, reactive, ref, watch} from 'vue';
 import { defineStore } from 'pinia';
 import { useCachedStore } from '@/store/modules/chat/cached';
 import { useUserStore } from '@/store';
@@ -21,6 +21,9 @@ import { cloneDeep } from 'lodash';
 import router from '@/router';
 import { pushNotifyByMessage } from '@/utils/chat/systemMessageNotify';
 import { UploadTask } from '@/hooks/chat/useUploadN';
+import { Notification } from '@arco-design/web-vue';
+import RenderMessage from '@/views/chat/chat-index/components/RenderMessage/index.vue';
+import AvatarImage from "@/components/image/AvatarImage.vue";
 
 export const pageSize = 80;
 // 标识是否第一次请求
@@ -364,9 +367,12 @@ export const useChatStore = defineStore('chat', () => {
         msg.message.body.content,
         cacheUser.avatar as string
       );
+
     } else if (String(msg.fromUser.uid) !== String(userStore.userInfo.id)) {
+
       pushNotifyByMessage(msg);
     }
+
 
     // tab 在后台获得新消息，就开始闪烁！
     if (document.hidden && !shakeTitle.isShaking) {

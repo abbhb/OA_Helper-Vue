@@ -1,5 +1,5 @@
 <template>
-  <a-spin style="display: block" :loading="loading">
+  <a-spin style="display: block" >
     <a-tabs v-model:activeKey="messageType" type="line" destroy-on-hide>
       <a-tab-pane key="message">
         <template #title>
@@ -26,7 +26,6 @@
             v-if="renderList.length > 0"
             :data="renderList"
             :span-method="spanMethod"
-            :row-class="renderClass"
             :scroll="{
               y: 500,
             }"
@@ -35,6 +34,7 @@
               <a-table-column title="通知人" data-index="username" :width="80">
                 <template #cell="{ record }">
                   <AvatarImage
+                    :class="record?.read?'warning-row':''"
                     :key="record.avatar + 'reas1' + record.username"
                     :avatar="record.avatar"
                     :name="record.username"
@@ -43,7 +43,11 @@
               </a-table-column>
               <a-table-column :width="120">
                 <template #cell="{ record }">
-                  {{ record.username }}
+                  <div :class="record?.read?'warning-row':''"
+                  >
+                    {{ record.username }}
+                  </div>
+
                 </template>
               </a-table-column>
               <a-table-column
@@ -51,12 +55,17 @@
                 :width="150"
               >
                 <template #cell="{ record }">
-                  {{ record.createTime }}
+                  <div :class="record?.read?'warning-row':''"
+                  >
+                    {{ record.createTime }}
+                  </div>
+
                 </template>
               </a-table-column>
               <a-table-column title="内容" data-index="message" :width="500">
                 <template #cell="{ record }">
                   <RenderMessage
+                    :class="record?.read?'warning-row':''"
                     :message="record.message"
                     :ext-type="''"
                   />
@@ -65,11 +74,12 @@
               <a-table-column title="操作" data-index="createTime" :width="160">
                 <template #cell="{ record }">
                   <a-button
+                    v-if="!record.read"
                     :disabled="record.read"
                     :type="'text'"
                     @click="handleItemClick(record)"
                   >
-                    确认
+                    已读
                   </a-button>
                   <a-button
                     :type="'text'"
@@ -132,7 +142,9 @@
         </a-spin>
       </a-tab-pane>
       <template #extra>
-        <a-button type="text" @click="emptyList">
+        <a-button type="text" @click="handleAllRead">
+          一键已读
+        </a-button> <a-button :status="'danger'" type="text" @click="emptyList">
           {{ $t('messageBox.tab.button') }}
         </a-button>
       </template>
@@ -255,17 +267,17 @@
     }
     return '';
   };
-  const handleItemClick = async (items: SystemMessageResp) => {
-    if (renderList.value.length && !items.read) {
+  const handleItemClick = async (item: SystemMessageResp) => {
+    if (renderList.value.length && !item.read) {
       // 标记并打开
-      await readPost(items.id, 1);
+      await readPost(item.id, 1);
       await systemMessageStore.getSystemMessageList();
     }
   };
-  const handleRemove = async (id: string) => {
+  const handleRemove = async (item: SystemMessageResp) => {
     if (renderList.value.length) {
       // 标记并打开
-      await readPost(id, 2);
+      await readPost(item.id, 2);
       await systemMessageStore.getSystemMessageList();
     }
   };
@@ -283,11 +295,12 @@
     for (let i = 0; i < temp.length; i += 1) {
       ids.push(temp[i].id);
     }
-    const res = await readPostBatch(ids, 2);
+    const res = await readPostBatch(ids, 1);
     // @ts-ignore
     if (res.code === 1) {
       // @ts-ignore
       Message.success(res.msg);
+      await systemMessageStore.getSystemMessageList();
     }
   };
   const emptyList = async () => {
@@ -301,6 +314,7 @@
     if (res.code === 1) {
       // @ts-ignore
       Message.success(res.msg);
+      await systemMessageStore.getSystemMessageList();
     }
   };
 </script>

@@ -264,6 +264,8 @@
 </script>
 
 <template>
+  <a-alert closable class="s-print-temp-tip">论文打印建议使用单文件打印（更加稳定可靠）</a-alert>
+
   <a-spin :loading="thisState.printing" dot>
     <div>
       <a-card>

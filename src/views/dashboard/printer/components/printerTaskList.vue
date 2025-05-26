@@ -1,6 +1,6 @@
 <template>
   <div title="打印机列表" hoverable>
-    <a-card title="当前打印机任务列表[2s刷新一次]" :bordered="true">
+    <a-card title="当前打印机任务列表[1s刷新一次]" :bordered="true">
       <a-table :data="printStore.printDevice == null?[]:printStore.printDevice.printJobs" :bordered="false">
         <template #columns>
           <a-table-column data-index="id" title="任务ID" />
@@ -10,7 +10,7 @@
           <a-table-column data-index="jobStatus" title="状态" />
           <a-table-column title="操作">
             <template #cell="{ record }">
-              <a-button @click="handleChangeJob(record.id, 3)">取消 </a-button>
+              <a-button @click="handleChangeJob(record, 3)">取消 </a-button>
             </template>
           </a-table-column>
         </template>
@@ -28,9 +28,20 @@
 
   const printStore = usePrintStore();
 
-  const handleChangeJob = async (FileUuid: any, state: any) => {
-    const {data} = await cancelPrint(FileUuid, printStore.printDevice.id);
-    Message.success(data)
+  const handleChangeJob = async (record: any, state: any) => {
+    if (typeof record.jobStatus === "string"){
+      if (record.jobStatus.includes("正在取消")){
+        Message.info("正在取消中，无需重复操作")
+        return
+      }
+    }
+    try {
+      const {data} = await cancelPrint(record.id, printStore.printDevice.id);
+      Message.success(data)
+    }catch (e) {
+      Message.error(e.toString());
+    }
+
   };
 </script>
 

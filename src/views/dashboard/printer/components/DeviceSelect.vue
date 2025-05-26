@@ -31,7 +31,7 @@
     }
     if (zuikuaideIndex === 999 && zuixiaodezhuangtai === 999) {
       // 压根没有设备，告知用户
-      Message.info('当前可能所有打印机都寄掉了！');
+      Message.warning('打印机离线告警，请联系管理员修复！');
     } else {
       printState.printDevice = printState.printDeviceList[zuikuaideIndex];
       await appState.changePrintDevice(

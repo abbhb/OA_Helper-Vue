@@ -97,7 +97,7 @@
       <li>
         <a-tooltip :content="$t('settings.navbar.alerts')">
           <div class="message-box-trigger">
-            <a-badge :count="NoRead" :dot="true">
+            <a-badge :count="NoRead" :dot="false">
               <a-button
                 class="nav-btn"
                 type="outline"
@@ -115,6 +115,7 @@
           :closable="true"
           v-model:visible="messageBoxState.visible"
           :width="1200"
+          :simple="false"
         >
           <MessageBox />
         </a-modal>

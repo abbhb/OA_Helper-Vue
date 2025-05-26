@@ -45,7 +45,7 @@ export class PrintDeviceImpl implements PrintDevice {
     this.description = description;
     this.listNums = listNums;
     this.statusTypeMessage = statusTypeMessage;
-    this.pollingInterval = 2000; // 3s一次
+    this.pollingInterval = 1000; // 1s一次
     this.pollingTimer = null;
     this.printJobs = [];
   }

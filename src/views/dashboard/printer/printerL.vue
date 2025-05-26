@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div class="left-side">
+      <a-alert closable class="s-print-temp-tip">论文打印建议上传PDF文件，格式不易错乱，且无需排队转换。（篇幅较长，建议查看缩略图在确认无误后打印，避免浪费纸张）</a-alert>
       <UploadPrint v-if="printState.model === 1" />
       <MultiUploadPrint v-else-if="printState.model === 9" />
       <PrinterTaskList />
@@ -42,6 +43,38 @@
 
   const printState = usePrintStore();
 </script>
+<style lang="less">
+.s-print-temp-tip {
+  padding: 10px 10px 10px 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-bg-2);
+}
+</style>
+
+<style lang="less">
+// responsive
+.mobile {
+  .s-print-temp-tip {
+    padding: 10px 10px 10px 10px;
+    margin-bottom: 10px;
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-bg-2);
+  }
+}
+</style>
 
 <style lang="less" scoped>
   .container {

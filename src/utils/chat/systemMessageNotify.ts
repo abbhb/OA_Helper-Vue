@@ -43,7 +43,7 @@ export const pushNitice = (msg: MessageType) => {
     title: cacheUser.name,
     content: () =>
       h(RenderMessage, {
-        message: msg.message,
+        message: msg,
         extType: ""
       }),
     icon: () =>
