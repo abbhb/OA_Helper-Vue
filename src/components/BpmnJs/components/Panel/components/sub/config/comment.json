@@ -9,7 +9,7 @@
         "name": "comment",
         "label": "审批意见",
         "labelAlign": "label-left-align",
-        "defaultValue": null,
+        "defaultValue": "True",
         "columnWidth": "200px",
         "size": "",
         "displayStyle": "inline",

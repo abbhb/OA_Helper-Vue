@@ -321,3 +321,26 @@ export function addBc(data: SigninBc) {
 export function editBc(data: SigninBc) {
   return axios.put<string>('/api/signin_bc/update', data);
 }
+
+export interface SigninRenewalReq {
+  renewalTime:string;
+  renewalReason:string;
+}
+
+/**
+ * 发起补签
+ */
+export function logRenewalSignin(data: SigninRenewalReq[]) {
+  return axios.post<string>('/api/signin_log/log_renewal_signin',data);
+}
+
+/**
+ * 补签流程内容
+ */
+export function getRenewalSigninDataByInstantId(instance_id: string) {
+  return axios.get<SigninRenewalReq[]>('/api/signin_log/get_renewal_signin_data_by_instant_id',{
+    params:{
+      instance_id:instance_id
+    }
+  });
+}

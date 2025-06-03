@@ -1,8 +1,9 @@
 <script setup lang="ts">
-  import { h, ref } from 'vue';
+  import { h, ref,reactive  } from 'vue';
   import { IconSearch } from '@arco-design/web-vue/es/icon';
   import { getColor } from '@/utils/color-index';
   import { RoleManger } from '@/api/role';
+  import { Modal, Checkbox, Textarea, Message } from '@arco-design/web-vue';
   import ShareCopyIcon from '@/assets/icons/shape-copy.svg';
 
   import {
@@ -10,8 +11,9 @@
     IndexPageDataWithuserReq,
     SigninLogForSelfResp,
   } from '@/api/attendance';
-  import { Message } from '@arco-design/web-vue';
   import router from '@/router';
+  import {logRenewalSignin, SigninRenewalReq} from "@/api/signin";
+  import dayjs, {Dayjs} from "dayjs";
 
   interface statuEI {
     clickLoading: boolean;
@@ -27,6 +29,23 @@
       start: null,
       end: null,
     },
+  });
+
+
+  interface RenewalModal {
+    visible: boolean;
+    record: SigninLogForSelfResp | null;
+    selectedTimes: string[];
+    reason: string;
+    timeOptions: { label: string; value: string }[];
+  }
+
+  const renewalModal = reactive<RenewalModal>({
+    visible: false,
+    record: null,
+    selectedTimes: [],
+    reason: '',
+    timeOptions: []
   });
 
   const tableData = ref<SigninLogForSelfResp[]>([]);
@@ -91,6 +110,86 @@
     router.push({
       name: 'StartProcessNewV1',
     });
+  };
+  const startRenewal = (record: SigninLogForSelfResp) => {
+    if (record.state !== 3 || !record.needSB) {
+      Message.warning('无需补签！');
+      return;
+    }
+
+    // 提取所有时间点并排序
+    const timeSet = new Set<string>();
+    record.bcDetail?.forEach(item => {
+      try{
+        const xbtimeY: Dayjs = dayjs(item.xbItem.timeY);
+        if (xbtimeY) timeSet.add(xbtimeY.add(1,'minute').format('YYYY-MM-DD HH:mm:ss'));
+      }catch (e) {
+        console.log(e)
+      }
+      try {
+        const sbtimeY: Dayjs = dayjs(item.sbItem.timeY);
+        if (sbtimeY) timeSet.add(sbtimeY.subtract(1,'minute').format('YYYY-MM-DD HH:mm:ss'));
+      }catch (e) {
+        console.log(e)
+      }
+
+    });
+
+    // 转换为选项并排序
+    renewalModal.timeOptions = Array.from(timeSet)
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+      .map(time => ({ label: formatTime(time), value: time }));
+
+    renewalModal.record = record;
+    renewalModal.selectedTimes = [];
+    renewalModal.reason = '';
+    renewalModal.visible = true;
+  };
+
+  const formatTime = (timeString: string) => {
+    return timeString;
+    // try {
+    //   const date = new Date(timeString);
+    //   return isNaN(date.getTime())
+    //     ? timeString
+    //     : `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    // } catch {
+    //   return timeString;
+    // }
+  };
+
+  const handleRenewalSubmit = async () => {
+    if (!renewalModal.selectedTimes.length) {
+      Message.warning('请至少选择一个补签时间点');
+      return;
+    }
+
+    if (!renewalModal.reason.trim()) {
+      Message.warning('请输入补签理由');
+      return;
+    }
+    // 生成请求体
+    const req:SigninRenewalReq[] = [];
+    for (const selectedTime of renewalModal.selectedTimes) {
+      const reqitem:SigninRenewalReq = {
+        renewalTime:selectedTime,
+        renewalReason:renewalModal.reason
+      }
+      req.push(reqitem)
+    }
+    try {
+      // 这里调用补签API
+      const data = await logRenewalSignin(req);
+      // @ts-ignore
+      Message.success(data.msg || '补签申请已提交');
+      renewalModal.visible = false;
+
+      // 刷新数据
+      initData();
+    } catch (error) {
+      Message.error('补签提交失败');
+      console.error('补签错误:', error);
+    }
   };
 </script>
 
@@ -242,10 +341,65 @@
               {{ record.errMsg ? record.errMsg : '--' }}
             </template>
           </a-table-column>
+          <a-table-column
+            title="操作"
+            :width="200"
+          >
+            <template #cell="{ record }">
+             <a-button v-if="record.state === 3 && record.needSB" @click="startRenewal(record)">补签</a-button>
+            </template>
+          </a-table-column>
         </template>
       </a-table>
     </div>
   </div>
+  <!-- 补签弹窗 -->
+  <a-modal
+    v-model:visible="renewalModal.visible"
+    title="发起补签"
+    :mask-closable="false"
+    :footer="true"
+    width="600px"
+    @ok="handleRenewalSubmit"
+    @cancel="renewalModal.visible = false"
+  >
+    <div class="renewal-modal">
+      <div class="time-selection">
+        <h4>选择补签时间点：</h4>
+        <a-checkbox-group
+          v-model="renewalModal.selectedTimes"
+          direction="vertical"
+        >
+          <a-checkbox
+            v-for="option in renewalModal.timeOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </a-checkbox>
+        </a-checkbox-group>
+      </div>
+
+      <div class="reason-input">
+        <h4>补签理由：</h4>
+        <a-textarea
+          v-model="renewalModal.reason"
+          placeholder="请输入补签理由"
+          :max-length="200"
+          show-word-limit
+          :auto-size="{
+            minRows: 3,
+            maxRows: 5
+          }"
+        />
+      </div>
+    </div>
+
+    <template #footer>
+      <a-button @click="renewalModal.visible = false">取消</a-button>
+      <a-button type="primary" @click="handleRenewalSubmit">提交</a-button>
+    </template>
+  </a-modal>
 </template>
 
 <style lang="less" scoped>
@@ -819,5 +973,38 @@
   }
   .test {
     height: 500px;
+  }
+
+  .renewal-modal {
+    padding: 10px 0;
+
+    .time-selection {
+      margin-bottom: 20px;
+
+      h4 {
+        margin-bottom: 10px;
+        font-weight: 500;
+        color: var(--color-text-1);
+      }
+
+      :deep(.arco-checkbox-group) {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 8px 5px;
+        border: 1px solid var(--color-border-2);
+        border-radius: 4px;
+      }
+    }
+
+    .reason-input {
+      h4 {
+        margin-bottom: 10px;
+        font-weight: 500;
+        color: var(--color-text-1);
+      }
+    }
   }
 </style>

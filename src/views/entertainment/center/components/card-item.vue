@@ -1,8 +1,7 @@
 <script setup lang="ts">
-  import { defineProps } from 'vue/dist/vue';
   import ImagePreview from '@/components/image/ImagePreview.vue';
   import AvatarImage from '@/components/image/AvatarImage.vue';
-  import { onMounted, ref } from 'vue';
+  import { defineProps,onMounted, ref } from 'vue';
   import router from '@/router';
 
   const props = defineProps({

@@ -191,8 +191,13 @@
         ElMessage.success(res.msg);
         emit('ok');
         drawer.value = false;
+      }else {
+        // @ts-ignore
+        ElMessage.error(res.msg)
       }
-    });
+    }).catch((reason)=>{
+      ElMessage.error(reason.message)
+    })
   }
 
   const emit = defineEmits<{

@@ -12,6 +12,11 @@
         :privie="true"
         :task-id="instanceId"
       />
+      <RenewalSigninForm
+        v-else-if="definitionKey === 'Process_system_2'"
+        :key="instanceId"
+        :task-id="instanceId"
+      />
       <MainForm
         v-else
         ref="mainForm"
@@ -26,6 +31,7 @@
   import { ref, watchEffect, defineProps } from 'vue';
   import { getMainFormInfo } from '@/api/bpmn';
   import userinfobaseext from '@/components/userinfo-base-ext/index.vue';
+  import RenewalSigninForm from "@/components/BpmnJs/components/MainFormPanel/RenewalSigninForm.vue";
   import MainForm from './MainForm.vue';
 
   const props = defineProps({

@@ -6,7 +6,6 @@ import {
 } from 'vue-router';
 import { useUserStore } from '@/store';
 import { BreadcrumbRoute, Message } from '@arco-design/web-vue';
-import { computed } from 'vue/dist/vue';
 
 export default function useRouterPlus() {
   const router = useRouter();

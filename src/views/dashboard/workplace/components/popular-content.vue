@@ -117,9 +117,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { ref,defineEmits } from 'vue';
   import useLoading from '@/hooks/loading';
-  import { defineEmits } from 'vue/dist/vue';
   import {
     addNoticeReadLog,
     getViewNoticeList,
